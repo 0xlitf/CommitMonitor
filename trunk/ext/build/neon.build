@@ -83,8 +83,8 @@
 				<include name="." />
 				<include name="src" />
 				<include name="..\apr-util\xml\expat\lib" />
-				<include name="..\..\..\common\zlib" />
-				<include name="..\..\..\common\openssl\inc32" />
+				<include name="..\..\common\zlib" />
+				<include name="..\..\common\openssl\inc32" />
 			</includedirs>
 			<defines>
 				<define name="_CRT_NONSTDC_NO_DEPRECATE" />
@@ -118,9 +118,9 @@
 			options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
 			<sources>
 				<include name="${configuration}_${platform}\*.obj" />
-				<include name="..\..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
-				<include name="..\..\..\common\openssl\out32\libeay32.lib" />
-				<include name="..\..\..\common\openssl\out32\ssleay32.lib" />
+				<include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
+				<include name="..\..\common\openssl\out32\libeay32.lib" />
+				<include name="..\..\common\openssl\out32\ssleay32.lib" />
 			</sources>
 		</lib>
 		<exec program="svn" failonerror="false">

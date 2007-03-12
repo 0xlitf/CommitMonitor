@@ -75,11 +75,11 @@
 			Builds all the libraries CommitMonitor depends on:
 			Subversion, apr, OpenSSL, ...
 		</description>
-		<nant target="OpenSSL">
+<!--		<nant target="OpenSSL">
 			<buildfiles>
 				<include name="ext\build\OpenSSL.build" />
 			</buildfiles>
-		</nant>
+		</nant> -->
 		<nant target="build">
 			<buildfiles>
 				<include name="ext\build\default.build" />
