@@ -55,6 +55,11 @@
 			Sets the version information as properties, env variables
 			and sets up the different version specific files.
 		</description>
+		<nant target="versioninfo">
+			<buildfiles>
+				<include name="versioninfo.build" />
+			</buildfiles>
+		</nant>
 		<loadfile file="src\version.in" property="versionheaderfile">
 			<filterchain>
 				<replacetokens begintoken="$" endtoken="$">
@@ -87,7 +92,7 @@
 		</nant>
 	</target>
 
-	<target name="CommitMonitor" depends="VSNET,env">
+	<target name="CommitMonitor" depends="VSNET,env,VersionInfo">
 		<description>
 			Builds CommitMonitor. The libraries must have been built
 			before.
@@ -99,7 +104,7 @@
 		</exec>
 	</target>
 
-	<target name="setup" depends="env,CommitMonitor">
+	<target name="setup" depends="CommitMonitor">
 		<description>
 			Uses WiX to create an msi installer file.
 		</description>
@@ -110,7 +115,7 @@
 		</nant>
 	</target>
 
-	<target name="msi" depends="env">
+	<target name="msi" depends="VSNET,env">
 		<description>
 			Builds the msi installer from already built binaries.
 		</description>
