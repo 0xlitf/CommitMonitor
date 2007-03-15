@@ -1,6 +1,8 @@
 #pragma once
 #include "basedialog.h"
 
+#define REPOBROWSER_CTRL_MIN_WIDTH 50
+
 /**
  * main dialog.
  * hosts the UI's of all the rules.
@@ -15,5 +17,15 @@ protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT					DoCommand(int id);
 
-protected:
+	bool					OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
+	bool					OnMouseMove(UINT nFlags, POINT point);
+	bool					OnLButtonDown(UINT nFlags, POINT point);
+	bool					OnLButtonUp(UINT nFlags, POINT point);
+	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+
+private:
+	bool					m_bThreadRunning;
+
+	bool					m_bDragMode;
+	LONG					m_oldx, m_oldy;
 };
