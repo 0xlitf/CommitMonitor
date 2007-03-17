@@ -15,11 +15,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Neutral resources
+// English (U.S.) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -27,6 +27,17 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 //
 // Dialog
 //
+
+IDD_ABOUTBOX DIALOG  22, 17, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "System"
+BEGIN
+    ICON            IDI_COMMITMONITOR,IDC_MYICON,14,9,16,16
+    LTEXT           "CommitMonitor Version 1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2007",IDC_STATIC,49,20,119,8
+    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
+END
 
 IDD_MAINDLG DIALOGEX 0, 0, 412, 238
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -38,8 +49,26 @@ BEGIN
     LTEXT           "Monitor the following URLs",IDC_STATIC,7,7,86,8
     CONTROL         "",IDC_MONITOREDURLS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,158,20,247,189
     PUSHBUTTON      "Add URL...",IDC_ADDURL,69,217,50,14
-    PUSHBUTTON      "Edit",IDC_EDIT,7,217,50,14
+    PUSHBUTTON      "Edit",IDC_URLEDIT,7,217,50,14
     CONTROL         "",IDC_URLTREE,"SysTreeView32",WS_BORDER | WS_TABSTOP,7,20,148,189
+END
+
+IDD_URLCONFIG DIALOGEX 0, 0, 255, 174
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "URL settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,136,153,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,198,153,50,14
+    LTEXT           "URL to monitor",IDC_STATIC,7,7,48,8
+    EDITTEXT        IDC_URLTOMONITOR,7,21,241,14,ES_AUTOHSCROLL
+    GROUPBOX        "URL settings",IDC_STATIC,7,58,241,91
+    PUSHBUTTON      "Check URL",IDC_CHECKURL,198,39,50,14
+    LTEXT           "Check every",IDC_STATIC,14,73,41,8
+    EDITTEXT        IDC_CHECKTIME,59,71,26,14,ES_AUTOHSCROLL | ES_NUMBER | WS_DISABLED
+    LTEXT           "minutes",IDC_STATIC,90,73,26,8
+    CONTROL         "Automatically create diffs of commits",IDC_CREATEDIFFS,
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,91,133,10
 END
 
 
@@ -51,19 +80,18 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO 
 BEGIN
-    IDD_MAINDLG, DIALOG
+    IDD_URLCONFIG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 405
+        RIGHTMARGIN, 248
+        VERTGUIDE, 14
         TOPMARGIN, 7
-        BOTTOMMARGIN, 231
-        HORZGUIDE, 20
-        HORZGUIDE, 209
+        BOTTOMMARGIN, 167
     END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Neutral resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -112,23 +140,6 @@ IDC_COMMITMONITOR ACCELERATORS
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUTBOX DIALOG  22, 17, 230, 75
-STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
-CAPTION "About"
-FONT 8, "System"
-BEGIN
-    ICON            IDI_COMMITMONITOR,IDC_MYICON,14,9,16,16
-    LTEXT           "CommitMonitor Version 1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2007",IDC_STATIC,49,20,119,8
-    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
 END
 
 

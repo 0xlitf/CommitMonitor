@@ -2,6 +2,8 @@
 #include "Resource.h"
 #include "MainDlg.h"
 
+#include "URLDlg.h"
+
 CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 	, m_bDragMode(false)
 	, m_oldx(-1)
@@ -65,6 +67,12 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case IDCANCEL:
 		PostQuitMessage(IDCANCEL);
+		return 0;
+		break;
+	case IDC_ADDURL:
+	case IDC_URLEDIT:
+		CURLDlg dlg;
+		dlg.DoModal(hResource, IDD_URLCONFIG, *this);
 		return 0;
 		break;
 	}

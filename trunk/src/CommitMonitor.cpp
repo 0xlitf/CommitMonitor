@@ -5,6 +5,8 @@
 #include "CommitMonitor.h"
 #include "MainDlg.h"
 
+#include "apr_general.h"
+
 // Global Variables:
 HINSTANCE hInst;								// current instance
 
@@ -26,8 +28,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		|ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&icex);
 
+	int argc = 0;
+	const char* const * argv = NULL;
+	apr_app_initialize(&argc, &argv, NULL);
+
 	CMainDlg dlg;
 	dlg.DoModal(hInstance, IDD_MAINDLG, NULL);
+
+	apr_terminate();
 	return (int) 0;
 }
 

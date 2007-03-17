@@ -1,16 +1,15 @@
 #pragma once
 #include "basedialog.h"
 
-#define REPOBROWSER_CTRL_MIN_WIDTH 50
 
 /**
- * main dialog.
+ * url dialog.
  */
-class CMainDlg : public CDialog
+class CURLDlg : public CDialog
 {
 public:
-	CMainDlg(void);
-	~CMainDlg(void);
+	CURLDlg(void);
+	~CURLDlg(void);
 
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -23,8 +22,4 @@ protected:
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 private:
-	bool					m_bThreadRunning;
-
-	bool					m_bDragMode;
-	LONG					m_oldx, m_oldy;
 };

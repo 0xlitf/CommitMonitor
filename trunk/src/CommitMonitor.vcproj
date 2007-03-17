@@ -41,7 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -60,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -115,7 +117,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="4"
@@ -132,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -205,6 +209,14 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\SVN.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\URLDlg.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -229,6 +241,14 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVN.h"
+				>
+			</File>
+			<File
+				RelativePath=".\URLDlg.h"
 				>
 			</File>
 		</Filter>
