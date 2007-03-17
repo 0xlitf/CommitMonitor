@@ -36,9 +36,7 @@
 				<include name="uri\gen_uri_delims.c" />
 			</sources>
 			<defines>
-				<define name="_USE_32BIT_TIME_T" if="${platform == 'win32'}" />
-				<define name="APR_DECLARE_EXPORT" />
-				<define name="APR_DECLARE_STATIC" />
+				<define name="APU_DECLARE_STATIC" />
 				<define name="WIN32" />
 				<define name="WIN64" if="${platform == 'x64'}" />
 				<define name="_WINDOWS" />
@@ -73,8 +71,8 @@
 			<arg value="/GF" if="${configuration == 'release'}" />
 			<arg value="/FD" />
 			<arg value="/EHsc" />
-			<arg value="/MD" if="${configuration == 'release'}" />
-			<arg value="/MDd" if="${configuration != 'release'}" />
+			<arg value="/MT" if="${configuration == 'release'}" />
+			<arg value="/MTd" if="${configuration != 'release'}" />
 			<arg value="/Gy" />
 			<arg value="/W3" />
 			<arg value="/nologo" />
@@ -92,8 +90,8 @@
 				<include name="xml\expat\lib" />
 			</includedirs>
 			<defines>
-				<define name="_USE_32BIT_TIME_T" if="${platform == 'win32'}" />
-				<define name="APR_DECLARE_EXPORT" />
+				<define name="APU_DECLARE_STATIC" />
+				<define name="APR_DECLARE_STATIC" />
 				<define name="WIN32" />
 				<define name="_WINDOWS" />
 				<define name="_WIN32" />
@@ -151,8 +149,8 @@
 			<arg value="/GF" if="${configuration == 'release'}" />
 			<arg value="/FD" />
 			<arg value="/EHsc" />
-			<arg value="/MD" if="${configuration == 'release'}" />
-			<arg value="/MDd" if="${configuration != 'release'}" />
+			<arg value="/MT" if="${configuration == 'release'}" />
+			<arg value="/MTd" if="${configuration != 'release'}" />
 			<arg value="/Gy" />
 			<arg value="/W3" />
 			<arg value="/nologo" />
@@ -179,8 +177,8 @@
 				<include name="..\apr\include" />
 			</includedirs>
 			<defines>
-				<define name="_USE_32BIT_TIME_T" if="${platform == 'win32'}" />
-				<define name="APU_DECLARE_EXPORT" />
+				<define name="APU_DECLARE_STATIC" />
+				<define name="APR_DECLARE_STATIC" />
 				<define name="WIN32" />
 				<define name="_WINDOWS" />
 				<define name="_WIN32" />

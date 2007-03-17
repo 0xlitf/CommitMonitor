@@ -52,8 +52,8 @@
 					<arg value="/GF" if="${configuration == 'release'}" />
 					<arg value="/FD" />
 					<arg value="/EHsc" />
-					<arg value="/MD" if="${configuration == 'release'}" />
-					<arg value="/MDd" if="${configuration != 'release'}" />
+					<arg value="/MT" if="${configuration == 'release'}" />
+					<arg value="/MTd" if="${configuration != 'release'}" />
 					<arg value="/Gy" />
 					<arg value="/W3" />
 					<arg value="/nologo" />
@@ -76,7 +76,8 @@
 						<include name="..\..\common\zlib" />
 					</includedirs>
 					<defines>
-						<define name="_USE_32BIT_TIME_T" if="${platform == 'win32'}" />
+						<define name="APR_DECLARE_STATIC" />
+						<define name="APU_DECLARE_STATIC" />
 						<define name="SVN_NEON_0_25=1" />
 						<define name="SVN_NEON_0_26=1" />
 						<define name="alloca=_alloca" />

@@ -46,8 +46,8 @@
 			<arg value="/GF" if="${configuration == 'release'}" />
 			<arg value="/FD" />
 			<arg value="/EHsc" />
-			<arg value="/MD" if="${configuration == 'release'}" />
-			<arg value="/MDd" if="${configuration != 'release'}" />
+			<arg value="/MT" if="${configuration == 'release'}" />
+			<arg value="/MTd" if="${configuration != 'release'}" />
 			<arg value="/Gy" />
 			<arg value="/W3" />
 			<arg value="/nologo" />
@@ -89,7 +89,6 @@
 			<defines>
 				<define name="_CRT_NONSTDC_NO_DEPRECATE" />
 				<define name="_CRT_SECURE_NO_DEPRECATE" />
-				<define name="_USE_32BIT_TIME_T" if="${platform == 'win32'}" />
 				<define name="HAVE_CONFIG_H" />
 				<define name="NE_HAVE_SSL" />
 				<define name="HAVE_OPENSSL" />
