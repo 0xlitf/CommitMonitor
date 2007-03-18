@@ -22,6 +22,12 @@
 			<arg value="/c" />
 			<arg value="ms\do_masm" />
 		</exec>
+		<loadfile file="..\..\common\openssl\ms\nt.mak" property="makefile">
+			<filterchain>
+				<replacestring from="  /MD " to="  /MT " />
+			</filterchain>
+		</loadfile>
+		<echo file="..\..\common\openssl\ms\nt.mak" message="${makefile}" />
 		<exec program="nmake" workingdir="..\..\common\openssl">
 			<arg value="-f" />
 			<arg value="ms\nt.mak" />
