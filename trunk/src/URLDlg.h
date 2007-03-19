@@ -1,6 +1,7 @@
 #pragma once
 #include "basedialog.h"
 
+#include "UrlInfo.h"
 
 /**
  * url dialog.
@@ -22,4 +23,5 @@ protected:
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 private:
+	CUrlInfos				infos;
 };

@@ -4,6 +4,7 @@
 
 #include "SVN.h"
 
+#include "AppUtils.h"
 
 CURLDlg::CURLDlg(void)
 {
@@ -21,6 +22,9 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			if (PathFileExists(urlfile.c_str()))
+				infos.Load(urlfile.c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -41,7 +45,11 @@ LRESULT CURLDlg::DoCommand(int id)
 	{
 	case IDOK:
 	case IDCANCEL:
-		EndDialog(*this, id);
+		{
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			infos.Save(urlfile.c_str());
+			EndDialog(*this, id);
+		}
 		break;
 	case IDC_CHECKURL:
 		{
