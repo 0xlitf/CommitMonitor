@@ -25,6 +25,20 @@ std::string CUnicodeUtils::StdGetUTF8(const wide_string& wide)
 	return sRet;
 }
 
+std::string CUnicodeUtils::StdGetANSI(const wide_string& wide)
+{
+	int len = (int)wide.size();
+	if (len==0)
+		return std::string();
+	int size = len*4;
+	char * narrow = new char[size];
+	int ret = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), len, narrow, size-1, NULL, NULL);
+	narrow[ret] = 0;
+	std::string sRet = std::string(narrow);
+	delete narrow;
+	return sRet;
+}
+
 wide_string CUnicodeUtils::StdGetUnicode(const std::string& multibyte)
 {
 	int len = (int)multibyte.size();

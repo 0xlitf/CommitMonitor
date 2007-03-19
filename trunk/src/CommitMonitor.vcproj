@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\release_win32\xml.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Registry.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -211,6 +215,14 @@
 			</File>
 			<File
 				RelativePath=".\SVN.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SVNPool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UnicodeUtils.cpp"
 				>
 			</File>
 			<File
@@ -236,6 +248,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Registry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
@@ -245,6 +261,14 @@
 			</File>
 			<File
 				RelativePath=".\SVN.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SVNPool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UnicodeUtils.h"
 				>
 			</File>
 			<File

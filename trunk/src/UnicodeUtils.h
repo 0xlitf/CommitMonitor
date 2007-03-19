@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 
 #pragma warning (push,1)
 #ifndef stdstring
@@ -20,6 +21,7 @@ public:
 #ifdef UNICODE
 	static std::string StdGetUTF8(const wide_string& wide);
 	static wide_string StdGetUnicode(const std::string& multibyte);
+	static std::string StdGetANSI(const wide_string& wide);
 #else
 	static std::string StdGetUTF8(std::string str) {return str;}
 	static std::string StdGetUnicode(std::string multibyte) {return multibyte;}
