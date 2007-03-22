@@ -4,7 +4,6 @@
 
 #include "SVN.h"
 
-#include "AppUtils.h"
 
 CURLDlg::CURLDlg(void)
 {
@@ -12,6 +11,13 @@ CURLDlg::CURLDlg(void)
 
 CURLDlg::~CURLDlg(void)
 {
+}
+
+void CURLDlg::SetInfo(CUrlInfo * pURLInfo /* = NULL */)
+{
+	if (pURLInfo == NULL)
+		return;
+	info = *pURLInfo;
 }
 
 LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -22,9 +28,12 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			if (PathFileExists(urlfile.c_str()))
-				infos.Load(urlfile.c_str());
+			// initialize the controls
+			SetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), info.url.c_str());
+			WCHAR buf[20];
+			_stprintf_s(buf, 20, _T("%ld"), info.minutesinterval);
+			SetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buf);
+			SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -44,12 +53,22 @@ LRESULT CURLDlg::DoCommand(int id)
 	switch (id)
 	{
 	case IDOK:
-	case IDCANCEL:
 		{
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			infos.Save(urlfile.c_str());
-			EndDialog(*this, id);
+			int len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
+			WCHAR * buffer = new WCHAR[len+1];
+			GetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), buffer, len);
+			info.url = wstring(buffer, len);
+			delete [] buffer;
+			len = GetWindowTextLength(GetDlgItem(*this, IDC_CHECKTIME));
+			buffer = new WCHAR[len+1];
+			GetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buffer, len);
+			info.minutesinterval = _ttoi(buffer);
+			delete [] buffer;
+			info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);
 		}
+		// fall through
+	case IDCANCEL:
+		EndDialog(*this, id);
 		break;
 	case IDC_CHECKURL:
 		{

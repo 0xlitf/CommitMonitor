@@ -12,6 +12,8 @@ public:
 	CURLDlg(void);
 	~CURLDlg(void);
 
+	void					SetInfo(CUrlInfo * pURLInfo = NULL);
+
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT					DoCommand(int id);
@@ -23,5 +25,5 @@ protected:
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 private:
-	CUrlInfos				infos;
+	CUrlInfo				info;
 };

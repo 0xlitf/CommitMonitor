@@ -16,7 +16,7 @@
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/utility.hpp>
-#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
 
 #pragma warning( pop ) 
 
@@ -65,7 +65,7 @@ public:
 	void						Save(LPCWSTR filename);
 	void						Load(LPCWSTR filename);
 
-	vector<CUrlInfo>			infos;
+	map<wstring,CUrlInfo>		infos;
 private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)

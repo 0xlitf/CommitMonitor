@@ -3,6 +3,8 @@
 #include "MainDlg.h"
 
 #include "URLDlg.h"
+#include "AppUtils.h"
+
 
 CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 	, m_bDragMode(false)
@@ -22,6 +24,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			if (PathFileExists(urlfile.c_str()))
+				m_URLInfos.Load(urlfile.c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:

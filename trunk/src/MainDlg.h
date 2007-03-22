@@ -1,5 +1,6 @@
 #pragma once
 #include "basedialog.h"
+#include "UrlInfo.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
 
@@ -27,4 +28,6 @@ private:
 
 	bool					m_bDragMode;
 	LONG					m_oldx, m_oldy;
+
+	CUrlInfos				m_URLInfos;
 };
