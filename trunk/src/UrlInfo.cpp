@@ -1,7 +1,10 @@
 #include "StdAfx.h"
 #include "UrlInfo.h"
 
-CUrlInfo::CUrlInfo(void)
+CUrlInfo::CUrlInfo(void) : lastchecked(0)
+	, lastcheckedrev(0)
+	, minutesinterval(0)
+	, fetchdiffs(false)
 {
 }
 

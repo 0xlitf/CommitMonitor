@@ -74,14 +74,38 @@ LRESULT CMainDlg::DoCommand(int id)
 		PostQuitMessage(IDCANCEL);
 		return 0;
 		break;
-	case IDC_ADDURL:
 	case IDC_URLEDIT:
-		CURLDlg dlg;
-		dlg.DoModal(hResource, IDD_URLCONFIG, *this);
+	case IDC_ADDURL:
+		{
+			CURLDlg dlg;
+			dlg.DoModal(hResource, IDD_URLCONFIG, *this);
+			CUrlInfo * inf = dlg.GetInfo();
+			if (inf)
+			{
+				m_URLInfos.infos[inf->url] = *inf;
+			}
+			SaveURLInfo();
+		}
 		return 0;
 		break;
 	}
 	return 1;
+}
+
+/******************************************************************************/
+/* data persistence                                                           */
+/******************************************************************************/
+void CMainDlg::SaveURLInfo()
+{
+	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+	m_URLInfos.Save(urlfile.c_str());
+}
+
+void CMainDlg::LoadURLInfo()
+{
+	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+	if (PathFileExists(urlfile.c_str()))
+		m_URLInfos.Load(urlfile.c_str());
 }
 
 /******************************************************************************/

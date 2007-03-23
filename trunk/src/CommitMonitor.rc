@@ -65,12 +65,13 @@ BEGIN
     LTEXT           "URL to monitor",IDC_STATIC,7,7,48,8
     EDITTEXT        IDC_URLTOMONITOR,7,21,241,14,ES_AUTOHSCROLL
     GROUPBOX        "URL settings",IDC_STATIC,7,58,241,91
-    PUSHBUTTON      "Check URL",IDC_CHECKURL,198,39,50,14
-    LTEXT           "Check every",IDC_STATIC,14,73,41,8
-    EDITTEXT        IDC_CHECKTIME,59,71,26,14,ES_AUTOHSCROLL | ES_NUMBER | WS_DISABLED
-    LTEXT           "minutes",IDC_STATIC,90,73,26,8
+    LTEXT           "Check every",IDC_STATIC,14,93,41,8
+    EDITTEXT        IDC_CHECKTIME,59,91,26,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "minutes",IDC_STATIC,90,93,26,8
     CONTROL         "Automatically create diffs of commits",IDC_CREATEDIFFS,
-                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,91,133,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,111,133,10
+    LTEXT           "Project name:",IDC_STATIC,14,73,50,8
+    EDITTEXT        IDC_PROJECTNAME,75,71,110,14,ES_AUTOHSCROLL
 END
 
 

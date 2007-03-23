@@ -35,6 +35,7 @@ public:
 	wstring						password;
 
 	wstring						url;
+	wstring						name;
 	__time64_t					lastchecked;
 	svn_revnum_t				lastcheckedrev;
 
@@ -48,6 +49,7 @@ private:
 		ar & username;
 		ar & password;
 		ar & url;
+		ar & name;
 		ar & lastchecked;
 		ar & lastcheckedrev;
 		ar & minutesinterval;

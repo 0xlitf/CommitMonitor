@@ -80,11 +80,11 @@
 			Builds all the libraries CommitMonitor depends on:
 			Subversion, apr, OpenSSL, ...
 		</description>
-<!--		<nant target="OpenSSL">
+		<nant target="OpenSSL">
 			<buildfiles>
 				<include name="ext\build\OpenSSL.build" />
 			</buildfiles>
-		</nant> -->
+		</nant>
 		<nant target="build">
 			<buildfiles>
 				<include name="ext\build\default.build" />
@@ -104,7 +104,7 @@
 		</exec>
 	</target>
 
-	<target name="setup" depends="CommitMonitor">
+	<target name="setup" depends="Subversion,CommitMonitor">
 		<description>
 			Uses WiX to create an msi installer file.
 		</description>

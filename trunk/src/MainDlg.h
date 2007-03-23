@@ -23,6 +23,8 @@ protected:
 	bool					OnLButtonUp(UINT nFlags, POINT point);
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
+	void					SaveURLInfo();
+	void					LoadURLInfo();
 private:
 	bool					m_bThreadRunning;
 

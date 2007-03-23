@@ -13,6 +13,7 @@ public:
 	~CURLDlg(void);
 
 	void					SetInfo(CUrlInfo * pURLInfo = NULL);
+	CUrlInfo *				GetInfo() {return &info;}
 
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
