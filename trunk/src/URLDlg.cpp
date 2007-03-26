@@ -33,6 +33,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			WCHAR buf[20];
 			_stprintf_s(buf, 20, _T("%ld"), info.minutesinterval);
 			SetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buf);
+			SetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), info.name.c_str());
 			SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
 		}
 		return TRUE;
@@ -61,7 +62,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			delete [] buffer;
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
 			buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buffer, len+1);
+			GetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), buffer, len+1);
 			info.name = wstring(buffer, len);
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_CHECKTIME));
 			buffer = new WCHAR[len+1];

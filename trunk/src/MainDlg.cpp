@@ -27,6 +27,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 			if (PathFileExists(urlfile.c_str()))
 				m_URLInfos.Load(urlfile.c_str());
+			RefreshURLTree();
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -85,6 +86,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				m_URLInfos.infos[inf->url] = *inf;
 			}
 			SaveURLInfo();
+			RefreshURLTree();
 		}
 		return 0;
 		break;
@@ -106,6 +108,47 @@ void CMainDlg::LoadURLInfo()
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 	if (PathFileExists(urlfile.c_str()))
 		m_URLInfos.Load(urlfile.c_str());
+}
+
+/******************************************************************************/
+/* tree handling                                                */
+/******************************************************************************/
+void CMainDlg::RefreshURLTree()
+{
+	// the m_URLInfos member must be up-to-date here
+
+	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+	// first clear the tree control
+	TreeView_DeleteAllItems(hTreeControl);
+	// now add a tree item for every entry in m_URLInfos
+	for (map<wstring, CUrlInfo>::const_iterator it = m_URLInfos.infos.begin(); it != m_URLInfos.infos.end(); ++it)
+	{
+		TVINSERTSTRUCT tv = {0};
+		tv.hParent = TVI_ROOT;
+		tv.hInsertAfter = TVI_SORT;
+		tv.itemex.mask = TVIF_TEXT;
+		WCHAR * str = new WCHAR[it->second.name.size()+1];
+		_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+		tv.itemex.pszText = str;
+		HTREEITEM hItem = TreeView_InsertItem(hTreeControl, &tv);
+		delete [] str;
+		if ((hItem)&&(it->second.subentries.size()))
+		{
+			for (map<wstring, wstring>::const_iterator it2 = it->second.subentries.begin(); it2 != it->second.subentries.end(); ++it2)
+			{
+				TVINSERTSTRUCT tv2 = {0};
+				tv2.hParent = hItem;
+				tv2.hInsertAfter = TVI_SORT;
+				tv2.itemex.mask = TVIF_TEXT;
+				WCHAR * str = new WCHAR[it->first.size()+1];
+				_tcscpy_s(str, it->first.size()+1, it->first.c_str());
+				tv.itemex.pszText = str;
+				TreeView_InsertItem(hTreeControl, &tv2);
+				delete [] str;
+			}
+		}
+	}
+
 }
 
 /******************************************************************************/

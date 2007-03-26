@@ -42,6 +42,10 @@ public:
 	int							minutesinterval;
 	bool						fetchdiffs;
 
+	// if the URL points to an SVNParentPath page, the
+	// subentries map contains the name/url pairs of
+	// all the entries below the SVNParentpath
+	map<wstring, wstring>		subentries;
 private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version)
@@ -54,6 +58,7 @@ private:
 		ar & lastcheckedrev;
 		ar & minutesinterval;
 		ar & fetchdiffs;
+		ar & subentries;
 	}
 };
 
