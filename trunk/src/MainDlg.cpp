@@ -299,7 +299,7 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	ReleaseCapture();
 
 	//position the child controls
-	HDWP hdwp = BeginDeferWindowPos(2);
+	HDWP hdwp = BeginDeferWindowPos(3);
 	if (hdwp)
 	{
 		GetWindowRect(GetDlgItem(*this, IDC_URLTREE), &treelist);
@@ -313,6 +313,13 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 		treelist.left = point2.x + 2;
 		MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
 		DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL, 
+			treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+
+		GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
+		treelist.left = point2.x + 2;
+		MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+		DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
 			treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		EndDeferWindowPos(hdwp);
