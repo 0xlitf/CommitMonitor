@@ -186,7 +186,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BaseWindow.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HiddenWindow.cpp"
 				>
 			</File>
 			<File
@@ -252,7 +260,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BaseWindow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HiddenWindow.h"
 				>
 			</File>
 			<File

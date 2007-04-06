@@ -72,7 +72,7 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDOK:
 		break;
 	case IDCANCEL:
-		PostQuitMessage(IDCANCEL);
+		EndDialog(*this, IDCANCEL);
 		return 0;
 		break;
 	case IDC_URLEDIT:
