@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 
 #include "apr_general.h"
 #include "svn_pools.h"
@@ -16,6 +17,7 @@
 #include "SVNPool.h"
 #include "UnicodeUtils.h"
 #include "Registry.h"
+#include "SerializeUtils.h"
 
 typedef std::wstring wide_string;
 #ifndef stdstring
@@ -25,6 +27,10 @@ typedef std::wstring wide_string;
 #		define stdstring std::string
 #	endif
 #endif
+
+#include <string>
+
+using namespace std;
 
 class SVNInfoData
 {
@@ -61,12 +67,136 @@ public:
 	stdstring			prejfile;
 };
 
+class SVNLogChangedPaths
+{
+public:
+	SVNLogChangedPaths()
+		: action(0)
+	{
+
+	}
+
+	wchar_t				action;
+	svn_revnum_t		copyfrom_revision;
+	stdstring			copyfrom_path;
+
+	bool Save(HANDLE hFile) const
+	{
+		if (!CSerializeUtils::SaveNumber(hFile, action))
+			return false;
+		if (!CSerializeUtils::SaveNumber(hFile, copyfrom_revision))
+			return false;
+		if (!CSerializeUtils::SaveString(hFile, copyfrom_path))
+			return false;
+		return true;
+	}
+	bool Load(HANDLE hFile)
+	{
+		unsigned __int64 value;
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		action = (wchar_t)value;
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		copyfrom_revision = (svn_revnum_t)value;
+		if (!CSerializeUtils::LoadString(hFile, copyfrom_path))
+			return false;
+		return true;
+	}
+};
+
+class SVNLogEntry
+{
+public:
+	SVNLogEntry() 
+		: read(false)
+		, revision(0)
+		, date(0)
+	{
+
+	}
+
+	bool				read;
+	svn_revnum_t		revision;
+	stdstring			author;
+	apr_time_t			date;
+	stdstring			message;
+	map<stdstring, SVNLogChangedPaths>	m_changedPaths;
+
+	bool Save(HANDLE hFile) const
+	{
+		if (!CSerializeUtils::SaveNumber(hFile, read))
+			return false;
+		if (!CSerializeUtils::SaveNumber(hFile, revision))
+			return false;
+		if (!CSerializeUtils::SaveString(hFile, author))
+			return false;
+		if (!CSerializeUtils::SaveNumber(hFile, date))
+			return false;
+		if (!CSerializeUtils::SaveString(hFile, message))
+			return false;
+
+		if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
+			return false;
+		if (!CSerializeUtils::SaveNumber(hFile, m_changedPaths.size()))
+			return false;
+		for (map<stdstring,SVNLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
+		{
+			if (!CSerializeUtils::SaveString(hFile, it->first))
+				return false;
+			if (!it->second.Save(hFile))
+				return false;
+		}
+		return true;
+	}
+	bool Load(HANDLE hFile)
+	{
+		unsigned __int64 value = 0;
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		read = !!value;
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		revision = (svn_revnum_t)value;
+		if (!CSerializeUtils::LoadString(hFile, author))
+			return false;
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		date = value;
+		if (!CSerializeUtils::LoadString(hFile, message))
+			return false;
+
+		m_changedPaths.clear();
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		if (CSerializeUtils::SerializeType_Map == value)
+		{
+			if (CSerializeUtils::LoadNumber(hFile, value))
+			{
+				for (unsigned __int64 i=0; i<value; ++i)
+				{
+					wstring key;
+					SVNLogChangedPaths cpaths;
+					if (!CSerializeUtils::LoadString(hFile, key))
+						return false;
+					if (!cpaths.Load(hFile))
+						return false;
+					m_changedPaths[key] = cpaths;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+};
 
 class SVN
 {
 public:
 	SVN(void);
 	~SVN(void);
+
+	void SetAuthInfo(const stdstring& username, const stdstring& password);
 
 	bool Cat(stdstring sUrl, stdstring sFile);
 
@@ -86,6 +216,11 @@ public:
 	 */
 	const SVNInfoData * GetNextFileInfo();
 
+	svn_revnum_t GetHEADRevision(const stdstring& url);
+
+	bool GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
+
+	map<svn_revnum_t,SVNLogEntry> m_logs;		///< contains the gathered log information
 private:
 	apr_pool_t *				parentpool;		///< the main memory pool
 	apr_pool_t *				pool;			///< 'root' memory pool
@@ -93,9 +228,15 @@ private:
 	svn_error_t *				Err;			///< Global error object struct
 	svn_auth_baton_t *			auth_baton;
 
-	std::vector<SVNInfoData>	m_arInfo;		///< contains all gathered info structs.
-	unsigned int				m_pos;			///< the current position of the vector
+	vector<SVNInfoData>			m_arInfo;		///< contains all gathered info structs.
+	unsigned int				m_pos;			///< the current position of the vector.
+
+
+private:
+	static svn_error_t *		cancel(void *baton);
 	static svn_error_t *		infoReceiver(void* baton, const char * path, const svn_info_t* info, apr_pool_t * pool);
+	static svn_error_t *		logReceiver(void* baton, apr_hash_t* ch_paths, svn_revnum_t rev, const char* author, const char* date, const char* msg, apr_pool_t* pool);
+
 };
 
 

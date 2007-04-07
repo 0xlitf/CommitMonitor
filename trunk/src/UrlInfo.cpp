@@ -3,7 +3,7 @@
 
 CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
-	, minutesinterval(0)
+	, minutesinterval(90)
 	, fetchdiffs(false)
 {
 }
@@ -23,19 +23,24 @@ CUrlInfos::~CUrlInfos(void)
 
 void CUrlInfos::Save(LPCWSTR filename)
 {
-	// create and open a character archive for output
-	std::ofstream ofs(filename);
-
-	boost::archive::text_oarchive oa(ofs);
-	// write class instance to archive
-	oa << *this;
+	HANDLE hFile = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_DELETE, NULL,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN|FILE_ATTRIBUTE_COMPRESSED, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return;
+	bool bSuccess = Save(hFile);
+	CloseHandle(hFile);
+	if (bSuccess)
+	{
+		// rename the file to the original requested name
+	}
 }
 
 void CUrlInfos::Load(LPCWSTR filename)
 {
-	// create and open an archive for input
-	std::ifstream ifs(filename, std::ios::binary);
-	boost::archive::text_iarchive ia(ifs);
-	// read class state from archive
-	ia >> *this;
+	HANDLE hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_DELETE, NULL,
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return;
+	Load(hFile);
+	CloseHandle(hFile);
 }

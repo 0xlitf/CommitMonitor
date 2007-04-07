@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "svn.h"
+#include "svn_sorts.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,11 +31,13 @@ SVN::SVN(void)
 		}
 	}
 
+	Err = svn_ra_initialize(parentpool);
+
 	// set up authentication
 	svn_auth_provider_object_t *provider;
 
 	/* The whole list of registered providers */
-	apr_array_header_t *providers = apr_array_make (pool, 12, sizeof (svn_auth_provider_object_t *));
+	apr_array_header_t *providers = apr_array_make (pool, 10, sizeof (svn_auth_provider_object_t *));
 
 	/* The main disk-caching auth providers, for both
 	'username/password' creds and 'username' creds.  */
@@ -73,13 +76,37 @@ SVN::SVN(void)
 
 	/* Build an authentication baton to give to libsvn_client. */
 	svn_auth_open (&auth_baton, providers, pool);
-	m_pctx->auth_baton = auth_baton;
+	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_NON_INTERACTIVE, "");
+	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_DONT_STORE_PASSWORDS, "");
 
+	m_pctx->auth_baton = auth_baton;
+	m_pctx->cancel_func = cancel;
+	m_pctx->cancel_baton = this;
 }
 
 SVN::~SVN(void)
 {
 	svn_pool_destroy (parentpool);
+}
+
+svn_error_t* SVN::cancel(void *baton)
+{
+	UNREFERENCED_PARAMETER(baton);
+	return SVN_NO_ERROR;
+}
+
+void SVN::SetAuthInfo(const stdstring& username, const stdstring& password)
+{
+	if (m_pctx)
+	{
+		if (!username.empty())
+		{
+			svn_auth_set_parameter(m_pctx->auth_baton, 
+				SVN_AUTH_PARAM_DEFAULT_USERNAME, apr_pstrdup(parentpool, CUnicodeUtils::StdGetUTF8(username).c_str()));
+			svn_auth_set_parameter(m_pctx->auth_baton, 
+				SVN_AUTH_PARAM_DEFAULT_PASSWORD, apr_pstrdup(parentpool, CUnicodeUtils::StdGetUTF8(password).c_str()));
+		}
+	}
 }
 
 bool SVN::Cat(stdstring sUrl, stdstring sFile)
@@ -106,7 +133,8 @@ bool SVN::Cat(stdstring sUrl, stdstring sFile)
 	pegrev.kind = svn_opt_revision_head;
 	rev.kind = svn_opt_revision_head;
 
-	Err = svn_client_cat2(stream, CUnicodeUtils::StdGetUTF8(sUrl).c_str(), 
+	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(sUrl).c_str(), localpool);
+	Err = svn_client_cat2(stream, urla, 
 		&pegrev, &rev, m_pctx, localpool);
 
 	apr_file_close(file);
@@ -136,7 +164,9 @@ const SVNInfoData * SVN::GetFirstFileInfo(stdstring path, svn_revnum_t pegrev, s
 		rev.value.number = revision;
 	}
 
-	Err = svn_client_info(CUnicodeUtils::StdGetUTF8(path).c_str(), &peg, &rev, infoReceiver, this, recurse, m_pctx, localpool);
+	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(path).c_str(), localpool);
+
+	Err = svn_client_info(urla, &peg, &rev, infoReceiver, this, recurse, m_pctx, localpool);
 	if (Err != NULL)
 		return NULL;
 	if (m_arInfo.size() == 0)
@@ -210,4 +240,101 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 	}
 	pThis->m_arInfo.push_back(data);
 	return NULL;
+}
+
+svn_revnum_t SVN::GetHEADRevision(const stdstring& url)
+{
+	svn_ra_session_t *ra_session = NULL;
+	SVNPool localpool(pool);
+	svn_revnum_t rev = 0;
+
+	// make sure the url is canonical.
+	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool);
+
+	if (urla == NULL)
+		return rev;
+
+	Err = svn_client_open_ra_session (&ra_session, urla, m_pctx, localpool);
+	if (Err)
+		return rev;
+
+	Err = svn_ra_get_latest_revnum(ra_session, &rev, localpool);
+
+	return rev;
+}
+
+bool SVN::GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
+{
+	SVNPool localpool(pool);
+
+	apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
+	(*((const char **) apr_array_push (targets))) = 
+		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool);
+
+	svn_opt_revision_t end;
+	end.kind = svn_opt_revision_number;
+	end.value.number = endrev;
+
+	svn_opt_revision_t start;
+	start.kind = svn_opt_revision_number;
+	start.value.number = startrev;
+
+	m_logs.clear();
+
+	Err = svn_client_log3 (targets, 
+		&end,
+		&start, 
+		&end, 
+		100,
+		true,
+		false,
+		logReceiver,	// log_message_receiver
+		(void *)this, m_pctx, localpool);
+
+	return (Err == NULL);
+}
+
+svn_error_t* SVN::logReceiver(void* baton, 
+							  apr_hash_t* ch_paths, 
+							  svn_revnum_t rev, 
+							  const char* author, 
+							  const char* date, 
+							  const char* msg, 
+							  apr_pool_t* pool)
+{
+	svn_error_t * error = NULL;
+	SVNLogEntry logEntry;
+	SVN * svn = (SVN *)baton;
+
+	logEntry.revision = rev;
+	error = svn_time_from_cstring (&logEntry.date, date, pool);
+	if (author)
+		logEntry.author = CUnicodeUtils::StdGetUnicode(author);
+
+	if (msg)
+		logEntry.message = CUnicodeUtils::StdGetUnicode(msg);
+
+	if (ch_paths)
+	{
+		apr_array_header_t *sorted_paths;
+		sorted_paths = svn_sort__hash(ch_paths, svn_sort_compare_items_as_paths, pool);
+		for (int i = 0; i < sorted_paths->nelts; i++)
+		{
+			SVNLogChangedPaths changedPaths;
+			svn_sort__item_t *item = &(APR_ARRAY_IDX (sorted_paths, i, svn_sort__item_t));
+			const char *path = (const char *)item->key;
+			svn_log_changed_path_t *log_item = (svn_log_changed_path_t *)apr_hash_get (ch_paths, item->key, item->klen);
+			stdstring path_native = CUnicodeUtils::StdGetUnicode(path);
+			changedPaths.action = log_item->action;
+			if (log_item->copyfrom_path && SVN_IS_VALID_REVNUM (log_item->copyfrom_rev))
+			{
+				changedPaths.copyfrom_path = CUnicodeUtils::StdGetUnicode(log_item->copyfrom_path);
+				changedPaths.copyfrom_revision = log_item->copyfrom_rev;
+			}
+			logEntry.m_changedPaths[path_native] = changedPaths;
+		}
+	}
+	svn->m_logs[rev] = logEntry;
+
+	return error;
 }

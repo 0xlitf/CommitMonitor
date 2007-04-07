@@ -29,12 +29,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				m_URLInfos.Load(urlfile.c_str());
 			RefreshURLTree();
 		}
-		return TRUE;
+		break;
 	case WM_COMMAND:
 		return DoCommand(LOWORD(wParam));
-	case WM_NOTIFY:
-		{
-		}
 		break;
 	case WM_SETCURSOR:
 		{
@@ -73,23 +70,48 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case IDCANCEL:
 		EndDialog(*this, IDCANCEL);
-		return 0;
 		break;
 	case IDC_URLEDIT:
+		{
+			CURLDlg dlg;
+			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+			HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
+			if (hItem)
+			{
+				TVITEMEX itemex = {0};
+				itemex.hItem = hItem;
+				itemex.mask = TVIF_PARAM;
+				TreeView_GetItem(hTreeControl, &itemex);
+				if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+				{
+					dlg.SetInfo(&m_URLInfos.infos[*(wstring*)itemex.lParam]);
+					dlg.DoModal(hResource, IDD_URLCONFIG, *this);
+					CUrlInfo * inf = dlg.GetInfo();
+					if ((inf)&&inf->url.size())
+					{
+						m_URLInfos.infos[inf->url] = *inf;
+					}
+					SaveURLInfo();
+					RefreshURLTree();
+				}
+			}
+		}
+		break;
 	case IDC_ADDURL:
 		{
 			CURLDlg dlg;
 			dlg.DoModal(hResource, IDD_URLCONFIG, *this);
 			CUrlInfo * inf = dlg.GetInfo();
-			if (inf)
+			if ((inf)&&inf->url.size())
 			{
 				m_URLInfos.infos[inf->url] = *inf;
 			}
 			SaveURLInfo();
 			RefreshURLTree();
 		}
-		return 0;
 		break;
+	default:
+		return 0;
 	}
 	return 1;
 }
@@ -108,6 +130,7 @@ void CMainDlg::LoadURLInfo()
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 	if (PathFileExists(urlfile.c_str()))
 		m_URLInfos.Load(urlfile.c_str());
+	RefreshURLTree();
 }
 
 /******************************************************************************/
@@ -126,27 +149,41 @@ void CMainDlg::RefreshURLTree()
 		TVINSERTSTRUCT tv = {0};
 		tv.hParent = TVI_ROOT;
 		tv.hInsertAfter = TVI_SORT;
-		tv.itemex.mask = TVIF_TEXT;
-		WCHAR * str = new WCHAR[it->second.name.size()+1];
-		_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM;
+		WCHAR * str = new WCHAR[it->second.name.size()+10];
+		// find out if there are some unread entries
+		int unread = 0;
+		for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+		{
+			if (!logit->second.read)
+				unread++;
+		}
+		if (unread)
+		{
+			_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+		}
+		else
+			_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+
 		tv.itemex.pszText = str;
+		tv.itemex.lParam = (LPARAM)&it->first;
 		HTREEITEM hItem = TreeView_InsertItem(hTreeControl, &tv);
 		delete [] str;
-		if ((hItem)&&(it->second.subentries.size()))
-		{
-			for (map<wstring, wstring>::const_iterator it2 = it->second.subentries.begin(); it2 != it->second.subentries.end(); ++it2)
-			{
-				TVINSERTSTRUCT tv2 = {0};
-				tv2.hParent = hItem;
-				tv2.hInsertAfter = TVI_SORT;
-				tv2.itemex.mask = TVIF_TEXT;
-				WCHAR * str = new WCHAR[it->first.size()+1];
-				_tcscpy_s(str, it->first.size()+1, it->first.c_str());
-				tv.itemex.pszText = str;
-				TreeView_InsertItem(hTreeControl, &tv2);
-				delete [] str;
-			}
-		}
+		//if ((hItem)&&(it->second.subentries.size()))
+		//{
+		//	for (map<wstring, wstring>::const_iterator it2 = it->second.subentries.begin(); it2 != it->second.subentries.end(); ++it2)
+		//	{
+		//		TVINSERTSTRUCT tv2 = {0};
+		//		tv2.hParent = hItem;
+		//		tv2.hInsertAfter = TVI_SORT;
+		//		tv2.itemex.mask = TVIF_TEXT;
+		//		WCHAR * str = new WCHAR[it->first.size()+1];
+		//		_tcscpy_s(str, it->first.size()+1, it->first.c_str());
+		//		tv.itemex.pszText = str;
+		//		TreeView_InsertItem(hTreeControl, &tv2);
+		//		delete [] str;
+		//	}
+		//}
 	}
 
 }

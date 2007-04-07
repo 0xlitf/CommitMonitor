@@ -32,6 +32,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	int argc = 0;
 	const char* const * argv = NULL;
 	apr_app_initialize(&argc, &argv, NULL);
+	setlocale(LC_ALL, ""); 
 
 	// first create a hidden window which serves as our main window for receiving
 	// the window messages, starts the monitoring thread and handles the icon

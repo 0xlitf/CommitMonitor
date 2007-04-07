@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SerializeUtils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -281,6 +285,10 @@
 			</File>
 			<File
 				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerializeUtils.h"
 				>
 			</File>
 			<File
