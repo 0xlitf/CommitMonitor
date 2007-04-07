@@ -26,6 +26,7 @@ protected:
 	void					RefreshURLTree();
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
+	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();
@@ -34,6 +35,8 @@ private:
 
 	bool					m_bDragMode;
 	LONG					m_oldx, m_oldy;
+
+	HFONT					m_boldFont;
 
 	CUrlInfos				m_URLInfos;
 };

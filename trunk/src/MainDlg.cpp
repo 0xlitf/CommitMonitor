@@ -12,6 +12,14 @@ CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 	, m_oldx(-1)
 	, m_oldy(-1)
 {
+	// use the default GUI font, create a copy of it and
+	// change the copy to BOLD (leave the rest of the font
+	// the same)
+	HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	LOGFONT lf = {0};
+	GetObject(hFont, sizeof(LOGFONT), &lf);
+	lf.lfWeight = FW_BOLD;
+	m_boldFont = CreateFontIndirect(&lf);
 }
 
 CMainDlg::~CMainDlg(void)
@@ -71,6 +79,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if ((lpnmhdr->code == LVN_ITEMCHANGED)&&(lpnmhdr->hwndFrom == hListCtrl))
 			{
 				OnSelectListItem((LPNMLISTVIEW)lParam);
+			}
+			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == hListCtrl))
+			{
+				return OnCustomDrawListItem((LPNMLVCUSTOMDRAW)lParam);
 			}
 			return FALSE;
 		}
@@ -281,6 +293,8 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 		SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 		if (pLogEntry)
 		{
+			// set the entry as read
+			pLogEntry->read = true;
 			TCHAR buf[1024];
 			HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
 			wstring msg = pLogEntry->message.c_str();
@@ -309,6 +323,41 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			SetWindowText(hMsgView, msg.c_str());
 		}
 	}
+}
+
+LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
+{
+	// First thing - check the draw stage. If it's the control's prepaint
+	// stage, then tell Windows we want messages for every item.
+	LRESULT result =  CDRF_DODEFAULT;
+	switch (lpNMCustomDraw->nmcd.dwDrawStage)
+	{
+	case CDDS_PREPAINT:
+		result = CDRF_NOTIFYITEMDRAW;
+		break;
+	case CDDS_ITEMPREPAINT:
+		{
+			// get the list item info
+			//HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
+			//LVITEM item = {0};
+			//item.mask = LVIF_PARAM;
+			//item.iItem = lpNMListView->iItem;
+			//ListView_GetItem(hListView, &item);
+			//SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+
+			SVNLogEntry * pLogEntry = (SVNLogEntry*)lpNMCustomDraw->nmcd.lItemlParam;
+
+			if (!pLogEntry->read)
+			{
+				SelectObject(lpNMCustomDraw->nmcd.hdc, m_boldFont);
+				// We changed the font, so we're returning CDRF_NEWFONT. This
+				// tells the control to recalculate the extent of the text.
+				result = CDRF_NEWFONT;
+			}
+		}
+		break;
+	}
+	return result;
 }
 
 /******************************************************************************/
