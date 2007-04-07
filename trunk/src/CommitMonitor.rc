@@ -17,6 +17,27 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_COMMITMONITOR       ICON                    "CommitMonitor.ico"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
@@ -49,10 +70,10 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,295,217,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,355,217,50,14
     LTEXT           "Monitor the following URLs",IDC_STATIC,7,7,86,8
-    CONTROL         "",IDC_MONITOREDURLS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,158,20,247,90
+    CONTROL         "",IDC_MONITOREDURLS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,158,20,247,90
     PUSHBUTTON      "Add URL...",IDC_ADDURL,69,217,50,14
     PUSHBUTTON      "Edit",IDC_URLEDIT,7,217,50,14
-    CONTROL         "",IDC_URLTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_TRACKSELECT | WS_BORDER | WS_TABSTOP,7,20,148,189
+    CONTROL         "",IDC_URLTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | TVS_TRACKSELECT | WS_BORDER | WS_TABSTOP,7,20,148,189
     EDITTEXT        IDC_LOGINFO,158,113,247,96,ES_AUTOHSCROLL
 END
 
@@ -107,27 +128,6 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Switzerland) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DES)
-#ifdef _WIN32
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDI_COMMITMONITOR       ICON                    "CommitMonitor.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -159,6 +159,30 @@ BEGIN
 END
 
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "CommitMonitor"
+    IDC_COMMITMONITOR       "COMMITMONITOR"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Switzerland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DES)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
+#pragma code_page(1252)
+#endif //_WIN32
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -186,18 +210,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE 
-BEGIN
-    IDS_APP_TITLE           "CommitMonitor"
-    IDC_COMMITMONITOR       "COMMITMONITOR"
-END
 
 #endif    // German (Switzerland) resources
 /////////////////////////////////////////////////////////////////////////////

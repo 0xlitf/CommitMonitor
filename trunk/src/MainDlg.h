@@ -24,6 +24,7 @@ protected:
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 	void					RefreshURLTree();
+	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "svn_time.h"
 
 using namespace std;
 
@@ -11,4 +12,5 @@ public:
 	~CAppUtils(void);
 
 	static wstring					GetAppDataDir();
+	static wstring					ConvertDate(apr_time_t time);
 };

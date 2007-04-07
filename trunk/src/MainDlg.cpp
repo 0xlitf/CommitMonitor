@@ -24,6 +24,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 			if (PathFileExists(urlfile.c_str()))
 				m_URLInfos.Load(urlfile.c_str());
@@ -54,6 +55,18 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			POINT pt = {LOWORD(lParam), HIWORD(lParam)};
 			return OnLButtonUp(wParam, pt);
+		}
+		break;
+	case WM_NOTIFY:
+		{
+			HWND hTreeCtrl = GetDlgItem(*this, IDC_URLTREE);
+			LPNMHDR lpnmhdr = (LPNMHDR)lParam;
+			if ((lpnmhdr->code == TVN_SELCHANGED)&&(lpnmhdr->hwndFrom == hTreeCtrl))
+			{
+				OnSelectTreeItem((LPNMTREEVIEW)lParam);
+				return TRUE;
+			}
+			return FALSE;
 		}
 		break;
 	default:
@@ -134,7 +147,7 @@ void CMainDlg::LoadURLInfo()
 }
 
 /******************************************************************************/
-/* tree handling                                                */
+/* tree handling                                                              */
 /******************************************************************************/
 void CMainDlg::RefreshURLTree()
 {
@@ -149,7 +162,7 @@ void CMainDlg::RefreshURLTree()
 		TVINSERTSTRUCT tv = {0};
 		tv.hParent = TVI_ROOT;
 		tv.hInsertAfter = TVI_SORT;
-		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM;
+		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE;
 		WCHAR * str = new WCHAR[it->second.name.size()+10];
 		// find out if there are some unread entries
 		int unread = 0;
@@ -161,10 +174,15 @@ void CMainDlg::RefreshURLTree()
 		if (unread)
 		{
 			_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+			tv.itemex.state = TVIS_BOLD;
+			tv.itemex.stateMask = TVIS_BOLD;
 		}
 		else
+		{
 			_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
-
+			tv.itemex.state = 0;
+			tv.itemex.stateMask = 0;
+		}
 		tv.itemex.pszText = str;
 		tv.itemex.lParam = (LPARAM)&it->first;
 		HTREEITEM hItem = TreeView_InsertItem(hTreeControl, &tv);
@@ -184,6 +202,59 @@ void CMainDlg::RefreshURLTree()
 		//		delete [] str;
 		//	}
 		//}
+	}
+
+}
+
+void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
+{
+	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
+	// get the url this entry refers to
+	TVITEMEX itemex = {0};
+	itemex.hItem = hSelectedItem;
+	itemex.mask = TVIF_PARAM;
+	TreeView_GetItem(lpNMTreeView->hdr.hwndFrom, &itemex);
+	if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+	{
+		CUrlInfo info = m_URLInfos.infos[*(wstring*)itemex.lParam];
+		HWND hLogInfo = GetDlgItem(*this, IDC_LOGINFO);
+		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
+
+
+		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
+		ListView_DeleteAllItems(hLogList);
+		ListView_SetExtendedListViewStyle(hLogList, exStyle);
+		LVCOLUMN lvc = {0};
+		lvc.mask = LVCF_TEXT;
+		lvc.fmt = LVCFMT_LEFT;
+		lvc.cx = -1;
+		lvc.pszText = _T("revision");
+		ListView_InsertColumn(hLogList, 0, &lvc);
+		lvc.pszText = _T("date");
+		ListView_InsertColumn(hLogList, 1, &lvc);
+		lvc.pszText = _T("author");
+		ListView_InsertColumn(hLogList, 2, &lvc);
+
+		LVITEM item = {0};
+		int i = 0;
+		TCHAR buf[1024];
+		for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info.logentries.begin(); it != info.logentries.end(); ++it)
+		{
+			item.mask = LVIF_TEXT;
+			item.iItem = i;
+			_stprintf_s(buf, 1024, _T("%ld"), it->first);
+			item.pszText = buf;
+			ListView_InsertItem(hLogList, &item);
+			_tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
+			ListView_SetItemText(hLogList, i, 1, buf);
+			_tcscpy_s(buf, 1024, it->second.author.c_str());
+			ListView_SetItemText(hLogList, i, 2, buf);
+		}
+		ListView_SetColumnWidth(hLogList, 0, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(hLogList, 1, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(hLogList, 2, LVSCW_AUTOSIZE_USEHEADER);
+
+		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 	}
 
 }
