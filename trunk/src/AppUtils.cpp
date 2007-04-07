@@ -52,3 +52,24 @@ wstring CAppUtils::ConvertDate(apr_time_t time)
 	sRet += timebuf;
 	return sRet;
 }
+
+void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith)
+{
+	wstring result;
+	wstring::size_type pos = 0;
+	while(true) 
+	{
+		wstring::size_type next = str.find(toreplace, pos);
+		result.append(str, pos, next-pos);
+		if( next != std::string::npos ) 
+		{
+			result.append(replacewith);
+			pos = next + toreplace.size();
+		} 
+		else 
+		{
+			break;  // exit loop
+		}
+	}
+	str.swap(result);
+}

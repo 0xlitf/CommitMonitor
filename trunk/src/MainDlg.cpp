@@ -4,6 +4,7 @@
 
 #include "URLDlg.h"
 #include "AppUtils.h"
+#include <algorithm>
 
 
 CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
@@ -60,11 +61,16 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 		{
 			HWND hTreeCtrl = GetDlgItem(*this, IDC_URLTREE);
+			HWND hListCtrl = GetDlgItem(*this, IDC_MONITOREDURLS);
 			LPNMHDR lpnmhdr = (LPNMHDR)lParam;
 			if ((lpnmhdr->code == TVN_SELCHANGED)&&(lpnmhdr->hwndFrom == hTreeCtrl))
 			{
 				OnSelectTreeItem((LPNMTREEVIEW)lParam);
 				return TRUE;
+			}
+			if ((lpnmhdr->code == LVN_ITEMCHANGED)&&(lpnmhdr->hwndFrom == hListCtrl))
+			{
+				OnSelectListItem((LPNMLISTVIEW)lParam);
 			}
 			return FALSE;
 		}
@@ -216,7 +222,7 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 	TreeView_GetItem(lpNMTreeView->hdr.hwndFrom, &itemex);
 	if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
 	{
-		CUrlInfo info = m_URLInfos.infos[*(wstring*)itemex.lParam];
+		CUrlInfo * info = &m_URLInfos.infos[*(wstring*)itemex.lParam];
 		HWND hLogInfo = GetDlgItem(*this, IDC_LOGINFO);
 		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
 
@@ -238,10 +244,11 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 		LVITEM item = {0};
 		int i = 0;
 		TCHAR buf[1024];
-		for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info.logentries.begin(); it != info.logentries.end(); ++it)
+		for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
 		{
-			item.mask = LVIF_TEXT;
+			item.mask = LVIF_TEXT|LVIF_PARAM;
 			item.iItem = i;
+			item.lParam = (LPARAM)&it->second;
 			_stprintf_s(buf, 1024, _T("%ld"), it->first);
 			item.pszText = buf;
 			ListView_InsertItem(hLogList, &item);
@@ -257,6 +264,51 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 	}
 
+}
+
+/******************************************************************************/
+/* list view handling                                                         */
+/******************************************************************************/
+void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
+{
+	if (lpNMListView->uNewState & LVIS_SELECTED)
+	{
+		HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
+		LVITEM item = {0};
+		item.mask = LVIF_PARAM;
+		item.iItem = lpNMListView->iItem;
+		ListView_GetItem(hListView, &item);
+		SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+		if (pLogEntry)
+		{
+			TCHAR buf[1024];
+			HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
+			wstring msg = pLogEntry->message.c_str();
+			msg += _T("\n\n-------------------------------\n");
+			// now add all changed paths, one path per line
+			for (map<stdstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+			{
+				// action
+				msg += it->second.action;
+				msg += _T(" : ");
+				msg += it->first;
+				msg += _T("  ");
+				if (!it->second.copyfrom_path.empty())
+				{
+					msg += _T("(copied from: ");
+					msg += it->second.copyfrom_path;
+					msg += _T(", revision ");
+					_stprintf_s(buf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
+					msg += wstring(buf);
+				}
+				else
+					msg += _T("\n");
+			}
+
+			CAppUtils::SearchReplace(msg, _T("\n"), _T("\r\n"));
+			SetWindowText(hMsgView, msg.c_str());
+		}
+	}
 }
 
 /******************************************************************************/

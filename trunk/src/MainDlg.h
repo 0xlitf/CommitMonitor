@@ -25,6 +25,7 @@ protected:
 
 	void					RefreshURLTree();
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
+	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();
