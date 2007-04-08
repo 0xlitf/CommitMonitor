@@ -167,7 +167,7 @@ DWORD CHiddenWindow::RunThread()
 			svn_revnum_t headrev = svn.GetHEADRevision(it->first);
 			if (headrev > it->second.lastcheckedrev)
 			{
-				if (svn.GetLog(it->first, it->second.lastcheckedrev, headrev))
+				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev))
 				{
 					it->second.lastcheckedrev = headrev;
 					it->second.lastchecked = currenttime;
