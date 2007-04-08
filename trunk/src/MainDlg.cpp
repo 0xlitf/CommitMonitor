@@ -123,6 +123,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					CUrlInfo * inf = dlg.GetInfo();
 					if ((inf)&&inf->url.size())
 					{
+						m_URLInfos.infos.erase(*(wstring*)itemex.lParam);
 						m_URLInfos.infos[inf->url] = *inf;
 					}
 					SaveURLInfo();
