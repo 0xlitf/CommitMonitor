@@ -11,6 +11,7 @@ CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 	, m_bDragMode(false)
 	, m_oldx(-1)
 	, m_oldy(-1)
+	, m_boldFont(NULL)
 {
 	// use the default GUI font, create a copy of it and
 	// change the copy to BOLD (leave the rest of the font
@@ -24,6 +25,8 @@ CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 
 CMainDlg::~CMainDlg(void)
 {
+	if (m_boldFont)
+		DeleteObject(m_boldFont);
 }
 
 LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
