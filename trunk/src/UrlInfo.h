@@ -145,6 +145,7 @@ public:
 						return false;
 					if (!info.Load(hFile))
 						return false;
+					info.url = key;
 					infos[key] = info;
 				}
 				return true;
