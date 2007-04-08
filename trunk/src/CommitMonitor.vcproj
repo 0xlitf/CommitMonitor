@@ -55,6 +55,8 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories=".."
+				ResourceOutputFileName="$(IntDir)/$(InputName).res"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -129,6 +131,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories=".."
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -322,11 +325,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\CommitMonitor.ico"
+				RelativePath=".\Resources\CommitMonitor.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\CommitMonitor.rc"
+				RelativePath=".\Resources\CommitMonitor.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\CommitMonitor.rc2"
 				>
 			</File>
 			<File
