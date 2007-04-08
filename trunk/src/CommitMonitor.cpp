@@ -10,6 +10,9 @@
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
+HANDLE g_mutex = 0;
+
+#define APPNAME_MUTEX _T("CommitMonitor_{3802F59C-BEBD-49b9-A345-F99CBA2FBD0D}")
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -48,6 +51,27 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		ICC_STANDARD_CLASSES | ICC_BAR_CLASSES
 	};
 	InitCommonControlsEx(&used);
+
+	//only one instance of this application allowed
+	g_mutex = ::CreateMutex(NULL, FALSE, APPNAME_MUTEX);
+
+	if (g_mutex != NULL)
+	{   
+		if(::GetLastError()==ERROR_ALREADY_EXISTS)
+		{
+			//an instance of this app is already running
+			HWND hWnd = FindWindow(ResString(hInst, IDS_APP_TITLE), NULL);		//try finding the running instance of this app
+			if (hWnd)
+			{
+				UINT COMMITMONITOR_SHOWDLGMSG = RegisterWindowMessage(_T("CommitMonitor_ShowDlgMsg"));
+				PostMessage(hWnd, COMMITMONITOR_SHOWDLGMSG ,0 ,0);				//open the window of the already running app
+				SetForegroundWindow(hWnd);										//set the window to front
+			}
+			apr_terminate();
+			return FALSE;
+		}		
+	}
+
 
 	CHiddenWindow hiddenWindow(hInst);
 

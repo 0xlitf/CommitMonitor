@@ -329,6 +329,14 @@
 				RelativePath=".\CommitMonitor.rc"
 				>
 			</File>
+			<File
+				RelativePath=".\Resources\NotifyNew.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
