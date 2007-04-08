@@ -83,6 +83,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				OnSelectListItem((LPNMLISTVIEW)lParam);
 			}
+			if ((lpnmhdr->code == LVN_KEYDOWN)&&(lpnmhdr->hwndFrom == hListCtrl))
+			{
+				OnKeyDownListItem((LPNMLVKEYDOWN)lParam);
+			}
 			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == hListCtrl))
 			{
 				return OnCustomDrawListItem((LPNMLVCUSTOMDRAW)lParam);
@@ -103,7 +107,11 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDOK:
 		break;
 	case IDCANCEL:
-		EndDialog(*this, IDCANCEL);
+		{
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			m_URLInfos.Save(urlfile.c_str());
+			EndDialog(*this, IDCANCEL);
+		}
 		break;
 	case IDC_URLEDIT:
 		{
@@ -341,14 +349,6 @@ LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
 		break;
 	case CDDS_ITEMPREPAINT:
 		{
-			// get the list item info
-			//HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
-			//LVITEM item = {0};
-			//item.mask = LVIF_PARAM;
-			//item.iItem = lpNMListView->iItem;
-			//ListView_GetItem(hListView, &item);
-			//SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
-
 			SVNLogEntry * pLogEntry = (SVNLogEntry*)lpNMCustomDraw->nmcd.lItemlParam;
 
 			if (!pLogEntry->read)
@@ -362,6 +362,46 @@ LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
 		break;
 	}
 	return result;
+}
+
+void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
+{
+	if (pnkd->wVKey == VK_DELETE)
+	{
+		// remove the selected entry
+		HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
+		int selCount = ListView_GetSelectedCount(hListView);
+		if (selCount <= 0)
+			return;	//nothing selected, nothing to remove
+
+		HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+		HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+		// get the url this entry refers to
+		TVITEMEX itemex = {0};
+		itemex.hItem = hSelectedItem;
+		itemex.mask = TVIF_PARAM;
+		TreeView_GetItem(hTreeControl, &itemex);
+		if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+		{
+			LVITEM item = {0};
+			int i = 0;
+			while (i<ListView_GetItemCount(hListView))
+			{
+				item.mask = LVIF_PARAM|LVIF_STATE;
+				item.stateMask = LVIS_SELECTED;
+				item.iItem = i;
+				ListView_GetItem(hListView, &item);
+				if (item.state & LVIS_SELECTED)
+				{
+					SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+					m_URLInfos.infos[(*(wstring*)itemex.lParam)].logentries.erase(pLogEntry->revision);
+					ListView_DeleteItem(hListView, i);
+				}
+				else
+					++i;
+			}
+		}
+	}
 }
 
 /******************************************************************************/

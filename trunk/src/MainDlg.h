@@ -27,6 +27,7 @@ protected:
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
+	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();
