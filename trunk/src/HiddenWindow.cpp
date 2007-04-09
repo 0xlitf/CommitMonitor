@@ -203,7 +203,7 @@ void CHiddenWindow::DoTimer()
 	_time64(&currenttime);
 	for (map<wstring,CUrlInfo>::const_iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
 	{
-		if ((it->second.lastchecked + (it->second.minutesinterval*60000)) < currenttime)
+		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
 			bStartThread = true;
 			break;
@@ -248,7 +248,7 @@ DWORD CHiddenWindow::RunThread()
 
 	for (map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
 	{
-		if ((it->second.lastchecked + (it->second.minutesinterval*60000)) < currenttime)
+		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
 			// get the highest revision of the repository
 			SVN svn;
@@ -264,6 +264,17 @@ DWORD CHiddenWindow::RunThread()
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						it->second.logentries[logit->first] = logit->second;
+						if (it->second.fetchdiffs)
+						{
+							// first, find a name where to store the diff for that revision
+							TCHAR buf[4096];
+							_stprintf_s(buf, 4096, _T("%s_%ld"), it->second.name.c_str(), logit->first);
+							wstring diffFileName = CAppUtils::GetAppDataDir();
+							diffFileName += _T("/");
+							diffFileName += wstring(buf);
+							// get the diff
+							svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
+						}
 					}
 				}
 			}

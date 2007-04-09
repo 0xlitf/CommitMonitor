@@ -73,3 +73,44 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
 	}
 	str.swap(result);
 }
+
+bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup)
+{
+	STARTUPINFO startup;
+	PROCESS_INFORMATION process;
+	memset(&startup, 0, sizeof(startup));
+	startup.cb = sizeof(startup);
+	memset(&process, 0, sizeof(process));
+
+	TCHAR * cmdbuf = new TCHAR[sCommandLine.length()+1];
+	_tcscpy_s(cmdbuf, sCommandLine.length()+1, sCommandLine.c_str());
+
+	if (CreateProcess(NULL, cmdbuf, NULL, NULL, FALSE, 0, 0, 0, &startup, &process)==0)
+	{
+		delete [] cmdbuf;
+		LPVOID lpMsgBuf;
+		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+			FORMAT_MESSAGE_FROM_SYSTEM | 
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			GetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) &lpMsgBuf,
+			0,
+			NULL 
+			);
+		::MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("CommitMonitor"), MB_ICONERROR);
+		LocalFree(lpMsgBuf);
+		return false;
+	}
+	delete [] cmdbuf;
+
+	if (bWaitForStartup)
+	{
+		WaitForInputIdle(process.hProcess, 10000);
+	}
+
+	CloseHandle(process.hThread);
+	CloseHandle(process.hProcess);
+	return true;
+}

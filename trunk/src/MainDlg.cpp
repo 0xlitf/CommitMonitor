@@ -153,6 +153,49 @@ LRESULT CMainDlg::DoCommand(int id)
 			RefreshURLTree();
 		}
 		break;
+	case IDC_SHOWDIFF:
+		{
+			TCHAR buf[4096];
+			// find the revision we have to show the diff for
+			HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
+			int selCount = ListView_GetSelectedCount(hListView);
+			if (selCount <= 0)
+				return FALSE;	//nothing selected, nothing to show
+
+			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+			HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+			// get the url this entry refers to
+			TVITEMEX itemex = {0};
+			itemex.hItem = hSelectedItem;
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(hTreeControl, &itemex);
+			if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+			{
+				LVITEM item = {0};
+				for (int i=0; i<ListView_GetItemCount(hListView); ++i)
+				{
+					item.mask = LVIF_PARAM|LVIF_STATE;
+					item.stateMask = LVIS_SELECTED;
+					item.iItem = i;
+					ListView_GetItem(hListView, &item);
+					if (item.state & LVIS_SELECTED)
+					{
+						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+						// find the diff name
+						_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
+						wstring diffFileName = CAppUtils::GetAppDataDir();
+						diffFileName += _T("\\");
+						diffFileName += wstring(buf);
+						// start the diff viewer
+						wstring cmd = _T("notepad.exe \"");
+						cmd += diffFileName;
+						cmd += _T("\"");
+						CAppUtils::LaunchApplication(cmd);
+					}
+				}
+			}
+		}
+		break;
 	default:
 		return 0;
 	}

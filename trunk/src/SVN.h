@@ -211,7 +211,7 @@ public:
 	const SVNInfoData * GetFirstFileInfo(stdstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false);
 	size_t GetFileCount() {return m_arInfo.size();}
 	/**
-	 * Returns the info of the next file in the filelist. If no more files are in the list then NULL is returned.
+	 * Returns the info of the next file in the file list. If no more files are in the list then NULL is returned.
 	 * See GetFirstFileInfo() for details.
 	 */
 	const SVNInfoData * GetNextFileInfo();
@@ -219,8 +219,14 @@ public:
 	svn_revnum_t GetHEADRevision(const stdstring& url);
 
 	bool GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
-
 	map<svn_revnum_t,SVNLogEntry> m_logs;		///< contains the gathered log information
+
+	bool Diff(const wstring& url1, svn_revnum_t revision1, const wstring& path2, 
+		svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
+		bool ignorecontenttype,  const wstring& options, bool bAppend, 
+		const wstring& outputfile, const wstring& errorfile);
+
+
 private:
 	apr_pool_t *				parentpool;		///< the main memory pool
 	apr_pool_t *				pool;			///< 'root' memory pool

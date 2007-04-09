@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TempFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\UnicodeUtils.cpp"
 				>
 			</File>
@@ -287,10 +291,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SerializeUtils.h"
 				>
 			</File>
@@ -304,6 +304,10 @@
 			</File>
 			<File
 				RelativePath=".\SVNPool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TempFile.h"
 				>
 			</File>
 			<File
@@ -337,7 +341,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resources\resources\NotifyNew.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\NotifyNew.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 			<File

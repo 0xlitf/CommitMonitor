@@ -2,6 +2,8 @@
 #include "svn.h"
 #include "svn_sorts.h"
 
+#include "TempFile.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -337,4 +339,80 @@ svn_error_t* SVN::logReceiver(void* baton,
 	svn->m_logs[rev] = logEntry;
 
 	return error;
+}
+
+bool SVN::Diff(const wstring& url1, svn_revnum_t revision1, const wstring& url2, 
+			   svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
+			   bool ignorecontenttype,  const wstring& options, bool bAppend, 
+			   const wstring& outputfile, const wstring& errorfile)
+{
+	bool del = FALSE;
+	apr_file_t * outfile;
+	apr_file_t * errfile;
+	apr_array_header_t *opts;
+
+	SVNPool localpool(pool);
+
+	opts = svn_cstring_split(CUnicodeUtils::StdGetUTF8(options).c_str(), " \t\n\r", TRUE, localpool);
+
+	apr_int32_t flags = APR_WRITE | APR_CREATE | APR_BINARY;
+	if (bAppend)
+		flags |= APR_APPEND;
+	else
+		flags |= APR_TRUNCATE;
+	Err = svn_io_file_open (&outfile, CUnicodeUtils::StdGetUTF8(outputfile).c_str(),
+		flags,
+		APR_OS_DEFAULT, localpool);
+	if (Err)
+		return false;
+
+	wstring workingErrorFile;
+	if (errorfile.empty())
+	{
+		workingErrorFile = CTempFiles::Instance().GetTempFilePath(true);
+		del = TRUE;
+	}
+	else
+	{
+		workingErrorFile = errorfile;
+	}
+
+	Err = svn_io_file_open (&errfile, CUnicodeUtils::StdGetUTF8(workingErrorFile).c_str(),
+		APR_WRITE | APR_CREATE | APR_TRUNCATE | APR_BINARY,
+		APR_OS_DEFAULT, localpool);
+	if (Err)
+		return false;
+
+	svn_opt_revision_t rev1;
+	rev1.kind = svn_opt_revision_number;
+	rev1.value.number = revision1;
+
+	svn_opt_revision_t rev2;
+	rev2.kind = svn_opt_revision_number;
+	rev2.value.number = revision2;
+
+
+	Err = svn_client_diff4 (opts,
+		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url1).c_str(), localpool),
+		&rev1,
+		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url2).c_str(), localpool),
+		&rev2,
+		svn_depth_infinity,
+		ignoreancestry,
+		nodiffdeleted,
+		ignorecontenttype,
+		APR_LOCALE_CHARSET,
+		outfile,
+		errfile,
+		m_pctx,
+		localpool);
+	if (Err)
+	{
+		return false;
+	}
+	if (del)
+	{
+		svn_io_remove_file (CUnicodeUtils::StdGetUTF8(workingErrorFile).c_str(), localpool);
+	}
+	return true;
 }
