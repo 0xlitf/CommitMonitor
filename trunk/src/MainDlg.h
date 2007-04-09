@@ -10,7 +10,7 @@
 class CMainDlg : public CDialog
 {
 public:
-	CMainDlg(void);
+	CMainDlg(HWND hParent);
 	~CMainDlg(void);
 
 protected:
@@ -33,6 +33,9 @@ protected:
 	void					LoadURLInfo();
 private:
 	bool					m_bThreadRunning;
+	
+	HWND					m_hParent;
+	UINT					COMMITMONITOR_CHANGEDINFO;
 
 	bool					m_bDragMode;
 	LONG					m_oldx, m_oldy;

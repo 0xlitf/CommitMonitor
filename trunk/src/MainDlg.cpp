@@ -7,12 +7,13 @@
 #include <algorithm>
 
 
-CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
+CMainDlg::CMainDlg(HWND hParent) : m_bThreadRunning(false)
 	, m_bDragMode(false)
 	, m_oldx(-1)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
 {
+	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
 	// change the copy to BOLD (leave the rest of the font
 	// the same)
@@ -21,6 +22,7 @@ CMainDlg::CMainDlg(void) : m_bThreadRunning(false)
 	GetObject(hFont, sizeof(LOGFONT), &lf);
 	lf.lfWeight = FW_BOLD;
 	m_boldFont = CreateFontIndirect(&lf);
+	COMMITMONITOR_CHANGEDINFO = RegisterWindowMessage(_T("CommitMonitor_ChangedInfo"));
 }
 
 CMainDlg::~CMainDlg(void)
@@ -296,6 +298,11 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 
 		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
 		ListView_DeleteAllItems(hLogList);
+
+		int c = Header_GetItemCount(ListView_GetHeader(hLogList))-1;
+		while (c>=0)
+			ListView_DeleteColumn(hLogList, c--);
+
 		ListView_SetExtendedListViewStyle(hLogList, exStyle);
 		LVCOLUMN lvc = {0};
 		lvc.mask = LVCF_TEXT;
@@ -350,6 +357,9 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 		{
 			// set the entry as read
 			pLogEntry->read = true;
+			// the icon in the system tray needs to be changed back
+			// to 'normal'
+			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
 			TCHAR buf[1024];
 			HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
 			wstring msg = pLogEntry->message.c_str();

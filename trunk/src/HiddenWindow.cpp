@@ -16,6 +16,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
 	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNORMAL));
+	ZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
 }
 
 CHiddenWindow::~CHiddenWindow(void)
@@ -51,7 +52,7 @@ bool CHiddenWindow::RegisterAndCreateWindow()
 			COMMITMONITOR_CHANGEDINFO = RegisterWindowMessage(_T("CommitMonitor_ChangedInfo"));
 			COMMITMONITOR_TASKBARCALLBACK = RegisterWindowMessage(_T("CommitMonitor_TaskbarCallback"));	
 			ShowWindow(m_hwnd, SW_HIDE);
-			ShowTrayIcon();
+			ShowTrayIcon(false);
 			return true;
 		}
 	}
@@ -70,7 +71,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		if (m_bMainDlgShown)
 			return TRUE;
 		m_bMainDlgShown = true;
-		CMainDlg dlg;
+		CMainDlg dlg(*this);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
 		wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 		if (PathFileExists(urlfile.c_str()))
@@ -80,9 +81,13 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 	}
 	else if (uMsg == COMMITMONITOR_CHANGEDINFO)
 	{
-		wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-		if (PathFileExists(urlfile.c_str()))
-			m_UrlInfos.Save(urlfile.c_str());
+		if (wParam)
+		{
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			if (PathFileExists(urlfile.c_str()))
+				m_UrlInfos.Save(urlfile.c_str());
+		}
+		ShowTrayIcon(!!wParam);
 		return TRUE;
 	}
 	else if (uMsg == COMMITMONITOR_TASKBARCALLBACK)
@@ -228,15 +233,16 @@ void CHiddenWindow::DoTimer()
 	}
 }
 
-void CHiddenWindow::ShowTrayIcon()
+void CHiddenWindow::ShowTrayIcon(bool newCommits)
 {
+	DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
 	m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
 	m_SystemTray.hWnd   = *this;
 	m_SystemTray.uID    = 1;
-	m_SystemTray.hIcon  = m_hIconNormal;
+	m_SystemTray.hIcon  = newCommits ? m_hIconNew : m_hIconNormal;
 	m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
-	Shell_NotifyIcon(NIM_ADD, &m_SystemTray);
+	Shell_NotifyIcon(msg, &m_SystemTray);
 }
 
 DWORD CHiddenWindow::RunThread()
@@ -283,7 +289,7 @@ DWORD CHiddenWindow::RunThread()
 	if (bNewEntries)
 	{
 		// save the changed entries
-		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, 0, 0);
+		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, 0);
 	}
 	m_ThreadRunning = FALSE;
 	return 0L;

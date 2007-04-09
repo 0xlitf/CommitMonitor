@@ -36,7 +36,7 @@ protected:
 
 private:
 	void				DoTimer();
-	void				ShowTrayIcon();
+	void				ShowTrayIcon(bool newCommits);
 
 private:
 	UINT				COMMITMONITOR_SHOWDLGMSG;
