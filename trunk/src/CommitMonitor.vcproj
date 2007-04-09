@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Debug.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HiddenWindow.cpp"
 				>
 			</File>
@@ -279,6 +283,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Debug.h"
+				>
+			</File>
+			<File
 				RelativePath=".\HiddenWindow.h"
 				>
 			</File>
@@ -341,19 +349,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
+				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>
