@@ -287,7 +287,7 @@ bool SVN::GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endre
 		&end,
 		&start, 
 		&end, 
-		100,
+		10,
 		true,
 		false,
 		logReceiver,	// log_message_receiver
