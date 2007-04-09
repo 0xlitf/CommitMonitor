@@ -32,6 +32,7 @@ void CUrlInfos::Save(LPCWSTR filename)
 	if (bSuccess)
 	{
 		// rename the file to the original requested name
+		TRACE(_T("data saved\n"));
 	}
 }
 
@@ -42,5 +43,6 @@ void CUrlInfos::Load(LPCWSTR filename)
 	if (hFile == INVALID_HANDLE_VALUE)
 		return;
 	Load(hFile);
+	TRACE(_T("data loaded\n"));
 	CloseHandle(hFile);
 }

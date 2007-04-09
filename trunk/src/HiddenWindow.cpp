@@ -102,6 +102,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		case WM_LBUTTONDBLCLK:
 			{
 				// show the main dialog
+				ShowDialog();
 			}
 			break;
 		case NIN_KEYSELECT:
@@ -197,6 +198,7 @@ LRESULT CHiddenWindow::DoCommand(int id)
 
 void CHiddenWindow::DoTimer()
 {
+	TRACE(_T("timer fired\n"));
 	// Restart the timer with 60 seconds
 	::SetTimer(*this, IDT_MONITOR, TIMER_ELAPSE, NULL);
 	// go through all url infos and check if
@@ -235,6 +237,8 @@ void CHiddenWindow::DoTimer()
 
 void CHiddenWindow::ShowTrayIcon(bool newCommits)
 {
+	TRACE(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
+
 	DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
 	m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
 	m_SystemTray.hWnd   = *this;
@@ -252,18 +256,22 @@ DWORD CHiddenWindow::RunThread()
 	_time64(&currenttime);
 	bool bNewEntries = false;
 
+	TRACE(_T("monitor thread started\n"));
 	for (map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
+			TRACE(_T("checking %s for updates\n"), it->first.c_str());
 			// get the highest revision of the repository
 			SVN svn;
 			svn.SetAuthInfo(it->second.username, it->second.password);
 			svn_revnum_t headrev = svn.GetHEADRevision(it->first);
 			if (headrev > it->second.lastcheckedrev)
 			{
+				TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
 				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev))
 				{
+					TRACE(_T("log fetched for %s\n"), it->first.c_str());
 					it->second.lastcheckedrev = headrev;
 					it->second.lastchecked = currenttime;
 					bNewEntries = true;
@@ -280,6 +288,7 @@ DWORD CHiddenWindow::RunThread()
 							diffFileName += wstring(buf);
 							// get the diff
 							svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
+							TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
 						}
 					}
 				}
@@ -291,6 +300,7 @@ DWORD CHiddenWindow::RunThread()
 		// save the changed entries
 		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, 0);
 	}
+	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
 	return 0L;
 }
