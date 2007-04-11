@@ -23,6 +23,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
+	::CoInitialize(NULL);
 
 	// we need some of the common controls
 	INITCOMMONCONTROLSEX icex;
@@ -97,7 +98,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return (int) msg.wParam;
 	}
 
-
+	::CoUninitialize();
 	apr_terminate();
 	return (int) 0;
 }

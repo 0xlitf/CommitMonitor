@@ -1,9 +1,21 @@
 #include "StdAfx.h"
+#include <fstream>
+#include <Urlmon.h>
+#pragma comment(lib, "Urlmon.lib")
+
 #include "HiddenWindow.h"
 #include "resource.h"
 #include "MainDlg.h"
 #include "SVN.h"
+#include "Callback.h"
 #include "AppUtils.h"
+#include "TempFile.h"
+
+#include <boost/regex.hpp>
+using namespace boost;
+
+
+
 
 extern HINSTANCE hInst;
 
@@ -256,6 +268,11 @@ DWORD CHiddenWindow::RunThread()
 	_time64(&currenttime);
 	bool bNewEntries = false;
 
+	if (::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)!=S_OK)
+	{
+		return 1;
+	}
+
 	TRACE(_T("monitor thread started\n"));
 	for (map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
 	{
@@ -293,6 +310,74 @@ DWORD CHiddenWindow::RunThread()
 					}
 				}
 			}
+			else
+			{
+				// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
+				// instead of pointing to an actual repository.
+
+				// we have to include the authentication in the URL itself
+				size_t colonpos = it->first.find_first_of(':');
+				wstring authurl = it->first.substr(0, colonpos+3);
+				authurl += it->second.username;
+				authurl += _T(":");
+				authurl += it->second.password;
+				authurl += _T("@");
+				authurl += it->first.substr(colonpos+3);
+				wstring tempfile = CTempFiles::Instance().GetTempFilePath(true);
+				CCallback * callback = new CCallback;
+				callback->SetAuthData(it->second.username, it->second.password);
+				if (URLDownloadToFile(NULL, it->first.c_str(), tempfile.c_str(), 0, callback) == S_OK)
+				{
+					// we got a web page! But we can't be sure that it's the page from SVNParentPath.
+					// Use a regex to parse the website and find out...
+					ifstream fs(tempfile.c_str());
+					string in;
+					if (!fs.bad())
+					{
+						in.reserve(fs.rdbuf()->in_avail());
+						char c;
+						while (fs.get(c))
+						{
+							if (in.capacity() == in.size())
+								in.reserve(in.capacity() * 3);
+							in.append(1, c);
+						}
+						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*href\\s*=\\s*\"([^\"]*)\"\\s*>([^/<])<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
+
+						regex expression = regex(re, regex::normal | regbase::icase);
+						string::const_iterator start = in.begin();
+						string::const_iterator end = in.end();
+						match_results<string::const_iterator> what;
+						match_flag_type flags = match_default;
+						while(regex_search(start, end, what, expression, flags))   
+						{
+							// what[0] contains the whole string
+							// what[1] contains the url.
+							// what[2] contains the name
+							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+							if (m_UrlInfos.infos.find(url) == m_UrlInfos.infos.end())
+							{
+								// we found a new URL, add it to our list
+								CUrlInfo newinfo;
+								newinfo.url = url;
+								newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+								newinfo.username = it->second.username;
+								newinfo.password = it->second.password;
+								newinfo.fetchdiffs = it->second.fetchdiffs;
+								newinfo.minutesinterval = it->second.minutesinterval;
+								m_UrlInfos.infos[url] = newinfo;
+							}
+							// update search position:
+							start = what[0].second;      
+							// update flags:
+							flags |= match_prev_avail;
+							flags |= match_not_bob;
+						}
+
+					}
+					delete callback;
+				}
+			}
 		}
 	}
 	if (bNewEntries)
@@ -302,6 +387,7 @@ DWORD CHiddenWindow::RunThread()
 	}
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
+	::CoUninitialize();
 	return 0L;
 }
 

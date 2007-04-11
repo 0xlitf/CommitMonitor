@@ -10,7 +10,7 @@
 /// the timer ID
 #define IDT_MONITOR		101
 /// timer elapse time, set to 1 minute
-#define TIMER_ELAPSE	60000
+#define TIMER_ELAPSE	1000//60000
 
 class CHiddenWindow : public CWindow
 {

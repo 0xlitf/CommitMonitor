@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Callback.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.cpp"
 				>
 			</File>
@@ -279,6 +283,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Callback.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.h"
 				>
 			</File>
@@ -353,19 +361,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
+				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>
