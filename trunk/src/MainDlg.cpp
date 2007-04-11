@@ -458,15 +458,24 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 		{
 			LVITEM item = {0};
 			int i = 0;
+			TCHAR buf[4096];
 			while (i<ListView_GetItemCount(hListView))
 			{
 				item.mask = LVIF_PARAM|LVIF_STATE;
 				item.stateMask = LVIS_SELECTED;
 				item.iItem = i;
+				item.lParam = 0;
 				ListView_GetItem(hListView, &item);
 				if (item.state & LVIS_SELECTED)
 				{
 					SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+					// find the diff name
+					_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
+					wstring diffFileName = CAppUtils::GetAppDataDir();
+					diffFileName += _T("\\");
+					diffFileName += wstring(buf);
+					DeleteFile(diffFileName.c_str());
+
 					m_URLInfos.infos[(*(wstring*)itemex.lParam)].logentries.erase(pLogEntry->revision);
 					ListView_DeleteItem(hListView, i);
 				}
