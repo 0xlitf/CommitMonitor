@@ -299,6 +299,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SerializeUtils.h"
 				>
 			</File>
@@ -349,19 +353,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNormal.ico"
+				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\resources\resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>

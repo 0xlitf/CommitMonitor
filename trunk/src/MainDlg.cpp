@@ -115,6 +115,26 @@ LRESULT CMainDlg::DoCommand(int id)
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
+	case IDC_URLDELETE:
+		{
+			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+			HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
+			if (hItem)
+			{
+				TVITEMEX itemex = {0};
+				itemex.hItem = hItem;
+				itemex.mask = TVIF_PARAM;
+				TreeView_GetItem(hTreeControl, &itemex);
+				if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+				{
+					m_URLInfos.infos.erase(*(wstring*)itemex.lParam);
+					SaveURLInfo();
+					TreeView_DeleteItem(hTreeControl, hItem);
+					RefreshURLTree();
+				}
+			}
+		}
+		break;
 	case IDC_URLEDIT:
 		{
 			CURLDlg dlg;
