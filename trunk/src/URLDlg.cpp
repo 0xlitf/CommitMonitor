@@ -57,10 +57,11 @@ LRESULT CURLDlg::DoCommand(int id)
 	{
 	case IDOK:
 		{
+			SVN svn;
 			int len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
 			WCHAR * buffer = new WCHAR[len+1];
 			GetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), buffer, len+1);
-			info.url = wstring(buffer, len);
+			info.url = svn.CanonicalizeURL(wstring(buffer, len));
 			delete [] buffer;
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));

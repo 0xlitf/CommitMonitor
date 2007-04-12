@@ -372,6 +372,7 @@ DWORD CHiddenWindow::RunThread()
 							// what[2] contains the name
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
 							url = it->first + url;
+							url = svn.CanonicalizeURL(url);
 							if (m_UrlInfos.infos.find(url) == m_UrlInfos.infos.end())
 							{
 								// we found a new URL, add it to our list

@@ -227,6 +227,8 @@ public:
 		const wstring& outputfile, const wstring& errorfile);
 
 
+	wstring CanonicalizeURL(const wstring& url);
+
 private:
 	apr_pool_t *				parentpool;		///< the main memory pool
 	apr_pool_t *				pool;			///< 'root' memory pool

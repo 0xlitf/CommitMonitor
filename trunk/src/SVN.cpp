@@ -416,3 +416,9 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t revision1, const wstring& url2,
 	}
 	return true;
 }
+
+wstring SVN::CanonicalizeURL(const wstring& url)
+{
+	SVNPool localpool(pool);
+	return CUnicodeUtils::StdGetUnicode(string(svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
+}
