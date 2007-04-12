@@ -342,19 +342,36 @@ DWORD CHiddenWindow::RunThread()
 								in.reserve(in.capacity() * 3);
 							in.append(1, c);
 						}
-						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*href\\s*=\\s*\"([^\"]*)\"\\s*>([^/<])<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
 
-						regex expression = regex(re, regex::normal | regbase::icase);
+						// make sure this is a html page from an SVNParentPathList
+						// we do this by checking for header titles looking like
+						// "<h2>Revision XX: /</h2> - if we find that, it's a html
+						// page from inside a repository
+						const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
+						regex titex = regex(reTitle, regex::normal | regbase::icase);
 						string::const_iterator start = in.begin();
 						string::const_iterator end = in.end();
+						match_results<string::const_iterator> fwhat;
+						if (regex_search(start, end, fwhat, titex, match_default))
+						{
+							TRACE(_T("found repository url instead of SVNParentPathList\n"));
+							continue;
+						}
+
+						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*href\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
+
+						regex expression = regex(re, regex::normal | regbase::icase);
+						start = in.begin();
+						end = in.end();
 						match_results<string::const_iterator> what;
 						match_flag_type flags = match_default;
-						while(regex_search(start, end, what, expression, flags))   
+						while (regex_search(start, end, what, expression, flags))   
 						{
 							// what[0] contains the whole string
-							// what[1] contains the url.
+							// what[1] contains the url part.
 							// what[2] contains the name
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+							url = it->first + url;
 							if (m_UrlInfos.infos.find(url) == m_UrlInfos.infos.end())
 							{
 								// we found a new URL, add it to our list
