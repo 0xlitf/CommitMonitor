@@ -274,7 +274,8 @@ DWORD CHiddenWindow::RunThread()
 	}
 
 	TRACE(_T("monitor thread started\n"));
-	for (map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
+	map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin();
+	for (; it != m_UrlInfos.infos.end(); ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
@@ -312,6 +313,7 @@ DWORD CHiddenWindow::RunThread()
 			}
 			else
 			{
+				it->second.lastchecked = currenttime;
 				// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
 				// instead of pointing to an actual repository.
 
@@ -385,6 +387,7 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
 								m_UrlInfos.infos[url] = newinfo;
+								it = m_UrlInfos.infos.begin();
 							}
 							// update search position:
 							start = what[0].second;      
@@ -392,7 +395,6 @@ DWORD CHiddenWindow::RunThread()
 							flags |= match_prev_avail;
 							flags |= match_not_bob;
 						}
-
 					}
 					delete callback;
 				}

@@ -4,6 +4,7 @@
 
 #include "URLDlg.h"
 #include "AppUtils.h"
+#include "DirFileEnum.h"
 #include <algorithm>
 
 
@@ -127,6 +128,15 @@ LRESULT CMainDlg::DoCommand(int id)
 				TreeView_GetItem(hTreeControl, &itemex);
 				if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
 				{
+					// delete all fetched and stored diff files
+					wstring mask = m_URLInfos.infos[(*(wstring*)itemex.lParam)].name;
+					mask += _T("*.*");
+					CSimpleFileFind sff(CAppUtils::GetAppDataDir(), mask.c_str());
+					while (sff.FindNextFileNoDots())
+					{
+						DeleteFile(sff.GetFilePath().c_str());
+					}
+
 					m_URLInfos.infos.erase(*(wstring*)itemex.lParam);
 					SaveURLInfo();
 					TreeView_DeleteItem(hTreeControl, hItem);
