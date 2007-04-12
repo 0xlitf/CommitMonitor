@@ -379,6 +379,7 @@ DWORD CHiddenWindow::RunThread()
 								CUrlInfo newinfo;
 								newinfo.url = url;
 								newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+								newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
 								newinfo.username = it->second.username;
 								newinfo.password = it->second.password;
 								newinfo.fetchdiffs = it->second.fetchdiffs;
