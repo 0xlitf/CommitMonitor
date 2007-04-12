@@ -398,6 +398,8 @@ DWORD CHiddenWindow::RunThread()
 				}
 			}
 		}
+		else
+			it->second.lastchecked = currenttime;
 	}
 	if (bNewEntries)
 	{
