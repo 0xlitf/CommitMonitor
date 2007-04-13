@@ -386,7 +386,47 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 		if (pLogEntry)
 		{
 			// set the entry as read
-			pLogEntry->read = true;
+            if (!pLogEntry->read)
+            {
+                pLogEntry->read = true;
+                // refresh the name of the tree item to indicate the new
+                // number of unread log messages
+                // e.g. instead of 'TortoiseSVN (3)', show now 'TortoiseSVN (2)'
+                HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+                HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+                // get the url this entry refers to
+                TVITEMEX itemex = {0};
+                itemex.hItem = hSelectedItem;
+                itemex.mask = TVIF_PARAM;
+                TreeView_GetItem(hTreeControl, &itemex);
+                if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+                {
+                    CUrlInfo uinfo = m_URLInfos.infos[(*(wstring*)itemex.lParam)];
+                    // count the number of unread messages
+                    int unread = 0;
+                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo.logentries.begin(); it != uinfo.logentries.end(); ++it)
+                    {
+                        if (!it->second.read)
+                            unread++;
+                    }
+                    WCHAR * str = new WCHAR[uinfo.name.size()+10];
+                    if (unread)
+                    {
+                        _stprintf_s(str, uinfo.name.size()+10, _T("%s (%d)"), uinfo.name.c_str(), unread);
+                        itemex.state = TVIS_BOLD;
+                        itemex.stateMask = TVIS_BOLD;
+                    }
+                    else
+                    {
+                        _stprintf_s(str, uinfo.name.size()+10, _T("%s"), uinfo.name.c_str());
+                        itemex.state = 0;
+                        itemex.stateMask = TVIS_BOLD;
+                    }
+                    itemex.pszText = str;
+                    itemex.mask = TVIF_TEXT|TVIF_STATE;
+                    TreeView_SetItem(hTreeControl, &itemex);
+                }
+            }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
 			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
