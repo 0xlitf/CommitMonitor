@@ -24,6 +24,7 @@ DWORD WINAPI MonitorThread(LPVOID lpParam);
 CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
 	: CWindow(hInst, wcx)
 	, m_ThreadRunning(0)
+	, m_hMonitorThread(NULL)
 	, m_bMainDlgShown(false)
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
@@ -231,8 +232,13 @@ void CHiddenWindow::DoTimer()
 	if ((bStartThread)&&(m_ThreadRunning == 0))
 	{
 		// start the monitoring thread to update the infos
+		if (m_hMonitorThread)
+		{
+			CloseHandle(m_hMonitorThread);
+			m_hMonitorThread = NULL;
+		}
 		DWORD dwThreadId = 0;
-		HANDLE hMonitorThread = CreateThread( 
+		m_hMonitorThread = CreateThread( 
 			NULL,              // no security attribute 
 			0,                 // default stack size 
 			MonitorThread, 
@@ -240,10 +246,8 @@ void CHiddenWindow::DoTimer()
 			0,                 // not suspended 
 			&dwThreadId);      // returns thread ID 
 
-		if (hMonitorThread == NULL) 
+		if (m_hMonitorThread == NULL) 
 			return;
-		else 
-			CloseHandle(hMonitorThread); 
 	}
 }
 
@@ -264,6 +268,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 DWORD CHiddenWindow::RunThread()
 {
 	m_ThreadRunning = TRUE;
+	m_bRun = true;
 	__time64_t currenttime = NULL;
 	_time64(&currenttime);
 	bool bNewEntries = false;
@@ -275,7 +280,7 @@ DWORD CHiddenWindow::RunThread()
 
 	TRACE(_T("monitor thread started\n"));
 	map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin();
-	for (; it != m_UrlInfos.infos.end(); ++it)
+	for (; (it != m_UrlInfos.infos.end()) && m_bRun; ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
@@ -307,6 +312,8 @@ DWORD CHiddenWindow::RunThread()
 							// get the diff
 							svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
 							TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
+							if (!m_bRun)
+								break;
 						}
 					}
 				}
@@ -367,13 +374,14 @@ DWORD CHiddenWindow::RunThread()
 						end = in.end();
 						match_results<string::const_iterator> what;
 						match_flag_type flags = match_default;
+						bool hasNewEntries = false;
 						while (regex_search(start, end, what, expression, flags))   
 						{
 							// what[0] contains the whole string
 							// what[1] contains the url part.
 							// what[2] contains the name
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
-							url = it->first + url;
+							url = it->first + _T("/") + url;
 							url = svn.CanonicalizeURL(url);
 							if (m_UrlInfos.infos.find(url) == m_UrlInfos.infos.end())
 							{
@@ -387,7 +395,7 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
 								m_UrlInfos.infos[url] = newinfo;
-								it = m_UrlInfos.infos.begin();
+								hasNewEntries = true;
 							}
 							// update search position:
 							start = what[0].second;      
@@ -395,6 +403,8 @@ DWORD CHiddenWindow::RunThread()
 							flags |= match_prev_avail;
 							flags |= match_not_bob;
 						}
+						if (hasNewEntries)
+							it = m_UrlInfos.infos.begin();
 					}
 					delete callback;
 				}
@@ -422,3 +432,20 @@ DWORD WINAPI MonitorThread(LPVOID lpParam)
 	return 0L;
 }
 
+void CHiddenWindow::StopThread()
+{
+	m_bRun = false;
+	if (m_hMonitorThread)
+	{
+		WaitForSingleObject(m_hMonitorThread, 1000);
+		if (m_ThreadRunning)
+		{
+			// we gave the thread a chance to quit. Since the thread didn't
+			// listen to us we have to kill it.
+			TerminateThread(m_hMonitorThread, (DWORD)-1);
+			m_ThreadRunning = false;
+		}
+		CloseHandle(m_hMonitorThread);
+		m_hMonitorThread = NULL;
+	}
+}

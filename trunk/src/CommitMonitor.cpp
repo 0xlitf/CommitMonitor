@@ -97,6 +97,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		}
 		return (int) msg.wParam;
 	}
+	hiddenWindow.StopThread();
 
 	::CoUninitialize();
 	apr_terminate();

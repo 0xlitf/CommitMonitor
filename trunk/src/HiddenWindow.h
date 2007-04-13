@@ -25,6 +25,7 @@ public:
 
 	INT_PTR				ShowDialog();
 
+	void				StopThread();
 
 	DWORD				RunThread();
 protected:
@@ -49,6 +50,8 @@ private:
 
 	CUrlInfos			m_UrlInfos;
 	DWORD				m_ThreadRunning;
+	bool				m_bRun;
+	HANDLE				m_hMonitorThread;
 
 	bool				m_bMainDlgShown;
 };
