@@ -1,8 +1,11 @@
 #pragma once
+#include <string>
 #include "basedialog.h"
 #include "UrlInfo.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
+
+using namespace std;
 
 /**
  * main dialog.
@@ -24,6 +27,8 @@ protected:
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 	void					RefreshURLTree();
+	HTREEITEM				FindParentTreeNode(const wstring& url);
+	HTREEITEM				FindTreeNode(const wstring& url);
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);

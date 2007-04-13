@@ -265,7 +265,7 @@ void CMainDlg::RefreshURLTree()
 	for (map<wstring, CUrlInfo>::const_iterator it = m_URLInfos.infos.begin(); it != m_URLInfos.infos.end(); ++it)
 	{
 		TVINSERTSTRUCT tv = {0};
-		tv.hParent = TVI_ROOT;
+		tv.hParent = FindParentTreeNode(it->first);
 		tv.hInsertAfter = TVI_SORT;
 		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE;
 		WCHAR * str = new WCHAR[it->second.name.size()+10];
@@ -290,25 +290,48 @@ void CMainDlg::RefreshURLTree()
 		}
 		tv.itemex.pszText = str;
 		tv.itemex.lParam = (LPARAM)&it->first;
-		HTREEITEM hItem = TreeView_InsertItem(hTreeControl, &tv);
+		TreeView_InsertItem(hTreeControl, &tv);
+		TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
-		//if ((hItem)&&(it->second.subentries.size()))
-		//{
-		//	for (map<wstring, wstring>::const_iterator it2 = it->second.subentries.begin(); it2 != it->second.subentries.end(); ++it2)
-		//	{
-		//		TVINSERTSTRUCT tv2 = {0};
-		//		tv2.hParent = hItem;
-		//		tv2.hInsertAfter = TVI_SORT;
-		//		tv2.itemex.mask = TVIF_TEXT;
-		//		WCHAR * str = new WCHAR[it->first.size()+1];
-		//		_tcscpy_s(str, it->first.size()+1, it->first.c_str());
-		//		tv.itemex.pszText = str;
-		//		TreeView_InsertItem(hTreeControl, &tv2);
-		//		delete [] str;
-		//	}
-		//}
 	}
 
+}
+
+HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
+{
+	size_t pos = url.find_last_of('/');
+	wstring parenturl = url.substr(0, pos);
+	do 
+	{
+		if (m_URLInfos.infos.find(parenturl) != m_URLInfos.infos.end())
+		{
+			// we found a parent URL, but now we have to find it in the
+			// tree view
+			return FindTreeNode(parenturl);
+		}
+		pos = parenturl.find_last_of('/');
+		parenturl = parenturl.substr(0, pos);
+		if (pos == string::npos)
+			parenturl.clear();
+	} while (!parenturl.empty());
+	return TVI_ROOT;
+}
+
+HTREEITEM CMainDlg::FindTreeNode(const wstring& url)
+{
+	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+	HTREEITEM hItem = TreeView_GetRoot(hTreeControl);
+	TVITEM item;
+	item.mask = TVIF_PARAM;
+	while (hItem)
+	{
+		item.hItem = hItem;
+		TreeView_GetItem(hTreeControl, &item);
+		if (url.compare(*(wstring*)item.lParam) == 0)
+			return hItem;
+		hItem = TreeView_GetNextSibling(hTreeControl, hItem);
+	};
+	return TVI_ROOT;
 }
 
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
