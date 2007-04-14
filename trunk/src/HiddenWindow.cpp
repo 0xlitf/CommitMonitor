@@ -26,6 +26,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_ThreadRunning(0)
 	, m_hMonitorThread(NULL)
 	, m_bMainDlgShown(false)
+	, m_bMainDlgShownThread(false)
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
 	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNORMAL));
@@ -84,6 +85,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		if (m_bMainDlgShown)
 			return TRUE;
 		m_bMainDlgShown = true;
+		m_bMainDlgShownThread = true;
 		CMainDlg dlg(*this);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
 		m_bMainDlgShown = false;
@@ -91,7 +93,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 	}
 	else if (uMsg == COMMITMONITOR_CHANGEDINFO)
 	{
-		if ((wParam)&&(!m_bMainDlgShown))
+		if ((wParam)&&(!m_bMainDlgShownThread))
 		{
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 			m_UrlInfos.Save(urlfile.c_str());
@@ -277,11 +279,14 @@ DWORD CHiddenWindow::RunThread()
 	// load a copy of the url data
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 	if (!PathFileExists(urlfile.c_str()))
+	{
+		m_bMainDlgShownThread = false;
 		return 0;
+	}
 	m_UrlInfos.Load(urlfile.c_str());
 	TRACE(_T("monitor thread started\n"));
 	map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin();
-	for (; (it != m_UrlInfos.infos.end()) && m_bRun; ++it)
+	for (; (it != m_UrlInfos.infos.end()) && m_bRun && !m_bMainDlgShownThread; ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
@@ -314,8 +319,13 @@ DWORD CHiddenWindow::RunThread()
 							if (!PathFileExists(diffFileName.c_str()))
 							{
 								// get the diff
-								svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
-								TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
+								if (svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring()))
+								{
+									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
+									DeleteFile(diffFileName.c_str());
+								}
+								else
+									TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
 								if (!m_bRun)
 									break;
 							}
@@ -425,6 +435,7 @@ DWORD CHiddenWindow::RunThread()
 	}
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
+	m_bMainDlgShownThread = false;
 	::CoUninitialize();
 	return 0L;
 }
