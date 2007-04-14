@@ -8,8 +8,8 @@
 #include <algorithm>
 
 
-CMainDlg::CMainDlg(HWND hParent) : m_bThreadRunning(false)
-	, m_bDragMode(false)
+CMainDlg::CMainDlg(HWND hParent) 
+	: m_bDragMode(false)
 	, m_oldx(-1)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
@@ -567,12 +567,6 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 {
 	UNREFERENCED_PARAMETER(message);
 	UNREFERENCED_PARAMETER(nHitTest);
-	if (m_bThreadRunning)
-	{
-		HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
-		SetCursor(hCur);
-		return TRUE;
-	}
 	if (hWnd == *this)
 	{
 		RECT rect;

@@ -36,9 +36,7 @@ protected:
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();
-private:
-	bool					m_bThreadRunning;
-	
+private:	
 	HWND					m_hParent;
 	UINT					COMMITMONITOR_CHANGEDINFO;
 
