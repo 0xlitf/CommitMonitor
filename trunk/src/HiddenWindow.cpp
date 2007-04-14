@@ -86,19 +86,15 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		m_bMainDlgShown = true;
 		CMainDlg dlg(*this);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
-		wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-		if (PathFileExists(urlfile.c_str()))
-			m_UrlInfos.Load(urlfile.c_str());
 		m_bMainDlgShown = false;
 		return TRUE;
 	}
 	else if (uMsg == COMMITMONITOR_CHANGEDINFO)
 	{
-		if (wParam)
+		if ((wParam)&&(!m_bMainDlgShown))
 		{
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			if (PathFileExists(urlfile.c_str()))
-				m_UrlInfos.Save(urlfile.c_str());
+			m_UrlInfos.Save(urlfile.c_str());
 		}
 		ShowTrayIcon(!!wParam);
 		return TRUE;
@@ -278,6 +274,11 @@ DWORD CHiddenWindow::RunThread()
 		return 1;
 	}
 
+	// load a copy of the url data
+	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+	if (!PathFileExists(urlfile.c_str()))
+		return 0;
+	m_UrlInfos.Load(urlfile.c_str());
 	TRACE(_T("monitor thread started\n"));
 	map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin();
 	for (; (it != m_UrlInfos.infos.end()) && m_bRun; ++it)
@@ -309,11 +310,15 @@ DWORD CHiddenWindow::RunThread()
 							wstring diffFileName = CAppUtils::GetAppDataDir();
 							diffFileName += _T("/");
 							diffFileName += wstring(buf);
-							// get the diff
-							svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
-							TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
-							if (!m_bRun)
-								break;
+							// do we already have that diff?
+							if (!PathFileExists(diffFileName.c_str()))
+							{
+								// get the diff
+								svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring());
+								TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
+								if (!m_bRun)
+									break;
+							}
 						}
 					}
 				}
