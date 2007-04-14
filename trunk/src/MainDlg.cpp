@@ -9,7 +9,7 @@
 
 
 CMainDlg::CMainDlg(HWND hParent) 
-	: m_bDragMode(false)
+	: m_nDragMode(DRAGMODE_NONE)
 	, m_oldx(-1)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
@@ -592,6 +592,18 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 					SetCursor(hCur);
 					return TRUE;
 				}
+
+				// maybe we are below the log message list control?
+				if (pt.y > rect.bottom)
+				{
+					::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &rect);
+					if (pt.y < rect.top)
+					{
+						HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS));
+						SetCursor(hCur);
+						return TRUE;
+					}
+				}
 			}
 		}
 	}
@@ -601,17 +613,22 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 bool CMainDlg::OnMouseMove(UINT nFlags, POINT point)
 {
 	HDC hDC;
-	RECT rect, tree, list, treelist, treelistclient;
+	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
 
-	if (m_bDragMode == false)
+	if (m_nDragMode == DRAGMODE_NONE)
 		return false;
 
 	// create an union of the tree and list control rectangle
 	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
 	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
+	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
+
+	UnionRect(&loglist, &logrect, &list);
+	loglistclient = loglist;
+	MapWindowPoints(NULL, *this, (LPPOINT)&loglistclient, 2);
 
 	//convert the mouse coordinates relative to the top-left of
 	//the window
@@ -619,24 +636,39 @@ bool CMainDlg::OnMouseMove(UINT nFlags, POINT point)
 	GetClientRect(*this, &rect);
 	MapWindowPoints(*this, NULL, (LPPOINT)&rect, 2);
 	point.x -= rect.left;
-	point.y -= treelist.top;
+	point.y -= rect.top;
 
 	//same for the window coordinates - make them relative to 0,0
-	OffsetRect(&treelist, -treelist.left, -treelist.top);
+	LONG tempy = rect.top;
+	LONG tempx = rect.left;
+	OffsetRect(&treelist, -tempx, -tempy);
+	OffsetRect(&loglist, -tempx, -tempy);
 
 	if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
 		point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
 	if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
 		point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
+	if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
+	if (point.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
 
-	if ((nFlags & MK_LBUTTON) && (point.x != m_oldx))
+	if ((nFlags & MK_LBUTTON) && ((point.x != m_oldx)||(point.y != m_oldy)))
 	{
 		hDC = GetDC(*this);
 
 		if (hDC)
 		{
-			DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
-			DrawXorBar(hDC, point.x+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+			if (m_nDragMode == DRAGMODE_HORIZONTAL)
+			{
+				DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+				DrawXorBar(hDC, point.x+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+			}
+			else
+			{
+				DrawXorBar(hDC, loglistclient.left, m_oldy+2, loglistclient.right-loglistclient.left-2, 4);
+				DrawXorBar(hDC, loglistclient.left, point.y+2, loglistclient.right-loglistclient.left-2, 4);
+			}
 
 			ReleaseDC(*this, hDC);
 		}
@@ -653,14 +685,19 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
 	UNREFERENCED_PARAMETER(nFlags);
 
 	HDC hDC;
-	RECT rect, tree, list, treelist, treelistclient;
+	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
 
 	// create an union of the tree and list control rectangle
 	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
 	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
+	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
+
+	UnionRect(&loglist, &logrect, &list);
+	loglistclient = loglist;
+	MapWindowPoints(NULL, *this, (LPPOINT)&loglistclient, 2);
 
 	//convert the mouse coordinates relative to the top-left of
 	//the window
@@ -668,26 +705,39 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
 	GetClientRect(*this, &rect);
 	MapWindowPoints(*this, NULL, (LPPOINT)&rect, 2);
 	point.x -= rect.left;
-	point.y -= treelist.top;
+	point.y -= rect.top;
 
 	//same for the window coordinates - make them relative to 0,0
-	OffsetRect(&treelist, -treelist.left, -treelist.top);
-
-	if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
-		point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
-	if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
-		point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
+	LONG tempy = rect.top;
+	LONG tempx = rect.left;
+	OffsetRect(&treelist, -tempx, -tempy);
+	OffsetRect(&loglist, -tempx, -tempy);
 
 	if ((point.y < treelist.top) || 
 		(point.y > treelist.bottom))
 		return false;
 
-	m_bDragMode = true;
+	m_nDragMode = DRAGMODE_HORIZONTAL;
+	if ((point.x+rect.left) > list.left)
+		m_nDragMode = DRAGMODE_VERTICAL;
+
+	if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
+		point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
+	if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
+		point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
+	if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
+	if (point.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
 
 	SetCapture(*this);
 
 	hDC = GetDC(*this);
-	DrawXorBar(hDC, point.x+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+	if (m_nDragMode == DRAGMODE_HORIZONTAL)
+		DrawXorBar(hDC, point.x+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+	else
+		DrawXorBar(hDC, loglistclient.left, point.y+2, loglistclient.right-loglistclient.left-2, 4);
+
 	ReleaseDC(*this, hDC);
 
 	m_oldx = point.x;
@@ -701,18 +751,25 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	UNREFERENCED_PARAMETER(nFlags);
 
 	HDC hDC;
-	RECT rect, tree, list, treelist, treelistclient;
+	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
 
-	if (m_bDragMode == FALSE)
+	if (m_nDragMode == DRAGMODE_NONE)
 		return false;
 
 	// create an union of the tree and list control rectangle
 	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
 	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
+	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
 
+	UnionRect(&loglist, &logrect, &list);
+	loglistclient = loglist;
+	MapWindowPoints(NULL, *this, (LPPOINT)&loglistclient, 2);
+
+	//convert the mouse coordinates relative to the top-left of
+	//the window
 	ClientToScreen(*this, &point);
 	GetClientRect(*this, &rect);
 	MapWindowPoints(*this, NULL, (LPPOINT)&rect, 2);
@@ -723,52 +780,91 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	if (point2.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
 		point2.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
 
-	point.x -= rect.left;
-	point.y -= treelist.top;
+	POINT point3 = point;
+	if (point3.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
+		point3.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
+	if (point3.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT) 
+		point3.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
 
-	OffsetRect(&treelist, -treelist.left, -treelist.top);
+	point.x -= rect.left;
+	point.y -= rect.top;
+
+	//same for the window coordinates - make them relative to 0,0
+	LONG tempy = treelist.top;
+	LONG tempx = treelist.left;
+	OffsetRect(&treelist, -tempx, -tempy);
+	OffsetRect(&loglist, -tempx, -tempy);
 
 	if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
 		point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
 	if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
 		point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
+	if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
+	if (point.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
+		point.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
+
 
 	hDC = GetDC(*this);
-	DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);			
+	if (m_nDragMode == DRAGMODE_HORIZONTAL)
+		DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+	else
+		DrawXorBar(hDC, loglistclient.left, m_oldy+2, loglistclient.right-loglistclient.left-2, 4);
+
+
 	ReleaseDC(*this, hDC);
 
 	m_oldx = point.x;
 	m_oldy = point.y;
 
-	m_bDragMode = false;
 	ReleaseCapture();
 
 	//position the child controls
 	HDWP hdwp = BeginDeferWindowPos(3);
 	if (hdwp)
 	{
-		GetWindowRect(GetDlgItem(*this, IDC_URLTREE), &treelist);
-		treelist.right = point2.x - 2;
-		MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-		DeferWindowPos(hdwp, GetDlgItem(*this, IDC_URLTREE), NULL, 
-			treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
-			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+		if (m_nDragMode == DRAGMODE_HORIZONTAL)
+		{
+			GetWindowRect(GetDlgItem(*this, IDC_URLTREE), &treelist);
+			treelist.right = point2.x - 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_URLTREE), NULL, 
+				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-		GetWindowRect(GetDlgItem(*this, IDC_MONITOREDURLS), &treelist);
-		treelist.left = point2.x + 2;
-		MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-		DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL, 
-			treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
-			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+			GetWindowRect(GetDlgItem(*this, IDC_MONITOREDURLS), &treelist);
+			treelist.left = point2.x + 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL, 
+				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-		GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
-		treelist.left = point2.x + 2;
-		MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-		DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
-			treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
-			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+			GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
+			treelist.left = point2.x + 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
+				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+		}
+		else
+		{
+			GetWindowRect(GetDlgItem(*this, IDC_MONITOREDURLS), &treelist);
+			treelist.bottom = point3.y - 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL,
+				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+
+			GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
+			treelist.top = point3.y + 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
+				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+		}
 		EndDeferWindowPos(hdwp);
 	}
+	m_nDragMode = DRAGMODE_NONE;
 
 	return true;
 }

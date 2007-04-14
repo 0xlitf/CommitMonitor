@@ -4,6 +4,11 @@
 #include "UrlInfo.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
+#define REPOBROWSER_CTRL_MIN_HEIGHT 40
+
+#define DRAGMODE_NONE			0
+#define DRAGMODE_HORIZONTAL		1
+#define DRAGMODE_VERTICAL		2
 
 using namespace std;
 
@@ -40,7 +45,7 @@ private:
 	HWND					m_hParent;
 	UINT					COMMITMONITOR_CHANGEDINFO;
 
-	bool					m_bDragMode;
+	int						m_nDragMode;
 	LONG					m_oldx, m_oldy;
 
 	HFONT					m_boldFont;
