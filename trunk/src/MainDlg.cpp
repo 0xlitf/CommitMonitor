@@ -107,10 +107,18 @@ LRESULT CMainDlg::DoCommand(int id)
 	switch (id)
 	{
 	case IDOK:
+		{
+			EndDialog(*this, IDCANCEL);
+		}
 		break;
 	case IDCANCEL:
 		{
+			int res = ::MessageBox(*this, _T("Do you really want to quit the CommitMonitor?\nIf you quit, monitoring will stop.\nIf you just want to close the dialog, use the \"OK\" button.\n\nAre you sure you want to quit the CommitMonitor?"),
+				_T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO);
+			if (res != IDYES)
+				break;
 			EndDialog(*this, IDCANCEL);
+			PostQuitMessage(IDOK);
 		}
 		break;
 	case IDC_URLDELETE:
