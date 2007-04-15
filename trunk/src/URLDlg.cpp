@@ -13,7 +13,7 @@ CURLDlg::~CURLDlg(void)
 {
 }
 
-void CURLDlg::SetInfo(CUrlInfo * pURLInfo /* = NULL */)
+void CURLDlg::SetInfo(const CUrlInfo * pURLInfo /* = NULL */)
 {
 	if (pURLInfo == NULL)
 		return;

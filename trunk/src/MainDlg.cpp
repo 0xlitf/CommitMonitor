@@ -13,6 +13,7 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_oldx(-1)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
+	, m_pURLInfos(NULL)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -40,9 +41,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
 			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			if (PathFileExists(urlfile.c_str()))
-				m_URLInfos.Load(urlfile.c_str());
+			assert(m_pURLInfos);
 			RefreshURLTree();
 		}
 		break;
@@ -111,8 +110,6 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case IDCANCEL:
 		{
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			m_URLInfos.Save(urlfile.c_str());
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
@@ -126,10 +123,11 @@ LRESULT CMainDlg::DoCommand(int id)
 				itemex.hItem = hItem;
 				itemex.mask = TVIF_PARAM;
 				TreeView_GetItem(hTreeControl, &itemex);
-				if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+				map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+				if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 				{
 					// delete all fetched and stored diff files
-					wstring mask = m_URLInfos.infos[(*(wstring*)itemex.lParam)].name;
+					wstring mask = (*pWrite)[(*(wstring*)itemex.lParam)].name;
 					mask += _T("*.*");
 					CSimpleFileFind sff(CAppUtils::GetAppDataDir(), mask.c_str());
 					while (sff.FindNextFileNoDots())
@@ -137,11 +135,12 @@ LRESULT CMainDlg::DoCommand(int id)
 						DeleteFile(sff.GetFilePath().c_str());
 					}
 
-					m_URLInfos.infos.erase(*(wstring*)itemex.lParam);
-					SaveURLInfo();
+					pWrite->erase(*(wstring*)itemex.lParam);
+					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
 					TreeView_DeleteItem(hTreeControl, hItem);
-					RefreshURLTree();
 				}
+				m_pURLInfos->ReleaseData();
+				RefreshURLTree();
 			}
 		}
 		break;
@@ -156,19 +155,24 @@ LRESULT CMainDlg::DoCommand(int id)
 				itemex.hItem = hItem;
 				itemex.mask = TVIF_PARAM;
 				TreeView_GetItem(hTreeControl, &itemex);
-				if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+				const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+				if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 				{
-					dlg.SetInfo(&m_URLInfos.infos[*(wstring*)itemex.lParam]);
+					dlg.SetInfo(&pRead->find(*(wstring*)itemex.lParam)->second);
+					m_pURLInfos->ReleaseData();
 					dlg.DoModal(hResource, IDD_URLCONFIG, *this);
 					CUrlInfo * inf = dlg.GetInfo();
+					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 					if ((inf)&&inf->url.size())
 					{
-						m_URLInfos.infos.erase(*(wstring*)itemex.lParam);
-						m_URLInfos.infos[inf->url] = *inf;
+						pWrite->erase(*(wstring*)itemex.lParam);
+						(*pWrite)[inf->url] = *inf;
 					}
-					SaveURLInfo();
+					m_pURLInfos->ReleaseData();
 					RefreshURLTree();
 				}
+				else
+					m_pURLInfos->ReleaseData();
 			}
 		}
 		break;
@@ -179,9 +183,13 @@ LRESULT CMainDlg::DoCommand(int id)
 			CUrlInfo * inf = dlg.GetInfo();
 			if ((inf)&&inf->url.size())
 			{
-				m_URLInfos.infos[inf->url] = *inf;
+				map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+				if ((inf)&&inf->url.size())
+				{
+					(*pWrite)[inf->url] = *inf;
+				}
+				m_pURLInfos->ReleaseData();
 			}
-			SaveURLInfo();
 			RefreshURLTree();
 		}
 		break;
@@ -201,7 +209,8 @@ LRESULT CMainDlg::DoCommand(int id)
 			itemex.hItem = hSelectedItem;
 			itemex.mask = TVIF_PARAM;
 			TreeView_GetItem(hTreeControl, &itemex);
-			if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+			const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+			if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 			{
 				LVITEM item = {0};
 				for (int i=0; i<ListView_GetItemCount(hListView); ++i)
@@ -214,7 +223,8 @@ LRESULT CMainDlg::DoCommand(int id)
 					{
 						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 						// find the diff name
-						_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
+						_stprintf_s(buf, 4096, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+						//_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
 						wstring diffFileName = CAppUtils::GetAppDataDir();
 						diffFileName += _T("\\");
 						diffFileName += wstring(buf);
@@ -226,6 +236,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					}
 				}
 			}
+			m_pURLInfos->ReleaseData();
 		}
 		break;
 	default:
@@ -234,22 +245,6 @@ LRESULT CMainDlg::DoCommand(int id)
 	return 1;
 }
 
-/******************************************************************************/
-/* data persistence                                                           */
-/******************************************************************************/
-void CMainDlg::SaveURLInfo()
-{
-	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-	m_URLInfos.Save(urlfile.c_str());
-}
-
-void CMainDlg::LoadURLInfo()
-{
-	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-	if (PathFileExists(urlfile.c_str()))
-		m_URLInfos.Load(urlfile.c_str());
-	RefreshURLTree();
-}
 
 /******************************************************************************/
 /* tree handling                                                              */
@@ -262,7 +257,8 @@ void CMainDlg::RefreshURLTree()
 	// first clear the tree control
 	TreeView_DeleteAllItems(hTreeControl);
 	// now add a tree item for every entry in m_URLInfos
-	for (map<wstring, CUrlInfo>::const_iterator it = m_URLInfos.infos.begin(); it != m_URLInfos.infos.end(); ++it)
+	const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+	for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
 	{
 		TVINSERTSTRUCT tv = {0};
 		tv.hParent = FindParentTreeNode(it->first);
@@ -294,7 +290,7 @@ void CMainDlg::RefreshURLTree()
 		TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
 	}
-
+	m_pURLInfos->ReleaseData();
 }
 
 HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
@@ -303,12 +299,15 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
 	wstring parenturl = url.substr(0, pos);
 	do 
 	{
-		if (m_URLInfos.infos.find(parenturl) != m_URLInfos.infos.end())
+		const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+		if (pRead->find(parenturl) != pRead->end())
 		{
+			m_pURLInfos->ReleaseData();
 			// we found a parent URL, but now we have to find it in the
 			// tree view
 			return FindTreeNode(parenturl);
 		}
+		m_pURLInfos->ReleaseData();
 		pos = parenturl.find_last_of('/');
 		parenturl = parenturl.substr(0, pos);
 		if (pos == string::npos)
@@ -342,9 +341,10 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 	itemex.hItem = hSelectedItem;
 	itemex.mask = TVIF_PARAM;
 	TreeView_GetItem(lpNMTreeView->hdr.hwndFrom, &itemex);
-	if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+	const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
-		CUrlInfo * info = &m_URLInfos.infos[*(wstring*)itemex.lParam];
+		const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
 		HWND hLogInfo = GetDlgItem(*this, IDC_LOGINFO);
 		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
 
@@ -390,7 +390,7 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 
 		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 	}
-
+	m_pURLInfos->ReleaseData();
 }
 
 /******************************************************************************/
@@ -422,26 +422,27 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 itemex.hItem = hSelectedItem;
                 itemex.mask = TVIF_PARAM;
                 TreeView_GetItem(hTreeControl, &itemex);
-                if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+				const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
                 {
-                    CUrlInfo uinfo = m_URLInfos.infos[(*(wstring*)itemex.lParam)];
+                    const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
                     // count the number of unread messages
                     int unread = 0;
-                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo.logentries.begin(); it != uinfo.logentries.end(); ++it)
+                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
                     {
                         if (!it->second.read)
                             unread++;
                     }
-                    WCHAR * str = new WCHAR[uinfo.name.size()+10];
+                    WCHAR * str = new WCHAR[uinfo->name.size()+10];
                     if (unread)
                     {
-                        _stprintf_s(str, uinfo.name.size()+10, _T("%s (%d)"), uinfo.name.c_str(), unread);
+                        _stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
                         itemex.state = TVIS_BOLD;
                         itemex.stateMask = TVIS_BOLD;
                     }
                     else
                     {
-                        _stprintf_s(str, uinfo.name.size()+10, _T("%s"), uinfo.name.c_str());
+                        _stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
                         itemex.state = 0;
                         itemex.stateMask = TVIS_BOLD;
                     }
@@ -449,6 +450,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     itemex.mask = TVIF_TEXT|TVIF_STATE;
                     TreeView_SetItem(hTreeControl, &itemex);
                 }
+				m_pURLInfos->ReleaseData();
             }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
@@ -527,7 +529,8 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 		itemex.hItem = hSelectedItem;
 		itemex.mask = TVIF_PARAM;
 		TreeView_GetItem(hTreeControl, &itemex);
-		if (m_URLInfos.infos.find(*(wstring*)itemex.lParam) != m_URLInfos.infos.end())
+		map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+		if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 		{
 			LVITEM item = {0};
 			int i = 0;
@@ -543,19 +546,20 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 				{
 					SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 					// find the diff name
-					_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
+					_stprintf_s(buf, 4096, _T("%s_%ld"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
 					wstring diffFileName = CAppUtils::GetAppDataDir();
 					diffFileName += _T("\\");
 					diffFileName += wstring(buf);
 					DeleteFile(diffFileName.c_str());
 
-					m_URLInfos.infos[(*(wstring*)itemex.lParam)].logentries.erase(pLogEntry->revision);
+					pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
 					ListView_DeleteItem(hListView, i);
 				}
 				else
 					++i;
 			}
 		}
+		m_pURLInfos->ReleaseData();
 	}
 }
 

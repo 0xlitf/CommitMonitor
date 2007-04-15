@@ -221,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RWSection.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SerializeUtils.cpp"
 				>
 			</File>
@@ -319,6 +323,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RWSection.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SerializeUtils.h"
 				>
 			</File>
@@ -369,19 +377,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
+				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>

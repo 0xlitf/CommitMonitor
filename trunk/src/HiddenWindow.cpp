@@ -26,7 +26,6 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_ThreadRunning(0)
 	, m_hMonitorThread(NULL)
 	, m_bMainDlgShown(false)
-	, m_bMainDlgShownThread(false)
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
 	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNORMAL));
@@ -67,6 +66,7 @@ bool CHiddenWindow::RegisterAndCreateWindow()
 			COMMITMONITOR_TASKBARCALLBACK = RegisterWindowMessage(_T("CommitMonitor_TaskbarCallback"));	
 			ShowWindow(m_hwnd, SW_HIDE);
 			ShowTrayIcon(false);
+			m_UrlInfos.Load();
 			return true;
 		}
 	}
@@ -85,15 +85,16 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		if (m_bMainDlgShown)
 			return TRUE;
 		m_bMainDlgShown = true;
-		m_bMainDlgShownThread = true;
 		CMainDlg dlg(*this);
+		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
+		m_UrlInfos.Save();
 		m_bMainDlgShown = false;
 		return TRUE;
 	}
 	else if (uMsg == COMMITMONITOR_CHANGEDINFO)
 	{
-		if ((wParam)&&(!m_bMainDlgShownThread))
+		if (wParam)
 		{
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 			m_UrlInfos.Save(urlfile.c_str());
@@ -212,14 +213,19 @@ void CHiddenWindow::DoTimer()
 	TRACE(_T("timer fired\n"));
 	// Restart the timer with 60 seconds
 	::SetTimer(*this, IDT_MONITOR, TIMER_ELAPSE, NULL);
+
+	if (m_ThreadRunning)
+		return;
 	// go through all url infos and check if
 	// we need to refresh them
-	if (m_UrlInfos.infos.empty())
+	if (m_UrlInfos.IsEmpty())
 		return;
 	bool bStartThread = false;
 	__time64_t currenttime = NULL;
 	_time64(&currenttime);
-	for (map<wstring,CUrlInfo>::const_iterator it = m_UrlInfos.infos.begin(); it != m_UrlInfos.infos.end(); ++it)
+
+	const map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
+	for (map<wstring,CUrlInfo>::const_iterator it = pInfos->begin(); it != pInfos->end(); ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
@@ -227,6 +233,8 @@ void CHiddenWindow::DoTimer()
 			break;
 		}
 	}
+	m_UrlInfos.ReleaseData();
+
 	if ((bStartThread)&&(m_ThreadRunning == 0))
 	{
 		// start the monitoring thread to update the infos
@@ -277,16 +285,17 @@ DWORD CHiddenWindow::RunThread()
 	}
 
 	// load a copy of the url data
+	CUrlInfos urlinfoReadOnly;
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 	if (!PathFileExists(urlfile.c_str()))
 	{
-		m_bMainDlgShownThread = false;
 		return 0;
 	}
-	m_UrlInfos.Load(urlfile.c_str());
+	urlinfoReadOnly.Load(urlfile.c_str());
 	TRACE(_T("monitor thread started\n"));
-	map<wstring,CUrlInfo>::iterator it = m_UrlInfos.infos.begin();
-	for (; (it != m_UrlInfos.infos.end()) && m_bRun && !m_bMainDlgShownThread; ++it)
+	const map<wstring,CUrlInfo> * pUrlInfoReadOnly = urlinfoReadOnly.GetReadOnlyData();
+	map<wstring,CUrlInfo>::const_iterator it = pUrlInfoReadOnly->begin();
+	for (; (it != pUrlInfoReadOnly->end()) && m_bRun; ++it)
 	{
 		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
 		{
@@ -301,12 +310,29 @@ DWORD CHiddenWindow::RunThread()
 				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev))
 				{
 					TRACE(_T("log fetched for %s\n"), it->first.c_str());
-					it->second.lastcheckedrev = headrev;
-					it->second.lastchecked = currenttime;
+					
+					// only block the object for a short time
+					map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+					map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+					if (writeIt != pWrite->end())
+					{
+						writeIt->second.lastcheckedrev = headrev;
+						writeIt->second.lastchecked = currenttime;
+					}
+					m_UrlInfos.ReleaseData();
+
 					bNewEntries = true;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
-						it->second.logentries[logit->first] = logit->second;
+						// again, only block for a short time
+						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+						if (writeIt != pWrite->end())
+						{
+							writeIt->second.logentries[logit->first] = logit->second;
+						}
+						m_UrlInfos.ReleaseData();
+
 						if (it->second.fetchdiffs)
 						{
 							// first, find a name where to store the diff for that revision
@@ -319,7 +345,7 @@ DWORD CHiddenWindow::RunThread()
 							if (!PathFileExists(diffFileName.c_str()))
 							{
 								// get the diff
-								if (svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring()))
+								if (!svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring()))
 								{
 									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
 									DeleteFile(diffFileName.c_str());
@@ -335,7 +361,15 @@ DWORD CHiddenWindow::RunThread()
 			}
 			else
 			{
-				it->second.lastchecked = currenttime;
+				// only block the object for a short time
+				map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+				map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+				if (writeIt != pWrite->end())
+				{
+					writeIt->second.lastchecked = currenttime;
+				}
+				m_UrlInfos.ReleaseData();
+
 				// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
 				// instead of pointing to an actual repository.
 
@@ -398,7 +432,10 @@ DWORD CHiddenWindow::RunThread()
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
 							url = it->first + _T("/") + url;
 							url = svn.CanonicalizeURL(url);
-							if (m_UrlInfos.infos.find(url) == m_UrlInfos.infos.end())
+
+							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+							if (writeIt == pWrite->end())
 							{
 								// we found a new URL, add it to our list
 								CUrlInfo newinfo;
@@ -409,9 +446,12 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.password = it->second.password;
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
-								m_UrlInfos.infos[url] = newinfo;
+								(*pWrite)[url] = newinfo;
+								//pWrite->insert(make_pair<url, newinfo>);
 								hasNewEntries = true;
 							}
+							m_UrlInfos.ReleaseData();
+
 							// update search position:
 							start = what[0].second;      
 							// update flags:
@@ -419,23 +459,32 @@ DWORD CHiddenWindow::RunThread()
 							flags |= match_not_bob;
 						}
 						if (hasNewEntries)
-							it = m_UrlInfos.infos.begin();
+							it = pUrlInfoReadOnly->begin();
 					}
 					delete callback;
 				}
 			}
 		}
 		else
-			it->second.lastchecked = currenttime;
+		{
+			// only block the object for a short time
+			map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+			map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+			if (writeIt != pWrite->end())
+			{
+				writeIt->second.lastchecked = currenttime;
+			}
+			m_UrlInfos.ReleaseData();
+		}
 	}
 	if (bNewEntries)
 	{
 		// save the changed entries
 		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, 0);
 	}
+	urlinfoReadOnly.ReleaseData();
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
-	m_bMainDlgShownThread = false;
 	::CoUninitialize();
 	return 0L;
 }

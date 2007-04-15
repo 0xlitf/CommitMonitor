@@ -12,7 +12,7 @@ public:
 	CURLDlg(void);
 	~CURLDlg(void);
 
-	void					SetInfo(CUrlInfo * pURLInfo = NULL);
+	void					SetInfo(const CUrlInfo * pURLInfo = NULL);
 	CUrlInfo *				GetInfo() {return &info;}
 
 protected:

@@ -54,5 +54,4 @@ private:
 	HANDLE				m_hMonitorThread;
 
 	bool				m_bMainDlgShown;
-	bool				m_bMainDlgShownThread;
 };

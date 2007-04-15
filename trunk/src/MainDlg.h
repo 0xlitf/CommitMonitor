@@ -21,6 +21,8 @@ public:
 	CMainDlg(HWND hParent);
 	~CMainDlg(void);
 
+	void					SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
+
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT					DoCommand(int id);
@@ -50,5 +52,5 @@ private:
 
 	HFONT					m_boldFont;
 
-	CUrlInfos				m_URLInfos;
+	CUrlInfos *				m_pURLInfos;
 };
