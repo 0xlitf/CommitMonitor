@@ -87,6 +87,9 @@ LRESULT CURLDlg::DoCommand(int id)
 			info.password = wstring(buffer, len);
 			delete [] buffer;
 			info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);
+
+			// make sure this entry gets checked again as soon as the next timer fires
+			info.lastchecked = 0;
 		}
 		// fall through
 	case IDCANCEL:
