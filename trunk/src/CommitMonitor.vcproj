@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -119,8 +119,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="4"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\release_win32\xml.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\release_win32\xml.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -197,11 +197,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CmdLineParser.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Debug.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DiffViewer.cpp"
 				>
 			</File>
 			<File
@@ -295,11 +303,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CmdLineParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CommitMonitor.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Debug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DiffViewer.h"
 				>
 			</File>
 			<File
@@ -377,19 +393,665 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resources\resources\NotifyNew.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\NotifyNormal.ico"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="Scintilla"
+			>
 			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
+				RelativePath="..\ext\scintilla\src\AutoComplete.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\AutoComplete.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CallTip.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CallTip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CellBuffer.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CellBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CharClassify.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CharClassify.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ContractionState.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ContractionState.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Document.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Document.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\DocumentAccessor.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\DocumentAccessor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Editor.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Editor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ExternalLexer.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ExternalLexer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Indicator.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Indicator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\KeyMap.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\KeyMap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\KeyWords.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\LexOthers.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\LineMarker.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\LineMarker.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Partitioning.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\win32\PlatformRes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\win32\PlatWin.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\PropSet.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\RESearch.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\RESearch.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ScintillaBase.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ScintillaBase.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\win32\ScintillaWin.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\SplitVector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Style.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Style.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\StyleContext.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\StyleContext.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\SVector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\UniConversion.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\UniConversion.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ViewStyle.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\ViewStyle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\WindowAccessor.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\XPM.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\XPM.h"
 				>
 			</File>
 		</Filter>

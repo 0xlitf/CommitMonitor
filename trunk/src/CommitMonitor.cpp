@@ -5,6 +5,8 @@
 #include "CommitMonitor.h"
 #include "HiddenWindow.h"
 #include "MainDlg.h"
+#include "CmdLineParser.h"
+#include "DiffViewer.h"
 
 #include "apr_general.h"
 
@@ -43,6 +45,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	// in the tray area.
 
 	MSG msg;
+	msg.wParam = FALSE;
 	HACCEL hAccelTable;
 
 	hInst = hInstance;
@@ -53,55 +56,82 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	};
 	InitCommonControlsEx(&used);
 
-	//only one instance of this application allowed
-	g_mutex = ::CreateMutex(NULL, FALSE, APPNAME_MUTEX);
+	hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
 
-	if (g_mutex != NULL)
-	{   
-		if(::GetLastError()==ERROR_ALREADY_EXISTS)
-		{
-			//an instance of this app is already running
-			HWND hWnd = FindWindow(ResString(hInst, IDS_APP_TITLE), NULL);		//try finding the running instance of this app
-			if (hWnd)
-			{
-				UINT COMMITMONITOR_SHOWDLGMSG = RegisterWindowMessage(_T("CommitMonitor_ShowDlgMsg"));
-				PostMessage(hWnd, COMMITMONITOR_SHOWDLGMSG ,0 ,0);				//open the window of the already running app
-				SetForegroundWindow(hWnd);										//set the window to front
-			}
-			apr_terminate();
-			return FALSE;
-		}		
-	}
-
-
-	CHiddenWindow hiddenWindow(hInst);
-
-
-	if (hiddenWindow.RegisterAndCreateWindow())
+	CCmdLineParser parser(lpCmdLine);
+	if (parser.HasKey(_T("patchfile")))
 	{
-		hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
-
-		if (true)	// for now, start the dialog every time
+		// in this case, we start another part of our application, not
+		// the monitoring part.
+		CDiffViewer viewer;
+		if (viewer.Initialize())
 		{
-			hiddenWindow.ShowDialog();
-		}
-
-		// Main message loop:
-		while (GetMessage(&msg, NULL, 0, 0))
-		{
-			if (!TranslateAccelerator(hiddenWindow, hAccelTable, &msg))
+			if (viewer.LoadFile(parser.GetVal(_T("patchfile"))))
 			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				::ShowWindow(viewer.GetHWND(), SW_SHOW);
+				::SetFocus(viewer.GetHWND());
+
+				// Main message loop:
+				while (GetMessage(&msg, NULL, 0, 0))
+				{
+					if (!TranslateAccelerator(viewer.GetHWND(), hAccelTable, &msg))
+					{
+						TranslateMessage(&msg);
+						DispatchMessage(&msg);
+					}
+				}
 			}
 		}
-		return (int) msg.wParam;
 	}
-	hiddenWindow.StopThread();
+	else
+	{
+		//only one instance of this application part allowed
+		g_mutex = ::CreateMutex(NULL, FALSE, APPNAME_MUTEX);
+
+		if (g_mutex != NULL)
+		{   
+			if(::GetLastError()==ERROR_ALREADY_EXISTS)
+			{
+				//an instance of this app is already running
+				HWND hWnd = FindWindow(ResString(hInst, IDS_APP_TITLE), NULL);		//try finding the running instance of this app
+				if (hWnd)
+				{
+					UINT COMMITMONITOR_SHOWDLGMSG = RegisterWindowMessage(_T("CommitMonitor_ShowDlgMsg"));
+					PostMessage(hWnd, COMMITMONITOR_SHOWDLGMSG ,0 ,0);				//open the window of the already running app
+					SetForegroundWindow(hWnd);										//set the window to front
+				}
+				apr_terminate();
+				return FALSE;
+			}		
+		}
+
+
+		CHiddenWindow hiddenWindow(hInst);
+
+
+		if (hiddenWindow.RegisterAndCreateWindow())
+		{
+			if (true)	// for now, start the dialog every time
+			{
+				hiddenWindow.ShowDialog();
+			}
+
+			// Main message loop:
+			while (GetMessage(&msg, NULL, 0, 0))
+			{
+				if (!TranslateAccelerator(hiddenWindow, hAccelTable, &msg))
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+			}
+		}
+		hiddenWindow.StopThread();
+	}
 
 	::CoUninitialize();
 	apr_terminate();
-	return (int) 0;
+	return (int) msg.wParam;
 }
 
 
