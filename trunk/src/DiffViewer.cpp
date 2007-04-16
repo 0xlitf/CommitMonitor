@@ -77,6 +77,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 		//SetTitle();
 		char data[4096];
 		int lenFile = fread(data, 1, sizeof(data), fp);
+		bool bUTF8 = IsUTF8(data, lenFile);
 		while (lenFile > 0) 
 		{
 			SendEditor(SCI_ADDTEXT, lenFile,
@@ -84,6 +85,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 			lenFile = fread(data, 1, sizeof(data), fp);
 		}
 		fclose(fp);
+		SendEditor(SCI_SETCODEPAGE, bUTF8 ? SC_CP_UTF8 : GetACP());
 	}
 	else 
 	{
@@ -124,4 +126,76 @@ void CDiffViewer::SetAStyle(int style, COLORREF fore, COLORREF back, int size, c
 		SendEditor(SCI_STYLESETSIZE, style, size);
 	if (face) 
 		SendEditor(SCI_STYLESETFONT, style, reinterpret_cast<LPARAM>(face));
+}
+
+bool CDiffViewer::IsUTF8(LPVOID pBuffer, int cb)
+{
+	if (cb < 2)
+		return true;
+	UINT16 * pVal = (UINT16 *)pBuffer;
+	UINT8 * pVal2 = (UINT8 *)(pVal+1);
+	// scan the whole buffer for a 0x0000 sequence
+	// if found, we assume a binary file
+	for (int i=0; i<(cb-2); i=i+2)
+	{
+		if (0x0000 == *pVal++)
+			return false;
+	}
+	pVal = (UINT16 *)pBuffer;
+	if (*pVal == 0xFEFF)
+		return false;
+	if (cb < 3)
+		return false;
+	if (*pVal == 0xBBEF)
+	{
+		if (*pVal2 == 0xBF)
+			return true;
+	}
+	// check for illegal UTF8 chars
+	pVal2 = (UINT8 *)pBuffer;
+	for (int i=0; i<cb; ++i)
+	{
+		if ((*pVal2 == 0xC0)||(*pVal2 == 0xC1)||(*pVal2 >= 0xF5))
+			return false;
+		pVal2++;
+	}
+	pVal2 = (UINT8 *)pBuffer;
+	bool bUTF8 = false;
+	for (int i=0; i<(cb-3); ++i)
+	{
+		if ((*pVal2 & 0xE0)==0xC0)
+		{
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			bUTF8 = true;
+		}
+		if ((*pVal2 & 0xF0)==0xE0)
+		{
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			bUTF8 = true;
+		}
+		if ((*pVal2 & 0xF8)==0xF0)
+		{
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			pVal2++;i++;
+			if ((*pVal2 & 0xC0)!=0x80)
+				return false;
+			bUTF8 = true;
+		}
+		pVal2++;
+	}
+	if (bUTF8)
+		return true;
+	return false;
 }

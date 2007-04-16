@@ -17,6 +17,7 @@ public:
 private:
 	void				SetAStyle(int style, COLORREF fore, COLORREF back=::GetSysColor(COLOR_WINDOW), 
 									int size=-1, const char *face=0);
+	bool                IsUTF8(LPVOID pBuffer, int cb);
 
 private:
 	LRESULT				m_directFunction;
