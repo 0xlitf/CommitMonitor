@@ -237,7 +237,21 @@ LRESULT CMainDlg::DoCommand(int id)
 						diffFileName += _T("\\");
 						diffFileName += wstring(buf);
 						// start the diff viewer
-						wstring cmd = _T("notepad.exe \"");
+                        TCHAR apppath[4096];
+                        GetModuleFileName(NULL, apppath, 4096);
+                        wstring cmd;
+                        bool bUseInternalDiffViewer = true;
+                        CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+                        if (wstring(diffViewer).empty())
+                        {
+                            cmd = apppath;
+                            cmd += _T(" /patchfile:\"");
+                        }
+                        else
+                        {
+                            cmd = (wstring)diffViewer;
+                            cmd += _T(" \"");
+                        }
 						cmd += diffFileName;
 						cmd += _T("\"");
 						CAppUtils::LaunchApplication(cmd);
