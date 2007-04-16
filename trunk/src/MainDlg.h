@@ -53,4 +53,6 @@ private:
 	HFONT					m_boldFont;
 
 	CUrlInfos *				m_pURLInfos;
+
+	bool					m_bBlockListCtrlUI;
 };

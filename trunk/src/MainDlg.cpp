@@ -14,6 +14,7 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
 	, m_pURLInfos(NULL)
+	, m_bBlockListCtrlUI(false)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -275,6 +276,7 @@ void CMainDlg::RefreshURLTree()
 {
 	// the m_URLInfos member must be up-to-date here
 
+	m_bBlockListCtrlUI = true;
 	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 	// first clear the tree control
 	TreeView_DeleteAllItems(hTreeControl);
@@ -313,6 +315,8 @@ void CMainDlg::RefreshURLTree()
 		delete [] str;
 	}
 	m_pURLInfos->ReleaseData();
+	m_bBlockListCtrlUI = false;
+	::InvalidateRect(GetDlgItem(*this, IDC_MONITOREDURLS), NULL, true);
 }
 
 HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
@@ -370,7 +374,7 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 		HWND hLogInfo = GetDlgItem(*this, IDC_LOGINFO);
 		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
 
-
+		m_bBlockListCtrlUI = true;
 		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
 		ListView_DeleteAllItems(hLogList);
 
@@ -406,11 +410,13 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 			_tcscpy_s(buf, 1024, it->second.author.c_str());
 			ListView_SetItemText(hLogList, i, 2, buf);
 		}
+		m_bBlockListCtrlUI = false;
 		ListView_SetColumnWidth(hLogList, 0, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(hLogList, 1, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(hLogList, 2, LVSCW_AUTOSIZE_USEHEADER);
 
 		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
+		::InvalidateRect(hLogList, NULL, false);
 	}
 	m_pURLInfos->ReleaseData();
 }
@@ -512,6 +518,8 @@ LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
 	// First thing - check the draw stage. If it's the control's prepaint
 	// stage, then tell Windows we want messages for every item.
 	LRESULT result =  CDRF_DODEFAULT;
+	if (m_bBlockListCtrlUI)
+		return result;
 	switch (lpNMCustomDraw->nmcd.dwDrawStage)
 	{
 	case CDDS_PREPAINT:
