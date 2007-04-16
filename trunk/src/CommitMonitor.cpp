@@ -63,18 +63,18 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	{
 		// in this case, we start another part of our application, not
 		// the monitoring part.
-		CDiffViewer viewer;
-		if (viewer.Initialize())
+		CDiffViewer viewer(hInst);
+		if (viewer.RegisterAndCreateWindow())
 		{
 			if (viewer.LoadFile(parser.GetVal(_T("patchfile"))))
 			{
-				::ShowWindow(viewer.GetHWND(), SW_SHOW);
-				::SetFocus(viewer.GetHWND());
+				::ShowWindow(viewer.GetHWNDEdit(), SW_SHOW);
+				::SetFocus(viewer.GetHWNDEdit());
 
 				// Main message loop:
 				while (GetMessage(&msg, NULL, 0, 0))
 				{
-					if (!TranslateAccelerator(viewer.GetHWND(), hAccelTable, &msg))
+					if (!TranslateAccelerator(viewer, hAccelTable, &msg))
 					{
 						TranslateMessage(&msg);
 						DispatchMessage(&msg);
@@ -133,6 +133,5 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	apr_terminate();
 	return (int) msg.wParam;
 }
-
 
 

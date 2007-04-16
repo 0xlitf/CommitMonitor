@@ -90,7 +90,7 @@ public:
 	/**
 	 * Constructor.
 	 * \param key the path to the key, including the key. example: "Software\\Company\\SubKey\\MyValue"
-	 * \param def the default value used when the key does not exist or a read error occured
+	 * \param def the default value used when the key does not exist or a read error occurred
 	 * \param force set to TRUE if no cache should be used, i.e. always read and write directly from/to registry
 	 * \param base a predefined base key like HKEY_LOCAL_MACHINE. see the SDK documentation for more information.
 	 */

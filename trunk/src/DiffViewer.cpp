@@ -1,19 +1,111 @@
 #include "StdAfx.h"
 #include "DiffViewer.h"
 #include "SciLexer.h"
+#include "Registry.h"
+#include "resource.h"
 
 #include <stdio.h>
 
 extern HINSTANCE hInst;
 
-CDiffViewer::CDiffViewer(void)
+CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) : CWindow(hInst, wcx)
 {
 	Scintilla_RegisterClasses(hInst);
+	SetWindowTitle(_T("CommitMonitorDiff"));
 }
 
 CDiffViewer::~CDiffViewer(void)
 {
 }
+
+bool CDiffViewer::RegisterAndCreateWindow()
+{
+	WNDCLASSEX wcx; 
+
+	// Fill in the window class structure with default parameters 
+	wcx.cbSize = sizeof(WNDCLASSEX);
+	wcx.style = CS_HREDRAW | CS_VREDRAW;
+	wcx.lpfnWndProc = CWindow::stWinMsgHandler;
+	wcx.cbClsExtra = 0;
+	wcx.cbWndExtra = 0;
+	wcx.hInstance = hResource;
+	wcx.hCursor = NULL;
+	wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
+	wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
+	wcx.lpszMenuName = MAKEINTRESOURCE(IDC_COMMITMONITOR);
+	wcx.hIconSm	= LoadIcon(wcx.hInstance, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	if (RegisterWindow(&wcx))
+	{
+		if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN, NULL))
+		{
+			ShowWindow(*this, SW_SHOW);
+			UpdateWindow(*this);
+			return true;
+		}
+	}
+	return false;
+}
+
+LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_CREATE:
+		{
+			m_hwnd = hwnd;
+			Initialize();
+		}
+		break;
+	case WM_COMMAND:
+		{
+			return DoCommand(LOWORD(wParam));
+		}
+		break;
+	case WM_SIZE:
+		{
+			RECT rect;
+			GetClientRect(*this, &rect);
+			::SetWindowPos(m_hWndEdit, HWND_TOP, 
+				rect.left, rect.top,
+				rect.right-rect.left, rect.bottom-rect.top,
+				SWP_SHOWWINDOW);
+		}
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_CLOSE:
+		{
+			CRegStdWORD w = CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)CW_USEDEFAULT);
+			CRegStdWORD h = CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)CW_USEDEFAULT);
+			RECT rect;
+			::GetWindowRect(*this, &rect);
+			w = rect.right-rect.left;
+			h = rect.bottom-rect.top;
+		}
+		::DestroyWindow(m_hwnd);
+		break;
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+
+	return 0;
+};
+
+LRESULT CDiffViewer::DoCommand(int id)
+{
+	switch (id) 
+	{
+	case IDM_EXIT:
+		::PostQuitMessage(0);
+		return 0;
+	default:
+		break;
+	};
+	return 1;
+}
+
 
 LRESULT CDiffViewer::SendEditor(UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -21,25 +113,38 @@ LRESULT CDiffViewer::SendEditor(UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 		return ((SciFnDirect) m_directFunction)(m_directPointer, Msg, wParam, lParam);
 	}
-	return ::SendMessage(m_hWnd, Msg, wParam, lParam);	
+	return ::SendMessage(m_hWndEdit, Msg, wParam, lParam);	
 }
 
 bool CDiffViewer::Initialize()
 {
-	m_hWnd = ::CreateWindow(
+	::SetWindowPos(*this, HWND_TOP, 0, 0, 
+		(int)(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)640), 
+		(int)(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)480),
+		SWP_NOMOVE);
+
+	m_hWndEdit = ::CreateWindow(
 		_T("Scintilla"),
 		_T("Source"),
-		WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN,
-		0, 0,
-		640, 480,
-		NULL,
+		WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		*this,
 		0,
 		hInst,
 		0);
-	if (m_hWnd == NULL)
+	if (m_hWndEdit == NULL)
 		return false;
-	m_directFunction = SendMessage(m_hWnd, SCI_GETDIRECTFUNCTION, 0, 0);
-	m_directPointer = SendMessage(m_hWnd, SCI_GETDIRECTPOINTER, 0, 0);
+
+	RECT rect;
+	GetClientRect(*this, &rect);
+	::SetWindowPos(m_hWndEdit, HWND_TOP, 
+		rect.left, rect.top,
+		rect.right-rect.left, rect.bottom-rect.top,
+		SWP_SHOWWINDOW);
+
+	m_directFunction = SendMessage(m_hWndEdit, SCI_GETDIRECTFUNCTION, 0, 0);
+	m_directPointer = SendMessage(m_hWndEdit, SCI_GETDIRECTPOINTER, 0, 0);
 
 	// Set up the global default style. These attributes are used wherever no explicit choices are made.
 	//SetAStyle(STYLE_DEFAULT, black, white, (DWORD)CRegStdWORD(_T("Software\\TortoiseMerge\\LogFontSize"), 10), 
@@ -93,7 +198,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 	}
 
 	SendEditor(SCI_SETUNDOCOLLECTION, 1);
-	::SetFocus(m_hWnd);
+	::SetFocus(m_hWndEdit);
 	SendEditor(EM_EMPTYUNDOBUFFER);
 	SendEditor(SCI_SETSAVEPOINT);
 	SendEditor(SCI_GOTOPOS, 0);
@@ -114,7 +219,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 	SendEditor(SCI_SETLEXER, SCLEX_DIFF);
 	//SendEditor(SCI_SETKEYWORDS, 0, (LPARAM)"Revision");
 	SendEditor(SCI_COLOURISE, 0, -1);
-	::ShowWindow(m_hWnd, SW_SHOW);
+	::ShowWindow(m_hWndEdit, SW_SHOW);
 	return true;
 }
 
