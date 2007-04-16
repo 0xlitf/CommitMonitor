@@ -80,6 +80,7 @@ SVN::SVN(void)
 	svn_auth_open (&auth_baton, providers, pool);
 	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_NON_INTERACTIVE, "");
 	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_DONT_STORE_PASSWORDS, "");
+	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_NO_AUTH_CACHE, "");
 
 	m_pctx->auth_baton = auth_baton;
 	m_pctx->cancel_func = cancel;
