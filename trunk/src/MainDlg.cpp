@@ -133,6 +133,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				itemex.mask = TVIF_PARAM;
 				TreeView_GetItem(hTreeControl, &itemex);
 				map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+				HTREEITEM hPrev = TVI_ROOT;
 				if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 				{
 					// delete all fetched and stored diff files
@@ -146,10 +147,16 @@ LRESULT CMainDlg::DoCommand(int id)
 
 					pWrite->erase(*(wstring*)itemex.lParam);
 					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
+					hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
+					m_pURLInfos->ReleaseData();
 					TreeView_DeleteItem(hTreeControl, hItem);
 				}
-				m_pURLInfos->ReleaseData();
-				RefreshURLTree();
+				else
+					m_pURLInfos->ReleaseData();
+				if (hPrev == NULL)
+					hPrev = TreeView_GetRoot(hTreeControl);
+				if (hPrev)
+					TreeView_SelectItem(hTreeControl, hPrev);
 			}
 		}
 		break;
@@ -551,7 +558,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 		int selCount = ListView_GetSelectedCount(hListView);
 		if (selCount <= 0)
 			return;	//nothing selected, nothing to remove
-
+		int nFirstDeleted = -1;
 		HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 		HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
 		// get the url this entry refers to
@@ -584,12 +591,25 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 
 					pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
 					ListView_DeleteItem(hListView, i);
+					if (nFirstDeleted < 0)
+						nFirstDeleted = i;
 				}
 				else
 					++i;
 			}
 		}
 		m_pURLInfos->ReleaseData();
+		if (nFirstDeleted >= 0)
+		{
+			if (ListView_GetItemCount(hListView) > nFirstDeleted)
+			{
+				ListView_SetItemState(hListView, nFirstDeleted, LVIS_SELECTED, LVIS_SELECTED);
+			}
+			else
+			{
+				ListView_SetItemState(hListView, ListView_GetItemCount(hListView)-1, LVIS_SELECTED, LVIS_SELECTED);
+			}
+		}
 	}
 }
 
