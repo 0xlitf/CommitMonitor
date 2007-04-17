@@ -242,8 +242,16 @@ private:
 
 private:
 	static svn_error_t *		cancel(void *baton);
-	static svn_error_t *		infoReceiver(void* baton, const char * path, const svn_info_t* info, apr_pool_t * pool);
-	static svn_error_t *		logReceiver(void* baton, apr_hash_t* ch_paths, svn_revnum_t rev, const char* author, const char* date, const char* msg, apr_pool_t* pool);
+	static svn_error_t *		infoReceiver(void* baton, const char * path, 
+											const svn_info_t* info, apr_pool_t * pool);
+	static svn_error_t *		logReceiver(void* baton, apr_hash_t* ch_paths, 
+											svn_revnum_t rev, const char* author, 
+											const char* date, const char* msg, apr_pool_t* pool);
+	static svn_error_t*			sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, 
+											void *baton, const char *realm, 
+											apr_uint32_t failures, 
+											const svn_auth_ssl_server_cert_info_t *cert_info, 
+											svn_boolean_t may_save, apr_pool_t *pool);
 
 };
 

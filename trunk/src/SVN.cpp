@@ -69,8 +69,8 @@ SVN::SVN(void)
 
 	/* Three prompting providers for server-certs, client-certs,
 	and client-cert-passphrases.  */
-	//svn_auth_get_ssl_server_trust_prompt_provider (&provider, sslserverprompt, this, pool);
-	//APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
+	svn_auth_get_ssl_server_trust_prompt_provider (&provider, sslserverprompt, this, pool);
+	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 	//svn_auth_get_ssl_client_cert_prompt_provider (&provider, sslclientprompt, this, 2, pool);
 	//APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 	//svn_auth_get_ssl_client_cert_pw_prompt_provider (&provider, sslpwprompt, this, 2, pool);
@@ -97,6 +97,17 @@ svn_error_t* SVN::cancel(void *baton)
 	UNREFERENCED_PARAMETER(baton);
 	return SVN_NO_ERROR;
 }
+
+svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void *baton, 
+								  const char *realm, apr_uint32_t failures, 
+								  const svn_auth_ssl_server_cert_info_t *cert_info, 
+								  svn_boolean_t may_save, apr_pool_t *pool)
+{
+	*cred_p = (svn_auth_cred_ssl_server_trust_t*)apr_pcalloc (pool, sizeof (**cred_p));
+	(*cred_p)->may_save = FALSE;
+	return SVN_NO_ERROR;
+}
+
 
 void SVN::SetAuthInfo(const stdstring& username, const stdstring& password)
 {
