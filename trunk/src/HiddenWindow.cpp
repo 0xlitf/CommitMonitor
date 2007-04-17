@@ -14,12 +14,15 @@
 #include <boost/regex.hpp>
 using namespace boost;
 
-
+// for Vista
+#define MSGFLT_ADD 1
 
 
 extern HINSTANCE hInst;
 
 DWORD WINAPI MonitorThread(LPVOID lpParam);
+
+CHiddenWindow::PFNCHANGEWINDOWMESSAGEFILTER CHiddenWindow::m_pChangeWindowMessageFilter = NULL;
 
 CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
 	: CWindow(hInst, wcx)
@@ -63,7 +66,20 @@ bool CHiddenWindow::RegisterAndCreateWindow()
 		{
 			COMMITMONITOR_SHOWDLGMSG = RegisterWindowMessage(_T("CommitMonitor_ShowDlgMsg"));
 			COMMITMONITOR_CHANGEDINFO = RegisterWindowMessage(_T("CommitMonitor_ChangedInfo"));
-			COMMITMONITOR_TASKBARCALLBACK = RegisterWindowMessage(_T("CommitMonitor_TaskbarCallback"));	
+			COMMITMONITOR_TASKBARCALLBACK = RegisterWindowMessage(_T("CommitMonitor_TaskbarCallback"));
+			WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
+			// On Vista, the message TasbarCreated may be blocked by the message filter.
+			// We try to change the filter here to get this message through. If even that
+			// fails, then we can't do much about it and the task bar icon won't show up again.
+			HMODULE hLib = LoadLibrary(_T("user32.dll"));
+			if (hLib)
+			{
+				m_pChangeWindowMessageFilter = (CHiddenWindow::PFNCHANGEWINDOWMESSAGEFILTER)GetProcAddress(hLib, "ChangeWindowMessageFilter");
+				if (m_pChangeWindowMessageFilter)
+				{
+					(*m_pChangeWindowMessageFilter)(WM_TASKBARCREATED, MSGFLT_ADD);
+				}
+			}
 			ShowWindow(m_hwnd, SW_HIDE);
 			ShowTrayIcon(false);
 			m_UrlInfos.Load();
@@ -101,6 +117,13 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		}
 		ShowTrayIcon(!!wParam);
 		return TRUE;
+	}
+	else if (uMsg == WM_TASKBARCREATED)
+	{
+		bool bNew = m_SystemTray.hIcon == m_hIconNew;
+		m_SystemTray.hIcon = NULL;
+		TRACE(_T("Taskbar created!\n"));
+		ShowTrayIcon(bNew);
 	}
 	else if (uMsg == COMMITMONITOR_TASKBARCALLBACK)
 	{

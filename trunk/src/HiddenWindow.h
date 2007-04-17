@@ -12,6 +12,8 @@
 /// timer elapse time, set to 1 minute
 #define TIMER_ELAPSE	1000//60000
 
+
+
 class CHiddenWindow : public CWindow
 {
 public:
@@ -43,6 +45,7 @@ private:
 	UINT				COMMITMONITOR_SHOWDLGMSG;
 	UINT				COMMITMONITOR_CHANGEDINFO;
 	UINT				COMMITMONITOR_TASKBARCALLBACK;
+	UINT				WM_TASKBARCREATED;
 
 	NOTIFYICONDATA		m_SystemTray;
 	HICON				m_hIconNormal;
@@ -54,4 +57,7 @@ private:
 	HANDLE				m_hMonitorThread;
 
 	bool				m_bMainDlgShown;
+
+	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
+	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
 };
