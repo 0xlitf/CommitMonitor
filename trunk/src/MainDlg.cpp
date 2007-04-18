@@ -6,7 +6,7 @@
 #include "AppUtils.h"
 #include "DirFileEnum.h"
 #include <algorithm>
-
+#include <assert.h>
 
 CMainDlg::CMainDlg(HWND hParent) 
 	: m_nDragMode(DRAGMODE_NONE)
@@ -44,6 +44,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
 			RefreshURLTree();
+			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 		}
 		break;
 	case WM_COMMAND:
@@ -70,6 +71,80 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			POINT pt = {LOWORD(lParam), HIWORD(lParam)};
 			return OnLButtonUp(wParam, pt);
+		}
+		break;
+	case WM_TIMER:
+		{
+			if (wParam == TIMER_REFRESH)
+			{
+				HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+				const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+				for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
+				{
+					TVINSERTSTRUCT tv = {0};
+					tv.hParent = FindParentTreeNode(it->first);
+					tv.hInsertAfter = TVI_SORT;
+					tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE;
+					WCHAR * str = new WCHAR[it->second.name.size()+10];
+					// find out if there are some unread entries
+					int unread = 0;
+					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+					{
+						if (!logit->second.read)
+							unread++;
+					}
+					if (unread)
+					{
+						_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+						tv.itemex.state = TVIS_BOLD;
+						tv.itemex.stateMask = TVIS_BOLD;
+					}
+					else
+					{
+						_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+						tv.itemex.state = 0;
+						tv.itemex.stateMask = TVIS_BOLD;
+					}
+					tv.itemex.pszText = str;
+					tv.itemex.lParam = (LPARAM)&it->first;
+					HTREEITEM directItem = FindTreeNode(it->first);
+					if (directItem != TVI_ROOT)
+					{
+						// The node already exists, just update the information
+						tv.itemex.hItem = directItem;
+						tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD;
+						TreeView_GetItem(hTreeControl, &tv.itemex);
+						tv.itemex.pszText = str;
+						if (unread)
+						{
+							tv.itemex.state = TVIS_BOLD;
+							tv.itemex.stateMask = TVIS_BOLD;
+						}
+						else
+						{
+							tv.itemex.state = 0;
+							tv.itemex.stateMask = TVIS_BOLD;
+						}
+						TreeView_SetItem(hTreeControl, &tv.itemex);
+						if (tv.itemex.state & TVIS_SELECTED)
+						{
+							m_bBlockListCtrlUI = true;
+							TreeItemSelected(hTreeControl, tv.itemex.hItem);
+							m_bBlockListCtrlUI = false;
+						}
+					}
+					else
+					{
+						m_bBlockListCtrlUI = true;
+						TreeView_InsertItem(hTreeControl, &tv);
+						TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
+						m_bBlockListCtrlUI = false;
+					}
+					delete [] str;
+				}
+				m_pURLInfos->ReleaseReadOnlyData();
+				::InvalidateRect(GetDlgItem(*this, IDC_MONITOREDURLS), NULL, true);
+			}
 		}
 		break;
 	case WM_NOTIFY:
@@ -148,11 +223,11 @@ LRESULT CMainDlg::DoCommand(int id)
 					pWrite->erase(*(wstring*)itemex.lParam);
 					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
 					hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
-					m_pURLInfos->ReleaseData();
+					m_pURLInfos->ReleaseWriteData();
 					TreeView_DeleteItem(hTreeControl, hItem);
 				}
 				else
-					m_pURLInfos->ReleaseData();
+					m_pURLInfos->ReleaseWriteData();
 				if (hPrev == NULL)
 					hPrev = TreeView_GetRoot(hTreeControl);
 				if (hPrev)
@@ -175,7 +250,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 				{
 					dlg.SetInfo(&pRead->find(*(wstring*)itemex.lParam)->second);
-					m_pURLInfos->ReleaseData();
+					m_pURLInfos->ReleaseReadOnlyData();
 					dlg.DoModal(hResource, IDD_URLCONFIG, *this);
 					CUrlInfo * inf = dlg.GetInfo();
 					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
@@ -184,11 +259,11 @@ LRESULT CMainDlg::DoCommand(int id)
 						pWrite->erase(*(wstring*)itemex.lParam);
 						(*pWrite)[inf->url] = *inf;
 					}
-					m_pURLInfos->ReleaseData();
+					m_pURLInfos->ReleaseWriteData();
 					RefreshURLTree();
 				}
 				else
-					m_pURLInfos->ReleaseData();
+					m_pURLInfos->ReleaseWriteData();
 			}
 		}
 		break;
@@ -204,7 +279,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				{
 					(*pWrite)[inf->url] = *inf;
 				}
-				m_pURLInfos->ReleaseData();
+				m_pURLInfos->ReleaseWriteData();
 			}
 			RefreshURLTree();
 		}
@@ -266,7 +341,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					}
 				}
 			}
-			m_pURLInfos->ReleaseData();
+			m_pURLInfos->ReleaseReadOnlyData();
 		}
 		break;
 	default:
@@ -321,7 +396,7 @@ void CMainDlg::RefreshURLTree()
 		TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
 	}
-	m_pURLInfos->ReleaseData();
+	m_pURLInfos->ReleaseReadOnlyData();
 	m_bBlockListCtrlUI = false;
 	::InvalidateRect(GetDlgItem(*this, IDC_MONITOREDURLS), NULL, true);
 }
@@ -335,12 +410,12 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
 		const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 		if (pRead->find(parenturl) != pRead->end())
 		{
-			m_pURLInfos->ReleaseData();
+			m_pURLInfos->ReleaseReadOnlyData();
 			// we found a parent URL, but now we have to find it in the
 			// tree view
 			return FindTreeNode(parenturl);
 		}
-		m_pURLInfos->ReleaseData();
+		m_pURLInfos->ReleaseReadOnlyData();
 		pos = parenturl.find_last_of('/');
 		parenturl = parenturl.substr(0, pos);
 		if (pos == string::npos)
@@ -349,10 +424,11 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
 	return TVI_ROOT;
 }
 
-HTREEITEM CMainDlg::FindTreeNode(const wstring& url)
+HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
 {
 	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-	HTREEITEM hItem = TreeView_GetRoot(hTreeControl);
+	if (hItem == TVI_ROOT)
+		hItem = TreeView_GetRoot(hTreeControl);
 	TVITEM item;
 	item.mask = TVIF_PARAM;
 	while (hItem)
@@ -361,6 +437,15 @@ HTREEITEM CMainDlg::FindTreeNode(const wstring& url)
 		TreeView_GetItem(hTreeControl, &item);
 		if (url.compare(*(wstring*)item.lParam) == 0)
 			return hItem;
+		HTREEITEM hChild = TreeView_GetChild(hTreeControl, hItem);
+		if (hChild)
+		{
+			item.hItem = hChild;
+			TreeView_GetItem(hTreeControl, &item);
+			hChild = FindTreeNode(url, hChild);
+			if (hChild != TVI_ROOT)
+				return hChild;
+		}
 		hItem = TreeView_GetNextSibling(hTreeControl, hItem);
 	};
 	return TVI_ROOT;
@@ -369,11 +454,16 @@ HTREEITEM CMainDlg::FindTreeNode(const wstring& url)
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
 	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
+	TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
+}
+
+void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
+{
 	// get the url this entry refers to
 	TVITEMEX itemex = {0};
 	itemex.hItem = hSelectedItem;
 	itemex.mask = TVIF_PARAM;
-	TreeView_GetItem(lpNMTreeView->hdr.hwndFrom, &itemex);
+	TreeView_GetItem(hTreeControl, &itemex);
 	const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
@@ -425,7 +515,7 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 		::InvalidateRect(hLogList, NULL, false);
 	}
-	m_pURLInfos->ReleaseData();
+	m_pURLInfos->ReleaseReadOnlyData();
 }
 
 /******************************************************************************/
@@ -435,6 +525,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 {
 	if (lpNMListView->uNewState & LVIS_SELECTED)
 	{
+		const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 		HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
 		LVITEM item = {0};
 		item.mask = LVIF_PARAM;
@@ -457,7 +548,6 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 itemex.hItem = hSelectedItem;
                 itemex.mask = TVIF_PARAM;
                 TreeView_GetItem(hTreeControl, &itemex);
-				const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
                 if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
                 {
                     const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
@@ -485,7 +575,6 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     itemex.mask = TVIF_TEXT|TVIF_STATE;
                     TreeView_SetItem(hTreeControl, &itemex);
                 }
-				m_pURLInfos->ReleaseData();
             }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
@@ -517,6 +606,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			CAppUtils::SearchReplace(msg, _T("\n"), _T("\r\n"));
 			SetWindowText(hMsgView, msg.c_str());
 		}
+		m_pURLInfos->ReleaseReadOnlyData();
 	}
 }
 
@@ -598,7 +688,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 					++i;
 			}
 		}
-		m_pURLInfos->ReleaseData();
+		m_pURLInfos->ReleaseWriteData();
 		if (nFirstDeleted >= 0)
 		{
 			if (ListView_GetItemCount(hListView) > nFirstDeleted)

@@ -225,11 +225,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Registry.cpp"
+				RelativePath=".\ReaderWriterLock.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\RWSection.cpp"
+				RelativePath=".\Registry.cpp"
 				>
 			</File>
 			<File
@@ -331,15 +331,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ReaderWriterLock.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Registry.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RWSection.h"
 				>
 			</File>
 			<File
@@ -393,19 +393,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
+				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>

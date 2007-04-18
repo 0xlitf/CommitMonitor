@@ -4,7 +4,7 @@
 
 #include "SVN.h"
 #include "SerializeUtils.h"
-#include "RWSection.h"
+#include "ReaderWriterLock.h"
 
 class CUrlInfo
 {
@@ -43,7 +43,8 @@ public:
 
 	const map<wstring,CUrlInfo> *	GetReadOnlyData();
 	map<wstring,CUrlInfo> *		GetWriteData();
-	void						ReleaseData();
+	void						ReleaseReadOnlyData();
+	void						ReleaseWriteData();
 
 protected:
 	bool						Save(HANDLE hFile);
@@ -51,6 +52,6 @@ protected:
 
 private:
 	map<wstring,CUrlInfo>		infos;
-	CRWSection					guard;
+	CReaderWriterLock			guard;
 };
 

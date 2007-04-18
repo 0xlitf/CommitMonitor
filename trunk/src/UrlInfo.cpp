@@ -117,7 +117,9 @@ void CUrlInfos::Save(LPCWSTR filename)
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN|FILE_ATTRIBUTE_COMPRESSED, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return;
+	guard.AcquireReaderLock();
 	bool bSuccess = Save(hFile);
+	guard.ReleaseReaderLock();
 	CloseHandle(hFile);
 	if (bSuccess)
 	{
@@ -132,7 +134,9 @@ void CUrlInfos::Load(LPCWSTR filename)
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return;
+	guard.AcquireWriterLock();
 	Load(hFile);
+	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
 	CloseHandle(hFile);
 }
@@ -184,25 +188,31 @@ bool CUrlInfos::Load(HANDLE hFile)
 bool CUrlInfos::IsEmpty()
 {
 	bool bIsEmpty = true;
-	guard.WaitToRead();
+	guard.AcquireReaderLock();
 	bIsEmpty = (infos.size() == 0);
-	guard.Done();
+	guard.ReleaseReaderLock();
 	return bIsEmpty;
 }
 
 const map<wstring,CUrlInfo> * CUrlInfos::GetReadOnlyData()
 {
-	guard.WaitToRead();
+	guard.AcquireReaderLock();
 	return &infos;
 }
 
 map<wstring,CUrlInfo> * CUrlInfos::GetWriteData()
 {
-	guard.WaitToWrite();
+	guard.AcquireWriterLock();
 	return &infos;
 }
 
-void CUrlInfos::ReleaseData()
+void CUrlInfos::ReleaseReadOnlyData()
 {
-	guard.Done();
+	guard.ReleaseReaderLock();
 }
+
+void CUrlInfos::ReleaseWriteData()
+{
+	guard.ReleaseWriterLock();
+}
+

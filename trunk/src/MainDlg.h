@@ -10,6 +10,8 @@
 #define DRAGMODE_HORIZONTAL		1
 #define DRAGMODE_VERTICAL		2
 
+#define TIMER_REFRESH			101
+
 using namespace std;
 
 /**
@@ -35,11 +37,12 @@ protected:
 
 	void					RefreshURLTree();
 	HTREEITEM				FindParentTreeNode(const wstring& url);
-	HTREEITEM				FindTreeNode(const wstring& url);
+	HTREEITEM				FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
+	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 
 	void					SaveURLInfo();
 	void					LoadURLInfo();

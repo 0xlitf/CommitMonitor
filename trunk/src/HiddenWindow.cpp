@@ -256,7 +256,7 @@ void CHiddenWindow::DoTimer()
 			break;
 		}
 	}
-	m_UrlInfos.ReleaseData();
+	m_UrlInfos.ReleaseReadOnlyData();
 
 	if ((bStartThread)&&(m_ThreadRunning == 0))
 	{
@@ -342,7 +342,7 @@ DWORD CHiddenWindow::RunThread()
 						writeIt->second.lastcheckedrev = headrev;
 						writeIt->second.lastchecked = currenttime;
 					}
-					m_UrlInfos.ReleaseData();
+					m_UrlInfos.ReleaseWriteData();
 
 					bNewEntries = true;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
@@ -354,7 +354,7 @@ DWORD CHiddenWindow::RunThread()
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
 						}
-						m_UrlInfos.ReleaseData();
+						m_UrlInfos.ReleaseWriteData();
 
 						if (it->second.fetchdiffs)
 						{
@@ -391,7 +391,7 @@ DWORD CHiddenWindow::RunThread()
 				{
 					writeIt->second.lastchecked = currenttime;
 				}
-				m_UrlInfos.ReleaseData();
+				m_UrlInfos.ReleaseWriteData();
 
 				// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
 				// instead of pointing to an actual repository.
@@ -473,7 +473,7 @@ DWORD CHiddenWindow::RunThread()
 								//pWrite->insert(make_pair<url, newinfo>);
 								hasNewEntries = true;
 							}
-							m_UrlInfos.ReleaseData();
+							m_UrlInfos.ReleaseWriteData();
 
 							// update search position:
 							start = what[0].second;      
@@ -497,7 +497,7 @@ DWORD CHiddenWindow::RunThread()
 			{
 				writeIt->second.lastchecked = currenttime;
 			}
-			m_UrlInfos.ReleaseData();
+			m_UrlInfos.ReleaseWriteData();
 		}
 	}
 	if (bNewEntries)
@@ -505,7 +505,7 @@ DWORD CHiddenWindow::RunThread()
 		// save the changed entries
 		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, 0);
 	}
-	urlinfoReadOnly.ReleaseData();
+	urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
 	::CoUninitialize();
