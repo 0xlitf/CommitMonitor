@@ -341,6 +341,7 @@ DWORD CHiddenWindow::RunThread()
 					{
 						writeIt->second.lastcheckedrev = headrev;
 						writeIt->second.lastchecked = currenttime;
+						bNewEntries = true;
 					}
 					m_UrlInfos.ReleaseWriteData();
 
@@ -390,6 +391,7 @@ DWORD CHiddenWindow::RunThread()
 				if (writeIt != pWrite->end())
 				{
 					writeIt->second.lastchecked = currenttime;
+					bNewEntries = true;
 				}
 				m_UrlInfos.ReleaseWriteData();
 
