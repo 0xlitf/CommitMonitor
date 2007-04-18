@@ -93,18 +93,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						if (!logit->second.read)
 							unread++;
 					}
-					if (unread)
-					{
-						_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
-						tv.itemex.state = TVIS_BOLD;
-						tv.itemex.stateMask = TVIS_BOLD;
-					}
-					else
-					{
-						_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
-						tv.itemex.state = 0;
-						tv.itemex.stateMask = TVIS_BOLD;
-					}
 					tv.itemex.pszText = str;
 					tv.itemex.lParam = (LPARAM)&it->first;
 					HTREEITEM directItem = FindTreeNode(it->first);
@@ -113,28 +101,47 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						// The node already exists, just update the information
 						tv.itemex.hItem = directItem;
 						tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD;
-						TreeView_GetItem(hTreeControl, &tv.itemex);
 						tv.itemex.pszText = str;
+						tv.itemex.cchTextMax = it->second.name.size()+9;
+						TreeView_GetItem(hTreeControl, &tv.itemex);
+						wstring sTitle = wstring(str);
 						if (unread)
 						{
+							_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+							tv.itemex.state |= TVIS_BOLD;
+							tv.itemex.stateMask = TVIS_BOLD;
+						}
+						else
+						{
+							_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+							tv.itemex.state &= ~TVIS_BOLD;
+							tv.itemex.stateMask = TVIS_BOLD;
+						}
+						if (sTitle.compare(str) != 0)
+						{
+							TreeView_SetItem(hTreeControl, &tv.itemex);
+							if (tv.itemex.state & TVIS_SELECTED)
+							{
+								m_bBlockListCtrlUI = true;
+								TreeItemSelected(hTreeControl, tv.itemex.hItem);
+								m_bBlockListCtrlUI = false;
+							}
+						}
+					}
+					else
+					{
+						if (unread)
+						{
+							_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
 							tv.itemex.state = TVIS_BOLD;
 							tv.itemex.stateMask = TVIS_BOLD;
 						}
 						else
 						{
+							_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
 							tv.itemex.state = 0;
 							tv.itemex.stateMask = TVIS_BOLD;
 						}
-						TreeView_SetItem(hTreeControl, &tv.itemex);
-						if (tv.itemex.state & TVIS_SELECTED)
-						{
-							m_bBlockListCtrlUI = true;
-							TreeItemSelected(hTreeControl, tv.itemex.hItem);
-							m_bBlockListCtrlUI = false;
-						}
-					}
-					else
-					{
 						m_bBlockListCtrlUI = true;
 						TreeView_InsertItem(hTreeControl, &tv);
 						TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
