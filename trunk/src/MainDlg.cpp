@@ -462,6 +462,8 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
 	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
 	TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
+	HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
+	SetWindowText(hMsgView, _T(""));
 }
 
 void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
@@ -519,7 +521,6 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		ListView_SetColumnWidth(hLogList, 1, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(hLogList, 2, LVSCW_AUTOSIZE_USEHEADER);
 
-		ListView_SetItemState(hLogList, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 		::InvalidateRect(hLogList, NULL, false);
 	}
 	m_pURLInfos->ReleaseReadOnlyData();
