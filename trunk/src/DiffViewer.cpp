@@ -33,7 +33,7 @@ bool CDiffViewer::RegisterAndCreateWindow()
 	wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
 	wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
-	wcx.lpszMenuName = MAKEINTRESOURCE(IDC_COMMITMONITOR);
+	wcx.lpszMenuName = NULL;//MAKEINTRESOURCE(IDC_COMMITMONITOR);
 	wcx.hIconSm	= LoadIcon(wcx.hInstance, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	if (RegisterWindow(&wcx))
 	{
