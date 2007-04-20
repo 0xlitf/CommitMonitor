@@ -11,13 +11,13 @@ class CStatusBarMsgWnd : public CWindow
 public:
 	CStatusBarMsgWnd(HINSTANCE hInst, const WNDCLASSEX* wcx = NULL) 
 		: CWindow(hInst, wcx) 
-		, m_width(200)
-		, m_height(200)
+		, m_width(150)
+		, m_height(50)
 	{
 		RegisterAndCreateWindow();
 	}
 
-	void				Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT messageOnClick);
+	void				Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT messageOnClick, int stay = 10);
 private:
 	// deconstructor private to prevent creating an instance on the stack
 	// --> must be created on the heap!
@@ -50,6 +50,7 @@ private:
 
 	LONG				m_width;
 	LONG				m_height;
+	int					m_stay;
 
 	int					m_thiscounter;
 	static int			m_counter;

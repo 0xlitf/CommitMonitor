@@ -32,12 +32,13 @@ bool CStatusBarMsgWnd::RegisterAndCreateWindow()
 	return false;
 }
 
-void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT messageOnClick)
+void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT messageOnClick, int stay /* = 10 */)
 {
 	m_title = wstring(title);
 	m_text = wstring(text);
 	m_hParentWnd = hParentWnd;
 	m_messageOnClick = messageOnClick;
+	m_stay = stay;
 
 	::SystemParametersInfo(SPI_GETWORKAREA, 0, &m_workarea, 0);
 
@@ -51,7 +52,7 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT m
 	m_ShowTicks = 0;
 	m_counter++;
 	m_thiscounter = m_counter;
-	SetTimer(*this, STATUSBARMSGWND_SHOWTIMER, 1, NULL);
+	SetTimer(*this, STATUSBARMSGWND_SHOWTIMER, 10, NULL);
 }
 
 LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -83,7 +84,7 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
 
 LRESULT CStatusBarMsgWnd::DoTimer()
 {
-	if (m_ShowTicks >= (3*m_height))
+	if (m_ShowTicks >= ((m_stay+2)*m_height))
 	{
 		::KillTimer(*this, STATUSBARMSGWND_SHOWTIMER);
 		DestroyWindow(*this);
@@ -115,7 +116,7 @@ LRESULT CStatusBarMsgWnd::DoTimer()
 void CStatusBarMsgWnd::ShowFromLeft()
 {
 	LONG xPos = m_workarea.left;
-	if ((m_ShowTicks > m_width) && (m_ShowTicks < (2*m_width)))
+	if ((m_ShowTicks > m_width) && (m_ShowTicks < ((m_stay+1)*m_width)))
 	{
 		// completely visible
 		xPos += m_width;
@@ -146,7 +147,7 @@ void CStatusBarMsgWnd::ShowFromLeft()
 void CStatusBarMsgWnd::ShowFromTop()
 {
 	LONG yPos = m_workarea.top;
-	if ((m_ShowTicks > m_height) && (m_ShowTicks < (2*m_height)))
+	if ((m_ShowTicks > m_height) && (m_ShowTicks < ((m_stay+1)*m_height)))
 	{
 		// completely visible
 		yPos += m_height;
@@ -177,7 +178,7 @@ void CStatusBarMsgWnd::ShowFromTop()
 void CStatusBarMsgWnd::ShowFromRight()
 {
 	LONG xPos = m_workarea.right;
-	if ((m_ShowTicks > m_width) && (m_ShowTicks < (2*m_width)))
+	if ((m_ShowTicks > m_width) && (m_ShowTicks < ((m_stay+1)*m_width)))
 	{
 		// completely visible
 		xPos -= m_width;
@@ -208,7 +209,7 @@ void CStatusBarMsgWnd::ShowFromRight()
 void CStatusBarMsgWnd::ShowFromBottom()
 {
 	LONG yPos = m_workarea.bottom;
-	if ((m_ShowTicks > m_height) && (m_ShowTicks < (2*m_height)))
+	if ((m_ShowTicks > m_height) && (m_ShowTicks < ((m_stay+1)*m_height)))
 	{
 		// completely visible
 		yPos -= m_height;
