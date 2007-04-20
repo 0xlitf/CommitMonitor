@@ -139,8 +139,7 @@ void CStatusBarMsgWnd::ShowFromLeft()
 	popupRect.bottom = m_workarea.top + m_height;
 	::SetWindowPos(*this, HWND_TOPMOST,
 		popupRect.left, popupRect.top, popupRect.right-popupRect.left, popupRect.bottom-popupRect.top,
-		SWP_NOACTIVATE|SWP_ASYNCWINDOWPOS);
-	::ShowWindow(*this, SW_SHOW);
+		SWP_NOACTIVATE|SWP_SHOWWINDOW);
 	m_ShowTicks += 2;
 }
 
@@ -171,8 +170,7 @@ void CStatusBarMsgWnd::ShowFromTop()
 	popupRect.bottom = yPos;
 	::SetWindowPos(*this, HWND_TOPMOST,
 		popupRect.left, popupRect.top, popupRect.right-popupRect.left, popupRect.bottom-popupRect.top,
-		SWP_NOACTIVATE|SWP_ASYNCWINDOWPOS);
-	::ShowWindow(*this, SW_SHOW);
+		SWP_NOACTIVATE|SWP_SHOWWINDOW);
 	m_ShowTicks += 2;
 }
 
@@ -203,8 +201,7 @@ void CStatusBarMsgWnd::ShowFromRight()
 	popupRect.bottom = m_workarea.top + m_height;
 	::SetWindowPos(*this, HWND_TOPMOST,
 		popupRect.left, popupRect.top, popupRect.right-popupRect.left, popupRect.bottom-popupRect.top,
-		SWP_NOACTIVATE|SWP_ASYNCWINDOWPOS);
-	::ShowWindow(*this, SW_SHOW);
+		SWP_NOACTIVATE|SWP_SHOWWINDOW);
 	m_ShowTicks += 2;
 }
 
@@ -235,7 +232,6 @@ void CStatusBarMsgWnd::ShowFromBottom()
 	popupRect.bottom = m_workarea.bottom - ((m_thiscounter-1)*m_height);
 	::SetWindowPos(*this, HWND_TOPMOST,
 		popupRect.left, popupRect.top, popupRect.right-popupRect.left, popupRect.bottom-popupRect.top,
-		SWP_NOACTIVATE|SWP_ASYNCWINDOWPOS);
-	::ShowWindow(*this, SW_SHOW);
+		SWP_NOACTIVATE|SWP_SHOWWINDOW);
 	m_ShowTicks += 2;
 }
