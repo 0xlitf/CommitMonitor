@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StatusBarMsgWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -347,6 +351,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StatusBarMsgWnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -393,19 +401,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\resources\resources\NotifyNew.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNormal.ico"
+				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\resources\resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\NotifyNormal.ico"
 				>
 			</File>
 		</Filter>
