@@ -66,8 +66,6 @@ bool CHiddenWindow::RegisterAndCreateWindow()
 		if (Create(WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, NULL))
 		{
 			COMMITMONITOR_SHOWDLGMSG = RegisterWindowMessage(_T("CommitMonitor_ShowDlgMsg"));
-			COMMITMONITOR_CHANGEDINFO = RegisterWindowMessage(_T("CommitMonitor_ChangedInfo"));
-			COMMITMONITOR_TASKBARCALLBACK = RegisterWindowMessage(_T("CommitMonitor_TaskbarCallback"));
 			WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
 			// On Vista, the message TasbarCreated may be blocked by the message filter.
 			// We try to change the filter here to get this message through. If even that
@@ -109,75 +107,12 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam,
 		m_bMainDlgShown = false;
 		return TRUE;
 	}
-	else if (uMsg == COMMITMONITOR_CHANGEDINFO)
-	{
-		if (wParam)
-		{
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			m_UrlInfos.Save(urlfile.c_str());
-		}
-		ShowTrayIcon(!!wParam);
-		return TRUE;
-	}
 	else if (uMsg == WM_TASKBARCREATED)
 	{
 		bool bNew = m_SystemTray.hIcon == m_hIconNew;
 		m_SystemTray.hIcon = NULL;
 		TRACE(_T("Taskbar created!\n"));
 		ShowTrayIcon(bNew);
-	}
-	else if (uMsg == COMMITMONITOR_TASKBARCALLBACK)
-	{
-		switch (lParam)
-		{
-		case WM_MOUSEMOVE:
-			{
-				// update the tool tip data
-			}
-			break;
-		case WM_LBUTTONDBLCLK:
-			{
-				// show the main dialog
-				ShowDialog();
-			}
-			break;
-		case NIN_KEYSELECT:
-		case NIN_SELECT:
-		case WM_RBUTTONUP:
-		case WM_CONTEXTMENU:
-			{
-				POINT pt;
-				GetCursorPos( &pt );
-
-				HMENU hMenu = ::LoadMenu(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
-				hMenu = ::GetSubMenu(hMenu, 0);
-
-				// set the default entry
-				MENUITEMINFO iinfo = {0};
-				iinfo.cbSize = sizeof(MENUITEMINFO);
-				iinfo.fMask = MIIM_STATE;
-				GetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
-				iinfo.fState |= MFS_DEFAULT;
-				SetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
-
-				// show the menu
-				::SetForegroundWindow(*this);
-				int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
-				::PostMessage(*this, WM_NULL, 0, 0);
-
-				switch( cmd )
-				{
-				case IDM_EXIT:
-					::PostQuitMessage(0);
-					break;
-				case ID_POPUP_OPENCOMMITMONITOR:
-					ShowDialog();
-					break;
-				}
-			}
-			break;
-		}
-		return TRUE;
 	}
 	return 0L;
 }
@@ -217,6 +152,71 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 	case WM_COMMAND:
 		{
 			return DoCommand(LOWORD(wParam));
+		}
+		break;
+	case COMMITMONITOR_CHANGEDINFO:
+		{
+			if (wParam)
+			{
+				wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+				m_UrlInfos.Save(urlfile.c_str());
+			}
+			ShowTrayIcon(!!wParam);
+			return TRUE;
+		}
+		break;
+	case COMMITMONITOR_TASKBARCALLBACK:
+		{
+			switch (lParam)
+			{
+			case WM_MOUSEMOVE:
+				{
+					// update the tool tip data
+				}
+				break;
+			case WM_LBUTTONDBLCLK:
+				{
+					// show the main dialog
+					ShowDialog();
+				}
+				break;
+			case NIN_KEYSELECT:
+			case NIN_SELECT:
+			case WM_RBUTTONUP:
+			case WM_CONTEXTMENU:
+				{
+					POINT pt;
+					GetCursorPos( &pt );
+
+					HMENU hMenu = ::LoadMenu(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
+					hMenu = ::GetSubMenu(hMenu, 0);
+
+					// set the default entry
+					MENUITEMINFO iinfo = {0};
+					iinfo.cbSize = sizeof(MENUITEMINFO);
+					iinfo.fMask = MIIM_STATE;
+					GetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
+					iinfo.fState |= MFS_DEFAULT;
+					SetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
+
+					// show the menu
+					::SetForegroundWindow(*this);
+					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+					::PostMessage(*this, WM_NULL, 0, 0);
+
+					switch( cmd )
+					{
+					case IDM_EXIT:
+						::PostQuitMessage(0);
+						break;
+					case ID_POPUP_OPENCOMMITMONITOR:
+						ShowDialog();
+						break;
+					}
+				}
+				break;
+			}
+			return TRUE;
 		}
 		break;
 	case WM_DESTROY:

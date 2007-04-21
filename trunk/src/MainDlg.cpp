@@ -25,7 +25,6 @@ CMainDlg::CMainDlg(HWND hParent)
 	GetObject(hFont, sizeof(LOGFONT), &lf);
 	lf.lfWeight = FW_BOLD;
 	m_boldFont = CreateFontIndirect(&lf);
-	COMMITMONITOR_CHANGEDINFO = RegisterWindowMessage(_T("CommitMonitor_ChangedInfo"));
 }
 
 CMainDlg::~CMainDlg(void)

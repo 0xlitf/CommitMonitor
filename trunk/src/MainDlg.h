@@ -48,7 +48,6 @@ protected:
 	void					LoadURLInfo();
 private:	
 	HWND					m_hParent;
-	UINT					COMMITMONITOR_CHANGEDINFO;
 
 	int						m_nDragMode;
 	LONG					m_oldx, m_oldy;
