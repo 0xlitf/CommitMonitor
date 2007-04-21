@@ -138,8 +138,9 @@ void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect, UINT uEdge)
 	// draw a border
 	DrawEdge(hDC, pRect, EDGE_BUMP, BF_ADJUST | BF_RECT | BF_SOFT);
 
-	// draw the icon on the left
-	DrawIconEx(hDC, pRect->left + 2, pRect->top + 2, m_icon, 
+	// draw the icon on the left, but centered vertically
+	DrawIconEx(hDC, pRect->left + 2, 
+		(pRect->bottom - pRect->top - STATUSBARMSGWND_ICONSIZE)/2, m_icon, 
 		STATUSBARMSGWND_ICONSIZE, STATUSBARMSGWND_ICONSIZE, 0, NULL, DI_NORMAL);
 
 	// draw the title
