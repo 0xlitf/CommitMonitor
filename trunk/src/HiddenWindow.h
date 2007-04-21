@@ -12,7 +12,11 @@
 /// timer elapse time, set to 1 minute
 #define TIMER_ELAPSE	1000//60000
 
-
+typedef struct
+{
+	wstring				sTitle;
+	wstring				sText;
+} popupData;
 
 class CHiddenWindow : public CWindow
 {

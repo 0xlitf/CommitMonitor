@@ -10,6 +10,7 @@
 #include "Callback.h"
 #include "AppUtils.h"
 #include "TempFile.h"
+#include "StatusBarMsgWnd.h"
 
 #include <boost/regex.hpp>
 using namespace boost;
@@ -203,6 +204,16 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			}
 		}
 		break;
+	case COMMITMONITOR_POPUP:
+		{
+			popupData * pData = (popupData*)lParam;
+			if (pData)
+			{
+				CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
+				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, 0);
+			}
+		}
+		break;
 	case WM_COMMAND:
 		{
 			return DoCommand(LOWORD(wParam));
@@ -346,6 +357,7 @@ DWORD CHiddenWindow::RunThread()
 					m_UrlInfos.ReleaseWriteData();
 
 					bNewEntries = true;
+					wstring sPopupText;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						// again, only block for a short time
@@ -356,11 +368,15 @@ DWORD CHiddenWindow::RunThread()
 							writeIt->second.logentries[logit->first] = logit->second;
 						}
 						m_UrlInfos.ReleaseWriteData();
-
+						TCHAR buf[4096];
+						// popup info text
+						_stprintf_s(buf, 4096, _T("r%ld"), logit->first);
+						if (!sPopupText.empty())
+							sPopupText += _T(", ");
+						sPopupText += wstring(buf);
 						if (it->second.fetchdiffs)
 						{
 							// first, find a name where to store the diff for that revision
-							TCHAR buf[4096];
 							_stprintf_s(buf, 4096, _T("%s_%ld"), it->second.name.c_str(), logit->first);
 							wstring diffFileName = CAppUtils::GetAppDataDir();
 							diffFileName += _T("/");
@@ -381,6 +397,13 @@ DWORD CHiddenWindow::RunThread()
 							}
 						}
 					}
+					// prepare notification strings
+					TCHAR sTitle[1024] = {0};
+					_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), svn.m_logs.size());
+					popupData data;
+					data.sText = sPopupText;
+					data.sTitle = wstring(sTitle);
+					::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 				}
 			}
 			else
@@ -399,13 +422,6 @@ DWORD CHiddenWindow::RunThread()
 				// instead of pointing to an actual repository.
 
 				// we have to include the authentication in the URL itself
-				size_t colonpos = it->first.find_first_of(':');
-				wstring authurl = it->first.substr(0, colonpos+3);
-				authurl += it->second.username;
-				authurl += _T(":");
-				authurl += it->second.password;
-				authurl += _T("@");
-				authurl += it->first.substr(colonpos+3);
 				wstring tempfile = CTempFiles::Instance().GetTempFilePath(true);
 				CCallback * callback = new CCallback;
 				callback->SetAuthData(it->second.username, it->second.password);
@@ -449,6 +465,8 @@ DWORD CHiddenWindow::RunThread()
 						match_results<string::const_iterator> what;
 						match_flag_type flags = match_default;
 						bool hasNewEntries = false;
+						int nCountNewEntries = 0;
+						wstring popupText;
 						while (regex_search(start, end, what, expression, flags))   
 						{
 							// what[0] contains the whole string
@@ -474,6 +492,10 @@ DWORD CHiddenWindow::RunThread()
 								(*pWrite)[url] = newinfo;
 								//pWrite->insert(make_pair<url, newinfo>);
 								hasNewEntries = true;
+								nCountNewEntries++;
+								if (!popupText.empty())
+									popupText += _T(", ");
+								popupText += newinfo.name;
 							}
 							m_UrlInfos.ReleaseWriteData();
 
@@ -484,7 +506,15 @@ DWORD CHiddenWindow::RunThread()
 							flags |= match_not_bob;
 						}
 						if (hasNewEntries)
+						{
 							it = pUrlInfoReadOnly->begin();
+							TCHAR popupTitle[1024] = {0};
+							_stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), it->second.name.c_str(), nCountNewEntries);
+							popupData data;
+							data.sText = popupText;
+							data.sTitle = wstring(popupTitle);
+							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+						}
 					}
 					delete callback;
 				}
@@ -510,6 +540,7 @@ DWORD CHiddenWindow::RunThread()
 	urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
+
 	::CoUninitialize();
 	return 0L;
 }

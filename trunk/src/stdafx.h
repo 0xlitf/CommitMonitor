@@ -52,3 +52,4 @@
 #endif
 
 
+#define COMMITMONITOR_POPUP		(WM_APP+1)
