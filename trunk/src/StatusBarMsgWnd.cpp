@@ -88,6 +88,10 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
 		break;
 	case WM_TIMER:
 		return DoTimer();
+	case WM_LBUTTONUP:
+		// user clicked on the popup window
+		::SendMessage(m_hParentWnd, m_messageOnClick, wParam, lParam);
+		break;
 	case WM_ERASEBKGND:
 		return TRUE;
 	case WM_PAINT:
