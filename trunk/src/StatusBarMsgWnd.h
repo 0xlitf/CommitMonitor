@@ -1,30 +1,33 @@
 #pragma once
 #include "BaseWindow.h"
 #include <string>
+#include <vector>
 
 using namespace std;
 
 #define STATUSBARMSGWND_SHOWTIMER		101
-
+#define STATUSBARMSGWND_ICONSIZE		32
 class CStatusBarMsgWnd : public CWindow
 {
 public:
 	CStatusBarMsgWnd(HINSTANCE hInst, const WNDCLASSEX* wcx = NULL) 
 		: CWindow(hInst, wcx) 
-		, m_width(150)
-		, m_height(50)
+		, m_width(200)
+		, m_height(80)
+		, m_icon(NULL)
 	{
 		RegisterAndCreateWindow();
 	}
 
-	void				Show(LPCTSTR title, LPCTSTR text, HWND hParentWnd, UINT messageOnClick, int stay = 10);
+	void				Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParentWnd, UINT messageOnClick, int stay = 10);
 private:
 	// deconstructor private to prevent creating an instance on the stack
 	// --> must be created on the heap!
-	~CStatusBarMsgWnd(void) {}
+	~CStatusBarMsgWnd(void);
 
 
 protected:
+	virtual void		OnPaint(HDC hDC, LPRECT pRect, UINT uEdge);
 	/**
 	 * Registers the window class and creates the window.
 	 */
@@ -41,6 +44,7 @@ protected:
 private:
 	wstring				m_title;
 	wstring				m_text;
+	HICON				m_icon;
 	UINT				m_messageOnClick;
 	HWND				m_hParentWnd;
 
@@ -54,5 +58,6 @@ private:
 
 	int					m_thiscounter;
 	static int			m_counter;
+	static vector<int>	m_slots;
 };
 
