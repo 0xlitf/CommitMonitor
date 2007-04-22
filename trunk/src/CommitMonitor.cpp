@@ -111,7 +111,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 		if (hiddenWindow.RegisterAndCreateWindow())
 		{
-			if (true)	// for now, start the dialog every time
+			if (!parser.HasKey(_T("hidden")))
 			{
 				hiddenWindow.ShowDialog();
 			}

@@ -37,8 +37,6 @@ public:
 protected:
 	/// the message handler for this window
 	LRESULT CALLBACK	WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	/// Handles all the WM_COMMAND window messages (e.g. menu commands)
-	LRESULT				DoCommand(int id);
 	LRESULT				HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:

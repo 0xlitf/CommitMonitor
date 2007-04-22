@@ -44,8 +44,6 @@ protected:
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 
-	void					SaveURLInfo();
-	void					LoadURLInfo();
 private:	
 	HWND					m_hParent;
 

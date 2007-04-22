@@ -93,7 +93,7 @@ INT_PTR CHiddenWindow::ShowDialog()
 	return ::SendMessage(*this, COMMITMONITOR_SHOWDLGMSG, 0, 0);
 }
 
-LRESULT CHiddenWindow::HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	if (uMsg == COMMITMONITOR_SHOWDLGMSG)
 	{
@@ -147,11 +147,6 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 				CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
 				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, 0);
 			}
-		}
-		break;
-	case WM_COMMAND:
-		{
-			return DoCommand(LOWORD(wParam));
 		}
 		break;
 	case COMMITMONITOR_CHANGEDINFO:
@@ -231,16 +226,6 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 };
-
-LRESULT CHiddenWindow::DoCommand(int id)
-{
-	switch (id) 
-	{
-	default:
-		break;
-	};
-	return 1;
-}
 
 void CHiddenWindow::DoTimer()
 {

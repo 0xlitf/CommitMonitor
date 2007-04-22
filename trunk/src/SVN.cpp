@@ -98,10 +98,10 @@ svn_error_t* SVN::cancel(void *baton)
 	return SVN_NO_ERROR;
 }
 
-svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void *baton, 
-								  const char *realm, apr_uint32_t failures, 
-								  const svn_auth_ssl_server_cert_info_t *cert_info, 
-								  svn_boolean_t may_save, apr_pool_t *pool)
+svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void * /*baton*/, 
+								  const char * /*realm*/, apr_uint32_t /*failures*/, 
+								  const svn_auth_ssl_server_cert_info_t * /*cert_info*/, 
+								  svn_boolean_t /*may_save*/, apr_pool_t *pool)
 {
 	*cred_p = (svn_auth_cred_ssl_server_trust_t*)apr_pcalloc (pool, sizeof (**cred_p));
 	(*cred_p)->may_save = FALSE;

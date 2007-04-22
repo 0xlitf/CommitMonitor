@@ -329,7 +329,6 @@ LRESULT CMainDlg::DoCommand(int id)
                         TCHAR apppath[4096];
                         GetModuleFileName(NULL, apppath, 4096);
                         wstring cmd;
-                        bool bUseInternalDiffViewer = true;
                         CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
                         if (wstring(diffViewer).empty())
                         {
@@ -476,7 +475,6 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
 		const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
-		HWND hLogInfo = GetDlgItem(*this, IDC_LOGINFO);
 		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
 
 		m_bBlockListCtrlUI = true;

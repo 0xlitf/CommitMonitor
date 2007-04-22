@@ -121,7 +121,7 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
 				PAINTSTRUCT ps;
 				HDC hdc = BeginPaint(hwnd, &ps);
 				CMemDC memdc(hdc);
-				OnPaint(memdc, &rect, m_uEdge);
+				OnPaint(memdc, &rect);
 				EndPaint(hwnd, &ps);
 			}
 		}
@@ -133,7 +133,7 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
 	return 0;
 };
 
-void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect, UINT uEdge)
+void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect)
 {
 	// erase the background
 	SetBkColor(hDC, ::GetSysColor(COLOR_WINDOW));

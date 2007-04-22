@@ -27,7 +27,7 @@ private:
 
 
 protected:
-	virtual void		OnPaint(HDC hDC, LPRECT pRect, UINT uEdge);
+	virtual void		OnPaint(HDC hDC, LPRECT pRect);
 	/**
 	 * Registers the window class and creates the window.
 	 */

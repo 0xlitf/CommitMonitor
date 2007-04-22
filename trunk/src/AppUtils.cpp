@@ -57,7 +57,7 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
 {
 	wstring result;
 	wstring::size_type pos = 0;
-	while(true) 
+	for ( ; ; )	// while (true)
 	{
 		wstring::size_type next = str.find(toreplace, pos);
 		result.append(str, pos, next-pos);
