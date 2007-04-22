@@ -29,11 +29,13 @@ protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT					DoCommand(int id);
 
+private:
 	bool					OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
 	bool					OnMouseMove(UINT nFlags, POINT point);
 	bool					OnLButtonDown(UINT nFlags, POINT point);
 	bool					OnLButtonUp(UINT nFlags, POINT point);
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+	bool					CreateToolbar();
 
 	void					RefreshURLTree();
 	HTREEITEM				FindParentTreeNode(const wstring& url);
@@ -46,6 +48,8 @@ protected:
 
 private:	
 	HWND					m_hParent;
+	HWND					m_hwndToolbar;
+	HIMAGELIST				m_hToolbarImages;
 
 	int						m_nDragMode;
 	LONG					m_oldx, m_oldy;

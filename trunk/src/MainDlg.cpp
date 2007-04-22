@@ -31,6 +31,107 @@ CMainDlg::~CMainDlg(void)
 {
 	if (m_boldFont)
 		DeleteObject(m_boldFont);
+	if (m_hToolbarImages)
+		ImageList_Destroy(m_hToolbarImages);
+}
+
+bool CMainDlg::CreateToolbar()
+{
+	m_hwndToolbar = CreateWindowEx(0, 
+		TOOLBARCLASSNAME, 
+		(LPCTSTR)NULL,
+		WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 
+		0, 0, 0, 0, 
+		*this,
+		(HMENU)IDR_MAINDLG, 
+		hResource, 
+		NULL);
+	if (m_hwndToolbar == INVALID_HANDLE_VALUE)
+		return false;
+
+	SendMessage(m_hwndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);
+
+#define MAINDLG_TOOLBARBUTTONCOUNT	9
+	TBBUTTON tbb[MAINDLG_TOOLBARBUTTONCOUNT];
+	// create an image list containing the icons for the toolbar
+	m_hToolbarImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, MAINDLG_TOOLBARBUTTONCOUNT, 4);
+	if (m_hToolbarImages == NULL)
+		return false;
+	int index = 0;
+	HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ADD));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MAIN_ADDPROJECT; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Add Project"); 
+
+	tbb[index].iBitmap = 0; 
+	tbb[index].idCommand = 0; 
+	tbb[index].fsState = TBSTATE_ENABLED; 
+	tbb[index].fsStyle = BTNS_SEP; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = 0; 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_EDIT));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MAIN_EDIT; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Edit"); 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REMOVE));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MAIN_REMOVE; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Remove"); 
+
+	tbb[index].iBitmap = 0; 
+	tbb[index].idCommand = 0; 
+	tbb[index].fsState = TBSTATE_ENABLED; 
+	tbb[index].fsStyle = BTNS_SEP; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = 0; 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MAIN_SHOWDIFF; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Show Diff"); 
+
+	tbb[index].iBitmap = 0; 
+	tbb[index].idCommand = 0; 
+	tbb[index].fsState = TBSTATE_ENABLED; 
+	tbb[index].fsStyle = BTNS_SEP; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = 0; 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_OPTIONS));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MISC_OPTIONS; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Options"); 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ABOUT));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MISC_ABOUT; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("About"); 
+
+	SendMessage(m_hwndToolbar, TB_SETIMAGELIST, 0, (LPARAM)m_hToolbarImages);
+	SendMessage(m_hwndToolbar, TB_ADDBUTTONS, (WPARAM)index, (LPARAM) (LPTBBUTTON) &tbb); 
+	SendMessage(m_hwndToolbar, TB_AUTOSIZE, 0, 0); 
+	ShowWindow(m_hwndToolbar, SW_SHOW); 
+	return true; 
 }
 
 LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -40,6 +141,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+			CreateToolbar();
 			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
 			RefreshURLTree();
@@ -203,7 +305,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			PostQuitMessage(IDOK);
 		}
 		break;
-	case IDC_URLDELETE:
+	case ID_MAIN_REMOVE:
 		{
 			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 			HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
@@ -241,7 +343,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			}
 		}
 		break;
-	case IDC_URLEDIT:
+	case ID_MAIN_EDIT:
 		{
 			CURLDlg dlg;
 			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
@@ -273,7 +375,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			}
 		}
 		break;
-	case IDC_ADDURL:
+	case ID_MAIN_ADDPROJECT:
 		{
 			CURLDlg dlg;
 			dlg.DoModal(hResource, IDD_URLCONFIG, *this);
@@ -290,7 +392,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			RefreshURLTree();
 		}
 		break;
-	case IDC_SHOWDIFF:
+	case ID_MAIN_SHOWDIFF:
 		{
 			TCHAR buf[4096];
 			// find the revision we have to show the diff for

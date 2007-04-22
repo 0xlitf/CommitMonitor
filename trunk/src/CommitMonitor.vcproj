@@ -393,6 +393,14 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\Resources\about.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\add.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\CommitMonitor.ico"
 				>
 			</File>
@@ -405,7 +413,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNew.ico"
+				RelativePath=".\Resources\diff.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\edit.ico"
 				>
 			</File>
 			<File
@@ -413,11 +425,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\NotifyNormal.ico"
+				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\resources\resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\NotifyNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\options.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\remove.ico"
 				>
 			</File>
 		</Filter>
