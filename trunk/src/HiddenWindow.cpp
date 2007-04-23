@@ -156,7 +156,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 				wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 				m_UrlInfos.Save(urlfile.c_str());
 			}
-			ShowTrayIcon(!!wParam);
+		    ShowTrayIcon(!!lParam);
 			return TRUE;
 		}
 		break;
@@ -337,11 +337,9 @@ DWORD CHiddenWindow::RunThread()
 					{
 						writeIt->second.lastcheckedrev = headrev;
 						writeIt->second.lastchecked = currenttime;
-						bNewEntries = true;
 					}
 					m_UrlInfos.ReleaseWriteData();
 
-					bNewEntries = true;
 					wstring sPopupText;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
@@ -351,6 +349,7 @@ DWORD CHiddenWindow::RunThread()
 						if (writeIt != pWrite->end())
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
+                            bNewEntries = true;
 						}
 						m_UrlInfos.ReleaseWriteData();
 						TCHAR buf[4096];
@@ -399,7 +398,6 @@ DWORD CHiddenWindow::RunThread()
 				if (writeIt != pWrite->end())
 				{
 					writeIt->second.lastchecked = currenttime;
-					bNewEntries = true;
 				}
 				m_UrlInfos.ReleaseWriteData();
 
@@ -431,8 +429,14 @@ DWORD CHiddenWindow::RunThread()
 						// we do this by checking for header titles looking like
 						// "<h2>Revision XX: /</h2> - if we find that, it's a html
 						// page from inside a repository
-						const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
-						regex titex = regex(reTitle, regex::normal | regbase::icase);
+                        const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
+                        // xsl transformed pages don't have an easy way to determine
+                        // the inside from outside of a repository.
+                        // We therefore check for <index rev="0" to make sure it's either
+                        // an empty repository or really an SVNParentPathList
+                        const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
+                        regex titex = regex(reTitle, regex::normal | regbase::icase);
+                        regex titex2 = regex(reTitle2, regex::normal | regbase::icase);
 						string::const_iterator start = in.begin();
 						string::const_iterator end = in.end();
 						match_results<string::const_iterator> fwhat;
@@ -494,12 +498,21 @@ DWORD CHiddenWindow::RunThread()
 						}
 						start = in.begin();
 						end = in.end();
+                        if (!regex_search(start, end, fwhat, titex2, match_default))
+                        {
+                            TRACE(_T("found repository url instead of SVNParentPathList\n"));
+                            continue;
+                        }
 						while (regex_search(start, end, what, expression2, flags))	 
 						{
 							// what[0] contains the whole string
 							// what[1] contains the url part.
 							// what[2] contains the name
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+                            if (url.compare(_T("trunk"))==0)
+                            {
+                                int akljdjlkaj = 0;
+                            }
 							url = it->first + _T("/") + url;
 							url = svn.CanonicalizeURL(url);
 
@@ -541,6 +554,7 @@ DWORD CHiddenWindow::RunThread()
 							data.sText = popupText;
 							data.sTitle = wstring(popupTitle);
 							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+                            bNewEntries = true;
 						}
 					}
 					delete callback;
@@ -559,12 +573,10 @@ DWORD CHiddenWindow::RunThread()
 			m_UrlInfos.ReleaseWriteData();
 		}
 	}
-	if (bNewEntries)
-	{
-		// save the changed entries
-		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, 0);
-	}
-	urlinfoReadOnly.ReleaseReadOnlyData();
+	// save the changed entries
+	::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, (LPARAM)bNewEntries);
+
+    urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
 	m_ThreadRunning = FALSE;
 

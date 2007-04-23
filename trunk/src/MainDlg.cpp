@@ -96,7 +96,7 @@ bool CMainDlg::CreateToolbar()
 	tbb[index].dwData = 0; 
 	tbb[index++].iString = 0; 
 
-	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
 	tbb[index].idCommand = ID_MAIN_SHOWDIFF; 
 	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -329,7 +329,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					}
 
 					pWrite->erase(*(wstring*)itemex.lParam);
-					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
+					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
 					hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
 					m_pURLInfos->ReleaseWriteData();
 					TreeView_DeleteItem(hTreeControl, hItem);
@@ -685,7 +685,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
-			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, 0);
+			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
 			TCHAR buf[1024];
 			HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
 			wstring msg = pLogEntry->message.c_str();
