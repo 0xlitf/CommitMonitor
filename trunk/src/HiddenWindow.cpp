@@ -442,9 +442,11 @@ DWORD CHiddenWindow::RunThread()
 							continue;
 						}
 
-						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*href\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
+						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*HREF\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
+						const char * re2 = "<\\s*DIR\\s*name\\s*=\\s*\"([^\"]*)\"\\s*HREF\\s*=\\s*\"([^\"]*)\"\\s*/\\s*>";
 
 						regex expression = regex(re, regex::normal | regbase::icase);
+						regex expression2 = regex(re2, regex::normal | regbase::icase);
 						start = in.begin();
 						end = in.end();
 						match_results<string::const_iterator> what;
@@ -452,7 +454,7 @@ DWORD CHiddenWindow::RunThread()
 						bool hasNewEntries = false;
 						int nCountNewEntries = 0;
 						wstring popupText;
-						while (regex_search(start, end, what, expression, flags))   
+						while (regex_search(start, end, what, expression, flags))	
 						{
 							// what[0] contains the whole string
 							// what[1] contains the url part.
@@ -485,7 +487,47 @@ DWORD CHiddenWindow::RunThread()
 							m_UrlInfos.ReleaseWriteData();
 
 							// update search position:
-							start = what[0].second;      
+							start = what[0].second;		 
+							// update flags:
+							flags |= match_prev_avail;
+							flags |= match_not_bob;
+						}
+						start = in.begin();
+						end = in.end();
+						while (regex_search(start, end, what, expression2, flags))	 
+						{
+							// what[0] contains the whole string
+							// what[1] contains the url part.
+							// what[2] contains the name
+							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+							url = it->first + _T("/") + url;
+							url = svn.CanonicalizeURL(url);
+
+							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+							if (writeIt == pWrite->end())
+							{
+								// we found a new URL, add it to our list
+								CUrlInfo newinfo;
+								newinfo.url = url;
+								newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+								newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
+								newinfo.username = it->second.username;
+								newinfo.password = it->second.password;
+								newinfo.fetchdiffs = it->second.fetchdiffs;
+								newinfo.minutesinterval = it->second.minutesinterval;
+								(*pWrite)[url] = newinfo;
+								//pWrite->insert(make_pair<url, newinfo>);
+								hasNewEntries = true;
+								nCountNewEntries++;
+								if (!popupText.empty())
+									popupText += _T(", ");
+								popupText += newinfo.name;
+							}
+							m_UrlInfos.ReleaseWriteData();
+
+							// update search position:
+							start = what[0].second;		 
 							// update flags:
 							flags |= match_prev_avail;
 							flags |= match_not_bob;
