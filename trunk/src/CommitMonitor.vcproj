@@ -421,15 +421,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\resources\resources\NotifyNew.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\NotifyNew.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\resources\resources\NotifyNormal.ico"
 				>
 			</File>
 			<File
