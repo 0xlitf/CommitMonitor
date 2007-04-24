@@ -146,6 +146,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			{
 				CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
 				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, 0);
+                ShowTrayIcon(true);
 			}
 		}
 		break;
@@ -560,17 +561,6 @@ DWORD CHiddenWindow::RunThread()
 					delete callback;
 				}
 			}
-		}
-		else
-		{
-			// only block the object for a short time
-			map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-			map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
-			if (writeIt != pWrite->end())
-			{
-				writeIt->second.lastchecked = currenttime;
-			}
-			m_UrlInfos.ReleaseWriteData();
 		}
 	}
 	// save the changed entries
