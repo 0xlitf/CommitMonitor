@@ -35,6 +35,7 @@ private:
 	bool					OnLButtonDown(UINT nFlags, POINT point);
 	bool					OnLButtonUp(UINT nFlags, POINT point);
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+	void					DoResize(int width, int height);
 	bool					CreateToolbar();
 
 	void					RefreshURLTree();
@@ -53,6 +54,10 @@ private:
 
 	int						m_nDragMode;
 	LONG					m_oldx, m_oldy;
+	LONG					m_topmarg;
+	LONG					m_xSliderPos;
+	LONG					m_ySliderPos;
+	LONG					m_bottommarg;
 
 	HFONT					m_boldFont;
 

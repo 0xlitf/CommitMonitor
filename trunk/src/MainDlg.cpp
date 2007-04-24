@@ -145,7 +145,34 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
 			RefreshURLTree();
+
+			// initialize the window position infos
+			RECT rect;
+			GetClientRect(m_hwndToolbar, &rect);
+			m_topmarg = rect.bottom+2;
+			GetClientRect(GetDlgItem(*this, IDC_URLTREE), &rect);
+			m_xSliderPos = rect.right+4;
+			GetClientRect(GetDlgItem(*this, IDC_MONITOREDURLS), &rect);
+			m_ySliderPos = rect.bottom+m_topmarg;
+			GetClientRect(GetDlgItem(*this, IDC_LOGINFO), &rect);
+			m_bottommarg = rect.bottom+4+m_ySliderPos;
+			GetClientRect(*this, &rect);
+			m_bottommarg = rect.bottom - m_bottommarg;
+
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
+		}
+		break;
+	case WM_SIZE:
+		{
+			DoResize(LOWORD(lParam), HIWORD(lParam));
+		}
+		break;
+	case WM_GETMINMAXINFO:
+		{
+			MINMAXINFO * mmi = (MINMAXINFO*)lParam;
+			mmi->ptMinTrackSize.x = m_xSliderPos + 100;
+			mmi->ptMinTrackSize.y = m_ySliderPos + 100;
+			return 0;
 		}
 		break;
 	case WM_COMMAND:
@@ -811,8 +838,29 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 }
 
 /******************************************************************************/
-/* tree and list view resizing                                                */
+/* tree, list view and dialog resizing                                        */
 /******************************************************************************/
+
+void CMainDlg::DoResize(int width, int height)
+{
+	// when we get here, the controls haven't been resized yet
+	RECT tree, list, log, ok;
+	HWND hTree = GetDlgItem(*this, IDC_URLTREE);
+	HWND hList = GetDlgItem(*this, IDC_MONITOREDURLS);
+	HWND hLog = GetDlgItem(*this, IDC_LOGINFO);
+	HWND hOK = GetDlgItem(*this, IDOK);
+	::GetClientRect(hTree, &tree);
+	::GetClientRect(hList, &list);
+	::GetClientRect(hLog, &log);
+	::GetClientRect(hOK, &ok);
+	HDWP hdwp = BeginDeferWindowPos(5);
+	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hTree, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hList, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hLog, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
+	EndDeferWindowPos(hdwp);
+}
 
 bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message) 
 {
@@ -1115,6 +1163,14 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 		}
 		EndDeferWindowPos(hdwp);
 	}
+
+	// initialize the window position infos
+	GetClientRect(GetDlgItem(*this, IDC_URLTREE), &rect);
+	m_xSliderPos = rect.right+4;
+	GetClientRect(GetDlgItem(*this, IDC_MONITOREDURLS), &rect);
+	m_ySliderPos = rect.bottom+m_topmarg;
+
+
 	m_nDragMode = DRAGMODE_NONE;
 
 	return true;
