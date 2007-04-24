@@ -510,10 +510,6 @@ DWORD CHiddenWindow::RunThread()
 							// what[1] contains the url part.
 							// what[2] contains the name
 							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
-                            if (url.compare(_T("trunk"))==0)
-                            {
-                                int akljdjlkaj = 0;
-                            }
 							url = it->first + _T("/") + url;
 							url = svn.CanonicalizeURL(url);
 
