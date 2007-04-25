@@ -335,38 +335,56 @@ LRESULT CMainDlg::DoCommand(int id)
 	case ID_MAIN_REMOVE:
 		{
 			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-			HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
-			if (hItem)
+			HWND hListControl = GetDlgItem(*this, IDC_MONITOREDURLS);
+			// which control has the focus?
+			HWND hFocus = ::GetFocus();
+			if (hFocus == hTreeControl)
 			{
-				TVITEMEX itemex = {0};
-				itemex.hItem = hItem;
-				itemex.mask = TVIF_PARAM;
-				TreeView_GetItem(hTreeControl, &itemex);
-				map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-				HTREEITEM hPrev = TVI_ROOT;
-				if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+				HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
+				if (hItem)
 				{
-					// delete all fetched and stored diff files
-					wstring mask = (*pWrite)[(*(wstring*)itemex.lParam)].name;
-					mask += _T("*.*");
-					CSimpleFileFind sff(CAppUtils::GetAppDataDir(), mask.c_str());
-					while (sff.FindNextFileNoDots())
+					TVITEMEX itemex = {0};
+					itemex.hItem = hItem;
+					itemex.mask = TVIF_PARAM;
+					TreeView_GetItem(hTreeControl, &itemex);
+					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+					HTREEITEM hPrev = TVI_ROOT;
+					if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 					{
-						DeleteFile(sff.GetFilePath().c_str());
-					}
+						wstring mask = (*pWrite)[(*(wstring*)itemex.lParam)].name;
+						// ask the user if he really wants to remove the url
+						TCHAR question[4096] = {0};
+						_stprintf_s(question, 4096, _T("Do you really want to delete the project\n%s ?"), mask.c_str());
+						if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO)==IDYES)
+						{
+							// delete all fetched and stored diff files
+							mask += _T("*.*");
+							CSimpleFileFind sff(CAppUtils::GetAppDataDir(), mask.c_str());
+							while (sff.FindNextFileNoDots())
+							{
+								DeleteFile(sff.GetFilePath().c_str());
+							}
 
-					pWrite->erase(*(wstring*)itemex.lParam);
-					::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
-					hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
-					m_pURLInfos->ReleaseWriteData();
-					TreeView_DeleteItem(hTreeControl, hItem);
+							pWrite->erase(*(wstring*)itemex.lParam);
+							::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
+							hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
+							m_pURLInfos->ReleaseWriteData();
+							TreeView_DeleteItem(hTreeControl, hItem);
+							if (hPrev == NULL)
+								hPrev = TreeView_GetRoot(hTreeControl);
+							if ((hPrev)&&(hPrev != TVI_ROOT))
+								TreeView_SelectItem(hTreeControl, hPrev);
+						}
+						else
+							m_pURLInfos->ReleaseWriteData();
+					}
+					else
+						m_pURLInfos->ReleaseWriteData();
 				}
-				else
-					m_pURLInfos->ReleaseWriteData();
-				if (hPrev == NULL)
-					hPrev = TreeView_GetRoot(hTreeControl);
-				if (hPrev)
-					TreeView_SelectItem(hTreeControl, hPrev);
+			}
+			else if (hFocus == hListControl)
+			{
+				RemoveSelectedListItems();
 			}
 		}
 		break;
@@ -807,65 +825,69 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 	if (pnkd->wVKey == VK_DELETE)
 	{
 		// remove the selected entry
-		HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
-		int selCount = ListView_GetSelectedCount(hListView);
-		if (selCount <= 0)
-			return;	//nothing selected, nothing to remove
-		int nFirstDeleted = -1;
-		HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-		HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
-		// get the url this entry refers to
-		TVITEMEX itemex = {0};
-		itemex.hItem = hSelectedItem;
-		itemex.mask = TVIF_PARAM;
-		TreeView_GetItem(hTreeControl, &itemex);
-		map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-		if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
-		{
-			LVITEM item = {0};
-			int i = 0;
-			TCHAR buf[4096];
-			while (i<ListView_GetItemCount(hListView))
-			{
-				item.mask = LVIF_PARAM|LVIF_STATE;
-				item.stateMask = LVIS_SELECTED;
-				item.iItem = i;
-				item.lParam = 0;
-				ListView_GetItem(hListView, &item);
-				if (item.state & LVIS_SELECTED)
-				{
-					SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
-					// find the diff name
-					_stprintf_s(buf, 4096, _T("%s_%ld"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-					wstring diffFileName = CAppUtils::GetAppDataDir();
-					diffFileName += _T("\\");
-					diffFileName += wstring(buf);
-					DeleteFile(diffFileName.c_str());
-
-					pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
-					ListView_DeleteItem(hListView, i);
-					if (nFirstDeleted < 0)
-						nFirstDeleted = i;
-				}
-				else
-					++i;
-			}
-		}
-		m_pURLInfos->ReleaseWriteData();
-		if (nFirstDeleted >= 0)
-		{
-			if (ListView_GetItemCount(hListView) > nFirstDeleted)
-			{
-				ListView_SetItemState(hListView, nFirstDeleted, LVIS_SELECTED, LVIS_SELECTED);
-			}
-			else
-			{
-				ListView_SetItemState(hListView, ListView_GetItemCount(hListView)-1, LVIS_SELECTED, LVIS_SELECTED);
-			}
-		}
+		RemoveSelectedListItems();
 	}
 }
 
+void CMainDlg::RemoveSelectedListItems()
+{
+	HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
+	int selCount = ListView_GetSelectedCount(hListView);
+	if (selCount <= 0)
+		return;	//nothing selected, nothing to remove
+	int nFirstDeleted = -1;
+	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+	HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+	// get the url this entry refers to
+	TVITEMEX itemex = {0};
+	itemex.hItem = hSelectedItem;
+	itemex.mask = TVIF_PARAM;
+	TreeView_GetItem(hTreeControl, &itemex);
+	map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+	if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+	{
+		LVITEM item = {0};
+		int i = 0;
+		TCHAR buf[4096];
+		while (i<ListView_GetItemCount(hListView))
+		{
+			item.mask = LVIF_PARAM|LVIF_STATE;
+			item.stateMask = LVIS_SELECTED;
+			item.iItem = i;
+			item.lParam = 0;
+			ListView_GetItem(hListView, &item);
+			if (item.state & LVIS_SELECTED)
+			{
+				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+				// find the diff name
+				_stprintf_s(buf, 4096, _T("%s_%ld"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				wstring diffFileName = CAppUtils::GetAppDataDir();
+				diffFileName += _T("\\");
+				diffFileName += wstring(buf);
+				DeleteFile(diffFileName.c_str());
+
+				pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
+				ListView_DeleteItem(hListView, i);
+				if (nFirstDeleted < 0)
+					nFirstDeleted = i;
+			}
+			else
+				++i;
+		}
+	}
+	m_pURLInfos->ReleaseWriteData();
+	if (nFirstDeleted >= 0)
+	{
+		if (ListView_GetItemCount(hListView) > nFirstDeleted)
+		{
+			ListView_SetItemState(hListView, nFirstDeleted, LVIS_SELECTED, LVIS_SELECTED);
+		}
+		else
+		{
+			ListView_SetItemState(hListView, ListView_GetItemCount(hListView)-1, LVIS_SELECTED, LVIS_SELECTED);
+		}
+	}
+}
 /******************************************************************************/
 /* tree, list view and dialog resizing                                        */
 /******************************************************************************/

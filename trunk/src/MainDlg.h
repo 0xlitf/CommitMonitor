@@ -46,6 +46,7 @@ private:
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
+	void					RemoveSelectedListItems();
 
 private:	
 	HWND					m_hParent;
