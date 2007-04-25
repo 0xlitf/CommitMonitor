@@ -47,8 +47,17 @@ private:
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 	void					RemoveSelectedListItems();
+	void					SetRemoveButtonState();
 
-private:	
+	/// window procedure of the sub classed tree view control
+	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+	WNDPROC					m_oldTreeWndProc;	///< pointer to the original window proc of the tree view control
+
+private:
+	HWND					m_hTreeControl;
+	HWND					m_hListControl;
+	HWND					m_hLogMsgControl;
+
 	HWND					m_hParent;
 	HWND					m_hwndToolbar;
 	HIMAGELIST				m_hToolbarImages;

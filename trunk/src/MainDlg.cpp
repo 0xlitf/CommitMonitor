@@ -15,6 +15,9 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_boldFont(NULL)
 	, m_pURLInfos(NULL)
 	, m_bBlockListCtrlUI(false)
+	, m_hTreeControl(NULL)
+	, m_hListControl(NULL)
+	, m_hLogMsgControl(NULL)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -142,7 +145,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
 			CreateToolbar();
-			::SendMessage(::GetDlgItem(*this, IDC_URLTREE), TVM_SETUNICODEFORMAT, 1, 0);
+			m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
+			m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
+			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
+			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
 			RefreshURLTree();
 
@@ -150,14 +156,18 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			RECT rect;
 			GetClientRect(m_hwndToolbar, &rect);
 			m_topmarg = rect.bottom+2;
-			GetClientRect(GetDlgItem(*this, IDC_URLTREE), &rect);
+			GetClientRect(m_hTreeControl, &rect);
 			m_xSliderPos = rect.right+4;
-			GetClientRect(GetDlgItem(*this, IDC_MONITOREDURLS), &rect);
+			GetClientRect(m_hListControl, &rect);
 			m_ySliderPos = rect.bottom+m_topmarg;
-			GetClientRect(GetDlgItem(*this, IDC_LOGINFO), &rect);
+			GetClientRect(m_hLogMsgControl, &rect);
 			m_bottommarg = rect.bottom+4+m_ySliderPos;
 			GetClientRect(*this, &rect);
 			m_bottommarg = rect.bottom - m_bottommarg;
+
+			// subclass the tree view control to intercept the WM_SETFOCUS messages
+			m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
+			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
 
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 		}
@@ -205,7 +215,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (wParam == TIMER_REFRESH)
 			{
-				HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 				const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 				for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
 				{
@@ -231,7 +240,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD;
 						tv.itemex.pszText = str;
 						tv.itemex.cchTextMax = it->second.name.size()+9;
-						TreeView_GetItem(hTreeControl, &tv.itemex);
+						TreeView_GetItem(m_hTreeControl, &tv.itemex);
 						wstring sTitle = wstring(str);
 						if (unread)
 						{
@@ -247,11 +256,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						if (sTitle.compare(str) != 0)
 						{
-							TreeView_SetItem(hTreeControl, &tv.itemex);
+							TreeView_SetItem(m_hTreeControl, &tv.itemex);
 							if (tv.itemex.state & TVIS_SELECTED)
 							{
 								m_bBlockListCtrlUI = true;
-								TreeItemSelected(hTreeControl, tv.itemex.hItem);
+								TreeItemSelected(m_hTreeControl, tv.itemex.hItem);
 								m_bBlockListCtrlUI = false;
 							}
 						}
@@ -271,36 +280,34 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							tv.itemex.stateMask = TVIS_BOLD;
 						}
 						m_bBlockListCtrlUI = true;
-						TreeView_InsertItem(hTreeControl, &tv);
-						TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
+						TreeView_InsertItem(m_hTreeControl, &tv);
+						TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 						m_bBlockListCtrlUI = false;
 					}
 					delete [] str;
 				}
 				m_pURLInfos->ReleaseReadOnlyData();
-				::InvalidateRect(GetDlgItem(*this, IDC_MONITOREDURLS), NULL, true);
+				::InvalidateRect(m_hListControl, NULL, true);
 			}
 		}
 		break;
 	case WM_NOTIFY:
 		{
-			HWND hTreeCtrl = GetDlgItem(*this, IDC_URLTREE);
-			HWND hListCtrl = GetDlgItem(*this, IDC_MONITOREDURLS);
 			LPNMHDR lpnmhdr = (LPNMHDR)lParam;
-			if ((lpnmhdr->code == TVN_SELCHANGED)&&(lpnmhdr->hwndFrom == hTreeCtrl))
+			if ((lpnmhdr->code == TVN_SELCHANGED)&&(lpnmhdr->hwndFrom == m_hTreeControl))
 			{
 				OnSelectTreeItem((LPNMTREEVIEW)lParam);
 				return TRUE;
 			}
-			if ((lpnmhdr->code == LVN_ITEMCHANGED)&&(lpnmhdr->hwndFrom == hListCtrl))
+			if ((lpnmhdr->code == LVN_ITEMCHANGED)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
 				OnSelectListItem((LPNMLISTVIEW)lParam);
 			}
-			if ((lpnmhdr->code == LVN_KEYDOWN)&&(lpnmhdr->hwndFrom == hListCtrl))
+			if ((lpnmhdr->code == LVN_KEYDOWN)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
 				OnKeyDownListItem((LPNMLVKEYDOWN)lParam);
 			}
-			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == hListCtrl))
+			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
 				return OnCustomDrawListItem((LPNMLVCUSTOMDRAW)lParam);
 			}
@@ -334,19 +341,17 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case ID_MAIN_REMOVE:
 		{
-			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-			HWND hListControl = GetDlgItem(*this, IDC_MONITOREDURLS);
 			// which control has the focus?
 			HWND hFocus = ::GetFocus();
-			if (hFocus == hTreeControl)
+			if (hFocus == m_hTreeControl)
 			{
-				HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
+				HTREEITEM hItem = TreeView_GetSelection(m_hTreeControl);
 				if (hItem)
 				{
 					TVITEMEX itemex = {0};
 					itemex.hItem = hItem;
 					itemex.mask = TVIF_PARAM;
-					TreeView_GetItem(hTreeControl, &itemex);
+					TreeView_GetItem(m_hTreeControl, &itemex);
 					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 					HTREEITEM hPrev = TVI_ROOT;
 					if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
@@ -367,13 +372,13 @@ LRESULT CMainDlg::DoCommand(int id)
 
 							pWrite->erase(*(wstring*)itemex.lParam);
 							::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
-							hPrev = TreeView_GetPrevSibling(hTreeControl, hItem);
+							hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
 							m_pURLInfos->ReleaseWriteData();
-							TreeView_DeleteItem(hTreeControl, hItem);
+							TreeView_DeleteItem(m_hTreeControl, hItem);
 							if (hPrev == NULL)
-								hPrev = TreeView_GetRoot(hTreeControl);
+								hPrev = TreeView_GetRoot(m_hTreeControl);
 							if ((hPrev)&&(hPrev != TVI_ROOT))
-								TreeView_SelectItem(hTreeControl, hPrev);
+								TreeView_SelectItem(m_hTreeControl, hPrev);
 						}
 						else
 							m_pURLInfos->ReleaseWriteData();
@@ -382,7 +387,7 @@ LRESULT CMainDlg::DoCommand(int id)
 						m_pURLInfos->ReleaseWriteData();
 				}
 			}
-			else if (hFocus == hListControl)
+			else if (hFocus == m_hListControl)
 			{
 				RemoveSelectedListItems();
 			}
@@ -391,14 +396,13 @@ LRESULT CMainDlg::DoCommand(int id)
 	case ID_MAIN_EDIT:
 		{
 			CURLDlg dlg;
-			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-			HTREEITEM hItem = TreeView_GetSelection(hTreeControl);
+			HTREEITEM hItem = TreeView_GetSelection(m_hTreeControl);
 			if (hItem)
 			{
 				TVITEMEX itemex = {0};
 				itemex.hItem = hItem;
 				itemex.mask = TVIF_PARAM;
-				TreeView_GetItem(hTreeControl, &itemex);
+				TreeView_GetItem(m_hTreeControl, &itemex);
 				const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 				if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 				{
@@ -441,28 +445,26 @@ LRESULT CMainDlg::DoCommand(int id)
 		{
 			TCHAR buf[4096];
 			// find the revision we have to show the diff for
-			HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
-			int selCount = ListView_GetSelectedCount(hListView);
+			int selCount = ListView_GetSelectedCount(m_hListControl);
 			if (selCount <= 0)
 				return FALSE;	//nothing selected, nothing to show
 
-			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-			HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
 			// get the url this entry refers to
 			TVITEMEX itemex = {0};
 			itemex.hItem = hSelectedItem;
 			itemex.mask = TVIF_PARAM;
-			TreeView_GetItem(hTreeControl, &itemex);
+			TreeView_GetItem(m_hTreeControl, &itemex);
 			const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 			if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 			{
 				LVITEM item = {0};
-				for (int i=0; i<ListView_GetItemCount(hListView); ++i)
+				for (int i=0; i<ListView_GetItemCount(m_hListControl); ++i)
 				{
 					item.mask = LVIF_PARAM|LVIF_STATE;
 					item.stateMask = LVIS_SELECTED;
 					item.iItem = i;
-					ListView_GetItem(hListView, &item);
+					ListView_GetItem(m_hListControl, &item);
 					if (item.state & LVIS_SELECTED)
 					{
 						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
@@ -502,6 +504,18 @@ LRESULT CMainDlg::DoCommand(int id)
 	return 1;
 }
 
+void CMainDlg::SetRemoveButtonState()
+{
+	HWND hFocus = ::GetFocus();
+	if (hFocus == m_hListControl)
+	{
+		SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(ListView_GetSelectedCount(m_hListControl) > 0, 0));
+	}
+	else
+	{
+		SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(TreeView_GetSelection(m_hTreeControl)!=0, 0));
+	}
+}
 
 /******************************************************************************/
 /* tree handling                                                              */
@@ -511,12 +525,11 @@ void CMainDlg::RefreshURLTree()
 	// the m_URLInfos member must be up-to-date here
 
 	m_bBlockListCtrlUI = true;
-	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 	// first clear the controls (the data)
-	ListView_DeleteAllItems(GetDlgItem(*this, IDC_MONITOREDURLS));
-	TreeView_SelectItem(hTreeControl, NULL);
-	TreeView_DeleteAllItems(hTreeControl);
-	SetWindowText(GetDlgItem(*this, IDC_LOGINFO), _T(""));
+	ListView_DeleteAllItems(m_hListControl);
+	TreeView_SelectItem(m_hTreeControl, NULL);
+	TreeView_DeleteAllItems(m_hTreeControl);
+	SetWindowText(m_hLogMsgControl, _T(""));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(false, 0));
@@ -551,13 +564,13 @@ void CMainDlg::RefreshURLTree()
 		}
 		tv.itemex.pszText = str;
 		tv.itemex.lParam = (LPARAM)&it->first;
-		TreeView_InsertItem(hTreeControl, &tv);
-		TreeView_Expand(hTreeControl, tv.hParent, TVE_EXPAND);
+		TreeView_InsertItem(m_hTreeControl, &tv);
+		TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
 	}
 	m_pURLInfos->ReleaseReadOnlyData();
 	m_bBlockListCtrlUI = false;
-	::InvalidateRect(GetDlgItem(*this, IDC_MONITOREDURLS), NULL, true);
+	::InvalidateRect(m_hListControl, NULL, true);
 }
 
 HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
@@ -585,27 +598,26 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
 
 HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
 {
-	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
 	if (hItem == TVI_ROOT)
-		hItem = TreeView_GetRoot(hTreeControl);
+		hItem = TreeView_GetRoot(m_hTreeControl);
 	TVITEM item;
 	item.mask = TVIF_PARAM;
 	while (hItem)
 	{
 		item.hItem = hItem;
-		TreeView_GetItem(hTreeControl, &item);
+		TreeView_GetItem(m_hTreeControl, &item);
 		if (url.compare(*(wstring*)item.lParam) == 0)
 			return hItem;
-		HTREEITEM hChild = TreeView_GetChild(hTreeControl, hItem);
+		HTREEITEM hChild = TreeView_GetChild(m_hTreeControl, hItem);
 		if (hChild)
 		{
 			item.hItem = hChild;
-			TreeView_GetItem(hTreeControl, &item);
+			TreeView_GetItem(m_hTreeControl, &item);
 			hChild = FindTreeNode(url, hChild);
 			if (hChild != TVI_ROOT)
 				return hChild;
 		}
-		hItem = TreeView_GetNextSibling(hTreeControl, hItem);
+		hItem = TreeView_GetNextSibling(m_hTreeControl, hItem);
 	};
 	return TVI_ROOT;
 }
@@ -615,17 +627,15 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, 
 		MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
-	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, 
-		MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
+	SetRemoveButtonState();
 	if (lpNMTreeView->itemNew.state & TVIS_SELECTED)
 		TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
 	else
 	{
-		ListView_DeleteAllItems(GetDlgItem(*this, IDC_MONITOREDURLS));
-		SetWindowText(GetDlgItem(*this, IDC_LOGINFO), _T(""));
+		ListView_DeleteAllItems(m_hListControl);
+		SetWindowText(m_hLogMsgControl, _T(""));
 	}
-	HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
-	SetWindowText(hMsgView, _T(""));
+	SetWindowText(m_hLogMsgControl, _T(""));
 }
 
 void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
@@ -639,27 +649,26 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
 		const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
-		HWND hLogList = GetDlgItem(*this, IDC_MONITOREDURLS);
 
 		m_bBlockListCtrlUI = true;
 		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
-		ListView_DeleteAllItems(hLogList);
+		ListView_DeleteAllItems(m_hListControl);
 
-		int c = Header_GetItemCount(ListView_GetHeader(hLogList))-1;
+		int c = Header_GetItemCount(ListView_GetHeader(m_hListControl))-1;
 		while (c>=0)
-			ListView_DeleteColumn(hLogList, c--);
+			ListView_DeleteColumn(m_hListControl, c--);
 
-		ListView_SetExtendedListViewStyle(hLogList, exStyle);
+		ListView_SetExtendedListViewStyle(m_hListControl, exStyle);
 		LVCOLUMN lvc = {0};
 		lvc.mask = LVCF_TEXT;
 		lvc.fmt = LVCFMT_LEFT;
 		lvc.cx = -1;
 		lvc.pszText = _T("revision");
-		ListView_InsertColumn(hLogList, 0, &lvc);
+		ListView_InsertColumn(m_hListControl, 0, &lvc);
 		lvc.pszText = _T("date");
-		ListView_InsertColumn(hLogList, 1, &lvc);
+		ListView_InsertColumn(m_hListControl, 1, &lvc);
 		lvc.pszText = _T("author");
-		ListView_InsertColumn(hLogList, 2, &lvc);
+		ListView_InsertColumn(m_hListControl, 2, &lvc);
 
 		LVITEM item = {0};
 		int i = 0;
@@ -671,18 +680,18 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			item.lParam = (LPARAM)&it->second;
 			_stprintf_s(buf, 1024, _T("%ld"), it->first);
 			item.pszText = buf;
-			ListView_InsertItem(hLogList, &item);
+			ListView_InsertItem(m_hListControl, &item);
 			_tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
-			ListView_SetItemText(hLogList, i, 1, buf);
+			ListView_SetItemText(m_hListControl, i, 1, buf);
 			_tcscpy_s(buf, 1024, it->second.author.c_str());
-			ListView_SetItemText(hLogList, i, 2, buf);
+			ListView_SetItemText(m_hListControl, i, 2, buf);
 		}
 		m_bBlockListCtrlUI = false;
-		ListView_SetColumnWidth(hLogList, 0, LVSCW_AUTOSIZE_USEHEADER);
-		ListView_SetColumnWidth(hLogList, 1, LVSCW_AUTOSIZE_USEHEADER);
-		ListView_SetColumnWidth(hLogList, 2, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
 
-		::InvalidateRect(hLogList, NULL, false);
+		::InvalidateRect(m_hListControl, NULL, false);
 	}
 	m_pURLInfos->ReleaseReadOnlyData();
 }
@@ -695,21 +704,19 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 	if (lpNMListView->uNewState & LVIS_SELECTED)
 	{
 		const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-		HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
 		LVITEM item = {0};
 		item.mask = LVIF_PARAM;
 		item.iItem = lpNMListView->iItem;
-		ListView_GetItem(hListView, &item);
+		ListView_GetItem(m_hListControl, &item);
 		SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 		if (pLogEntry)
 		{
-			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-			HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
 			// get the url this entry refers to
 			TVITEMEX itemex = {0};
 			itemex.hItem = hSelectedItem;
 			itemex.mask = TVIF_PARAM;
-			TreeView_GetItem(hTreeControl, &itemex);
+			TreeView_GetItem(m_hTreeControl, &itemex);
 			if (itemex.lParam == 0)
 			{
 				m_pURLInfos->ReleaseReadOnlyData();
@@ -747,14 +754,13 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     }
                     itemex.pszText = str;
                     itemex.mask = TVIF_TEXT|TVIF_STATE;
-                    TreeView_SetItem(hTreeControl, &itemex);
+                    TreeView_SetItem(m_hTreeControl, &itemex);
                 }
             }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
 			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
 			TCHAR buf[1024];
-			HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
 			wstring msg = pLogEntry->message.c_str();
 			msg += _T("\n\n-------------------------------\n");
 			// now add all changed paths, one path per line
@@ -778,7 +784,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			}
 
 			CAppUtils::SearchReplace(msg, _T("\n"), _T("\r\n"));
-			SetWindowText(hMsgView, msg.c_str());
+			SetWindowText(m_hLogMsgControl, msg.c_str());
 
 			// find the diff name
 			_stprintf_s(buf, 1024, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
@@ -831,31 +837,29 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 
 void CMainDlg::RemoveSelectedListItems()
 {
-	HWND hListView = GetDlgItem(*this, IDC_MONITOREDURLS);
-	int selCount = ListView_GetSelectedCount(hListView);
+	int selCount = ListView_GetSelectedCount(m_hListControl);
 	if (selCount <= 0)
 		return;	//nothing selected, nothing to remove
 	int nFirstDeleted = -1;
-	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-	HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+	HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
 	// get the url this entry refers to
 	TVITEMEX itemex = {0};
 	itemex.hItem = hSelectedItem;
 	itemex.mask = TVIF_PARAM;
-	TreeView_GetItem(hTreeControl, &itemex);
+	TreeView_GetItem(m_hTreeControl, &itemex);
 	map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 	if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 	{
 		LVITEM item = {0};
 		int i = 0;
 		TCHAR buf[4096];
-		while (i<ListView_GetItemCount(hListView))
+		while (i<ListView_GetItemCount(m_hListControl))
 		{
 			item.mask = LVIF_PARAM|LVIF_STATE;
 			item.stateMask = LVIS_SELECTED;
 			item.iItem = i;
 			item.lParam = 0;
-			ListView_GetItem(hListView, &item);
+			ListView_GetItem(m_hListControl, &item);
 			if (item.state & LVIS_SELECTED)
 			{
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
@@ -867,7 +871,7 @@ void CMainDlg::RemoveSelectedListItems()
 				DeleteFile(diffFileName.c_str());
 
 				pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
-				ListView_DeleteItem(hListView, i);
+				ListView_DeleteItem(m_hListControl, i);
 				if (nFirstDeleted < 0)
 					nFirstDeleted = i;
 			}
@@ -878,16 +882,18 @@ void CMainDlg::RemoveSelectedListItems()
 	m_pURLInfos->ReleaseWriteData();
 	if (nFirstDeleted >= 0)
 	{
-		if (ListView_GetItemCount(hListView) > nFirstDeleted)
+		if (ListView_GetItemCount(m_hListControl) > nFirstDeleted)
 		{
-			ListView_SetItemState(hListView, nFirstDeleted, LVIS_SELECTED, LVIS_SELECTED);
+			ListView_SetItemState(m_hListControl, nFirstDeleted, LVIS_SELECTED, LVIS_SELECTED);
 		}
 		else
 		{
-			ListView_SetItemState(hListView, ListView_GetItemCount(hListView)-1, LVIS_SELECTED, LVIS_SELECTED);
+			ListView_SetItemState(m_hListControl, ListView_GetItemCount(m_hListControl)-1, LVIS_SELECTED, LVIS_SELECTED);
 		}
 	}
+	SetRemoveButtonState();
 }
+
 /******************************************************************************/
 /* tree, list view and dialog resizing                                        */
 /******************************************************************************/
@@ -896,19 +902,16 @@ void CMainDlg::DoResize(int width, int height)
 {
 	// when we get here, the controls haven't been resized yet
 	RECT tree, list, log, ok;
-	HWND hTree = GetDlgItem(*this, IDC_URLTREE);
-	HWND hList = GetDlgItem(*this, IDC_MONITOREDURLS);
-	HWND hLog = GetDlgItem(*this, IDC_LOGINFO);
 	HWND hOK = GetDlgItem(*this, IDOK);
-	::GetClientRect(hTree, &tree);
-	::GetClientRect(hList, &list);
-	::GetClientRect(hLog, &log);
+	::GetClientRect(m_hTreeControl, &tree);
+	::GetClientRect(m_hListControl, &list);
+	::GetClientRect(m_hLogMsgControl, &log);
 	::GetClientRect(hOK, &ok);
 	HDWP hdwp = BeginDeferWindowPos(5);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, hTree, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, hList, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, hLog, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	EndDeferWindowPos(hdwp);
 }
@@ -929,13 +932,13 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 			ClientToScreen(*this, &pt);
 			// are we right of the tree control?
 
-			::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &rect);
+			::GetWindowRect(m_hTreeControl, &rect);
 			if ((pt.x > rect.right)&&
 				(pt.y >= rect.top)&&
 				(pt.y <= rect.bottom))
 			{
 				// but left of the list control?
-				::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &rect);
+				::GetWindowRect(m_hListControl, &rect);
 				if (pt.x < rect.left)
 				{
 					HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
@@ -946,7 +949,7 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 				// maybe we are below the log message list control?
 				if (pt.y > rect.bottom)
 				{
-					::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &rect);
+					::GetWindowRect(m_hLogMsgControl, &rect);
 					if (pt.y < rect.top)
 					{
 						HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS));
@@ -969,9 +972,9 @@ bool CMainDlg::OnMouseMove(UINT nFlags, POINT point)
 		return false;
 
 	// create an union of the tree and list control rectangle
-	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
-	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
-	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
+	::GetWindowRect(m_hListControl, &list);
+	::GetWindowRect(m_hTreeControl, &tree);
+	::GetWindowRect(m_hLogMsgControl, &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
@@ -1038,9 +1041,9 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
 	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
 
 	// create an union of the tree and list control rectangle
-	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
-	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
-	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
+	::GetWindowRect(m_hListControl, &list);
+	::GetWindowRect(m_hTreeControl, &tree);
+	::GetWindowRect(m_hLogMsgControl, &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
@@ -1107,9 +1110,9 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 		return false;
 
 	// create an union of the tree and list control rectangle
-	::GetWindowRect(::GetDlgItem(*this, IDC_MONITOREDURLS), &list);
-	::GetWindowRect(::GetDlgItem(*this, IDC_URLTREE), &tree);
-	::GetWindowRect(::GetDlgItem(*this, IDC_LOGINFO), &logrect);
+	::GetWindowRect(m_hListControl, &list);
+	::GetWindowRect(m_hTreeControl, &tree);
+	::GetWindowRect(m_hLogMsgControl, &logrect);
 	UnionRect(&treelist, &tree, &list);
 	treelistclient = treelist;
 	MapWindowPoints(NULL, *this, (LPPOINT)&treelistclient, 2);
@@ -1175,40 +1178,40 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	{
 		if (m_nDragMode == DRAGMODE_HORIZONTAL)
 		{
-			GetWindowRect(GetDlgItem(*this, IDC_URLTREE), &treelist);
+			GetWindowRect(m_hTreeControl, &treelist);
 			treelist.right = point2.x - 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_URLTREE), NULL, 
+			DeferWindowPos(hdwp, m_hTreeControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-			GetWindowRect(GetDlgItem(*this, IDC_MONITOREDURLS), &treelist);
+			GetWindowRect(m_hListControl, &treelist);
 			treelist.left = point2.x + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL, 
+			DeferWindowPos(hdwp, m_hListControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-			GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
+			GetWindowRect(m_hLogMsgControl, &treelist);
 			treelist.left = point2.x + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
+			DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
 		else
 		{
-			GetWindowRect(GetDlgItem(*this, IDC_MONITOREDURLS), &treelist);
+			GetWindowRect(m_hListControl, &treelist);
 			treelist.bottom = point3.y - 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_MONITOREDURLS), NULL,
+			DeferWindowPos(hdwp, m_hListControl, NULL,
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-			GetWindowRect(GetDlgItem(*this, IDC_LOGINFO), &treelist);
+			GetWindowRect(m_hLogMsgControl, &treelist);
 			treelist.top = point3.y + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, GetDlgItem(*this, IDC_LOGINFO), NULL, 
+			DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
@@ -1216,9 +1219,9 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	}
 
 	// initialize the window position infos
-	GetClientRect(GetDlgItem(*this, IDC_URLTREE), &rect);
+	GetClientRect(m_hTreeControl, &rect);
 	m_xSliderPos = rect.right+4;
-	GetClientRect(GetDlgItem(*this, IDC_MONITOREDURLS), &rect);
+	GetClientRect(m_hListControl, &rect);
 	m_ySliderPos = rect.bottom+m_topmarg;
 
 
@@ -1250,4 +1253,14 @@ void CMainDlg::DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height)
 
 	DeleteObject(hbr);
 	DeleteObject(hbm);
+}
+
+LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	CMainDlg *pThis = (CMainDlg*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	if (uMessage == WM_SETFOCUS)
+	{
+		pThis->SetRemoveButtonState();
+	}
+	return CallWindowProc(pThis->m_oldTreeWndProc, hWnd, uMessage, wParam, lParam);
 }
