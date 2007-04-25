@@ -3,6 +3,7 @@
 #include "svn_sorts.h"
 
 #include "TempFile.h"
+#include "AppUtils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -85,6 +86,26 @@ SVN::SVN(void)
 	m_pctx->auth_baton = auth_baton;
 	m_pctx->cancel_func = cancel;
 	m_pctx->cancel_baton = this;
+
+	//set up the SVN_SSH param
+	wstring tsvn_ssh = CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
+	if (tsvn_ssh.empty())
+	{
+		// maybe the user has TortoiseSVN installed?
+		// if so, try to use TortoisePlink with the default params for SSH
+		tsvn_ssh = (wstring)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE);
+		if (!tsvn_ssh.empty())
+		{
+			tsvn_ssh += _T("\\bin\\TortoisePlink.exe");
+		}
+	}
+	CAppUtils::SearchReplace(tsvn_ssh, _T("\\"), _T("/"));
+	if (!tsvn_ssh.empty())
+	{
+		svn_config_t * cfg = (svn_config_t *)apr_hash_get (m_pctx->config, SVN_CONFIG_CATEGORY_CONFIG,
+			APR_HASH_KEY_STRING);
+		svn_config_set(cfg, SVN_CONFIG_SECTION_TUNNELS, "ssh", CUnicodeUtils::StdGetUTF8(tsvn_ssh).c_str());
+	}
 }
 
 SVN::~SVN(void)
