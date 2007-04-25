@@ -76,7 +76,7 @@ bool CMainDlg::CreateToolbar()
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_EDIT));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
 	tbb[index].idCommand = ID_MAIN_EDIT; 
-	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsState = BTNS_SHOWTEXT; 
 	tbb[index].fsStyle = BTNS_BUTTON; 
 	tbb[index].dwData = 0; 
 	tbb[index++].iString = (INT_PTR)_T("Edit"); 
@@ -84,7 +84,7 @@ bool CMainDlg::CreateToolbar()
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REMOVE));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
 	tbb[index].idCommand = ID_MAIN_REMOVE; 
-	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsState = BTNS_SHOWTEXT; 
 	tbb[index].fsStyle = BTNS_BUTTON; 
 	tbb[index].dwData = 0; 
 	tbb[index++].iString = (INT_PTR)_T("Remove"); 
@@ -99,7 +99,7 @@ bool CMainDlg::CreateToolbar()
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
 	tbb[index].idCommand = ID_MAIN_SHOWDIFF; 
-	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsState = BTNS_SHOWTEXT; 
 	tbb[index].fsStyle = BTNS_BUTTON; 
 	tbb[index].dwData = 0; 
 	tbb[index++].iString = (INT_PTR)_T("Show Diff"); 
@@ -494,8 +494,15 @@ void CMainDlg::RefreshURLTree()
 
 	m_bBlockListCtrlUI = true;
 	HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-	// first clear the tree control
+	// first clear the controls (the data)
+	ListView_DeleteAllItems(GetDlgItem(*this, IDC_MONITOREDURLS));
+	TreeView_SelectItem(hTreeControl, NULL);
 	TreeView_DeleteAllItems(hTreeControl);
+	SetWindowText(GetDlgItem(*this, IDC_LOGINFO), _T(""));
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(false, 0));
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, MAKELONG(false, 0));
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(false, 0));
+
 	// now add a tree item for every entry in m_URLInfos
 	const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 	for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
@@ -588,7 +595,17 @@ HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
 	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
-	TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, 
+		MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, 
+		MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
+	if (lpNMTreeView->itemNew.state & TVIS_SELECTED)
+		TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
+	else
+	{
+		ListView_DeleteAllItems(GetDlgItem(*this, IDC_MONITOREDURLS));
+		SetWindowText(GetDlgItem(*this, IDC_LOGINFO), _T(""));
+	}
 	HWND hMsgView = GetDlgItem(*this, IDC_LOGINFO);
 	SetWindowText(hMsgView, _T(""));
 }
@@ -668,6 +685,18 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 		SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 		if (pLogEntry)
 		{
+			HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
+			HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
+			// get the url this entry refers to
+			TVITEMEX itemex = {0};
+			itemex.hItem = hSelectedItem;
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(hTreeControl, &itemex);
+			if (itemex.lParam == 0)
+			{
+				m_pURLInfos->ReleaseReadOnlyData();
+				return;
+			}
 			// set the entry as read
             if (!pLogEntry->read)
             {
@@ -675,13 +704,6 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 // refresh the name of the tree item to indicate the new
                 // number of unread log messages
                 // e.g. instead of 'TortoiseSVN (3)', show now 'TortoiseSVN (2)'
-                HWND hTreeControl = GetDlgItem(*this, IDC_URLTREE);
-                HTREEITEM hSelectedItem = TreeView_GetSelection(hTreeControl);
-                // get the url this entry refers to
-                TVITEMEX itemex = {0};
-                itemex.hItem = hSelectedItem;
-                itemex.mask = TVIF_PARAM;
-                TreeView_GetItem(hTreeControl, &itemex);
                 if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
                 {
                     const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
@@ -739,6 +761,13 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 			CAppUtils::SearchReplace(msg, _T("\n"), _T("\r\n"));
 			SetWindowText(hMsgView, msg.c_str());
+
+			// find the diff name
+			_stprintf_s(buf, 1024, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+			wstring diffFileName = CAppUtils::GetAppDataDir();
+			diffFileName += _T("\\");
+			diffFileName += wstring(buf);
+			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(!!PathFileExists(diffFileName.c_str()), 0));
 		}
 		m_pURLInfos->ReleaseReadOnlyData();
 	}
