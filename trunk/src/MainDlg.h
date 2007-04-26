@@ -45,9 +45,11 @@ private:
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
+	void					OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 	void					RemoveSelectedListItems();
 	void					SetRemoveButtonState();
+	bool					ShowDiff();
 
 	/// window procedure of the sub classed tree view control
 	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);

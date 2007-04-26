@@ -320,6 +320,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				return OnCustomDrawListItem((LPNMLVCUSTOMDRAW)lParam);
 			}
+			if ((lpnmhdr->code == NM_DBLCLK)&&(lpnmhdr->hwndFrom == m_hListControl))
+			{
+				OnDblClickListItem((LPNMITEMACTIVATE)lParam);
+			}
 			return FALSE;
 		}
 		break;
@@ -454,59 +458,7 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case ID_MAIN_SHOWDIFF:
 		{
-			TCHAR buf[4096];
-			// find the revision we have to show the diff for
-			int selCount = ListView_GetSelectedCount(m_hListControl);
-			if (selCount <= 0)
-				return FALSE;	//nothing selected, nothing to show
-
-			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
-			// get the url this entry refers to
-			TVITEMEX itemex = {0};
-			itemex.hItem = hSelectedItem;
-			itemex.mask = TVIF_PARAM;
-			TreeView_GetItem(m_hTreeControl, &itemex);
-			const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-			if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
-			{
-				LVITEM item = {0};
-				for (int i=0; i<ListView_GetItemCount(m_hListControl); ++i)
-				{
-					item.mask = LVIF_PARAM|LVIF_STATE;
-					item.stateMask = LVIS_SELECTED;
-					item.iItem = i;
-					ListView_GetItem(m_hListControl, &item);
-					if (item.state & LVIS_SELECTED)
-					{
-						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
-						// find the diff name
-						_stprintf_s(buf, 4096, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-						//_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
-						wstring diffFileName = CAppUtils::GetAppDataDir();
-						diffFileName += _T("\\");
-						diffFileName += wstring(buf);
-						// start the diff viewer
-                        TCHAR apppath[4096];
-                        GetModuleFileName(NULL, apppath, 4096);
-                        wstring cmd;
-                        CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
-                        if (wstring(diffViewer).empty())
-                        {
-                            cmd = apppath;
-                            cmd += _T(" /patchfile:\"");
-                        }
-                        else
-                        {
-                            cmd = (wstring)diffViewer;
-                            cmd += _T(" \"");
-                        }
-						cmd += diffFileName;
-						cmd += _T("\"");
-						CAppUtils::LaunchApplication(cmd);
-					}
-				}
-			}
-			m_pURLInfos->ReleaseReadOnlyData();
+			ShowDiff();
 		}
 		break;
 	default:
@@ -526,6 +478,64 @@ void CMainDlg::SetRemoveButtonState()
 	{
 		SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(TreeView_GetSelection(m_hTreeControl)!=0, 0));
 	}
+}
+
+bool CMainDlg::ShowDiff()
+{
+	TCHAR buf[4096];
+	// find the revision we have to show the diff for
+	int selCount = ListView_GetSelectedCount(m_hListControl);
+	if (selCount <= 0)
+		return FALSE;	//nothing selected, nothing to show
+
+	HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+	// get the url this entry refers to
+	TVITEMEX itemex = {0};
+	itemex.hItem = hSelectedItem;
+	itemex.mask = TVIF_PARAM;
+	TreeView_GetItem(m_hTreeControl, &itemex);
+	const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+	{
+		LVITEM item = {0};
+		for (int i=0; i<ListView_GetItemCount(m_hListControl); ++i)
+		{
+			item.mask = LVIF_PARAM|LVIF_STATE;
+			item.stateMask = LVIS_SELECTED;
+			item.iItem = i;
+			ListView_GetItem(m_hListControl, &item);
+			if (item.state & LVIS_SELECTED)
+			{
+				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+				// find the diff name
+				_stprintf_s(buf, 4096, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				//_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
+				wstring diffFileName = CAppUtils::GetAppDataDir();
+				diffFileName += _T("\\");
+				diffFileName += wstring(buf);
+				// start the diff viewer
+				TCHAR apppath[4096];
+				GetModuleFileName(NULL, apppath, 4096);
+				wstring cmd;
+				CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+				if (wstring(diffViewer).empty())
+				{
+					cmd = apppath;
+					cmd += _T(" /patchfile:\"");
+				}
+				else
+				{
+					cmd = (wstring)diffViewer;
+					cmd += _T(" \"");
+				}
+				cmd += diffFileName;
+				cmd += _T("\"");
+				CAppUtils::LaunchApplication(cmd);
+			}
+		}
+	}
+	m_pURLInfos->ReleaseReadOnlyData();
+	return TRUE;
 }
 
 /******************************************************************************/
@@ -808,6 +818,11 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 		}
 		m_pURLInfos->ReleaseReadOnlyData();
 	}
+}
+
+void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
+{
+	ShowDiff();
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
