@@ -355,10 +355,9 @@ DWORD CHiddenWindow::RunThread()
 						m_UrlInfos.ReleaseWriteData();
 						TCHAR buf[4096];
 						// popup info text
-						_stprintf_s(buf, 4096, _T("r%ld"), logit->first);
 						if (!sPopupText.empty())
 							sPopupText += _T(", ");
-						sPopupText += wstring(buf);
+						sPopupText += logit->second.author;
 						if (it->second.fetchdiffs)
 						{
 							// first, find a name where to store the diff for that revision
