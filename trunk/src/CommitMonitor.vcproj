@@ -269,6 +269,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SysImageList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TempFile.cpp"
 				>
 			</File>
@@ -368,6 +372,10 @@
 			</File>
 			<File
 				RelativePath=".\SVNPool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SysImageList.h"
 				>
 			</File>
 			<File

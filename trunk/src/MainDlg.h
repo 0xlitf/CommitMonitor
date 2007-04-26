@@ -55,6 +55,8 @@ private:
 
 private:
 	HWND					m_hTreeControl;
+	int						m_nIconFolder;
+	int						m_nOpenIconFolder;
 	HWND					m_hListControl;
 	HWND					m_hLogMsgControl;
 

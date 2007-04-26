@@ -5,6 +5,7 @@
 #include "URLDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
+#include "SysImageList.h"
 #include <algorithm>
 #include <assert.h>
 
@@ -18,6 +19,8 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_hTreeControl(NULL)
 	, m_hListControl(NULL)
 	, m_hLogMsgControl(NULL)
+	, m_nIconFolder(0)
+	, m_nOpenIconFolder(0)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -150,6 +153,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
 			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
+			m_nIconFolder = SYS_IMAGE_LIST().GetDirIconIndex();
+			m_nOpenIconFolder = SYS_IMAGE_LIST().GetDirOpenIconIndex();
+			TreeView_SetImageList(m_hTreeControl, SYS_IMAGE_LIST(), LVSIL_SMALL);
+			TreeView_SetImageList(m_hTreeControl, SYS_IMAGE_LIST(), TVSIL_NORMAL);
 			RefreshURLTree();
 
 			// initialize the window position infos
@@ -221,7 +228,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					TVINSERTSTRUCT tv = {0};
 					tv.hParent = FindParentTreeNode(it->first);
 					tv.hInsertAfter = TVI_SORT;
-					tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE;
+					tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
 					WCHAR * str = new WCHAR[it->second.name.size()+10];
 					// find out if there are some unread entries
 					int unread = 0;
@@ -280,6 +287,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							tv.itemex.stateMask = TVIS_BOLD;
 						}
 						m_bBlockListCtrlUI = true;
+						tv.itemex.iImage = m_nIconFolder;
+						tv.itemex.iSelectedImage = m_nOpenIconFolder;
 						TreeView_InsertItem(m_hTreeControl, &tv);
 						TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 						m_bBlockListCtrlUI = false;
@@ -327,6 +336,7 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDOK:
 		{
 			EndDialog(*this, IDCANCEL);
+			SYS_IMAGE_LIST().Cleanup();
 		}
 		break;
 	case IDCANCEL:
@@ -336,6 +346,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			if (res != IDYES)
 				break;
 			EndDialog(*this, IDCANCEL);
+			SYS_IMAGE_LIST().Cleanup();
 			PostQuitMessage(IDOK);
 		}
 		break;
@@ -541,7 +552,7 @@ void CMainDlg::RefreshURLTree()
 		TVINSERTSTRUCT tv = {0};
 		tv.hParent = FindParentTreeNode(it->first);
 		tv.hInsertAfter = TVI_SORT;
-		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE;
+		tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
 		WCHAR * str = new WCHAR[it->second.name.size()+10];
 		// find out if there are some unread entries
 		int unread = 0;
@@ -564,6 +575,8 @@ void CMainDlg::RefreshURLTree()
 		}
 		tv.itemex.pszText = str;
 		tv.itemex.lParam = (LPARAM)&it->first;
+		tv.itemex.iSelectedImage = m_nOpenIconFolder;
+		tv.itemex.iImage = m_nIconFolder;
 		TreeView_InsertItem(m_hTreeControl, &tv);
 		TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
