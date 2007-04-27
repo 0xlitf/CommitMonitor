@@ -408,6 +408,8 @@ DWORD CHiddenWindow::RunThread()
 				wstring tempfile = CTempFiles::Instance().GetTempFilePath(true);
 				CCallback * callback = new CCallback;
 				callback->SetAuthData(it->second.username, it->second.password);
+				DeleteFile(tempfile.c_str());
+				wstring projName = it->second.name;
 				if (URLDownloadToFile(NULL, it->first.c_str(), tempfile.c_str(), 0, callback) == S_OK)
 				{
 					// we got a web page! But we can't be sure that it's the page from SVNParentPath.
@@ -545,7 +547,7 @@ DWORD CHiddenWindow::RunThread()
 						{
 							it = pUrlInfoReadOnly->begin();
 							TCHAR popupTitle[1024] = {0};
-							_stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), it->second.name.c_str(), nCountNewEntries);
+							_stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
 							popupData data;
 							data.sText = popupText;
 							data.sTitle = wstring(popupTitle);
