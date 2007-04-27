@@ -387,6 +387,7 @@ LRESULT CMainDlg::DoCommand(int id)
 
 							pWrite->erase(*(wstring*)itemex.lParam);
 							::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
+							::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
 							hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
 							m_pURLInfos->ReleaseWriteData();
 							TreeView_DeleteItem(m_hTreeControl, hItem);

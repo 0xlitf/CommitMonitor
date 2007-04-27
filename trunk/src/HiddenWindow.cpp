@@ -28,8 +28,10 @@ CHiddenWindow::PFNCHANGEWINDOWMESSAGEFILTER CHiddenWindow::m_pChangeWindowMessag
 CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
 	: CWindow(hInst, wcx)
 	, m_ThreadRunning(0)
+	, m_bRun(true)
 	, m_hMonitorThread(NULL)
 	, m_bMainDlgShown(false)
+	, m_bMainDlgRemovedItems(false)
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
 	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNORMAL));
@@ -159,6 +161,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			}
 		    ShowTrayIcon(!!lParam);
 			return TRUE;
+		}
+		break;
+	case COMMITMONITOR_REMOVEDURL:
+		{
+			m_bMainDlgRemovedItems = true;
 		}
 		break;
 	case COMMITMONITOR_TASKBARCALLBACK:
@@ -471,7 +478,7 @@ DWORD CHiddenWindow::RunThread()
 
 							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
 							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
-							if (writeIt == pWrite->end())
+							if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
 							{
 								// we found a new URL, add it to our list
 								CUrlInfo newinfo;
@@ -516,7 +523,7 @@ DWORD CHiddenWindow::RunThread()
 
 							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
 							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
-							if (writeIt == pWrite->end())
+							if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
 							{
 								// we found a new URL, add it to our list
 								CUrlInfo newinfo;
@@ -565,6 +572,7 @@ DWORD CHiddenWindow::RunThread()
 
     urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
+	m_bMainDlgRemovedItems = false;
 	m_ThreadRunning = FALSE;
 
 	::CoUninitialize();

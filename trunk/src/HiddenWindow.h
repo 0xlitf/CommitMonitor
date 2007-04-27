@@ -57,6 +57,7 @@ private:
 	HANDLE				m_hMonitorThread;
 
 	bool				m_bMainDlgShown;
+	bool				m_bMainDlgRemovedItems;
 
 	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
 	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
