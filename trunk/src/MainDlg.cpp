@@ -369,9 +369,10 @@ LRESULT CMainDlg::DoCommand(int id)
 					TreeView_GetItem(m_hTreeControl, &itemex);
 					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 					HTREEITEM hPrev = TVI_ROOT;
-					if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+					map<wstring,CUrlInfo>::iterator it = pWrite->find(*(wstring*)itemex.lParam);
+					if (it != pWrite->end())
 					{
-						wstring mask = (*pWrite)[(*(wstring*)itemex.lParam)].name;
+						wstring mask = it->second.name;
 						// ask the user if he really wants to remove the url
 						TCHAR question[4096] = {0};
 						_stprintf_s(question, 4096, _T("Do you really want to delete the project\n%s ?"), mask.c_str());
@@ -385,8 +386,15 @@ LRESULT CMainDlg::DoCommand(int id)
 								DeleteFile(sff.GetFilePath().c_str());
 							}
 
-							pWrite->erase(*(wstring*)itemex.lParam);
-							::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
+							int unread = 0;
+							for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+							{
+								if (!logit->second.read)
+									unread++;
+							}
+							pWrite->erase(it);
+							if (unread)
+								::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
 							::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
 							hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
 							m_pURLInfos->ReleaseWriteData();
@@ -787,7 +795,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             }
 			// the icon in the system tray needs to be changed back
 			// to 'normal'
-			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)false);
+			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
 			TCHAR buf[1024];
 			wstring msg = pLogEntry->message.c_str();
 			msg += _T("\n\n-------------------------------\n");

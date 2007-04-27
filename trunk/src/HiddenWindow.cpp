@@ -153,14 +153,10 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			}
 		}
 		break;
-	case COMMITMONITOR_CHANGEDINFO:
+	case COMMITMONITOR_SAVEINFO:
 		{
-			if (wParam)
-			{
-				wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-				m_UrlInfos.Save(urlfile.c_str());
-			}
-		    ShowTrayIcon(!!lParam);
+			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+			m_UrlInfos.Save(urlfile.c_str());
 			return TRUE;
 		}
 		break;
@@ -169,6 +165,9 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			m_bMainDlgRemovedItems = true;
 		}
 		break;
+	case COMMITMONITOR_CHANGEDINFO: 		    
+		ShowTrayIcon(!!wParam);
+		return TRUE;
 	case COMMITMONITOR_TASKBARCALLBACK:
 		{
 			switch (lParam)
@@ -567,7 +566,8 @@ DWORD CHiddenWindow::RunThread()
 		}
 	}
 	// save the changed entries
-	::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, (LPARAM)bNewEntries);
+	::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
+	::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)bNewEntries, (LPARAM)0);
 
     urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
