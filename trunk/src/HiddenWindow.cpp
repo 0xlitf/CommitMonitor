@@ -491,7 +491,6 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
 								(*pWrite)[url] = newinfo;
-								//pWrite->insert(make_pair<url, newinfo>);
 								hasNewEntries = true;
 								nCountNewEntries++;
 								if (!popupText.empty())
@@ -536,7 +535,6 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
 								(*pWrite)[url] = newinfo;
-								//pWrite->insert(make_pair<url, newinfo>);
 								hasNewEntries = true;
 								nCountNewEntries++;
 								if (!popupText.empty())
