@@ -31,10 +31,10 @@ bool CDiffViewer::RegisterAndCreateWindow()
 	wcx.hInstance = hResource;
 	wcx.hCursor = NULL;
 	wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
-	wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
 	wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
 	wcx.lpszMenuName = NULL;
-	wcx.hIconSm	= LoadIcon(wcx.hInstance, MAKEINTRESOURCE(IDI_COMMITMONITOR));
+	wcx.hIconSm	= LoadIcon(wcx.hInstance, MAKEINTRESOURCE(IDI_DIFF));
 	if (RegisterWindow(&wcx))
 	{
 		if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN, NULL))
