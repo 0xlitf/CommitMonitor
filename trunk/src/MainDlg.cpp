@@ -509,10 +509,12 @@ bool CMainDlg::ShowDiff()
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 				// find the diff name
 				_stprintf_s(buf, 4096, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-				//_stprintf_s(buf, 4096, _T("%s_%ld"), m_URLInfos.infos[(*(wstring*)itemex.lParam)].name.c_str(), pLogEntry->revision);
 				wstring diffFileName = CAppUtils::GetAppDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
+				// construct a title for the diff viewer
+				_stprintf_s(buf, 4096, _T("%s, revision %ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				wstring title = wstring(buf);
 				// start the diff viewer
 				TCHAR apppath[4096];
 				GetModuleFileName(NULL, apppath, 4096);
@@ -529,6 +531,8 @@ bool CMainDlg::ShowDiff()
 					cmd += _T(" \"");
 				}
 				cmd += diffFileName;
+				cmd += _T("\" /title:\"");
+				cmd += title;
 				cmd += _T("\"");
 				CAppUtils::LaunchApplication(cmd);
 			}

@@ -12,13 +12,14 @@ public:
 	/**
 	 * Registers the window class and creates the window.
 	 */
-	bool RegisterAndCreateWindow();
+	bool				RegisterAndCreateWindow();
 
 	bool				Initialize();
 
 	LRESULT				SendEditor(UINT Msg, WPARAM wParam = 0, LPARAM lParam = 0);
 	HWND				GetHWNDEdit() { return m_hWndEdit; }
 	bool				LoadFile(LPCTSTR filename);
+	void				SetTitle(LPCTSTR title);
 
 protected:
 	/// the message handler for this window

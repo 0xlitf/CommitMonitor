@@ -64,6 +64,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		// in this case, we start another part of our application, not
 		// the monitoring part.
 		CDiffViewer viewer(hInst);
+		if (parser.HasVal(_T("title")))
+			viewer.SetTitle(parser.GetVal(_T("title")));
 		if (viewer.RegisterAndCreateWindow())
 		{
 			if (viewer.LoadFile(parser.GetVal(_T("patchfile"))))
