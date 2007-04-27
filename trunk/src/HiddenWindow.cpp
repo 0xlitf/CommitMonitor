@@ -102,6 +102,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		if (m_bMainDlgShown)
 			return TRUE;
 		m_bMainDlgShown = true;
+		m_bMainDlgRemovedItems = false;
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
