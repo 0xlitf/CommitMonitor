@@ -33,11 +33,11 @@ bool CDiffViewer::RegisterAndCreateWindow()
 	wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
 	wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
-	wcx.lpszMenuName = NULL;//MAKEINTRESOURCE(IDC_COMMITMONITOR);
+	wcx.lpszMenuName = NULL;
 	wcx.hIconSm	= LoadIcon(wcx.hInstance, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	if (RegisterWindow(&wcx))
 	{
-		if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN, NULL))
+		if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN, NULL))
 		{
 			ShowWindow(*this, SW_SHOW);
 			UpdateWindow(*this);
@@ -147,8 +147,6 @@ bool CDiffViewer::Initialize()
 	m_directPointer = SendMessage(m_hWndEdit, SCI_GETDIRECTPOINTER, 0, 0);
 
 	// Set up the global default style. These attributes are used wherever no explicit choices are made.
-	//SetAStyle(STYLE_DEFAULT, black, white, (DWORD)CRegStdWORD(_T("Software\\TortoiseMerge\\LogFontSize"), 10), 
-	//	((stdstring)(CRegStdString(_T("Software\\TortoiseMerge\\LogFontName"), _T("Courier New")))).c_str());
 	SetAStyle(STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT), ::GetSysColor(COLOR_WINDOW), 10, "Courier New");
 	SendEditor(SCI_SETTABWIDTH, 4);
 	SendEditor(SCI_SETREADONLY, TRUE);
@@ -217,7 +215,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 	SetAStyle(SCE_DIFF_ADDED, ::GetSysColor(COLOR_WINDOWTEXT), RGB(0x80, 0xFF, 0x80));
 
 	SendEditor(SCI_SETLEXER, SCLEX_DIFF);
-	//SendEditor(SCI_SETKEYWORDS, 0, (LPARAM)"Revision");
+	SendEditor(SCI_SETKEYWORDS, 0, (LPARAM)"revision");
 	SendEditor(SCI_COLOURISE, 0, -1);
 	::ShowWindow(m_hWndEdit, SW_SHOW);
 	return true;
