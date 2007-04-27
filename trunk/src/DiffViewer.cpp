@@ -62,6 +62,17 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 			return DoCommand(LOWORD(wParam));
 		}
 		break;
+	case WM_MOUSEWHEEL:
+		{
+			if (GET_KEYSTATE_WPARAM(wParam) == MK_SHIFT)
+			{
+				// scroll sideways
+				SendEditor(SCI_LINESCROLL, -GET_WHEEL_DELTA_WPARAM(wParam)/40, 0);
+			}
+			else
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		}
+		break;
 	case WM_SIZE:
 		{
 			RECT rect;
