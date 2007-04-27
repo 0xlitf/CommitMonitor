@@ -334,7 +334,7 @@ DWORD CHiddenWindow::RunThread()
 			if (headrev > it->second.lastcheckedrev)
 			{
 				TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
-				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev))
+				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev + 1))
 				{
 					TRACE(_T("log fetched for %s\n"), it->first.c_str());
 					
