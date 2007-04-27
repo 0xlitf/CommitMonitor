@@ -584,7 +584,7 @@ void CHiddenWindow::StopThread()
 	m_bRun = false;
 	if (m_hMonitorThread)
 	{
-		WaitForSingleObject(m_hMonitorThread, 1000);
+		WaitForSingleObject(m_hMonitorThread, 2000);
 		if (m_ThreadRunning)
 		{
 			// we gave the thread a chance to quit. Since the thread didn't
