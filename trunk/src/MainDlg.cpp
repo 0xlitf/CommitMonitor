@@ -792,10 +792,10 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     itemex.mask = TVIF_TEXT|TVIF_STATE;
                     TreeView_SetItem(m_hTreeControl, &itemex);
                 }
+				// the icon in the system tray needs to be changed back
+				// to 'normal'
+				::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
             }
-			// the icon in the system tray needs to be changed back
-			// to 'normal'
-			::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
 			TCHAR buf[1024];
 			wstring msg = pLogEntry->message.c_str();
 			msg += _T("\n\n-------------------------------\n");

@@ -567,7 +567,8 @@ DWORD CHiddenWindow::RunThread()
 	}
 	// save the changed entries
 	::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
-	::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)bNewEntries, (LPARAM)0);
+	if (bNewEntries)
+		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, (LPARAM)0);
 
     urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));
