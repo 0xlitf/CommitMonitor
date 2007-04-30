@@ -429,6 +429,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\CommitMonitorRed.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\diff.ico"
 				>
 			</File>

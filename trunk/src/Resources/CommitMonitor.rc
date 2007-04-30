@@ -33,8 +33,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_COMMITMONITOR       ICON                    "CommitMonitor.ico"
-IDI_NOTIFYNEW           ICON                    "NotifyNew.ico"
-IDI_NOTIFYNORMAL        ICON                    "NotifyNormal.ico"
+IDI_NOTIFYNEW           ICON                    "CommitMonitorRed.ico"
 IDI_ABOUT               ICON                    "about.ico"
 IDI_ADD                 ICON                    "add.ico"
 IDI_EDIT                ICON                    "edit.ico"

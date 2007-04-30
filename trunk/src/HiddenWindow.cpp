@@ -36,7 +36,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 
 {
 	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
-	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNORMAL));
+	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	ZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
 }
 
@@ -387,7 +387,7 @@ DWORD CHiddenWindow::RunThread()
 							if (!PathFileExists(diffFileName.c_str()))
 							{
 								// get the diff
-								if (!svn.Diff(it->first, logit->first - 1, it->first, logit->first, false, true, false, wstring(), false, diffFileName, wstring()))
+								if (!svn.Diff(it->first, logit->first - 1, it->first, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
 								{
 									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
 									DeleteFile(diffFileName.c_str());

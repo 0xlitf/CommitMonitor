@@ -14,7 +14,6 @@
 #define IDD_MAINDLG                     129
 #define IDD_URLCONFIG                   131
 #define IDI_NOTIFYNEW                   132
-#define IDI_NOTIFYNORMAL                133
 #define IDR_MAINDLG                     134
 #define IDI_ABOUT                       135
 #define IDI_ADD                         136
@@ -42,7 +41,6 @@
 #define IDC_BUTTON1                     1014
 #define IDC_URLDELETE                   1014
 #define IDC_TASKBAR_ALWAYSON            1015
-#define IDC_CHECK2                      1016
 #define IDC_AUTOSTART                   1016
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
