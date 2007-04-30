@@ -59,6 +59,9 @@ private:
 	bool				m_bMainDlgShown;
 	bool				m_bMainDlgRemovedItems;
 
+	CRegStdWORD			regShowTaskbarIcon;
+
+
 	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
 	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
 };

@@ -3,6 +3,7 @@
 #include "MainDlg.h"
 
 #include "URLDlg.h"
+#include "OptionsDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
 #include "SysImageList.h"
@@ -468,6 +469,13 @@ LRESULT CMainDlg::DoCommand(int id)
 	case ID_MAIN_SHOWDIFF:
 		{
 			ShowDiff();
+		}
+		break;
+	case ID_MISC_OPTIONS:
+		{
+			COptionsDlg dlg(*this);
+			dlg.SetHiddenWnd(m_hParent);
+			dlg.DoModal(hResource, IDD_OPTIONS, NULL);
 		}
 		break;
 	default:

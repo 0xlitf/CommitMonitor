@@ -24,6 +24,7 @@
 #define IDI_REMOVE                      139
 #define IDI_ICON2                       140
 #define IDI_DIFF                        140
+#define IDD_OPTIONS                     141
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -40,6 +41,9 @@
 #define IDC_SHOWDIFF                    1013
 #define IDC_BUTTON1                     1014
 #define IDC_URLDELETE                   1014
+#define IDC_TASKBAR_ALWAYSON            1015
+#define IDC_CHECK2                      1016
+#define IDC_AUTOSTART                   1016
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -56,9 +60,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_RESOURCE_VALUE        142
 #define _APS_NEXT_COMMAND_VALUE         32780
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

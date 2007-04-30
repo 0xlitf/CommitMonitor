@@ -225,6 +225,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ReaderWriterLock.cpp"
 				>
 			</File>
@@ -340,6 +344,10 @@
 			</File>
 			<File
 				RelativePath=".\memdc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsDlg.h"
 				>
 			</File>
 			<File
