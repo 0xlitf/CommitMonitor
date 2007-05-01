@@ -328,6 +328,64 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return FALSE;
 		}
 		break;
+	case WM_CONTEXTMENU:
+		{
+			POINT pt;
+			pt.x = GET_X_LPARAM(lParam);
+			pt.y = GET_Y_LPARAM(lParam);
+
+			if (HWND(wParam) == m_hTreeControl)
+			{
+				TVHITTESTINFO hittest = {0};
+				if (pt.x == -1 && pt.y == -1)
+				{
+					hittest.hItem = TreeView_GetSelection(m_hTreeControl);
+					if (hittest.hItem)
+					{
+						hittest.flags = TVHT_ONITEM;
+						RECT rect;
+						TreeView_GetItemRect(m_hTreeControl, hittest.hItem, &rect, TRUE);
+						pt.x = rect.right-rect.left;
+						pt.y = rect.bottom - rect.top;
+						ClientToScreen(m_hTreeControl, &pt);
+					}
+				}
+				else
+				{
+					POINT clPt = pt;
+					::ScreenToClient(m_hTreeControl, &clPt);
+					hittest.pt = clPt;
+					TreeView_HitTest(m_hTreeControl, &hittest);
+				}
+				if (hittest.flags & TVHT_ONITEM)
+				{
+					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
+					hMenu = ::GetSubMenu(hMenu, 0);
+
+					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+					switch (cmd)
+					{
+					case ID_MAIN_EDIT:
+					case ID_MAIN_REMOVE:
+						{
+							HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
+							m_bBlockListCtrlUI = true;
+							TreeView_SelectItem(m_hTreeControl, hittest.hItem);
+							m_bBlockListCtrlUI = false;
+							::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+							m_bBlockListCtrlUI = true;
+							TreeView_SelectItem(m_hTreeControl, hSel);
+							m_bBlockListCtrlUI = false;
+						}
+					}
+				}
+			}
+			else if (HWND(wParam) == m_hListControl)
+			{
+
+			}
+		}
+		break;
 	default:
 		return FALSE;
 	}
