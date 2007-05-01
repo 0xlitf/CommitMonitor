@@ -408,6 +408,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
 					hMenu = ::GetSubMenu(hMenu, 0);
 
+					// set the default entry
+					MENUITEMINFO iinfo = {0};
+					iinfo.cbSize = sizeof(MENUITEMINFO);
+					iinfo.fMask = MIIM_STATE;
+					GetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
+					iinfo.fState |= MFS_DEFAULT;
+					SetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
+
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
 					switch (cmd)
 					{
