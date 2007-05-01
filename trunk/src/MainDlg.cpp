@@ -345,8 +345,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						hittest.flags = TVHT_ONITEM;
 						RECT rect;
 						TreeView_GetItemRect(m_hTreeControl, hittest.hItem, &rect, TRUE);
-						pt.x = rect.right-rect.left;
-						pt.y = rect.bottom - rect.top;
+						pt.x = rect.left + ((rect.right-rect.left)/2);
+						pt.y = rect.top + ((rect.bottom - rect.top)/2);
 						ClientToScreen(m_hTreeControl, &pt);
 					}
 				}
