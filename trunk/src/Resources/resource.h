@@ -24,8 +24,9 @@
 #define IDI_ICON2                       140
 #define IDI_DIFF                        140
 #define IDD_OPTIONS                     141
-#define IDR_MENU1                       142
 #define IDR_TREEPOPUP                   142
+#define IDR_LISTPOP                     143
+#define IDR_LISTPOPUP                   143
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -55,6 +56,8 @@
 #define ID_MISC_ABOUT                   32779
 #define ID_POPUP_EDIT                   32780
 #define ID_POPUP_REMOVE                 32781
+#define ID_POPUP_SHOWDIFF               32782
+#define ID_POPUP_REMOVE32783            32783
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -62,8 +65,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        143
-#define _APS_NEXT_COMMAND_VALUE         32782
+#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

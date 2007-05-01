@@ -382,7 +382,42 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 			else if (HWND(wParam) == m_hListControl)
 			{
+				LVHITTESTINFO hittest = {0};
+				if (pt.x == -1 && pt.y == -1)
+				{
+					hittest.iItem = ListView_GetSelectionMark(m_hListControl);
+					if (hittest.iItem >= 0)
+					{
+						hittest.flags = LVHT_ONITEM;
+						RECT rect;
+						ListView_GetItemRect(m_hListControl, hittest.iItem, &rect, LVIR_LABEL);
+						pt.x = rect.left + ((rect.right-rect.left)/2);
+						pt.y = rect.top + ((rect.bottom - rect.top)/2);
+						ClientToScreen(m_hListControl, &pt);
+					}
+				}
+				else
+				{
+					POINT clPt = pt;
+					::ScreenToClient(m_hListControl, &clPt);
+					hittest.pt = clPt;
+					ListView_HitTest(m_hListControl, &hittest);
+				}
+				if (hittest.flags & LVHT_ONITEM)
+				{
+					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
+					hMenu = ::GetSubMenu(hMenu, 0);
 
+					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+					switch (cmd)
+					{
+					case ID_MAIN_SHOWDIFF:
+					case ID_MAIN_REMOVE:
+						{
+							::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+						}
+					}
+				}
 			}
 		}
 		break;
