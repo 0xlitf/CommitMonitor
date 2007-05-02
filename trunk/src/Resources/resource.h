@@ -46,7 +46,6 @@
 #define IDC_DIFFBROWSE                  1014
 #define IDC_TASKBAR_ALWAYSON            1015
 #define IDC_AUTOSTART                   1016
-#define IDC_EDIT1                       1017
 #define IDC_DIFFVIEWER                  1017
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
@@ -61,6 +60,7 @@
 #define ID_POPUP_REMOVE                 32781
 #define ID_POPUP_SHOWDIFF               32782
 #define ID_POPUP_REMOVE32783            32783
+#define ID_POPUP_MARKALLASREAD          32784
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -69,7 +69,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32784
+#define _APS_NEXT_COMMAND_VALUE         32785
 #define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

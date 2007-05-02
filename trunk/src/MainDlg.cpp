@@ -377,6 +377,43 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							TreeView_SelectItem(m_hTreeControl, hSel);
 							m_bBlockListCtrlUI = false;
 						}
+                        break;
+                    case ID_POPUP_MARKALLASREAD:
+                        {
+                            // get the url this entry refers to
+                            TVITEMEX itemex = {0};
+                            itemex.hItem = hittest.hItem;
+                            itemex.mask = TVIF_PARAM;
+                            TreeView_GetItem(m_hTreeControl, &itemex);
+                            map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                            bool bChanged = false;
+                            if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+                            {
+                                CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+
+                                for (map<svn_revnum_t,SVNLogEntry>::iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
+                                {
+                                    if (!it->second.read)
+                                        bChanged = true;
+                                    it->second.read = true;
+                                }
+                                // refresh the name of the tree item to indicate the new
+                                // number of unread log messages
+                                WCHAR * str = new WCHAR[info->name.size()+10];
+                                _stprintf_s(str, info->name.size()+10, _T("%s"), info->name.c_str());
+                                itemex.state = 0;
+                                itemex.stateMask = TVIS_BOLD;
+                                itemex.pszText = str;
+                                itemex.mask = TVIF_TEXT|TVIF_STATE;
+                                TreeView_SetItem(m_hTreeControl, &itemex);
+                                delete [] str;
+                            }
+                            m_pURLInfos->ReleaseWriteData();
+                            if (bChanged)
+                                ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
+
+                        }
+                        break;
 					}
 				}
 			}
