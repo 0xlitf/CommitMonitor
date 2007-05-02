@@ -26,8 +26,10 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
+            CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
+            SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -59,6 +61,17 @@ LRESULT COptionsDlg::DoCommand(int id)
 			}
 			else
 				regStartWithWindows.removeValue();
+
+            int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
+            TCHAR * divi = new TCHAR[len+1];
+            ::GetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), divi, len+1);
+            wstring dv = wstring(divi);
+            delete [] divi;
+            CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+            if (!dv.empty())
+                diffViewer = dv;
+            else
+                diffViewer.removeValue();
 		}
 		// fall through
 	case IDCANCEL:

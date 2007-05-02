@@ -649,9 +649,13 @@ bool CMainDlg::ShowDiff()
 					cmd += _T(" \"");
 				}
 				cmd += diffFileName;
-				cmd += _T("\" /title:\"");
-				cmd += title;
-				cmd += _T("\"");
+                cmd += _T("\"");
+                if (wstring(diffViewer).empty())
+                {
+                    cmd += _T(" /title:\"");
+                    cmd += title;
+                    cmd += _T("\"");
+                }
 				CAppUtils::LaunchApplication(cmd);
 			}
 		}
