@@ -53,7 +53,9 @@ LRESULT COptionsDlg::DoCommand(int id)
 			{
 				TCHAR buf[MAX_PATH*4];
 				GetModuleFileName(NULL, buf, MAX_PATH*4);
-				regStartWithWindows = wstring(buf);
+                wstring cmd = wstring(buf);
+                cmd += _T(" /hidden");
+				regStartWithWindows = cmd;
 			}
 			else
 				regStartWithWindows.removeValue();
