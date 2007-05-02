@@ -613,7 +613,7 @@ LRESULT CMainDlg::DoCommand(int id)
 		{
 			COptionsDlg dlg(*this);
 			dlg.SetHiddenWnd(m_hParent);
-			dlg.DoModal(hResource, IDD_OPTIONS, NULL);
+			dlg.DoModal(hResource, IDD_OPTIONS, *this);
 		}
 		break;
 	default:
