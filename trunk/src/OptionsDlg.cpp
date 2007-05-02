@@ -3,6 +3,7 @@
 #include "OptionsDlg.h"
 #include "Registry.h"
 #include <string>
+#include <Commdlg.h>
 
 using namespace std;
 
@@ -76,6 +77,26 @@ LRESULT COptionsDlg::DoCommand(int id)
 		// fall through
 	case IDCANCEL:
 		EndDialog(*this, id);
+		break;
+	case IDC_DIFFBROWSE:
+		{
+			OPENFILENAME ofn = {0};		// common dialog box structure
+			TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+			// Initialize OPENFILENAME
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = *this;
+			ofn.lpstrFile = szFile;
+			ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+			ofn.lpstrTitle = _T("Select Diff Viewer...\0");
+			ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
+			ofn.lpstrFilter = _T("Programs\0*.exe;*.com\0All files\0*.*\0\0");
+			ofn.nFilterIndex = 1;
+			// Display the Open dialog box. 
+			if (GetOpenFileName(&ofn)==TRUE)
+			{
+				SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), szFile);
+			}
+		}
 		break;
 	}
 	return 1;
