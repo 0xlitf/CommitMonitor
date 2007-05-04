@@ -28,6 +28,7 @@ public:
 
 	map<svn_revnum_t,SVNLogEntry> logentries;
 
+	bool						parentpath;
 	wstring						error;
 
 	bool						Save(HANDLE hFile);

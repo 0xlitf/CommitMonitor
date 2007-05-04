@@ -836,6 +836,17 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 	{
 		const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
 
+		if ((!info->error.empty())&&(!info->parentpath))
+		{
+			// there was an error when we last tried to access this url.
+			// Show a message box with the error.
+			int len = info->error.length()+info->url.length()+1024;
+			TCHAR * pBuf = new TCHAR[len];
+			_stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s"), info->url.c_str(), info->error.c_str());
+			::MessageBox(*this, pBuf, _T("CommitMonitor"), MB_ICONERROR);
+			delete [] pBuf;
+		}
+
 		m_bBlockListCtrlUI = true;
 		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
 		ListView_DeleteAllItems(m_hListControl);

@@ -6,6 +6,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
 	, minutesinterval(90)
 	, fetchdiffs(false)
+	, parentpath(false)
 {
 }
 
@@ -30,6 +31,8 @@ bool CUrlInfo::Save(HANDLE hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, minutesinterval))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, fetchdiffs))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, parentpath))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, error))
 		return false;
@@ -72,6 +75,9 @@ bool CUrlInfo::Load(HANDLE hFile)
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	fetchdiffs = !!value;
+	if (!CSerializeUtils::LoadNumber(hFile, value))
+		return false;
+	parentpath = !!value;
 	if (!CSerializeUtils::LoadString(hFile, error))
 		return false;
 
