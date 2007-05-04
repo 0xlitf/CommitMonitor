@@ -25,7 +25,7 @@ SVN::SVN(void)
 	if (Err == 0)
 	{
 		//set up the SVN_SSH param
-		stdstring tsvn_ssh = CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
+		wstring tsvn_ssh = CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
 		if (!tsvn_ssh.empty())
 		{
 			svn_config_t * cfg = (svn_config_t *)apr_hash_get (m_pctx->config, SVN_CONFIG_CATEGORY_CONFIG,
@@ -129,8 +129,82 @@ svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, voi
 	return SVN_NO_ERROR;
 }
 
+wstring SVN::GetLastErrorMsg()
+{
+	wstring msg;
+	char errbuf[256];
 
-void SVN::SetAuthInfo(const stdstring& username, const stdstring& password)
+	if (Err != NULL)
+	{
+		svn_error_t * ErrPtr = Err;
+		if (ErrPtr->message)
+		{
+			msg = CUnicodeUtils::StdGetUnicode(ErrPtr->message);
+		}
+		else
+		{
+			/* Is this a Subversion-specific error code? */
+			if ((ErrPtr->apr_err > APR_OS_START_USEERR)
+				&& (ErrPtr->apr_err <= APR_OS_START_CANONERR))
+				msg = CUnicodeUtils::StdGetUnicode(svn_strerror (ErrPtr->apr_err, errbuf, sizeof (errbuf)));
+			/* Otherwise, this must be an APR error code. */
+			else
+			{
+				svn_error_t *temp_err = NULL;
+				const char * err_string = NULL;
+				temp_err = svn_utf_cstring_to_utf8(&err_string, apr_strerror (ErrPtr->apr_err, errbuf, sizeof (errbuf)-1), ErrPtr->pool);
+				if (temp_err)
+				{
+					svn_error_clear (temp_err);
+					msg = _T("Can't recode error string from APR");
+				}
+				else
+				{
+					msg = CUnicodeUtils::StdGetUnicode(err_string);
+				}
+			}
+
+		}
+
+		while (ErrPtr->child)
+		{
+			ErrPtr = ErrPtr->child;
+			msg += _T("\n");
+			if (ErrPtr->message)
+			{
+				msg += CUnicodeUtils::StdGetUnicode(ErrPtr->message);
+			}
+			else
+			{
+				/* Is this a Subversion-specific error code? */
+				if ((ErrPtr->apr_err > APR_OS_START_USEERR)
+					&& (ErrPtr->apr_err <= APR_OS_START_CANONERR))
+					msg += CUnicodeUtils::StdGetUnicode(svn_strerror (ErrPtr->apr_err, errbuf, sizeof (errbuf)));
+				/* Otherwise, this must be an APR error code. */
+				else
+				{
+					svn_error_t *temp_err = NULL;
+					const char * err_string = NULL;
+					temp_err = svn_utf_cstring_to_utf8(&err_string, apr_strerror (ErrPtr->apr_err, errbuf, sizeof (errbuf)-1), ErrPtr->pool);
+					if (temp_err)
+					{
+						svn_error_clear (temp_err);
+						msg += _T("Can't recode error string from APR");
+					}
+					else
+					{
+						msg += CUnicodeUtils::StdGetUnicode(err_string);
+					}
+				}
+
+			}
+		}
+		return msg;
+	} // if (Err != NULL)
+	return msg;
+}
+
+void SVN::SetAuthInfo(const wstring& username, const wstring& password)
 {
 	if (m_pctx)
 	{
@@ -144,7 +218,7 @@ void SVN::SetAuthInfo(const stdstring& username, const stdstring& password)
 	}
 }
 
-bool SVN::Cat(stdstring sUrl, stdstring sFile)
+bool SVN::Cat(wstring sUrl, wstring sFile)
 {
 	// we always use the HEAD revision to fetch a file
 	apr_file_t * file;
@@ -177,7 +251,7 @@ bool SVN::Cat(stdstring sUrl, stdstring sFile)
 	return (Err == NULL);
 }
 
-const SVNInfoData * SVN::GetFirstFileInfo(stdstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
+const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
 {
 	SVNPool localpool(pool);
 	m_arInfo.clear();
@@ -277,7 +351,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 	return NULL;
 }
 
-svn_revnum_t SVN::GetHEADRevision(const stdstring& url)
+svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 {
 	svn_ra_session_t *ra_session = NULL;
 	SVNPool localpool(pool);
@@ -298,7 +372,7 @@ svn_revnum_t SVN::GetHEADRevision(const stdstring& url)
 	return rev;
 }
 
-bool SVN::GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
+bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
 	SVNPool localpool(pool);
 
@@ -362,7 +436,7 @@ svn_error_t* SVN::logReceiver(void* baton,
 			svn_sort__item_t *item = &(APR_ARRAY_IDX (sorted_paths, i, svn_sort__item_t));
 			const char *path = (const char *)item->key;
 			svn_log_changed_path_t *log_item = (svn_log_changed_path_t *)apr_hash_get (ch_paths, item->key, item->klen);
-			stdstring path_native = CUnicodeUtils::StdGetUnicode(path);
+			wstring path_native = CUnicodeUtils::StdGetUnicode(path);
 			changedPaths.action = log_item->action;
 			if (log_item->copyfrom_path && SVN_IS_VALID_REVNUM (log_item->copyfrom_rev))
 			{

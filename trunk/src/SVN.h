@@ -228,6 +228,7 @@ public:
 
 
 	wstring CanonicalizeURL(const wstring& url);
+	wstring GetLastErrorMsg();
 
 private:
 	apr_pool_t *				parentpool;		///< the main memory pool
