@@ -391,7 +391,7 @@ bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 	m_logs.clear();
 
 	int limit = 0;
-	if ((startrev == 0)||(endrev == 0))
+	if ((startrev <= 1)||(endrev <= 1))
 		limit = 10;
 	Err = svn_client_log3 (targets, 
 		&end,
