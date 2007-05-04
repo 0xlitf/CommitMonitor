@@ -369,6 +369,7 @@ DWORD CHiddenWindow::RunThread()
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
                             bNewEntries = true;
+							writeIt->second.error.clear();
 						}
 						m_UrlInfos.ReleaseWriteData();
 						TCHAR buf[4096];
@@ -416,6 +417,7 @@ DWORD CHiddenWindow::RunThread()
 				if (writeIt != pWrite->end())
 				{
 					writeIt->second.lastchecked = currenttime;
+					writeIt->second.error = svn.GetLastErrorMsg();
 				}
 				m_UrlInfos.ReleaseWriteData();
 
