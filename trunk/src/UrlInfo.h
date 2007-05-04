@@ -6,6 +6,9 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
+#define URLINFO_VERSION		1
+#define URLINFOS_VERSION	1
+
 class CUrlInfo
 {
 public:
@@ -24,6 +27,8 @@ public:
 	bool						fetchdiffs;
 
 	map<svn_revnum_t,SVNLogEntry> logentries;
+
+	wstring						error;
 
 	bool						Save(HANDLE hFile);
 	bool						Load(HANDLE hFile);

@@ -15,6 +15,8 @@ CUrlInfo::~CUrlInfo(void)
 
 bool CUrlInfo::Save(HANDLE hFile)
 {
+	if (!CSerializeUtils::SaveNumber(hFile, URLINFO_VERSION))
+		return false;
 	if (!CSerializeUtils::SaveString(hFile, username))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, password))
@@ -28,6 +30,8 @@ bool CUrlInfo::Save(HANDLE hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, minutesinterval))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, fetchdiffs))
+		return false;
+	if (!CSerializeUtils::SaveString(hFile, error))
 		return false;
 
 	if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
@@ -46,6 +50,9 @@ bool CUrlInfo::Save(HANDLE hFile)
 
 bool CUrlInfo::Load(HANDLE hFile)
 {
+	unsigned __int64 version = 0;
+	if (!CSerializeUtils::LoadNumber(hFile, version))
+		return false;
 	unsigned __int64 value = 0;
 	if (!CSerializeUtils::LoadString(hFile, username))
 		return false;
@@ -65,6 +72,8 @@ bool CUrlInfo::Load(HANDLE hFile)
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	fetchdiffs = !!value;
+	if (!CSerializeUtils::LoadString(hFile, error))
+		return false;
 
 	logentries.clear();
 	if (!CSerializeUtils::LoadNumber(hFile, value))
@@ -143,6 +152,8 @@ void CUrlInfos::Load(LPCWSTR filename)
 
 bool CUrlInfos::Save(HANDLE hFile)
 {
+	if (!CSerializeUtils::SaveNumber(hFile, URLINFOS_VERSION))
+		return false;
 	// first save the size of the map
 	if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
 		return false;
@@ -160,6 +171,9 @@ bool CUrlInfos::Save(HANDLE hFile)
 
 bool CUrlInfos::Load(HANDLE hFile)
 {
+	unsigned __int64 version = 0;
+	if (!CSerializeUtils::LoadNumber(hFile, version))
+		return false;
 	infos.clear();
 	unsigned __int64 value = 0;
 	if (!CSerializeUtils::LoadNumber(hFile, value))
