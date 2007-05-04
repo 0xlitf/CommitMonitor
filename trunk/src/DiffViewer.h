@@ -2,6 +2,7 @@
 #include "BaseWindow.h"
 #include "Platform.h"
 #include "Scintilla.h"
+#include "FindBar.h"
 
 class CDiffViewer : public CWindow
 {
@@ -37,4 +38,7 @@ private:
 	LRESULT				m_directPointer;
 
 	HWND				m_hWndEdit;
+
+    CFindBar            m_FindBar;
+    LRESULT             m_lastFoundPos;
 };

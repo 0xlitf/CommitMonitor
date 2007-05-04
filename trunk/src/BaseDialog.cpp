@@ -8,6 +8,12 @@ INT_PTR CDialog::DoModal(HINSTANCE hInstance, int resID, HWND hWndParent)
 	return DialogBoxParam(hInstance, MAKEINTRESOURCE(resID), hWndParent, &CDialog::stDlgFunc, (LPARAM)this);
 }
 
+HWND CDialog::Create(HINSTANCE hInstance, int resID, HWND hWndParent)
+{
+    m_hwnd = CreateDialogParam(hInstance, MAKEINTRESOURCE(resID), hWndParent, &CDialog::stDlgFunc, (LPARAM)this);
+    return m_hwnd;
+}
+
 void CDialog::InitDialog(HWND hwndDlg, UINT iconID)
 {
 	HWND hwndOwner; 

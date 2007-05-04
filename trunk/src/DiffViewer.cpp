@@ -2,13 +2,16 @@
 #include "DiffViewer.h"
 #include "SciLexer.h"
 #include "Registry.h"
+#include "UnicodeUtils.h"
 #include "resource.h"
 
 #include <stdio.h>
 
 extern HINSTANCE hInst;
 
-CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) : CWindow(hInst, wcx)
+CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
+    : CWindow(hInst, wcx)
+    , m_lastFoundPos(-1)
 {
 	Scintilla_RegisterClasses(hInst);
 	SetWindowTitle(_T("CommitMonitorDiff"));
@@ -39,7 +42,9 @@ bool CDiffViewer::RegisterAndCreateWindow()
 	{
 		if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN, NULL))
 		{
-			ShowWindow(*this, SW_SHOW);
+            m_FindBar.SetParent(*this);
+            m_FindBar.Create(hInst, IDD_FINDBAR, *this);
+            ShowWindow(*this, SW_SHOW);
 			UpdateWindow(*this);
 			return true;
 		}
@@ -79,8 +84,12 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 			GetClientRect(*this, &rect);
 			::SetWindowPos(m_hWndEdit, HWND_TOP, 
 				rect.left, rect.top,
-				rect.right-rect.left, rect.bottom-rect.top,
+				rect.right-rect.left, rect.bottom-rect.top-30,
 				SWP_SHOWWINDOW);
+            ::SetWindowPos(m_FindBar, HWND_TOP,
+                rect.left, rect.bottom-30,
+                rect.right-rect.left, 30,
+                SWP_SHOWWINDOW);
 		}
 		break;
 	case WM_DESTROY:
@@ -97,6 +106,21 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 		}
 		::DestroyWindow(m_hwnd);
 		break;
+    case COMMITMONITOR_FINDMSGNEXT:
+        {
+            SendEditor(SCI_CHARRIGHT);
+            SendEditor(SCI_SEARCHANCHOR);
+            SendEditor(SCI_SEARCHNEXT, wParam ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8((LPCTSTR)lParam).c_str());
+            SendEditor(SCI_SCROLLCARET);
+        }
+        break;
+    case COMMITMONITOR_FINDMSGPREV:
+        {
+            SendEditor(SCI_SEARCHANCHOR);
+            SendEditor(SCI_SEARCHPREV, wParam ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8((LPCTSTR)lParam).c_str());
+            SendEditor(SCI_SCROLLCARET);
+        }
+        break;
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}

@@ -217,6 +217,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FindBar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HiddenWindow.cpp"
 				>
 			</File>
@@ -332,6 +336,10 @@
 			</File>
 			<File
 				RelativePath=".\DirFileEnum.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FindBar.h"
 				>
 			</File>
 			<File

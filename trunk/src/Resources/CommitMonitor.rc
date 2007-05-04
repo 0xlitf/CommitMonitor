@@ -117,6 +117,18 @@ BEGIN
     PUSHBUTTON      "...",IDC_DIFFBROWSE,235,39,14,14
 END
 
+IDD_FINDBAR DIALOGEX 0, 0, 246, 21
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_EXIT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,4,13,10
+    LTEXT           "Find:",IDC_STATIC,19,5,17,8
+    EDITTEXT        IDC_FINDTEXT,40,2,55,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Next",IDC_FINDNEXT,100,2,38,14
+    PUSHBUTTON      "&Previous",IDC_FINDPREV,140,2,38,14
+    CONTROL         "Mat&ch case",IDC_MATCHCASECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,182,4,52,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
