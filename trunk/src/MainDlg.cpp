@@ -845,6 +845,14 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			_stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s"), info->url.c_str(), info->error.c_str());
 			::MessageBox(*this, pBuf, _T("CommitMonitor"), MB_ICONERROR);
 			delete [] pBuf;
+			// clear the error so it won't show up again
+			map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+			if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+			{
+				CUrlInfo * infoWrite = &pWrite->find(*(wstring*)itemex.lParam)->second;
+				infoWrite->error.clear();
+			}
+			m_pURLInfos->ReleaseWriteData();
 		}
 
 		m_bBlockListCtrlUI = true;
