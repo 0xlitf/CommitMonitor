@@ -425,6 +425,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\cancel-normal.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\cancel-pressed.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\CommitMonitor.ico"
 				>
 			</File>

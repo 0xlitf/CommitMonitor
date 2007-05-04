@@ -10,6 +10,7 @@ INT_PTR CDialog::DoModal(HINSTANCE hInstance, int resID, HWND hWndParent)
 
 HWND CDialog::Create(HINSTANCE hInstance, int resID, HWND hWndParent)
 {
+	hResource = hInstance;
     m_hwnd = CreateDialogParam(hInstance, MAKEINTRESOURCE(resID), hWndParent, &CDialog::stDlgFunc, (LPARAM)this);
     return m_hwnd;
 }

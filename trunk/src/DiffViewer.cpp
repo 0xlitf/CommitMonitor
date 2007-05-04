@@ -11,7 +11,7 @@ extern HINSTANCE hInst;
 
 CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
     : CWindow(hInst, wcx)
-    , m_lastFoundPos(-1)
+	, m_bShowFindBar(false)
 {
 	Scintilla_RegisterClasses(hInst);
 	SetWindowTitle(_T("CommitMonitorDiff"));
@@ -82,14 +82,25 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 		{
 			RECT rect;
 			GetClientRect(*this, &rect);
-			::SetWindowPos(m_hWndEdit, HWND_TOP, 
-				rect.left, rect.top,
-				rect.right-rect.left, rect.bottom-rect.top-30,
-				SWP_SHOWWINDOW);
-            ::SetWindowPos(m_FindBar, HWND_TOP,
-                rect.left, rect.bottom-30,
-                rect.right-rect.left, 30,
-                SWP_SHOWWINDOW);
+			if (m_bShowFindBar)
+			{
+				::SetWindowPos(m_hWndEdit, HWND_TOP, 
+					rect.left, rect.top,
+					rect.right-rect.left, rect.bottom-rect.top-30,
+					SWP_SHOWWINDOW);
+				::SetWindowPos(m_FindBar, HWND_TOP,
+					rect.left, rect.bottom-30,
+					rect.right-rect.left, 30,
+					SWP_SHOWWINDOW);
+			}
+			else
+			{
+				::SetWindowPos(m_hWndEdit, HWND_TOP, 
+					rect.left, rect.top,
+					rect.right-rect.left, rect.bottom-rect.top,
+					SWP_SHOWWINDOW);
+				::ShowWindow(m_FindBar, SW_HIDE);
+			}
 		}
 		break;
 	case WM_DESTROY:
@@ -110,17 +121,38 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         {
             SendEditor(SCI_CHARRIGHT);
             SendEditor(SCI_SEARCHANCHOR);
-            SendEditor(SCI_SEARCHNEXT, wParam ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8((LPCTSTR)lParam).c_str());
+			m_bMatchCase = !!wParam;
+			m_findtext = (LPCTSTR)lParam;
+            SendEditor(SCI_SEARCHNEXT, m_bMatchCase ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8(m_findtext).c_str());
             SendEditor(SCI_SCROLLCARET);
         }
         break;
     case COMMITMONITOR_FINDMSGPREV:
         {
             SendEditor(SCI_SEARCHANCHOR);
-            SendEditor(SCI_SEARCHPREV, wParam ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8((LPCTSTR)lParam).c_str());
+			m_bMatchCase = !!wParam;
+			m_findtext = (LPCTSTR)lParam;
+            SendEditor(SCI_SEARCHPREV, m_bMatchCase ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8(m_findtext).c_str());
             SendEditor(SCI_SCROLLCARET);
         }
         break;
+	case COMMITMONITOR_FINDEXIT:
+		{
+			RECT rect;
+			GetClientRect(*this, &rect);
+			m_bShowFindBar = false;
+			::ShowWindow(m_FindBar, SW_HIDE);
+			::SetWindowPos(m_hWndEdit, HWND_TOP, 
+				rect.left, rect.top,
+				rect.right-rect.left, rect.bottom-rect.top,
+				SWP_SHOWWINDOW);
+		}
+		break;
+	case COMMITMONITOR_FINDRESET:
+		SendEditor(SCI_SETSELECTIONSTART, 0);
+		SendEditor(SCI_SETSELECTIONEND, 0);
+		SendEditor(SCI_SEARCHANCHOR);
+		break;
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
@@ -135,6 +167,49 @@ LRESULT CDiffViewer::DoCommand(int id)
 	case IDM_EXIT:
 		::PostQuitMessage(0);
 		return 0;
+	case IDM_SHOWFINDBAR:
+		{
+			m_bShowFindBar = true;
+			::ShowWindow(m_FindBar, SW_SHOW);
+			RECT rect;
+			GetClientRect(*this, &rect);
+			::SetWindowPos(m_hWndEdit, HWND_TOP, 
+				rect.left, rect.top,
+				rect.right-rect.left, rect.bottom-rect.top-30,
+				SWP_SHOWWINDOW);
+			::SetWindowPos(m_FindBar, HWND_TOP,
+				rect.left, rect.bottom-30,
+				rect.right-rect.left, 30,
+				SWP_SHOWWINDOW);
+			::SetFocus(m_FindBar);
+			SendEditor(SCI_SETSELECTIONSTART, 0);
+			SendEditor(SCI_SETSELECTIONEND, 0);
+			SendEditor(SCI_SEARCHANCHOR);
+		}
+		break;
+	case IDM_FINDNEXT:
+		SendEditor(SCI_CHARRIGHT);
+		SendEditor(SCI_SEARCHANCHOR);
+		SendEditor(SCI_SEARCHNEXT, m_bMatchCase ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8(m_findtext).c_str());
+		SendEditor(SCI_SCROLLCARET);
+		break;
+	case IDM_FINDPREV:
+		SendEditor(SCI_SEARCHANCHOR);
+		SendEditor(SCI_SEARCHPREV, m_bMatchCase ? SCFIND_MATCHCASE : 0, (LPARAM)CUnicodeUtils::StdGetUTF8(m_findtext).c_str());
+		SendEditor(SCI_SCROLLCARET);
+		break;
+	case IDM_FINDEXIT:
+		{
+			RECT rect;
+			GetClientRect(*this, &rect);
+			m_bShowFindBar = false;
+			::ShowWindow(m_FindBar, SW_HIDE);
+			::SetWindowPos(m_hWndEdit, HWND_TOP, 
+				rect.left, rect.top,
+				rect.right-rect.left, rect.bottom-rect.top,
+				SWP_SHOWWINDOW);
+		}
+		break;
 	default:
 		break;
 	};

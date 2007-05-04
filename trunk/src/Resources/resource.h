@@ -28,6 +28,8 @@
 #define IDR_LISTPOP                     143
 #define IDR_LISTPOPUP                   143
 #define IDD_FINDBAR                     144
+#define IDB_CANCELNORMAL                145
+#define IDC_CMVIEWER                    147
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -53,6 +55,7 @@
 #define IDC_FINDTEXT                    1019
 #define IDC_FINDPREV                    1020
 #define IDC_MATCHCASECHECK              1021
+#define IDC_FINDEXIT                    1022
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -67,6 +70,10 @@
 #define ID_POPUP_SHOWDIFF               32782
 #define ID_POPUP_REMOVE32783            32783
 #define ID_POPUP_MARKALLASREAD          32784
+#define IDM_SHOWFINDBAR                 32787
+#define IDM_FINDNEXT                    32789
+#define IDM_FINDPREV                    32790
+#define IDM_FINDEXIT                    32793
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -74,9 +81,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_RESOURCE_VALUE        148
+#define _APS_NEXT_COMMAND_VALUE         32794
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

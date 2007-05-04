@@ -40,5 +40,7 @@ private:
 	HWND				m_hWndEdit;
 
     CFindBar            m_FindBar;
-    LRESULT             m_lastFoundPos;
+	bool				m_bShowFindBar;
+	bool				m_bMatchCase;
+	wstring				m_findtext;
 };

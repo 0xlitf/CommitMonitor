@@ -40,6 +40,13 @@ IDI_EDIT                ICON                    "edit.ico"
 IDI_OPTIONS             ICON                    "options.ico"
 IDI_REMOVE              ICON                    "remove.ico"
 IDI_DIFF                ICON                    "diff.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CANCELNORMAL        BITMAP                  "cancel-normal.bmp"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -121,7 +128,7 @@ IDD_FINDBAR DIALOGEX 0, 0, 246, 21
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_EXIT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,4,13,10
+    PUSHBUTTON      "",IDC_FINDEXIT,0,3,15,14,BS_BITMAP | NOT WS_TABSTOP,WS_EX_TRANSPARENT
     LTEXT           "Find:",IDC_STATIC,19,5,17,8
     EDITTEXT        IDC_FINDTEXT,40,2,55,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Next",IDC_FINDNEXT,100,2,38,14
@@ -227,6 +234,14 @@ IDC_COMMITMONITOR ACCELERATORS
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+IDC_CMVIEWER ACCELERATORS 
+BEGIN
+    VK_F3,          IDM_FINDNEXT,           VIRTKEY, NOINVERT
+    VK_F3,          IDM_FINDPREV,           VIRTKEY, SHIFT, NOINVERT
+    "F",            IDM_SHOWFINDBAR,        VIRTKEY, CONTROL, NOINVERT
+    VK_ESCAPE,      IDM_FINDEXIT,           VIRTKEY, NOINVERT
 END
 
 

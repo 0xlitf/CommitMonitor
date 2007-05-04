@@ -56,11 +56,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	};
 	InitCommonControlsEx(&used);
 
-	hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
 
 	CCmdLineParser parser(lpCmdLine);
 	if (parser.HasKey(_T("patchfile")))
 	{
+		hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_CMVIEWER));
 		// in this case, we start another part of our application, not
 		// the monitoring part.
 		CDiffViewer viewer(hInst);
@@ -110,6 +110,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 		CHiddenWindow hiddenWindow(hInst);
 
+		hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
 
 		if (hiddenWindow.RegisterAndCreateWindow())
 		{
