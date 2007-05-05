@@ -233,6 +233,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ProgressDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ReaderWriterLock.cpp"
 				>
 			</File>
@@ -356,6 +360,10 @@
 			</File>
 			<File
 				RelativePath=".\OptionsDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ProgressDlg.h"
 				>
 			</File>
 			<File

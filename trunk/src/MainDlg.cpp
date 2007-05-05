@@ -669,12 +669,13 @@ bool CMainDlg::ShowDiff()
 			{
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 				// find the diff name
-				_stprintf_s(buf, 4096, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+				_stprintf_s(buf, 4096, _T("%s_%ld"), pInfo->name.c_str(), pLogEntry->revision);
 				wstring diffFileName = CAppUtils::GetAppDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
 				// construct a title for the diff viewer
-				_stprintf_s(buf, 4096, _T("%s, revision %ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				_stprintf_s(buf, 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
 				wstring title = wstring(buf);
 				// start the diff viewer
 				TCHAR apppath[4096];
@@ -699,7 +700,30 @@ bool CMainDlg::ShowDiff()
                     cmd += title;
                     cmd += _T("\"");
                 }
-				CAppUtils::LaunchApplication(cmd);
+				// Check if the diff file exists. If it doesn't, we have to fetch
+				// the diff first
+				if (!PathFileExists(diffFileName.c_str()))
+				{
+					// fetch the diff
+					SVN svn;
+					CProgressDlg progDlg;
+					svn.SetAndClearProgressInfo(&progDlg);
+					progDlg.ShowModeless(*this);
+					if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, wstring(), false, diffFileName, wstring()))
+					{
+						progDlg.Stop();
+						if (svn.Err->apr_err != SVN_ERR_CANCELLED)
+							::MessageBox(*this, svn.GetLastErrorMsg().c_str(), _T("CommitMonitor"), MB_ICONERROR);
+						DeleteFile(diffFileName.c_str());
+					}
+					else
+					{
+						TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
+						progDlg.Stop();
+					}
+				}
+				if (PathFileExists(diffFileName.c_str()))
+					CAppUtils::LaunchApplication(cmd);
 			}
 		}
 	}
@@ -1002,7 +1026,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			wstring diffFileName = CAppUtils::GetAppDataDir();
 			diffFileName += _T("\\");
 			diffFileName += wstring(buf);
-			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(!!PathFileExists(diffFileName.c_str()), 0));
+			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(true, 0));
 		}
 		m_pURLInfos->ReleaseReadOnlyData();
 	}

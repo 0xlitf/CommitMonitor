@@ -388,7 +388,7 @@ DWORD CHiddenWindow::RunThread()
 							if (!PathFileExists(diffFileName.c_str()))
 							{
 								// get the diff
-								if (!svn.Diff(it->first, logit->first - 1, it->first, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
+								if (!svn.Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
 								{
 									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
 									DeleteFile(diffFileName.c_str());
