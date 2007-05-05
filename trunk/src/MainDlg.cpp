@@ -182,6 +182,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				EndDialog(*this, IDCANCEL);
+				SYS_IMAGE_LIST().Cleanup();
+				return 0;
+			}
 			DoResize(LOWORD(lParam), HIWORD(lParam));
 		}
 		break;
