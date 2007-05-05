@@ -1,9 +1,13 @@
 #include "stdafx.h"
 #include "StatusBarMsgWnd.h"
+#include "resource.h"
+#include "Registry.h"
 #include <ShellAPI.h>
 #include <assert.h>
 
 #include "MemDC.h"
+
+#pragma comment(lib, "Winmm")
 
 int CStatusBarMsgWnd::m_counter = 0;
 vector<int> CStatusBarMsgWnd::m_slots;
@@ -77,6 +81,12 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParent
 	if (m_thiscounter >= (int)m_slots.size())
 		m_slots.push_back(1);
 	SetTimer(*this, STATUSBARMSGWND_SHOWTIMER, 10, NULL);
+	// play the notification sound
+	CRegStdString regSound(_T("Software\\CommitMonitor\\NotificationSound"));
+	if (wstring(regSound).empty())
+		PlaySound(_T("MailBeep"), NULL, SND_ALIAS | SND_ASYNC | SND_NODEFAULT);
+	else
+		PlaySound(wstring(regSound).c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
 }
 
 LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

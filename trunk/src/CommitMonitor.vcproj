@@ -457,6 +457,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\Notification.wav"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\NotifyNew.ico"
 				>
 			</File>

@@ -27,10 +27,12 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
-            CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
-            SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
+			SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
+			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -63,16 +65,27 @@ LRESULT COptionsDlg::DoCommand(int id)
 			else
 				regStartWithWindows.removeValue();
 
-            int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
-            TCHAR * divi = new TCHAR[len+1];
-            ::GetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), divi, len+1);
-            wstring dv = wstring(divi);
-            delete [] divi;
-            CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
-            if (!dv.empty())
-                diffViewer = dv;
-            else
-                diffViewer.removeValue();
+			int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
+			TCHAR * divi = new TCHAR[len+1];
+			::GetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), divi, len+1);
+			wstring dv = wstring(divi);
+			delete [] divi;
+			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+			if (!dv.empty())
+				diffViewer = dv;
+			else
+				diffViewer.removeValue();
+
+			len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH));
+			divi = new TCHAR[len+1];
+			::GetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), divi, len+1);
+			wstring ns = wstring(divi);
+			delete [] divi;
+			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
+			if (!ns.empty())
+				notifySound = ns;
+			else
+				notifySound.removeValue();
 		}
 		// fall through
 	case IDCANCEL:
@@ -95,6 +108,26 @@ LRESULT COptionsDlg::DoCommand(int id)
 			if (GetOpenFileName(&ofn)==TRUE)
 			{
 				SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), szFile);
+			}
+		}
+		break;
+	case IDC_SOUNDBROWSE:
+		{
+			OPENFILENAME ofn = {0};		// common dialog box structure
+			TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+			// Initialize OPENFILENAME
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = *this;
+			ofn.lpstrFile = szFile;
+			ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+			ofn.lpstrTitle = _T("Select Notification Sound...\0");
+			ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
+			ofn.lpstrFilter = _T("Sound Files\0*.wav;*.mp3\0All files\0*.*\0\0");
+			ofn.nFilterIndex = 1;
+			// Display the Open dialog box. 
+			if (GetOpenFileName(&ofn)==TRUE)
+			{
+				SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), szFile);
 			}
 		}
 		break;
