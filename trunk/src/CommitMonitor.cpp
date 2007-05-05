@@ -25,7 +25,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
-	::CoInitialize(NULL);
+	::OleInitialize(NULL);
 
 	// we need some of the common controls
 	INITCOMMONCONTROLSEX icex;
@@ -132,7 +132,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		hiddenWindow.StopThread();
 	}
 
-	::CoUninitialize();
+	::OleUninitialize();
 	apr_terminate();
 	return (int) msg.wParam;
 }
