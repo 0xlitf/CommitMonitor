@@ -18,6 +18,7 @@
 #include "UnicodeUtils.h"
 #include "Registry.h"
 #include "SerializeUtils.h"
+#include "ProgressDlg.h"
 
 typedef std::wstring wide_string;
 #ifndef stdstring
@@ -221,7 +222,7 @@ public:
 	bool GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
 	map<svn_revnum_t,SVNLogEntry> m_logs;		///< contains the gathered log information
 
-	bool Diff(const wstring& url1, svn_revnum_t revision1, const wstring& path2, 
+	bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
 		svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
 		bool ignorecontenttype,  const wstring& options, bool bAppend, 
 		const wstring& outputfile, const wstring& errorfile);
@@ -230,16 +231,46 @@ public:
 	wstring CanonicalizeURL(const wstring& url);
 	wstring GetLastErrorMsg();
 
+	/**
+	 * Sets and clears the progress info which is shown during lengthy operations.
+	 * \param pProgressDlg the CProgressDlg object to show the progress info on.
+	 * \param bShowProgressBar set to true if the progress bar should be shown. Only makes
+	 * sense if the total amount of the progress is known beforehand. Otherwise the
+	 * progressbar is always "empty".
+	 */
+	void SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar = false);
+
+	struct SVNProgress
+	{
+		apr_off_t progress;			///< operation progress
+		apr_off_t total;			///< operation progress
+		apr_off_t overall_total;	///< total bytes transferred, use SetAndClearProgressInfo() to reset this
+		apr_off_t BytesPerSecond;	///< Speed in bytes per second
+		wstring	  SpeedString;		///< String for speed. Either "xxx Bytes/s" or "xxx kBytes/s"
+	};
+
+	bool						m_bCanceled;
+	svn_error_t *				Err;			///< Global error object struct
 private:
 	apr_pool_t *				parentpool;		///< the main memory pool
 	apr_pool_t *				pool;			///< 'root' memory pool
 	svn_client_ctx_t * 			m_pctx;			///< pointer to client context
-	svn_error_t *				Err;			///< Global error object struct
 	svn_auth_baton_t *			auth_baton;
 
 	vector<SVNInfoData>			m_arInfo;		///< contains all gathered info structs.
 	unsigned int				m_pos;			///< the current position of the vector.
 
+	SVNProgress					m_SVNProgressMSG;
+	HWND						m_progressWnd;
+	CProgressDlg *				m_pProgressDlg;
+	bool						m_progressWndIsCProgress;
+	bool						m_bShowProgressBar;
+	apr_off_t					progress_total;
+	apr_off_t					progress_averagehelper;
+	apr_off_t					progress_lastprogress;
+	apr_off_t					progress_lasttotal;
+	DWORD						progress_lastTicks;
+	std::vector<apr_off_t>		progress_vector;
 
 private:
 	static svn_error_t *		cancel(void *baton);
@@ -253,6 +284,8 @@ private:
 											apr_uint32_t failures, 
 											const svn_auth_ssl_server_cert_info_t *cert_info, 
 											svn_boolean_t may_save, apr_pool_t *pool);
+	static void					progress_func(apr_off_t progress, apr_off_t total, 
+											void *baton, apr_pool_t *pool);
 
 };
 

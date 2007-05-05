@@ -86,6 +86,8 @@ SVN::SVN(void)
 	m_pctx->auth_baton = auth_baton;
 	m_pctx->cancel_func = cancel;
 	m_pctx->cancel_baton = this;
+	m_pctx->progress_func = progress_func;
+	m_pctx->progress_baton = this;
 
 	//set up the SVN_SSH param
 	wstring tsvn_ssh = CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
@@ -106,6 +108,7 @@ SVN::SVN(void)
 			APR_HASH_KEY_STRING);
 		svn_config_set(cfg, SVN_CONFIG_SECTION_TUNNELS, "ssh", CUnicodeUtils::StdGetUTF8(tsvn_ssh).c_str());
 	}
+	m_bCanceled = false;
 }
 
 SVN::~SVN(void)
@@ -115,7 +118,11 @@ SVN::~SVN(void)
 
 svn_error_t* SVN::cancel(void *baton)
 {
-	UNREFERENCED_PARAMETER(baton);
+	SVN * pSVN = (SVN*)baton;
+	if (pSVN->m_bCanceled)
+	{
+		return svn_error_create(SVN_ERR_CANCELLED, NULL, "user canceled");
+	}
 	return SVN_NO_ERROR;
 }
 
@@ -220,6 +227,7 @@ void SVN::SetAuthInfo(const wstring& username, const wstring& password)
 
 bool SVN::Cat(wstring sUrl, wstring sFile)
 {
+	m_bCanceled = false;
 	// we always use the HEAD revision to fetch a file
 	apr_file_t * file;
 	svn_stream_t * stream;
@@ -253,6 +261,7 @@ bool SVN::Cat(wstring sUrl, wstring sFile)
 
 const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
 {
+	m_bCanceled = false;
 	SVNPool localpool(pool);
 	m_arInfo.clear();
 	m_pos = 0;
@@ -353,6 +362,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 
 svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 {
+	m_bCanceled = false;
 	svn_ra_session_t *ra_session = NULL;
 	SVNPool localpool(pool);
 	svn_revnum_t rev = 0;
@@ -374,6 +384,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 
 bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
+	m_bCanceled = false;
 	SVNPool localpool(pool);
 
 	apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
@@ -451,11 +462,12 @@ svn_error_t* SVN::logReceiver(void* baton,
 	return error;
 }
 
-bool SVN::Diff(const wstring& url1, svn_revnum_t revision1, const wstring& url2, 
+bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
 			   svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
 			   bool ignorecontenttype,  const wstring& options, bool bAppend, 
 			   const wstring& outputfile, const wstring& errorfile)
 {
+	m_bCanceled = false;
 	bool del = FALSE;
 	apr_file_t * outfile;
 	apr_file_t * errfile;
@@ -501,11 +513,15 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t revision1, const wstring& url2,
 	rev2.kind = svn_opt_revision_number;
 	rev2.value.number = revision2;
 
+	svn_opt_revision_t peg;
+	peg.kind = svn_opt_revision_number;
+	peg.value.number = pegrevision;
 
-	Err = svn_client_diff4 (opts,
+
+	Err = svn_client_diff_peg4 (opts,
 		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url1).c_str(), localpool),
+		&peg,
 		&rev1,
-		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url2).c_str(), localpool),
 		&rev2,
 		svn_depth_infinity,
 		ignoreancestry,
@@ -529,6 +545,88 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t revision1, const wstring& url2,
 
 wstring SVN::CanonicalizeURL(const wstring& url)
 {
+	m_bCanceled = false;
 	SVNPool localpool(pool);
 	return CUnicodeUtils::StdGetUnicode(string(svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
 }
+
+void SVN::SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar/* = false*/)
+{
+	m_bCanceled = false;
+	m_progressWnd = NULL;
+	m_pProgressDlg = pProgressDlg;
+	progress_total = 0;
+	progress_lastprogress = 0;
+	progress_lasttotal = 0;
+	progress_lastTicks = GetTickCount();
+	m_bShowProgressBar = bShowProgressBar;
+}
+
+void SVN::progress_func(apr_off_t progress, apr_off_t total, void *baton, apr_pool_t * /*pool*/)
+{
+	TCHAR formatbuf[4096];
+	SVN * pSVN = (SVN*)baton;
+	if ((pSVN==0)||((pSVN->m_progressWnd == 0)&&(pSVN->m_pProgressDlg == 0)))
+		return;
+	apr_off_t delta = progress;
+	if ((progress >= pSVN->progress_lastprogress)&&(total == pSVN->progress_lasttotal))
+		delta = progress - pSVN->progress_lastprogress;
+	pSVN->progress_lastprogress = progress;
+	pSVN->progress_lasttotal = total;
+
+	DWORD ticks = GetTickCount();
+	pSVN->progress_vector.push_back(delta);
+	pSVN->progress_total += delta;
+	if ((pSVN->progress_lastTicks + 1000) < ticks)
+	{
+		double divby = (double(ticks - pSVN->progress_lastTicks)/1000.0);
+		if (divby == 0)
+			divby = 1;
+		pSVN->m_SVNProgressMSG.overall_total = pSVN->progress_total;
+		pSVN->m_SVNProgressMSG.progress = progress;
+		pSVN->m_SVNProgressMSG.total = total;
+		pSVN->progress_lastTicks = ticks;
+		apr_off_t average = 0;
+		for (std::vector<apr_off_t>::iterator it = pSVN->progress_vector.begin(); it != pSVN->progress_vector.end(); ++it)
+		{
+			average += *it;
+		}
+		average = apr_off_t(double(average) / divby);
+		pSVN->m_SVNProgressMSG.BytesPerSecond = average;
+		if (average < 1024)
+		{
+			_stprintf_s(formatbuf, 4096, _T("%ld Bytes/s"), average);
+			pSVN->m_SVNProgressMSG.SpeedString = formatbuf;
+		}
+		else
+		{
+			double averagekb = (double)average / 1024.0;
+			_stprintf_s(formatbuf, 4096, _T("%.2f kBytes/s"), averagekb);
+			pSVN->m_SVNProgressMSG.SpeedString = formatbuf;
+		}
+		if (pSVN->m_pProgressDlg)
+		{
+			if ((pSVN->m_bShowProgressBar && (progress > 1000) && (total > 0)))
+				pSVN->m_pProgressDlg->SetProgress64(progress, total);
+
+			wstring sTotal;
+			if (pSVN->m_SVNProgressMSG.overall_total < 1024)
+				_stprintf_s(formatbuf, 4096, _T("%I64d Bytes transferred"), pSVN->m_SVNProgressMSG.overall_total);
+			else if (pSVN->m_SVNProgressMSG.overall_total < 1200000)
+				_stprintf_s(formatbuf, 4096, _T("%I64d kBytes transferred"), pSVN->m_SVNProgressMSG.overall_total / 1024);
+			else
+				_stprintf_s(formatbuf, 4096, _T("%.2f MBytes transferred"), (double)((double)pSVN->m_SVNProgressMSG.overall_total / 1024000.0));
+			sTotal = formatbuf;
+			_stprintf_s(formatbuf, 4096, _T("%s, at %s"), sTotal.c_str(), pSVN->m_SVNProgressMSG.SpeedString.c_str());
+
+			pSVN->m_pProgressDlg->SetLine(2, formatbuf);
+			if (pSVN->m_pProgressDlg->HasUserCancelled())
+			{
+				pSVN->m_bCanceled = true;
+			}
+		}
+		pSVN->progress_vector.clear();
+	}
+	return;
+}
+
