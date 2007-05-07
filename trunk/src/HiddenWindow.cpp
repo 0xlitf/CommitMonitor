@@ -102,8 +102,14 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 	if (uMsg == COMMITMONITOR_SHOWDLGMSG)
 	{
 		if (m_bMainDlgShown)
+        {
+            // bring the dialog to front
+            HWND hWnd = FindWindow(NULL, _T("Commit Monitor"));
+            SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+            SetForegroundWindow(hWnd);
 			return TRUE;
-		m_bMainDlgShown = true;
+        }
+        m_bMainDlgShown = true;
 		m_bMainDlgRemovedItems = false;
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
