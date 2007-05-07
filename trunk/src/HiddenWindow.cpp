@@ -562,6 +562,9 @@ DWORD CHiddenWindow::RunThread()
 									popupText += _T(", ");
 								popupText += newinfo.name;
 							}
+                            writeIt = pWrite->find(it->first);
+                            if (writeIt != pWrite->end())
+                                writeIt->second.parentpath = true;
 							m_UrlInfos.ReleaseWriteData();
 
 							// update search position:
