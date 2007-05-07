@@ -587,6 +587,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					}
 					m_pURLInfos->ReleaseWriteData();
 					RefreshURLTree();
+                    m_pURLInfos->Save();
 				}
 				else
 					m_pURLInfos->ReleaseWriteData();
@@ -606,6 +607,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					(*pWrite)[inf->url] = *inf;
 				}
 				m_pURLInfos->ReleaseWriteData();
+                m_pURLInfos->Save();
 			}
 			RefreshURLTree();
 		}
