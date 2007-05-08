@@ -40,7 +40,7 @@ protected:
 	LRESULT				HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	void				DoTimer();
+	void				DoTimer(bool bForce);
 	void				ShowTrayIcon(bool newCommits);
 
 private:
@@ -58,6 +58,7 @@ private:
 
 	bool				m_bMainDlgShown;
 	bool				m_bMainDlgRemovedItems;
+	HWND				m_hMainDlg;
 
 	CRegStdWORD			regShowTaskbarIcon;
 

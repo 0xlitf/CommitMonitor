@@ -40,6 +40,7 @@ IDI_EDIT                ICON                    "edit.ico"
 IDI_OPTIONS             ICON                    "options.ico"
 IDI_REMOVE              ICON                    "remove.ico"
 IDI_DIFF                ICON                    "diff.ico"
+IDI_GETALL              ICON                    "getall.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -85,6 +86,7 @@ BEGIN
     CONTROL         "",IDC_MONITOREDURLS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,158,31,254,86
     EDITTEXT        IDC_LOGINFO,158,120,254,102,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
     DEFPUSHBUTTON   "OK",IDOK,362,224,50,14
+    LTEXT           "",IDC_INFOLABEL,0,225,355,8
 END
 
 IDD_URLCONFIG DIALOGEX 0, 0, 255, 194
@@ -197,6 +199,7 @@ IDR_MAINDLG MENU
 BEGIN
     POPUP "Main"
     BEGIN
+        MENUITEM "Check Repositories &now",     ID_MAIN_CHECKREPOSITORIESNOW
         MENUITEM "Add Project",                 ID_MAIN_ADDPROJECT
         MENUITEM SEPARATOR
         MENUITEM "Edit",                        ID_MAIN_EDIT

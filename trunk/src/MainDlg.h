@@ -11,6 +11,7 @@
 #define DRAGMODE_VERTICAL		2
 
 #define TIMER_REFRESH			101
+#define TIMER_LABEL				102
 
 using namespace std;
 

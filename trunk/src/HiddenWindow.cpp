@@ -32,6 +32,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_hMonitorThread(NULL)
 	, m_bMainDlgShown(false)
 	, m_bMainDlgRemovedItems(false)
+	, m_hMainDlg(NULL)
 	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE)
 
 {
@@ -104,9 +105,10 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		if (m_bMainDlgShown)
         {
             // bring the dialog to front
-            HWND hWnd = FindWindow(NULL, _T("Commit Monitor"));
-            SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-            SetForegroundWindow(hWnd);
+			if (m_hMainDlg == NULL)
+				m_hMainDlg = FindWindow(NULL, _T("Commit Monitor"));
+            SetWindowPos(m_hMainDlg, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+            SetForegroundWindow(m_hMainDlg);
 			return TRUE;
         }
         m_bMainDlgShown = true;
@@ -114,6 +116,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
+		m_hMainDlg = NULL;
 		m_UrlInfos.Save();
 		m_bMainDlgShown = false;
 		return TRUE;
@@ -146,9 +149,12 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		{
 			if (wParam == IDT_MONITOR)
 			{
-				DoTimer();
+				DoTimer(false);
 			}
 		}
+		break;
+	case COMMITMONITOR_GETALL:
+		DoTimer(true);
 		break;
 	case COMMITMONITOR_POPUP:
 		{
@@ -230,6 +236,13 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			return TRUE;
 		}
 		break;
+	case COMMITMONITOR_SETWINDOWHANDLE:
+		m_hMainDlg = (HWND)wParam;
+		break;
+	case COMMITMONITOR_INFOTEXT:
+		if (m_hMainDlg)
+			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, lParam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -243,14 +256,18 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 };
 
-void CHiddenWindow::DoTimer()
+void CHiddenWindow::DoTimer(bool bForce)
 {
 	TRACE(_T("timer fired\n"));
 	// Restart the timer with 60 seconds
 	::SetTimer(*this, IDT_MONITOR, TIMER_ELAPSE, NULL);
 
 	if (m_ThreadRunning)
+	{
+		if (m_hMainDlg)
+			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T("Repositories are currently checked, please wait..."));
 		return;
+	}
 	// go through all url infos and check if
 	// we need to refresh them
 	if (m_UrlInfos.IsEmpty())
@@ -258,6 +275,17 @@ void CHiddenWindow::DoTimer()
 	bool bStartThread = false;
 	__time64_t currenttime = NULL;
 	_time64(&currenttime);
+
+	if (bForce)
+	{
+		// reset the 'last checked times' of all urls
+		map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetWriteData();
+		for (map<wstring,CUrlInfo>::iterator it = pInfos->begin(); it != pInfos->end(); ++it)
+		{
+			it->second.lastchecked = 0;
+		}
+		m_UrlInfos.ReleaseWriteData();
+	}
 
 	const map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
 	for (map<wstring,CUrlInfo>::const_iterator it = pInfos->begin(); it != pInfos->end(); ++it)
@@ -335,6 +363,7 @@ DWORD CHiddenWindow::RunThread()
 	{
 		return 0;
 	}
+	TCHAR infotextbuf[1024];
 	urlinfoReadOnly.Load(urlfile.c_str());
 	TRACE(_T("monitor thread started\n"));
 	const map<wstring,CUrlInfo> * pUrlInfoReadOnly = urlinfoReadOnly.GetReadOnlyData();
@@ -347,10 +376,20 @@ DWORD CHiddenWindow::RunThread()
 			// get the highest revision of the repository
 			SVN svn;
 			svn.SetAuthInfo(it->second.username, it->second.password);
+			if (m_hMainDlg)
+			{
+				_stprintf_s(infotextbuf, 1024, _T("checking %s ..."), it->first.c_str());
+				SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
+			}
 			svn_revnum_t headrev = svn.GetHEADRevision(it->first);
 			if (headrev > it->second.lastcheckedrev)
 			{
 				TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
+				if (m_hMainDlg)
+				{
+					_stprintf_s(infotextbuf, 1024, _T("getting log for %s"), it->first.c_str());
+					SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
+				}
 				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev + 1))
 				{
 					TRACE(_T("log fetched for %s\n"), it->first.c_str());
@@ -394,6 +433,11 @@ DWORD CHiddenWindow::RunThread()
 							if (!PathFileExists(diffFileName.c_str()))
 							{
 								// get the diff
+								if (m_hMainDlg)
+								{
+									_stprintf_s(infotextbuf, 1024, _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
+									SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
+								}
 								if (!svn.Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
 								{
 									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
@@ -413,6 +457,23 @@ DWORD CHiddenWindow::RunThread()
 					data.sText = sPopupText;
 					data.sTitle = wstring(sTitle);
 					::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+				}
+			}
+			else if (headrev > 0)
+			{
+				// only block the object for a short time
+				map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+				map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+				if (writeIt != pWrite->end())
+				{
+					writeIt->second.lastchecked = currenttime;
+					writeIt->second.error = svn.GetLastErrorMsg();
+				}
+				m_UrlInfos.ReleaseWriteData();
+				if (m_hMainDlg)
+				{
+					_stprintf_s(infotextbuf, 1024, _T("no new commits for %s"), it->first.c_str());
+					SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
 				}
 			}
 			else

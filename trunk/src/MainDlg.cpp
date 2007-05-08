@@ -58,14 +58,22 @@ bool CMainDlg::CreateToolbar()
 
 	SendMessage(m_hwndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);
 
-#define MAINDLG_TOOLBARBUTTONCOUNT	9
+#define MAINDLG_TOOLBARBUTTONCOUNT	10
 	TBBUTTON tbb[MAINDLG_TOOLBARBUTTONCOUNT];
 	// create an image list containing the icons for the toolbar
 	m_hToolbarImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, MAINDLG_TOOLBARBUTTONCOUNT, 4);
 	if (m_hToolbarImages == NULL)
 		return false;
 	int index = 0;
-	HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ADD));
+	HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_GETALL));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_MAIN_CHECKREPOSITORIESNOW; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Check Now"); 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ADD));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
 	tbb[index].idCommand = ID_MAIN_ADDPROJECT; 
 	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -178,6 +186,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
 
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
+			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
 		}
 		break;
 	case WM_SIZE:
@@ -227,7 +236,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_TIMER:
 		{
-			if (wParam == TIMER_REFRESH)
+			if (wParam == TIMER_LABEL)
+			{
+				SetWindowText(GetDlgItem(*this, IDC_INFOLABEL), _T(""));
+				KillTimer(*this, TIMER_LABEL);
+			}
+			else if (wParam == TIMER_REFRESH)
 			{
 				const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 				for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
@@ -472,6 +486,15 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+	case COMMITMONITOR_INFOTEXT:
+		{
+			if (lParam)
+			{
+				SetWindowText(GetDlgItem(*this, IDC_INFOLABEL), (LPCTSTR)lParam);
+				SetTimer(*this, TIMER_LABEL, 1000, NULL);
+			}
+		}
+		break;
 	default:
 		return FALSE;
 	}
@@ -593,6 +616,9 @@ LRESULT CMainDlg::DoCommand(int id)
 					m_pURLInfos->ReleaseWriteData();
 			}
 		}
+		break;
+	case ID_MAIN_CHECKREPOSITORIESNOW:
+		SendMessage(m_hParent, COMMITMONITOR_GETALL, 0, 0);
 		break;
 	case ID_MAIN_ADDPROJECT:
 		{
@@ -1143,18 +1169,21 @@ void CMainDlg::RemoveSelectedListItems()
 void CMainDlg::DoResize(int width, int height)
 {
 	// when we get here, the controls haven't been resized yet
-	RECT tree, list, log, ok;
+	RECT tree, list, log, ok, label;
 	HWND hOK = GetDlgItem(*this, IDOK);
+	HWND hLabel = GetDlgItem(*this, IDC_INFOLABEL);
 	::GetClientRect(m_hTreeControl, &tree);
 	::GetClientRect(m_hListControl, &list);
 	::GetClientRect(m_hLogMsgControl, &log);
 	::GetClientRect(hOK, &ok);
-	HDWP hdwp = BeginDeferWindowPos(5);
+	::GetClientRect(hLabel, &label);
+	HDWP hdwp = BeginDeferWindowPos(6);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hLabel, *this, 0, height-label.bottom+label.top+2, width-ok.right-5, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	EndDeferWindowPos(hdwp);
 }
 
