@@ -188,7 +188,28 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			{
 			case WM_MOUSEMOVE:
 				{
+					// find the number of unread items
+					int nNewCommits = 0;
+					const map<wstring, CUrlInfo> * pRead = m_UrlInfos.GetReadOnlyData();
+					for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
+					{
+						for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+						{
+							if (!logit->second.read)
+								nNewCommits++;
+						}
+					}
+					m_UrlInfos.ReleaseReadOnlyData();
 					// update the tool tip data
+					m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
+					m_SystemTray.hWnd   = *this;
+					m_SystemTray.uID    = 1;
+					m_SystemTray.uFlags = NIF_TIP;
+					if (nNewCommits)
+						_stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commits"), nNewCommits);
+					else
+						_tcscpy_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor"));
+					Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray);
 				}
 				break;
 			case WM_LBUTTONDBLCLK:
