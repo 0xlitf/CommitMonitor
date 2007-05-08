@@ -146,14 +146,19 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         break;
 	case COMMITMONITOR_FINDEXIT:
 		{
-			RECT rect;
-			GetClientRect(*this, &rect);
-			m_bShowFindBar = false;
-			::ShowWindow(m_FindBar, SW_HIDE);
-			::SetWindowPos(m_hWndEdit, HWND_TOP, 
-				rect.left, rect.top,
-				rect.right-rect.left, rect.bottom-rect.top,
-				SWP_SHOWWINDOW);
+			if (IsWindowVisible(m_FindBar))
+			{
+				RECT rect;
+				GetClientRect(*this, &rect);
+				m_bShowFindBar = false;
+				::ShowWindow(m_FindBar, SW_HIDE);
+				::SetWindowPos(m_hWndEdit, HWND_TOP, 
+					rect.left, rect.top,
+					rect.right-rect.left, rect.bottom-rect.top,
+					SWP_SHOWWINDOW);
+			}
+			else
+				PostQuitMessage(0);
 		}
 		break;
 	case COMMITMONITOR_FINDRESET:
