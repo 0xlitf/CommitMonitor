@@ -33,7 +33,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_COMMITMONITOR       ICON                    "CommitMonitor.ico"
-IDI_NOTIFYNEW           ICON                    "CommitMonitorRed.ico"
+IDI_NOTIFYNEW1          ICON                    "CommitMonitorRed1.ico"
 IDI_ABOUT               ICON                    "about.ico"
 IDI_ADD                 ICON                    "add.ico"
 IDI_EDIT                ICON                    "edit.ico"
@@ -41,6 +41,9 @@ IDI_OPTIONS             ICON                    "options.ico"
 IDI_REMOVE              ICON                    "remove.ico"
 IDI_DIFF                ICON                    "diff.ico"
 IDI_GETALL              ICON                    "getall.ico"
+IDI_NOTIFYNEW0          ICON                    "CommitMonitorRed0.ico"
+IDI_NOTIFYNEW2          ICON                    "CommitMonitorRed2.ico"
+IDI_NOTIFYNEW3          ICON                    "CommitMonitorRed3.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -112,21 +115,22 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,198,173,50,14
 END
 
-IDD_OPTIONS DIALOGEX 0, 0, 308, 114
+IDD_OPTIONS DIALOGEX 0, 0, 308, 132
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,122,93,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,251,93,50,14
+    DEFPUSHBUTTON   "OK",IDOK,122,111,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,251,111,50,14
     CONTROL         "Always show taskbar icon",IDC_TASKBAR_ALWAYSON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,98,10
-    CONTROL         "Automatically start with Windows",IDC_AUTOSTART,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,122,10
-    LTEXT           "Diff Viewer (leave empty for default):",IDC_STATIC,7,42,121,8
-    EDITTEXT        IDC_DIFFVIEWER,180,39,103,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_DIFFBROWSE,287,39,14,14
-    LTEXT           "Notification Sound (leave empty for default):",IDC_STATIC,7,60,144,8
-    EDITTEXT        IDC_NOTIFICATIONSOUNDPATH,180,58,103,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_SOUNDBROWSE,287,58,14,14
+    CONTROL         "Automatically start with Windows",IDC_AUTOSTART,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,122,10
+    LTEXT           "Diff Viewer (leave empty for default):",IDC_STATIC,7,55,121,8
+    EDITTEXT        IDC_DIFFVIEWER,180,52,103,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_DIFFBROWSE,287,52,14,14
+    LTEXT           "Notification Sound (leave empty for default):",IDC_STATIC,7,73,144,8
+    EDITTEXT        IDC_NOTIFICATIONSOUNDPATH,180,71,103,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_SOUNDBROWSE,287,71,14,14
+    CONTROL         "Animate tray icon",IDC_ANIMATEICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,72,10
 END
 
 IDD_FINDBAR DIALOGEX 0, 0, 246, 21
@@ -175,7 +179,7 @@ BEGIN
         VERTGUIDE, 283
         VERTGUIDE, 287
         TOPMARGIN, 7
-        BOTTOMMARGIN, 107
+        BOTTOMMARGIN, 125
     END
 END
 #endif    // APSTUDIO_INVOKED

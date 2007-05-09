@@ -7,10 +7,13 @@
 
 #pragma comment(lib, "shell32.lib")
 
-/// the timer ID
+/// the timer IDs
 #define IDT_MONITOR		101
+#define IDT_ANIMATE		102
+
 /// timer elapse time, set to 1 minute
 #define TIMER_ELAPSE	1000//60000
+#define TIMER_ANIMATE	200
 
 typedef struct
 {
@@ -41,15 +44,20 @@ protected:
 
 private:
 	void				DoTimer(bool bForce);
+	void				DoAnimate();
 	void				ShowTrayIcon(bool newCommits);
 
 private:
 	UINT				COMMITMONITOR_SHOWDLGMSG;
 	UINT				WM_TASKBARCREATED;
 
+	int					m_nIcon;
 	NOTIFYICONDATA		m_SystemTray;
 	HICON				m_hIconNormal;
-	HICON				m_hIconNew;
+	HICON				m_hIconNew0;
+	HICON				m_hIconNew1;
+	HICON				m_hIconNew2;
+	HICON				m_hIconNew3;
 
 	CUrlInfos			m_UrlInfos;
 	DWORD				m_ThreadRunning;

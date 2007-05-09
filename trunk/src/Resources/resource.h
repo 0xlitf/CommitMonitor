@@ -13,7 +13,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
 #define IDD_URLCONFIG                   131
-#define IDI_NOTIFYNEW                   132
+#define IDI_NOTIFYNEW1                  132
 #define IDR_MAINDLG                     134
 #define IDI_ABOUT                       135
 #define IDI_ADD                         136
@@ -32,6 +32,9 @@
 #define IDC_CMVIEWER                    147
 #define IDI_ICON3                       149
 #define IDI_GETALL                      149
+#define IDI_NOTIFYNEW0                  150
+#define IDI_NOTIFYNEW2                  151
+#define IDI_NOTIFYNEW3                  152
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -61,6 +64,8 @@
 #define IDC_NOTIFICATIONSOUNDPATH       1023
 #define IDC_SOUNDBROWSE                 1024
 #define IDC_INFOLABEL                   1025
+#define IDC_CHECK1                      1026
+#define IDC_ANIMATEICON                 1026
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -87,9 +92,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_RESOURCE_VALUE        153
 #define _APS_NEXT_COMMAND_VALUE         32795
-#define _APS_NEXT_CONTROL_VALUE         1026
+#define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

@@ -457,6 +457,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\CommitMonitorRed0.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\CommitMonitorRed1.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\CommitMonitorRed2.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\CommitMonitorRed3.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\diff.ico"
 				>
 			</File>

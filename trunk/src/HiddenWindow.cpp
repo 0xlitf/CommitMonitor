@@ -33,17 +33,24 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_bMainDlgShown(false)
 	, m_bMainDlgRemovedItems(false)
 	, m_hMainDlg(NULL)
+	, m_nIcon(0)
 	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE)
 
 {
-	m_hIconNew = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW));
+	m_hIconNew0 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW0));
+	m_hIconNew1 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW1));
+	m_hIconNew2 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW2));
+	m_hIconNew3 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW3));
 	m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_COMMITMONITOR));
 	ZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
 }
 
 CHiddenWindow::~CHiddenWindow(void)
 {
-	DestroyIcon(m_hIconNew);
+	DestroyIcon(m_hIconNew0);
+	DestroyIcon(m_hIconNew1);
+	DestroyIcon(m_hIconNew2);
+	DestroyIcon(m_hIconNew3);
 	DestroyIcon(m_hIconNormal);
 
 	Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
@@ -123,7 +130,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 	}
 	else if (uMsg == WM_TASKBARCREATED)
 	{
-		bool bNew = m_SystemTray.hIcon == m_hIconNew;
+		bool bNew = m_SystemTray.hIcon == m_hIconNew1;
 		m_SystemTray.hIcon = NULL;
 		TRACE(_T("Taskbar created!\n"));
 		ShowTrayIcon(bNew);
@@ -147,9 +154,14 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		break;
 	case WM_TIMER:
 		{
-			if (wParam == IDT_MONITOR)
+			switch (wParam)
 			{
+			case IDT_MONITOR:
 				DoTimer(false);
+				break;
+			case IDT_ANIMATE:
+				DoAnimate();
+				break;
 			}
 		}
 		break;
@@ -354,14 +366,50 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
 	m_SystemTray.hWnd   = *this;
 	m_SystemTray.uID    = 1;
-	m_SystemTray.hIcon  = newCommits ? m_hIconNew : m_hIconNormal;
+	m_SystemTray.hIcon  = newCommits ? m_hIconNew1 : m_hIconNormal;
 	m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
 	Shell_NotifyIcon(msg, &m_SystemTray);
+	m_nIcon = 2;
 	if ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE))
 	{
 		m_SystemTray.hIcon = NULL;
 	}
+	if ((newCommits)&&(DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
+		SetTimer(*this, IDT_ANIMATE, TIMER_ANIMATE, NULL);
+	else
+		KillTimer(*this, IDT_ANIMATE);
+}
+
+void CHiddenWindow::DoAnimate()
+{
+	m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
+	m_SystemTray.hWnd   = *this;
+	m_SystemTray.uID    = 1;
+	switch (m_nIcon)
+	{
+	case 0:
+		m_SystemTray.hIcon  = m_hIconNew0;
+		break;
+	default:
+	case 1:
+	case 5:
+		m_SystemTray.hIcon  = m_hIconNew1;
+		break;
+	case 2:
+	case 4:
+		m_SystemTray.hIcon  = m_hIconNew2;
+		break;
+	case 3:
+		m_SystemTray.hIcon  = m_hIconNew3;
+		break;
+	}
+	m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
+	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
+	Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray);
+	m_nIcon++;
+	if (m_nIcon >= 6)
+		m_nIcon = 0;
 }
 
 DWORD CHiddenWindow::RunThread()
