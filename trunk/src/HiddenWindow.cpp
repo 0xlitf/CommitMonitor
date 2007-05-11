@@ -375,7 +375,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	{
 		m_SystemTray.hIcon = NULL;
 	}
-	if ((newCommits)&&(DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
+	if ((newCommits)&&(m_SystemTray.hIcon)&&(DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
 		SetTimer(*this, IDT_ANIMATE, TIMER_ANIMATE, NULL);
 	else
 		KillTimer(*this, IDT_ANIMATE);
