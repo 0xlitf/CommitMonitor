@@ -58,14 +58,13 @@ private:
 
 private:
 	HWND					m_hTreeControl;
-	int						m_nIconFolder;
-	int						m_nOpenIconFolder;
 	HWND					m_hListControl;
 	HWND					m_hLogMsgControl;
 
 	HWND					m_hParent;
 	HWND					m_hwndToolbar;
 	HIMAGELIST				m_hToolbarImages;
+	HIMAGELIST				m_hImgList;
 
 	int						m_nDragMode;
 	LONG					m_oldx, m_oldy;

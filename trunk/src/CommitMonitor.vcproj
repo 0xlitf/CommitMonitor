@@ -481,6 +481,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\folder.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\folder_open.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\getall.ico"
 				>
 			</File>
@@ -502,6 +510,14 @@
 			</File>
 			<File
 				RelativePath=".\Resources\remove.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\repourl.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\repourl_new.ico"
 				>
 			</File>
 		</Filter>

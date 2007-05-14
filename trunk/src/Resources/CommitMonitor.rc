@@ -44,6 +44,10 @@ IDI_GETALL              ICON                    "getall.ico"
 IDI_NOTIFYNEW0          ICON                    "CommitMonitorRed0.ico"
 IDI_NOTIFYNEW2          ICON                    "CommitMonitorRed2.ico"
 IDI_NOTIFYNEW3          ICON                    "CommitMonitorRed3.ico"
+IDI_PARENTPATHFOLDER    ICON                    "folder.ico"
+IDI_PARENTPATHFOLDEROPEN ICON                    "folder_open.ico"
+IDI_REPOURL             ICON                    "repourl.ico"
+IDI_REPOURLNEW          ICON                    "repourl_new.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -35,6 +35,11 @@
 #define IDI_NOTIFYNEW0                  150
 #define IDI_NOTIFYNEW2                  151
 #define IDI_NOTIFYNEW3                  152
+#define IDI_PARENTPATHFOLDER            153
+#define IDI_PARENTPATHFOLDEROPEN        154
+#define IDI_REPOURL                     155
+#define IDI_ICON5                       156
+#define IDI_REPOURLNEW                  156
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -64,7 +69,6 @@
 #define IDC_NOTIFICATIONSOUNDPATH       1023
 #define IDC_SOUNDBROWSE                 1024
 #define IDC_INFOLABEL                   1025
-#define IDC_CHECK1                      1026
 #define IDC_ANIMATEICON                 1026
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
@@ -92,7 +96,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        153
+#define _APS_NEXT_RESOURCE_VALUE        157
 #define _APS_NEXT_COMMAND_VALUE         32795
 #define _APS_NEXT_CONTROL_VALUE         1027
 #define _APS_NEXT_SYMED_VALUE           110

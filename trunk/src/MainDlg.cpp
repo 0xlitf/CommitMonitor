@@ -6,7 +6,6 @@
 #include "OptionsDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
-#include "SysImageList.h"
 #include <algorithm>
 #include <assert.h>
 
@@ -20,8 +19,8 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_hTreeControl(NULL)
 	, m_hListControl(NULL)
 	, m_hLogMsgControl(NULL)
-	, m_nIconFolder(0)
-	, m_nOpenIconFolder(0)
+	, m_hToolbarImages(NULL)
+	, m_hImgList(NULL)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -40,6 +39,8 @@ CMainDlg::~CMainDlg(void)
 		DeleteObject(m_boldFont);
 	if (m_hToolbarImages)
 		ImageList_Destroy(m_hToolbarImages);
+	if (m_hImgList)
+		ImageList_Destroy(m_hImgList);
 }
 
 bool CMainDlg::CreateToolbar()
@@ -162,10 +163,28 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
 			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
-			m_nIconFolder = SYS_IMAGE_LIST().GetDirIconIndex();
-			m_nOpenIconFolder = SYS_IMAGE_LIST().GetDirOpenIconIndex();
-			TreeView_SetImageList(m_hTreeControl, SYS_IMAGE_LIST(), LVSIL_SMALL);
-			TreeView_SetImageList(m_hTreeControl, SYS_IMAGE_LIST(), TVSIL_NORMAL);
+			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 4, 4);
+			if (m_hImgList)
+			{
+				HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDER));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDEROPEN));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURL));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLNEW));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_SMALL);
+				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_NORMAL);
+			}
 			RefreshURLTree();
 
 			// initialize the window position infos
@@ -194,7 +213,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (wParam == SIZE_MINIMIZED)
 			{
 				EndDialog(*this, IDCANCEL);
-				SYS_IMAGE_LIST().Cleanup();
 				return 0;
 			}
 			DoResize(LOWORD(lParam), HIWORD(lParam));
@@ -265,7 +283,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					{
 						// The node already exists, just update the information
 						tv.itemex.hItem = directItem;
-						tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD;
+						tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
 						tv.itemex.pszText = str;
 						tv.itemex.cchTextMax = it->second.name.size()+9;
 						TreeView_GetItem(m_hTreeControl, &tv.itemex);
@@ -281,6 +299,24 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							_tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
 							tv.itemex.state &= ~TVIS_BOLD;
 							tv.itemex.stateMask = TVIS_BOLD;
+						}
+						if (it->second.parentpath)
+						{
+							tv.itemex.iImage = 0;
+							tv.itemex.iSelectedImage = 1;
+						}
+						else
+						{
+							if (unread)
+							{
+								tv.itemex.iImage = 3;
+								tv.itemex.iSelectedImage = 3;
+							}
+							else
+							{
+								tv.itemex.iImage = 2;
+								tv.itemex.iSelectedImage = 2;
+							}
 						}
 						if (sTitle.compare(str) != 0)
 						{
@@ -308,8 +344,24 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							tv.itemex.stateMask = TVIS_BOLD;
 						}
 						m_bBlockListCtrlUI = true;
-						tv.itemex.iImage = m_nIconFolder;
-						tv.itemex.iSelectedImage = m_nOpenIconFolder;
+						if (it->second.parentpath)
+						{
+							tv.itemex.iImage = 0;
+							tv.itemex.iSelectedImage = 1;
+						}
+						else
+						{
+							if (unread)
+							{
+								tv.itemex.iImage = 3;
+								tv.itemex.iSelectedImage = 3;
+							}
+							else
+							{
+								tv.itemex.iImage = 2;
+								tv.itemex.iSelectedImage = 2;
+							}
+						}
 						TreeView_InsertItem(m_hTreeControl, &tv);
 						TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 						m_bBlockListCtrlUI = false;
@@ -424,7 +476,17 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                 itemex.state = 0;
                                 itemex.stateMask = TVIS_BOLD;
                                 itemex.pszText = str;
-                                itemex.mask = TVIF_TEXT|TVIF_STATE;
+								if (info->parentpath)
+								{
+									itemex.iImage = 0;
+									itemex.iSelectedImage = 1;
+								}
+								else
+								{
+									itemex.iImage = 2;
+									itemex.iSelectedImage = 2;
+								}
+                                itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                                 TreeView_SetItem(m_hTreeControl, &itemex);
                                 delete [] str;
                             }
@@ -508,7 +570,6 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDOK:
 		{
 			EndDialog(*this, IDCANCEL);
-			SYS_IMAGE_LIST().Cleanup();
 		}
 		break;
 	case IDCANCEL:
@@ -518,7 +579,6 @@ LRESULT CMainDlg::DoCommand(int id)
 			if (res != IDYES)
 				break;
 			EndDialog(*this, IDCANCEL);
-			SYS_IMAGE_LIST().Cleanup();
 			PostQuitMessage(IDOK);
 		}
 		break;
@@ -806,8 +866,24 @@ void CMainDlg::RefreshURLTree()
 		}
 		tv.itemex.pszText = str;
 		tv.itemex.lParam = (LPARAM)&it->first;
-		tv.itemex.iSelectedImage = m_nOpenIconFolder;
-		tv.itemex.iImage = m_nIconFolder;
+		if (it->second.parentpath)
+		{
+			tv.itemex.iImage = 0;
+			tv.itemex.iSelectedImage = 1;
+		}
+		else
+		{
+			if (unread)
+			{
+				tv.itemex.iImage = 3;
+				tv.itemex.iSelectedImage = 3;
+			}
+			else
+			{
+				tv.itemex.iImage = 2;
+				tv.itemex.iSelectedImage = 2;
+			}
+		}
 		TreeView_InsertItem(m_hTreeControl, &tv);
 		TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
@@ -1008,15 +1084,20 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                         _stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
                         itemex.state = TVIS_BOLD;
                         itemex.stateMask = TVIS_BOLD;
+						itemex.iImage = 3;
+						itemex.iSelectedImage = 3;
                     }
                     else
                     {
                         _stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
                         itemex.state = 0;
                         itemex.stateMask = TVIS_BOLD;
+						itemex.iImage = 2;
+						itemex.iSelectedImage = 2;
                     }
+
                     itemex.pszText = str;
-                    itemex.mask = TVIF_TEXT|TVIF_STATE;
+                    itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                     TreeView_SetItem(m_hTreeControl, &itemex);
                 }
 				// the icon in the system tray needs to be changed back
