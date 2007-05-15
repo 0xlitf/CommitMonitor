@@ -101,6 +101,10 @@
 				</lib>
 			</do>
 		</foreach>
+		<exec program="svn" failonerror="false">
+			<arg value="revert" />
+			<arg value="subversion\libsvn_subr\utf.c" />
+		</exec>
 	</target>
 
 </project>
