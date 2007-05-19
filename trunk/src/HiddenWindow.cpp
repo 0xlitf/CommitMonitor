@@ -526,6 +526,7 @@ DWORD CHiddenWindow::RunThread()
 					data.sText = sPopupText;
 					data.sTitle = wstring(sTitle);
 					::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+					bNewEntries = false;
 				}
 			}
 			else if (headrev > 0)
@@ -712,7 +713,7 @@ DWORD CHiddenWindow::RunThread()
 							data.sText = popupText;
 							data.sTitle = wstring(popupTitle);
 							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
-                            bNewEntries = true;
+                            bNewEntries = false;
 						}
 					}
 					delete callback;
