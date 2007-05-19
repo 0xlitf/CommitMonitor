@@ -12,8 +12,8 @@
 #define IDT_ANIMATE		102
 
 /// timer elapse time, set to 1 minute
-#define TIMER_ELAPSE	1000//60000
-#define TIMER_ANIMATE	200
+#define TIMER_ELAPSE	60000
+#define TIMER_ANIMATE	400
 
 typedef struct
 {
