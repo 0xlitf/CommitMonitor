@@ -31,12 +31,14 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// initialize the controls
 			SetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), info.url.c_str());
 			WCHAR buf[20];
-			_stprintf_s(buf, 20, _T("%ld"), info.minutesinterval);
+			_stprintf_s(buf, 20, _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
 			SetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buf);
 			SetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), info.name.c_str());
 			SetWindowText(GetDlgItem(*this, IDC_USERNAME), info.username.c_str());
 			SetWindowText(GetDlgItem(*this, IDC_PASSWORD), info.password.c_str());
 			SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
+			if (info.disallowdiffs)
+				EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -73,6 +75,8 @@ LRESULT CURLDlg::DoCommand(int id)
 			buffer = new WCHAR[len+1];
 			GetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buffer, len+1);
 			info.minutesinterval = _ttoi(buffer);
+			if ((info.minminutesinterval)&&(info.minminutesinterval < info.minutesinterval))
+				info.minutesinterval = info.minminutesinterval;
 			delete [] buffer;
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_USERNAME));

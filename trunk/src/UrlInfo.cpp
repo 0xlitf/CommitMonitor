@@ -5,7 +5,9 @@
 CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
 	, minutesinterval(90)
+	, minminutesinterval(0)
 	, fetchdiffs(false)
+	, disallowdiffs(false)
 	, parentpath(false)
 {
 }
@@ -28,9 +30,15 @@ bool CUrlInfo::Save(HANDLE hFile)
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, lastcheckedrev))
 		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, lastcheckedrobots))
+		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, minutesinterval))
 		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, minminutesinterval))
+		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, fetchdiffs))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, disallowdiffs))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, parentpath))
 		return false;
@@ -69,12 +77,30 @@ bool CUrlInfo::Load(HANDLE hFile)
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	lastcheckedrev = (svn_revnum_t)value;
+	if (version > 1)
+	{
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		lastcheckedrobots = (int)value;
+	}
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	minutesinterval = (int)value;
+	if (version > 1)
+	{
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		minminutesinterval = (int)value;
+	}
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	fetchdiffs = !!value;
+	if (version > 1)
+	{
+		if (!CSerializeUtils::LoadNumber(hFile, value))
+			return false;
+		disallowdiffs = !!value;
+	}
 	if (!CSerializeUtils::LoadNumber(hFile, value))
 		return false;
 	parentpath = !!value;

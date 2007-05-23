@@ -6,7 +6,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		1
+#define URLINFO_VERSION		2
 #define URLINFOS_VERSION	1
 
 class CUrlInfo
@@ -22,9 +22,12 @@ public:
 	wstring						name;
 	__time64_t					lastchecked;
 	svn_revnum_t				lastcheckedrev;
+	__time64_t					lastcheckedrobots;
 
 	int							minutesinterval;
+	int							minminutesinterval;
 	bool						fetchdiffs;
+	bool						disallowdiffs;
 
 	map<svn_revnum_t,SVNLogEntry> logentries;
 
