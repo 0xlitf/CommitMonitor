@@ -114,3 +114,21 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
 	CloseHandle(process.hProcess);
 	return true;
 }
+
+wstring CAppUtils::GetTempFilePath()
+{
+	DWORD len = ::GetTempPath(0, NULL);
+	TCHAR * temppath = new TCHAR[len+1];
+	TCHAR * tempF = new TCHAR[len+50];
+	::GetTempPath (len+1, temppath);
+	wstring tempfile;
+	::GetTempFileName (temppath, TEXT("cm_"), 0, tempF);
+	tempfile = wstring(tempF);
+	//now create the tempfile, so that subsequent calls to GetTempFile() return
+	//different filenames.
+	HANDLE hFile = CreateFile(tempfile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
+	CloseHandle(hFile);
+	delete temppath;
+	delete tempF;
+	return tempfile;
+}
