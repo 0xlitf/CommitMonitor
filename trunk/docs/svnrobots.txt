@@ -1,0 +1,8 @@
+## this is an example svnrobots.txt file
+##
+## the checkinterval line sets the minimum interval in minutes between
+## update checks:
+# checkinterval = 90
+## the disallowautodiff line if it's present forces the check apps
+## to *not* do automatic diffs:
+# disallowautodiff
