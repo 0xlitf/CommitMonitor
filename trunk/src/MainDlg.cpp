@@ -796,6 +796,11 @@ bool CMainDlg::ShowDiff()
 					SVN svn;
 					CProgressDlg progDlg;
 					svn.SetAndClearProgressInfo(&progDlg);
+					progDlg.SetTitle(_T("Fetching Diff"));
+					TCHAR dispbuf[MAX_PATH] = {0};
+					_stprintf_s(dispbuf, MAX_PATH, _T("fetching diff of revision %ld"), pLogEntry->revision);
+					progDlg.SetLine(1, dispbuf);
+					progDlg.SetShowProgressBar(false);
 					progDlg.ShowModeless(*this);
 					if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, wstring(), false, diffFileName, wstring()))
 					{
