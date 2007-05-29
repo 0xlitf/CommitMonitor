@@ -70,6 +70,8 @@
 #define IDC_SOUNDBROWSE                 1024
 #define IDC_INFOLABEL                   1025
 #define IDC_ANIMATEICON                 1026
+#define IDC_CHECK1                      1027
+#define IDC_NOTIFICATIONSOUND           1027
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -98,7 +100,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        157
 #define _APS_NEXT_COMMAND_VALUE         32795
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

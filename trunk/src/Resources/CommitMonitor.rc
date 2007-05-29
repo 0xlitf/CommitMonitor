@@ -131,10 +131,11 @@ BEGIN
     LTEXT           "Diff Viewer (leave empty for default):",IDC_STATIC,7,55,121,8
     EDITTEXT        IDC_DIFFVIEWER,180,52,103,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_DIFFBROWSE,287,52,14,14
-    LTEXT           "Notification Sound (leave empty for default):",IDC_STATIC,7,73,144,8
     EDITTEXT        IDC_NOTIFICATIONSOUNDPATH,180,71,103,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_SOUNDBROWSE,287,71,14,14
     CONTROL         "Animate tray icon",IDC_ANIMATEICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,72,10
+    CONTROL         "Notification Sound (leave empty for default):",IDC_NOTIFICATIONSOUND,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,73,159,10
 END
 
 IDD_FINDBAR DIALOGEX 0, 0, 246, 21

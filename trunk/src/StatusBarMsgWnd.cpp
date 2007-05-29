@@ -82,11 +82,15 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParent
 		m_slots.push_back(1);
 	SetTimer(*this, STATUSBARMSGWND_SHOWTIMER, 10, NULL);
 	// play the notification sound
-	CRegStdString regSound(_T("Software\\CommitMonitor\\NotificationSound"));
-	if (wstring(regSound).empty())
-		PlaySound(_T("MailBeep"), NULL, SND_ALIAS | SND_ASYNC | SND_NODEFAULT);
-	else
-		PlaySound(wstring(regSound).c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
+	CRegStdWORD regPlay(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+	if (DWORD(regPlay))
+	{
+		CRegStdString regSound(_T("Software\\CommitMonitor\\NotificationSound"));
+		if (wstring(regSound).empty())
+			PlaySound(_T("MailBeep"), NULL, SND_ALIAS | SND_ASYNC | SND_NODEFAULT);
+		else
+			PlaySound(wstring(regSound).c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
+	}
 }
 
 LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

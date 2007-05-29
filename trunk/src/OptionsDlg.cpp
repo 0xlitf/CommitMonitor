@@ -28,6 +28,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
 			bool bAnimateIcon = !!CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
+			bool bPlaySound = !!CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -35,6 +36,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
 			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
+			SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -53,11 +55,14 @@ LRESULT COptionsDlg::DoCommand(int id)
 			CRegStdWORD regShowTaskbarIcon = CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			CRegStdString regStartWithWindows = CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
 			CRegStdWORD regAnimateIcon = CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
+			CRegStdWORD regPlaySound = CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 			bool bShowTaskbarIcon = !!SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_GETCHECK, 0, NULL);
+			bool bPlaySound = !!SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_GETCHECK, 0, NULL);
 			regShowTaskbarIcon = bShowTaskbarIcon;
 			regAnimateIcon = bAnimateIcon;
+			regPlaySound = bPlaySound;
 			::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
 			if (bStartWithWindows)
 			{
