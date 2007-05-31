@@ -627,12 +627,15 @@ DWORD CHiddenWindow::RunThread()
 						}
 					}
 					// prepare notification strings
-					TCHAR sTitle[1024] = {0};
-					_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), svn.m_logs.size());
-					popupData data;
-					data.sText = sPopupText;
-					data.sTitle = wstring(sTitle);
-					::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+					if (bNewEntries)
+					{
+						TCHAR sTitle[1024] = {0};
+						_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), svn.m_logs.size());
+						popupData data;
+						data.sText = sPopupText;
+						data.sTitle = wstring(sTitle);
+						::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+					}
 					bNewEntries = false;
 				}
 			}
