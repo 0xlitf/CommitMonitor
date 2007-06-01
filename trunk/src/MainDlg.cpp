@@ -567,15 +567,16 @@ LRESULT CMainDlg::DoCommand(int id)
 {
 	switch (id)
 	{
+	case IDCANCEL:
 	case IDOK:
 		{
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
-	case IDCANCEL:
+	case IDC_EXIT:
 		{
-			int res = ::MessageBox(*this, _T("Do you really want to quit the CommitMonitor?\nIf you quit, monitoring will stop.\nIf you just want to close the dialog, use the \"OK\" button.\n\nAre you sure you want to quit the CommitMonitor?"),
-				_T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO);
+			int res = ::MessageBox(*this, _T("Do you really want to quit the CommitMonitor?\nIf you quit, monitoring will stop.\nIf you just want to close the dialog, use the \"Hide\" button.\n\nAre you sure you want to quit the CommitMonitor?"),
+				_T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2);
 			if (res != IDYES)
 				break;
 			EndDialog(*this, IDCANCEL);
@@ -1255,21 +1256,24 @@ void CMainDlg::RemoveSelectedListItems()
 void CMainDlg::DoResize(int width, int height)
 {
 	// when we get here, the controls haven't been resized yet
-	RECT tree, list, log, ok, label;
+	RECT tree, list, log, ex, ok, label;
+	HWND hExit = GetDlgItem(*this, IDC_EXIT);
 	HWND hOK = GetDlgItem(*this, IDOK);
 	HWND hLabel = GetDlgItem(*this, IDC_INFOLABEL);
 	::GetClientRect(m_hTreeControl, &tree);
 	::GetClientRect(m_hListControl, &list);
 	::GetClientRect(m_hLogMsgControl, &log);
+	::GetClientRect(hExit, &ex);
 	::GetClientRect(hOK, &ok);
 	::GetClientRect(hLabel, &label);
-	HDWP hdwp = BeginDeferWindowPos(6);
+	HDWP hdwp = BeginDeferWindowPos(7);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hExit, *this, width-ok.right+ok.left-ex.right+ex.left-3, height-ex.bottom+ex.top, ex.right-ex.left, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, hLabel, *this, 0, height-label.bottom+label.top+2, width-ok.right-5, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hLabel, *this, 0, height-label.bottom+label.top+2, width-ok.right-ex.right-8, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	EndDeferWindowPos(hdwp);
 }
 
