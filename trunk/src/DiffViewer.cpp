@@ -213,6 +213,11 @@ LRESULT CDiffViewer::DoCommand(int id)
 		break;
 	case IDM_FINDEXIT:
 		{
+			if (!m_bShowFindBar)
+			{
+				::PostQuitMessage(0);
+				return 0;
+			}
 			RECT rect;
 			GetClientRect(*this, &rect);
 			m_bShowFindBar = false;
