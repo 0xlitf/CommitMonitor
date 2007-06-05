@@ -281,10 +281,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\TempFile.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\UnicodeUtils.cpp"
 				>
 			</File>
@@ -392,10 +388,6 @@
 			</File>
 			<File
 				RelativePath=".\SVNPool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TempFile.h"
 				>
 			</File>
 			<File

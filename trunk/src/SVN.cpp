@@ -2,7 +2,6 @@
 #include "svn.h"
 #include "svn_sorts.h"
 
-#include "TempFile.h"
 #include "AppUtils.h"
 
 #ifdef _DEBUG
@@ -491,7 +490,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
 	wstring workingErrorFile;
 	if (errorfile.empty())
 	{
-		workingErrorFile = CTempFiles::Instance().GetTempFilePath(true);
+		workingErrorFile = CAppUtils::GetTempFilePath();
 		del = TRUE;
 	}
 	else

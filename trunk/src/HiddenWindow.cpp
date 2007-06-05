@@ -10,7 +10,6 @@
 #include "SVN.h"
 #include "Callback.h"
 #include "AppUtils.h"
-#include "TempFile.h"
 #include "StatusBarMsgWnd.h"
 
 #include <boost/regex.hpp>
@@ -319,6 +318,7 @@ void CHiddenWindow::DoTimer(bool bForce)
 			it->second.lastchecked = 0;
 		}
 		m_UrlInfos.ReleaseWriteData();
+		m_UrlInfos.Save();
 	}
 
 	const map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
@@ -564,6 +564,7 @@ DWORD CHiddenWindow::RunThread()
 											in.reserve(in.capacity() * 3);
 										in.append(1, c);
 									}
+									fs.close();
 								}
 							}
 							else if (svn.Cat(sRobotsURL, sFile))
@@ -579,6 +580,7 @@ DWORD CHiddenWindow::RunThread()
 											in.reserve(in.capacity() * 3);
 										in.append(1, c);
 									}
+									fs.close();
 								}
 							}
 							delete callback;
@@ -672,13 +674,18 @@ DWORD CHiddenWindow::RunThread()
 				// instead of pointing to an actual repository.
 
 				// we have to include the authentication in the URL itself
-				wstring tempfile = CTempFiles::Instance().GetTempFilePath(true);
+				wstring tempfile = CAppUtils::GetTempFilePath();
 				CCallback * callback = new CCallback;
 				callback->SetAuthData(it->second.username, it->second.password);
 				DeleteFile(tempfile.c_str());
 				wstring projName = it->second.name;
 				if (URLDownloadToFile(NULL, it->first.c_str(), tempfile.c_str(), 0, callback) == S_OK)
 				{
+					if (callback)
+					{
+						delete callback;
+						callback = NULL;
+					}
 					// we got a web page! But we can't be sure that it's the page from SVNParentPath.
 					// Use a regex to parse the website and find out...
 					ifstream fs(tempfile.c_str());
@@ -693,6 +700,8 @@ DWORD CHiddenWindow::RunThread()
 								in.reserve(in.capacity() * 3);
 							in.append(1, c);
 						}
+						fs.close();
+						DeleteFile(tempfile.c_str());
 
 						// make sure this is a html page from an SVNParentPathList
 						// we do this by checking for header titles looking like
@@ -826,8 +835,13 @@ DWORD CHiddenWindow::RunThread()
                             bNewEntries = false;
 						}
 					}
-					delete callback;
 				}
+				if (callback)
+				{
+					delete callback;
+					callback = NULL;
+				}
+				DeleteFile(tempfile.c_str());
 			}
 		}
 	}
