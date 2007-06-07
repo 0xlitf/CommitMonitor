@@ -640,6 +640,18 @@ DWORD CHiddenWindow::RunThread()
 					}
 					bNewEntries = false;
 				}
+				else
+				{
+					// only block the object for a short time
+					map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+					map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+					if (writeIt != pWrite->end())
+					{
+						writeIt->second.lastchecked = currenttime;
+						writeIt->second.error = svn.GetLastErrorMsg();
+					}
+					m_UrlInfos.ReleaseWriteData();
+				}
 			}
 			else if (headrev > 0)
 			{
