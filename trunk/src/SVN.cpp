@@ -13,7 +13,7 @@ static char THIS_FILE[] = __FILE__;
 SVN::SVN(void)
 {
 	parentpool = svn_pool_create(NULL);
-	svn_client_create_context(&m_pctx, parentpool);
+	svn_error_clear(svn_client_create_context(&m_pctx, parentpool));
 
 	Err = svn_config_ensure(NULL, parentpool);
 	pool = svn_pool_create (parentpool);
@@ -32,7 +32,8 @@ SVN::SVN(void)
 			svn_config_set(cfg, SVN_CONFIG_SECTION_TUNNELS, "ssh", CUnicodeUtils::StdGetUTF8(tsvn_ssh).c_str());
 		}
 	}
-
+	else
+		svn_error_clear(Err);
 	Err = svn_ra_initialize(parentpool);
 
 	// set up authentication
@@ -112,6 +113,7 @@ SVN::SVN(void)
 
 SVN::~SVN(void)
 {
+	svn_error_clear(Err);
 	svn_pool_destroy (parentpool);
 }
 
@@ -226,6 +228,7 @@ void SVN::SetAuthInfo(const wstring& username, const wstring& password)
 
 bool SVN::Cat(wstring sUrl, wstring sFile)
 {
+	svn_error_clear(Err);
 	m_bCanceled = false;
 	// we always use the HEAD revision to fetch a file
 	apr_file_t * file;
@@ -260,6 +263,7 @@ bool SVN::Cat(wstring sUrl, wstring sFile)
 
 const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
 {
+	svn_error_clear(Err);
 	m_bCanceled = false;
 	SVNPool localpool(pool);
 	m_arInfo.clear();
@@ -361,6 +365,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 
 svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 {
+	svn_error_clear(Err);
 	m_bCanceled = false;
 	svn_ra_session_t *ra_session = NULL;
 	SVNPool localpool(pool);
@@ -383,6 +388,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 
 bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
+	svn_error_clear(Err);
 	m_bCanceled = false;
 	SVNPool localpool(pool);
 
@@ -466,6 +472,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
 			   bool ignorecontenttype,  const wstring& options, bool bAppend, 
 			   const wstring& outputfile, const wstring& errorfile)
 {
+	svn_error_clear(Err);
 	m_bCanceled = false;
 	bool del = FALSE;
 	apr_file_t * outfile;
