@@ -206,6 +206,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
+			CRegStdWORD regSize(_T("Software\\CommitMonitor\\size"));
+			if (DWORD(regSize) != 0)
+			{
+				SetWindowPos(hwndDlg, HWND_TOP, 0, 0, LOWORD(DWORD(regSize)), HIWORD(DWORD(regSize)), SWP_NOMOVE); 
+			}
 		}
 		break;
 	case WM_SIZE:
@@ -570,6 +575,10 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDCANCEL:
 	case IDOK:
 		{
+			CRegStdWORD regSize(_T("Software\\CommitMonitor\\size"));
+			RECT rc;
+			::GetWindowRect(*this, &rc);
+			regSize = MAKELONG(rc.right-rc.left, rc.bottom-rc.top);
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
