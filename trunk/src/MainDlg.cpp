@@ -4,6 +4,7 @@
 
 #include "URLDlg.h"
 #include "OptionsDlg.h"
+#include "AboutDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
 #include <algorithm>
@@ -718,6 +719,13 @@ LRESULT CMainDlg::DoCommand(int id)
 			COptionsDlg dlg(*this);
 			dlg.SetHiddenWnd(m_hParent);
 			dlg.DoModal(hResource, IDD_OPTIONS, *this);
+		}
+		break;
+	case ID_MISC_ABOUT:
+		{
+			CAboutDlg dlg(*this);
+			dlg.SetHiddenWnd(m_hParent);
+			dlg.DoModal(hResource, IDD_ABOUTBOX, *this);
 		}
 		break;
 	default:
