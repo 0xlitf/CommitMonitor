@@ -29,6 +29,18 @@
 			</filterchain>
 		</loadfile>
 		<echo file="subversion\svn_private_config.h" message="${configfile}" />
+
+		<copy file="..\cyrus-sasl\include\prop.h" tofile="..\cyrus-sasl\include\orig_prop.h" overwrite="true" />
+		<loadfile file="..\cyrus-sasl\include\prop.h" property="propfile">
+			<filterchain>
+				<replacestring from="#  define LIBSASL_API  __declspec(dllexport)" to="#  define LIBSASL_API  " />
+				<replacestring from="#  define LIBSASL_VAR  __declspec(dllexport)" to="#  define LIBSASL_VAR  " />
+				<replacestring from="#  define LIBSASL_API  __declspec(dllimport)" to="#  define LIBSASL_API  " />
+				<replacestring from="#  define LIBSASL_VAR  __declspec(dllimport)" to="#  define LIBSASL_VAR  " />
+			</filterchain>
+		</loadfile>
+		<echo file="..\cyrus-sasl\include\prop.h" message="${propfile}" />
+
 		<property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
 		<property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
 		<foreach item="Folder" property="foldername">
@@ -37,7 +49,6 @@
 					<include name="subversion\libsvn*" />
 					<exclude name="subversion\libsvn_ra_local" />
 					<exclude name="subversion\libsvn_fs*" />
-					<exclude name="subversion\libsvn_ra_serf" />
 				</items>
 			</in>
 			<do>
@@ -73,14 +84,20 @@
 						<include name="..\apr-util\xml\expat\lib" />
 						<include name="..\svn-win32-libintl\inc" />
 						<include name="..\neon\src" />
+						<include name="..\serf" />
 						<include name="..\..\common\zlib" />
+						<include name="..\sqlite" />
+						<include name="..\cyrus-sasl\include" />
 					</includedirs>
 					<defines>
 						<define name="APR_DECLARE_STATIC" />
 						<define name="APU_DECLARE_STATIC" />
 						<define name="SVN_NEON_0_25=1" />
 						<define name="SVN_NEON_0_26=1" />
+						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_NEON=1" />
+						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_SERF=1" />
 						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
+						<define name="SVN_HAVE_SASL=1" />
 						<define name="alloca=_alloca" />
 						<define name="snprintf=_snprintf" />
 						<define name="WIN32" />
@@ -97,6 +114,7 @@
 					<sources>
 						<include name="${configuration}_${platform}\${fname}\**.obj" />
                         <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" if="${fname == 'libsvn_subr'}"/>
+                        <include name="..\sqlite\${configuration}_${platform}\sqlite.lib" if="${fname == 'libsvn_fs_fs'}"/>
 					</sources>
 				</lib>
 			</do>
@@ -105,6 +123,7 @@
 			<arg value="revert" />
 			<arg value="subversion\libsvn_subr\utf.c" />
 		</exec>
+		<copy file="..\cyrus-sasl\include\orig_prop.h" tofile="..\cyrus-sasl\include\prop.h" overwrite="true" />
 	</target>
 
 </project>

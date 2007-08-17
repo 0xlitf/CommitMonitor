@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_dav.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\debug_win32\libapr.lib ..\ext\apr-util\debug_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib ..\ext\neon\debug_win32\libneon.lib ..\ext\Subversion\debug_win32\libsvn_client.lib ..\ext\Subversion\debug_win32\libsvn_delta.lib ..\ext\Subversion\debug_win32\libsvn_diff.lib ..\ext\Subversion\debug_win32\libsvn_ra.lib ..\ext\Subversion\debug_win32\libsvn_ra_neon.lib ..\ext\Subversion\debug_win32\libsvn_ra_serf.lib ..\ext\Subversion\debug_win32\libsvn_ra_svn.lib ..\ext\Subversion\debug_win32\libsvn_repos.lib ..\ext\Subversion\debug_win32\libsvn_subr.lib ..\ext\Subversion\debug_win32\libsvn_wc.lib ..\ext\cyrus-sasl\debug_win32\libsasls.lib ..\ext\serf\debug_win32\libserf.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\release_win32\xml.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_dav.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib"
+				AdditionalDependencies="Ws2_32.lib Mswsock.lib Rpcrt4.lib Imm32.lib ..\ext\apr\release_win32\libapr.lib ..\ext\apr-util\release_win32\libaprutil.lib ..\ext\apr-util\xml\expat\lib\release_win32\xml.lib ..\ext\neon\release_win32\libneon.lib ..\ext\Subversion\release_win32\libsvn_client.lib ..\ext\Subversion\release_win32\libsvn_delta.lib ..\ext\Subversion\release_win32\libsvn_diff.lib ..\ext\Subversion\release_win32\libsvn_ra.lib ..\ext\Subversion\release_win32\libsvn_ra_neon.lib ..\ext\Subversion\release_win32\libsvn_ra_serf.lib ..\ext\Subversion\release_win32\libsvn_ra_svn.lib ..\ext\Subversion\release_win32\libsvn_repos.lib ..\ext\Subversion\release_win32\libsvn_subr.lib ..\ext\Subversion\release_win32\libsvn_wc.lib ..\ext\cyrus-sasl\release_win32\libsasls.lib ..\ext\serf\release_win32\libserf.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

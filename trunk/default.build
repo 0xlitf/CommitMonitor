@@ -92,6 +92,18 @@
 		</nant>
 	</target>
 
+	<target name="SubversionOnly" depends="VSNET,env">
+		<description>
+			Builds all the libraries CommitMonitor depends on:
+			Subversion, apr, ...
+		</description>
+		<nant target="build">
+			<buildfiles>
+				<include name="ext\build\default.build" />
+			</buildfiles>
+		</nant>
+	</target>
+
 	<target name="CommitMonitor" depends="VSNET,env,VersionInfo">
 		<description>
 			Builds CommitMonitor. The libraries must have been built
