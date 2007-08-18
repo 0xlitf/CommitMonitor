@@ -35,7 +35,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_hMainDlg(NULL)
 	, m_nIcon(0)
 	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE)
-
+	, m_bIsTask(false)
 {
 	m_hIconNew0 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW0));
 	m_hIconNew1 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW1));
@@ -304,7 +304,11 @@ void CHiddenWindow::DoTimer(bool bForce)
 	// go through all url infos and check if
 	// we need to refresh them
 	if (m_UrlInfos.IsEmpty())
+	{
+		if (m_bIsTask)
+			::PostQuitMessage(0);
 		return;
+	}
 	bool bStartThread = false;
 	__time64_t currenttime = NULL;
 	_time64(&currenttime);
@@ -352,6 +356,8 @@ void CHiddenWindow::DoTimer(bool bForce)
 		if (m_hMonitorThread == NULL) 
 			return;
 	}
+	if ((!bStartThread)&&(m_bIsTask))
+		::PostQuitMessage(0);
 }
 
 void CHiddenWindow::ShowTrayIcon(bool newCommits)
@@ -431,6 +437,8 @@ DWORD CHiddenWindow::RunThread()
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
 	if (!PathFileExists(urlfile.c_str()))
 	{
+		if (m_bIsTask)
+			::PostQuitMessage(0);
 		return 0;
 	}
 	TCHAR infotextbuf[1024];
@@ -863,6 +871,9 @@ DWORD CHiddenWindow::RunThread()
 	::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
 	if (bNewEntries)
 		::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, (LPARAM)0);
+
+	if ((!bNewEntries)&&(m_bIsTask))
+		::PostQuitMessage(0);
 
     urlinfoReadOnly.ReleaseReadOnlyData();
 	TRACE(_T("monitor thread ended\n"));

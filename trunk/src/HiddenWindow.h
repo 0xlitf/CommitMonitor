@@ -37,6 +37,8 @@ public:
 	void				StopThread();
 
 	DWORD				RunThread();
+
+	void				SetTask(bool b) {m_bIsTask = b;}
 protected:
 	/// the message handler for this window
 	LRESULT CALLBACK	WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -70,6 +72,7 @@ private:
 
 	CRegStdWORD			regShowTaskbarIcon;
 
+	bool				m_bIsTask;
 
 	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
 	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;

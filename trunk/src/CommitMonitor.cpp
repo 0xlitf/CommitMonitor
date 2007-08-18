@@ -114,11 +114,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 		if (hiddenWindow.RegisterAndCreateWindow())
 		{
-			if (!parser.HasKey(_T("hidden")))
+			if (parser.HasKey(_T("task")))
+			{
+				hiddenWindow.SetTask(true);
+			}
+			else if (!parser.HasKey(_T("hidden")))
 			{
 				hiddenWindow.ShowDialog();
 			}
-
 			// Main message loop:
 			while (GetMessage(&msg, NULL, 0, 0))
 			{
