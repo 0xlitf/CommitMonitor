@@ -92,7 +92,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 		if (g_mutex != NULL)
 		{   
-			if(::GetLastError()==ERROR_ALREADY_EXISTS)
+			if ((::GetLastError()==ERROR_ALREADY_EXISTS)&&(!parser.HasKey(_T("task"))))
 			{
 				//an instance of this app is already running
 				HWND hWnd = FindWindow(ResString(hInst, IDS_APP_TITLE), NULL);		//try finding the running instance of this app
