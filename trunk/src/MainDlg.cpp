@@ -559,7 +559,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (lParam)
 			{
 				SetWindowText(GetDlgItem(*this, IDC_INFOLABEL), (LPCTSTR)lParam);
-				SetTimer(*this, TIMER_LABEL, 1000, NULL);
 			}
 		}
 		break;

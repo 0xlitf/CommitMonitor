@@ -441,6 +441,7 @@ DWORD CHiddenWindow::RunThread()
 	for (; (it != pUrlInfoReadOnly->end()) && m_bRun; ++it)
 	{
 		int mit = max(it->second.minutesinterval, it->second.minminutesinterval);
+		SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
 		if ((it->second.lastchecked + (mit*60)) < currenttime)
 		{
 			TRACE(_T("checking %s for updates\n"), it->first.c_str());
@@ -857,6 +858,7 @@ DWORD CHiddenWindow::RunThread()
 			}
 		}
 	}
+	SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
 	// save the changed entries
 	::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
 	if (bNewEntries)
