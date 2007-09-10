@@ -29,7 +29,7 @@ bool CStatusBarMsgWnd::RegisterAndCreateWindow()
 	wcx.cbClsExtra = 0;
 	wcx.cbWndExtra = 0;
 	wcx.hInstance = hResource;
-	wcx.hCursor = NULL;
+	wcx.hCursor = LoadCursor(NULL, IDC_HAND);
 	wcx.lpszClassName = _T("StatusBarMsgWnd_{BAB03407-CF65-4942-A1D5-063FA1CA8530}");
 	wcx.hIcon = NULL;
 	wcx.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
