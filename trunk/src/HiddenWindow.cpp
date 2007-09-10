@@ -174,11 +174,14 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			if (pData)
 			{
 				CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
-				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, 0);
+				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
                 ShowTrayIcon(true);
 			}
 		}
 		break;
+    case COMMITMONITOR_POPUPCLICK:
+        ShowDialog();
+        break;
 	case COMMITMONITOR_SAVEINFO:
 		{
 			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
