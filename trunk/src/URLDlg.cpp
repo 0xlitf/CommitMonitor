@@ -105,18 +105,18 @@ LRESULT CURLDlg::DoCommand(int id)
 			SVN svn;
 			int len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
 			WCHAR * buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), buffer, len+1);
+			GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
 			info.url = svn.CanonicalizeURL(wstring(buffer, len));
 			delete [] buffer;
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
 			buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), buffer, len+1);
+			GetDlgItemText(*this, IDC_PROJECTNAME, buffer, len+1);
 			info.name = wstring(buffer, len);
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_CHECKTIME));
 			buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buffer, len+1);
+			GetDlgItemText(*this, IDC_CHECKTIME, buffer, len+1);
 			info.minutesinterval = _ttoi(buffer);
 			if ((info.minminutesinterval)&&(info.minminutesinterval < info.minutesinterval))
 				info.minutesinterval = info.minminutesinterval;
@@ -124,13 +124,13 @@ LRESULT CURLDlg::DoCommand(int id)
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_USERNAME));
 			buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_USERNAME), buffer, len+1);
+			GetDlgItemText(*this, IDC_USERNAME, buffer, len+1);
 			info.username = wstring(buffer, len);
 			delete [] buffer;
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PASSWORD));
 			buffer = new WCHAR[len+1];
-			GetWindowText(GetDlgItem(*this, IDC_PASSWORD), buffer, len+1);
+			GetDlgItemText(*this, IDC_PASSWORD, buffer, len+1);
 			info.password = wstring(buffer, len);
 			delete [] buffer;
 			info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);

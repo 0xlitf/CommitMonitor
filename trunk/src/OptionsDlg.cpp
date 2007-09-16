@@ -111,7 +111,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 
 			int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
 			TCHAR * divi = new TCHAR[len+1];
-			::GetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), divi, len+1);
+			::GetDlgItemText(*this, IDC_DIFFVIEWER, divi, len+1);
 			wstring dv = wstring(divi);
 			delete [] divi;
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
@@ -122,7 +122,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 
 			len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH));
 			divi = new TCHAR[len+1];
-			::GetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), divi, len+1);
+			::GetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, divi, len+1);
 			wstring ns = wstring(divi);
 			delete [] divi;
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));

@@ -68,7 +68,7 @@ void CFindBar::DoFind(bool bFindPrev)
 {
 	int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_FINDTEXT));
 	TCHAR * findtext = new TCHAR[len+1];
-	::GetWindowText(GetDlgItem(*this, IDC_FINDTEXT), findtext, len+1);
+	::GetDlgItemText(*this, IDC_FINDTEXT, findtext, len+1);
 	wstring ft = wstring(findtext);
 	delete [] findtext;
 	bool bCaseSensitive = !!SendMessage(GetDlgItem(*this, IDC_MATCHCASECHECK), BM_GETCHECK, 0, NULL);
