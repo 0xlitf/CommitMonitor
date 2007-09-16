@@ -28,6 +28,19 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+
+			AddToolTip(IDC_CREATEDIFFS, _T("Fetches the diff for each revision automatically\nPlease do NOT enable this for repositories which are not on your LAN!"));
+			AddToolTip(IDC_PROJECTNAME, _T("Enter here a name for the project"));
+			AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
+			if (info.minminutesinterval)
+			{
+				TCHAR infobuf[MAX_PATH] = {0};
+				_stprintf_s(infobuf, MAX_PATH, _T("Interval for repository update checks.\nMiminum set by svnrobots.txt file to %ld minutes."), info.minminutesinterval);
+				AddToolTip(IDC_CHECKTIME, infobuf);
+			}
+			else
+				AddToolTip(IDC_CHECKTIME, _T("Interval for repository update checks"));
+
 			// initialize the controls
 			SetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), info.url.c_str());
 			WCHAR buf[20];
@@ -39,49 +52,6 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
 			if (info.disallowdiffs)
 				EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
-
-			HWND hwndTT;				// handle to the ToolTip control
-			TOOLINFO ti = {0};
-			hwndTT = CreateWindowEx(WS_EX_TOPMOST,
-				TOOLTIPS_CLASS,
-				NULL,
-				WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,		
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				*this,
-				NULL,
-				hResource,
-				NULL
-				);
-
-			ti.cbSize = sizeof(TOOLINFO);
-			ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS | TTF_PARSELINKS;
-			ti.hwnd = hwndTT;
-			ti.hinst = hResource;
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_CREATEDIFFS);
-			ti.lpszText = _T("Fetches the diff for each revision automatically\nPlease do NOT enable this for repositories which are not on your LAN!");
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_PROJECTNAME);
-			ti.lpszText = _T("Enter here a name for the project");
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_CHECKTIME);
-			if (info.minminutesinterval)
-			{
-				TCHAR infobuf[MAX_PATH] = {0};
-				_stprintf_s(infobuf, MAX_PATH, _T("Interval for repository update checks.\nMiminum set by svnrobots.txt file to %ld minutes."), info.minminutesinterval);
-				ti.lpszText = infobuf;
-			}
-			else
-			{
-				ti.lpszText = _T("Interval for repository update checks");
-			}
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
-
-
-			SendMessage(hwndTT, TTM_SETMAXTIPWIDTH, 0, 600);
-			SendMessage(hwndTT, TTM_ACTIVATE, 1, 0);	
 		}
 		return TRUE;
 	case WM_COMMAND:

@@ -24,6 +24,13 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+
+			AddToolTip(IDC_AUTOSTART, _T("Starts the CommitMonitor automatically when Windows starts up."));
+			AddToolTip(IDC_TASKBAR_ALWAYSON, _T("If disabled, the taskbar icon is only shown if new commits are available.\nThe CommitMonitor can be shown by 'starting' it again."));
+			AddToolTip(IDC_DIFFVIEWER, _T("Path to a viewer for unified diff files."));
+			AddToolTip(IDC_DIFFVIEWERLABEL, _T("Path to a viewer for unified diff files."));
+			AddToolTip(IDC_ANIMATEICON, _T("Animates the system tray icon as long as there are unread commits"));
+
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
@@ -37,40 +44,6 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
 			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
 			SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
-
-			HWND hwndTT;				// handle to the ToolTip control
-			TOOLINFO ti = {0};
-			hwndTT = CreateWindowEx(WS_EX_TOPMOST,
-				TOOLTIPS_CLASS,
-				NULL,
-				WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,		
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				*this,
-				NULL,
-				hResource,
-				NULL
-				);
-
-			ti.cbSize = sizeof(TOOLINFO);
-			ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS | TTF_PARSELINKS;
-			ti.hwnd = hwndTT;
-			ti.hinst = hResource;
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_AUTOSTART);
-			ti.lpszText = _T("Starts the CommitMonitor automatically when Windows starts up.");
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_TASKBAR_ALWAYSON);
-			ti.lpszText = _T("If disabled, the taskbar icon is only shown if new commits are available.\nThe CommitMonitor can be shown by 'starting' it again.");
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);
-			ti.uId = (UINT_PTR)GetDlgItem(*this, IDC_DIFFVIEWER);
-			ti.lpszText = _T("Path to a viewer for unified diff files.");
-			SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);	
-
-
-			SendMessage(hwndTT, TTM_SETMAXTIPWIDTH, 0, 600);
-			SendMessage(hwndTT, TTM_ACTIVATE, 1, 0);	
 		}
 		return TRUE;
 	case WM_COMMAND:
