@@ -359,8 +359,7 @@ void CHiddenWindow::DoTimer(bool bForce)
 		if (m_hMonitorThread == NULL) 
 			return;
 	}
-	if ((!bStartThread)&&(m_bIsTask))
-		::PostQuitMessage(0);
+	SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 }
 
 void CHiddenWindow::ShowTrayIcon(bool newCommits)
@@ -432,6 +431,7 @@ DWORD CHiddenWindow::RunThread()
 
 	if (::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)!=S_OK)
 	{
+		SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 		return 1;
 	}
 
@@ -442,6 +442,7 @@ DWORD CHiddenWindow::RunThread()
 	{
 		if (m_bIsTask)
 			::PostQuitMessage(0);
+		SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 		return 0;
 	}
 	TCHAR infotextbuf[1024];
@@ -883,6 +884,8 @@ DWORD CHiddenWindow::RunThread()
 	m_bMainDlgRemovedItems = false;
 	m_ThreadRunning = FALSE;
 
+	SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
+
 	::CoUninitialize();
 	return 0L;
 }
@@ -892,6 +895,7 @@ DWORD WINAPI MonitorThread(LPVOID lpParam)
 	CHiddenWindow * pThis = (CHiddenWindow*)lpParam;
 	if (pThis)
 		return pThis->RunThread();
+	SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 	return 0L;
 }
 
