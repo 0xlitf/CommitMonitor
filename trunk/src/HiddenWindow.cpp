@@ -34,7 +34,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_bMainDlgRemovedItems(false)
 	, m_hMainDlg(NULL)
 	, m_nIcon(0)
-	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE)
+	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE)
 	, m_bIsTask(false)
 {
 	m_hIconNew0 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW0));
@@ -380,7 +380,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
 	Shell_NotifyIcon(msg, &m_SystemTray);
 	m_nIcon = 2;
-	if ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE))
+	if ((!newCommits)&&(DWORD(regShowTaskbarIcon) == FALSE))
 	{
 		m_SystemTray.hIcon = NULL;
 	}
