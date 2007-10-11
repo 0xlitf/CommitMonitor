@@ -29,28 +29,6 @@
 		</delete>
 	</target>
 
-	<target name="gen_uri_delims">
-		<mkdir dir="uri\obj_${platform}" />
-		<cl outputdir="uri\obj_${platform}">
-			<sources>
-				<include name="uri\gen_uri_delims.c" />
-			</sources>
-			<defines>
-				<define name="APU_DECLARE_STATIC" />
-				<define name="WIN32" />
-				<define name="WIN64" if="${platform == 'x64'}" />
-				<define name="_WINDOWS" />
-				<define name="_WIN32" />
-				<define name="NDEBUG" />
-			</defines>
-		</cl>
-		<link output="uri\gen_uri_delims.exe">
-			<sources>
-				<include name="uri\obj_${platform}\*.obj" />
-			</sources>
-		</link>
-	</target>
-	
 	<target name="xml">
 		<mkdir dir="xml\expat\lib\${configuration}_${platform}" />
 		<copy file="xml\expat\lib\winconfig.h" tofile="xml\expat\lib\config.h" overwrite="true" />
@@ -112,7 +90,7 @@
 		</lib>
 	</target>
 
-	<target name="build" depends="gen_uri_delims,xml">
+	<target name="build" depends="xml">
 		<mkdir dir="${configuration}_${platform}" />
 		<copy file="..\build\apu.hw" tofile="include\apu.h" overwrite="true" />
 		<copy file="include\apu_want.hw" tofile="include\apu_want.h" overwrite="true" />
@@ -139,9 +117,7 @@
 				<include name="include" />
 			</includedirs>
 		</rc>
-		
-		<exec program="uri\gen_uri_delims.exe" output="uri\uri_delims.h" unless="${file::exists('uri\uri_delims.h')}" />
-		
+				
 		<cl outputdir="${configuration}_${platform}">
 			<arg value="/O2" if="${configuration == 'release'}" />
 			<arg value="/Ob1" if="${configuration == 'release'}" />
@@ -160,6 +136,7 @@
 			<sources>
 				<include name="buckets\*.c" />
 				<include name="crypto\*.c" />
+				<include name="dbd\*.c" />
 				<include name="dbm\*.c" />
 				<include name="dbm\sdbm\*.c" />
 				<include name="encoding\*.c" />
