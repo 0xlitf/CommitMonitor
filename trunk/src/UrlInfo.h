@@ -34,8 +34,8 @@ public:
 	bool						parentpath;
 	wstring						error;
 
-	bool						Save(HANDLE hFile);
-	bool						Load(HANDLE hFile);
+	bool						Save(FILE * hFile);
+	bool						Load(FILE * hFile);
 };
 
 class CUrlInfos
@@ -56,8 +56,8 @@ public:
 	void						ReleaseWriteData();
 
 protected:
-	bool						Save(HANDLE hFile);
-	bool						Load(HANDLE hFile);
+	bool						Save(FILE * hFile);
+	bool						Load(FILE * hFile);
 
 private:
 	map<wstring,CUrlInfo>		infos;

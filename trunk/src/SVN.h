@@ -81,7 +81,7 @@ public:
 	svn_revnum_t		copyfrom_revision;
 	stdstring			copyfrom_path;
 
-	bool Save(HANDLE hFile) const
+	bool Save(FILE * hFile) const
 	{
 		if (!CSerializeUtils::SaveNumber(hFile, action))
 			return false;
@@ -91,7 +91,7 @@ public:
 			return false;
 		return true;
 	}
-	bool Load(HANDLE hFile)
+	bool Load(FILE * hFile)
 	{
 		unsigned __int64 value;
 		if (!CSerializeUtils::LoadNumber(hFile, value))
@@ -124,7 +124,7 @@ public:
 	stdstring			message;
 	map<stdstring, SVNLogChangedPaths>	m_changedPaths;
 
-	bool Save(HANDLE hFile) const
+	bool Save(FILE * hFile) const
 	{
 		if (!CSerializeUtils::SaveNumber(hFile, read))
 			return false;
@@ -150,7 +150,7 @@ public:
 		}
 		return true;
 	}
-	bool Load(HANDLE hFile)
+	bool Load(FILE * hFile)
 	{
 		unsigned __int64 value = 0;
 		if (!CSerializeUtils::LoadNumber(hFile, value))

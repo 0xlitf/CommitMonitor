@@ -16,7 +16,7 @@ CUrlInfo::~CUrlInfo(void)
 {
 }
 
-bool CUrlInfo::Save(HANDLE hFile)
+bool CUrlInfo::Save(FILE * hFile)
 {
 	if (!CSerializeUtils::SaveNumber(hFile, URLINFO_VERSION))
 		return false;
@@ -59,7 +59,7 @@ bool CUrlInfo::Save(HANDLE hFile)
 	return true;
 }
 
-bool CUrlInfo::Load(HANDLE hFile)
+bool CUrlInfo::Load(FILE * hFile)
 {
 	unsigned __int64 version = 0;
 	if (!CSerializeUtils::LoadNumber(hFile, version))
@@ -154,14 +154,17 @@ void CUrlInfos::Save()
 
 void CUrlInfos::Save(LPCWSTR filename)
 {
-	HANDLE hFile = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_DELETE, NULL,
-		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN|FILE_ATTRIBUTE_COMPRESSED, NULL);
-	if (hFile == INVALID_HANDLE_VALUE)
+    FILE * hFile = NULL;
+    _tfopen_s(&hFile, filename, _T("w+b"));
+	if (hFile == NULL)
 		return;
+    char filebuffer[4096];
+    setvbuf(hFile, filebuffer, _IOFBF, 4096);
+
 	guard.AcquireReaderLock();
 	bool bSuccess = Save(hFile);
 	guard.ReleaseReaderLock();
-	CloseHandle(hFile);
+	fclose(hFile);
 	if (bSuccess)
 	{
 		// rename the file to the original requested name
@@ -171,18 +174,21 @@ void CUrlInfos::Save(LPCWSTR filename)
 
 void CUrlInfos::Load(LPCWSTR filename)
 {
-	HANDLE hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_DELETE, NULL,
-		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL|FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	if (hFile == INVALID_HANDLE_VALUE)
+    FILE * hFile = NULL;
+    _tfopen_s(&hFile, filename, _T("rb"));
+	if (hFile == NULL)
 		return;
-	guard.AcquireWriterLock();
+    char filebuffer[4096];
+    setvbuf(hFile, filebuffer, _IOFBF, 4096);
+
+    guard.AcquireWriterLock();
 	Load(hFile);
 	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
-	CloseHandle(hFile);
+	fclose(hFile);
 }
 
-bool CUrlInfos::Save(HANDLE hFile)
+bool CUrlInfos::Save(FILE * hFile)
 {
 	if (!CSerializeUtils::SaveNumber(hFile, URLINFOS_VERSION))
 		return false;
@@ -201,7 +207,7 @@ bool CUrlInfos::Save(HANDLE hFile)
 	return true;
 }
 
-bool CUrlInfos::Load(HANDLE hFile)
+bool CUrlInfos::Load(FILE * hFile)
 {
 	unsigned __int64 version = 0;
 	if (!CSerializeUtils::LoadNumber(hFile, version))

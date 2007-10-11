@@ -10,13 +10,12 @@ CSerializeUtils::~CSerializeUtils(void)
 {
 }
 
-bool CSerializeUtils::SaveNumber(HANDLE hFile, unsigned __int64 value)
+bool CSerializeUtils::SaveNumber(FILE * hFile, unsigned __int64 value)
 {
-	DWORD written = 0;
 	SerializeTypes type = SerializeType_Number;
-	if (WriteFile(hFile, &type, sizeof(type), &written, NULL))
+    if (fwrite(&type, sizeof(type), 1, hFile))
 	{
-		if (WriteFile(hFile, &value, sizeof(value), &written, NULL))
+        if (fwrite(&value, sizeof(value), 1, hFile))
 		{
 			return true;
 		}
@@ -24,15 +23,14 @@ bool CSerializeUtils::SaveNumber(HANDLE hFile, unsigned __int64 value)
 	return false;
 }
 
-bool CSerializeUtils::LoadNumber(HANDLE hFile, unsigned __int64& value)
+bool CSerializeUtils::LoadNumber(FILE * hFile, unsigned __int64& value)
 {
-	DWORD read = 0;
 	SerializeTypes type;
-	if (ReadFile(hFile, &type, sizeof(type), &read, NULL))
+    if (fread(&type, sizeof(type), 1, hFile))
 	{
 		if (type == SerializeType_Number)
 		{
-			if (ReadFile(hFile, &value, sizeof(value), &read, NULL))
+            if (fread(&value, sizeof(value), 1, hFile))
 			{
 				return true;
 			}
@@ -41,48 +39,54 @@ bool CSerializeUtils::LoadNumber(HANDLE hFile, unsigned __int64& value)
 	return false;
 }
 
-bool CSerializeUtils::SaveString(HANDLE hFile, string str)
+bool CSerializeUtils::SaveString(FILE * hFile, string str)
 {
-	DWORD written = 0;
 	SerializeTypes type = SerializeType_String;
-	if (WriteFile(hFile, &type, sizeof(type), &written, NULL))
+    if (fwrite(&type, sizeof(type), 1, hFile))
 	{
 		size_t length = str.size();
 		assert(length < (1024*100));
-		if (WriteFile(hFile, &length, sizeof(length), &written, NULL))
+        if (fwrite(&length, sizeof(length), 1, hFile))
 		{
-			if (WriteFile(hFile, str.c_str(), length, &written, NULL))
+            if (fwrite(str.c_str(), sizeof(char), length, hFile)>=0)
 				return true;
 		}
 	}
 	return false;
 }
-bool CSerializeUtils::SaveString(HANDLE hFile, wstring str)
+bool CSerializeUtils::SaveString(FILE * hFile, wstring str)
 {
 	return SaveString(hFile, CUnicodeUtils::StdGetUTF8(str));
 }
 
-bool CSerializeUtils::LoadString(HANDLE hFile, std::string &str)
+bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
 {
-	DWORD read = 0;
 	SerializeTypes type;
-	if (ReadFile(hFile, &type, sizeof(type), &read, NULL))
+    if (fread(&type, sizeof(type), 1, hFile))
 	{
 		if (type == SerializeType_String)
 		{
 			size_t length = 0;
-			if (ReadFile(hFile, &length, sizeof(length), &read, NULL))
+            if (fread(&length, sizeof(length), 1, hFile))
 			{
 				if (length < (1024*100))
 				{
-					char * buffer = new char[length];
-					if (ReadFile(hFile, buffer, length, &read, NULL))
-					{
-						str = string(buffer, length);
-						delete [] buffer;
-						return true;
-					}
-					delete [] buffer;
+                    if (length)
+                    {
+                        char * buffer = new char[length];
+                        if (fread(buffer, sizeof(char), length, hFile))
+                        {
+                            str = string(buffer, length);
+                            delete [] buffer;
+                            return true;
+                        }
+                        delete [] buffer;
+                    }
+                    else
+                    {
+                        str = string("");
+                        return true;
+                    }
 				}
 			}
 		}
@@ -90,7 +94,7 @@ bool CSerializeUtils::LoadString(HANDLE hFile, std::string &str)
 	return false;
 }
 
-bool CSerializeUtils::LoadString(HANDLE hFile, wstring& str)
+bool CSerializeUtils::LoadString(FILE * hFile, wstring& str)
 {
 	string tempstr;
 	if (LoadString(hFile, tempstr))
