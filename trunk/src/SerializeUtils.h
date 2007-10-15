@@ -19,9 +19,6 @@ public:
 	static bool LoadString(FILE * hFile, string& str);
 	static bool LoadString(FILE * hFile, wstring& str);
 
-    static void InitializeStatic();
-    static void CleanupStatic();
-
 	enum SerializeTypes
 	{
 		SerializeType_Number,
@@ -29,6 +26,5 @@ public:
 		SerializeType_Map
 	};
 private:
-    static char *   buffer;
-    static size_t   lenbuffer;
+    static char buffer[4096];
 };

@@ -90,8 +90,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		//only one instance of this application part allowed
 		g_mutex = ::CreateMutex(NULL, FALSE, APPNAME_MUTEX);
         
-        CSerializeUtils::InitializeStatic();
-
 		if (g_mutex != NULL)
 		{   
 			if ((::GetLastError()==ERROR_ALREADY_EXISTS)&&(!parser.HasKey(_T("task"))))
@@ -105,7 +103,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					SetForegroundWindow(hWnd);										//set the window to front
 				}
 				apr_terminate();
-                CSerializeUtils::CleanupStatic();
 				return FALSE;
 			}		
 		}
@@ -136,7 +133,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			}
 		}
 		hiddenWindow.StopThread();
-        CSerializeUtils::CleanupStatic();
 	}
 
 	::OleUninitialize();
