@@ -109,6 +109,7 @@ SVN::SVN(void)
 		svn_config_set(cfg, SVN_CONFIG_SECTION_TUNNELS, "ssh", CUnicodeUtils::StdGetUTF8(tsvn_ssh).c_str());
 	}
 	m_bCanceled = false;
+    m_pProgressDlg = NULL;
 }
 
 SVN::~SVN(void)
