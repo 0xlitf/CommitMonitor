@@ -2,12 +2,29 @@
 #include "SerializeUtils.h"
 #include <assert.h>
 
+
+char * CSerializeUtils::buffer = NULL;
+size_t CSerializeUtils::lenbuffer = 0;
+
 CSerializeUtils::CSerializeUtils(void)
 {
 }
 
 CSerializeUtils::~CSerializeUtils(void)
 {
+}
+
+void CSerializeUtils::InitializeStatic()
+{
+    buffer = new char[1024];
+    lenbuffer = 1024;
+}
+
+void CSerializeUtils::CleanupStatic()
+{
+    if (buffer)
+        delete [] buffer;
+    lenbuffer = 0;
 }
 
 bool CSerializeUtils::SaveNumber(FILE * hFile, unsigned __int64 value)
@@ -73,14 +90,17 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
 				{
                     if (length)
                     {
-                        char * buffer = new char[length];
+                        if (length > lenbuffer)
+                        {
+                            delete [] buffer;
+                            buffer = new char[length];
+                            lenbuffer = length;
+                        }
                         if (fread(buffer, sizeof(char), length, hFile))
                         {
                             str = string(buffer, length);
-                            delete [] buffer;
                             return true;
                         }
-                        delete [] buffer;
                     }
                     else
                     {
