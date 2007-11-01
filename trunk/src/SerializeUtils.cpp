@@ -41,6 +41,20 @@ bool CSerializeUtils::LoadNumber(FILE * hFile, unsigned __int64& value)
 	return false;
 }
 
+bool CSerializeUtils::LoadNumber(const unsigned char *& buf, unsigned __int64& value)
+{
+	SerializeTypes type = *((SerializeTypes*)buf);
+	buf += sizeof(SerializeTypes);
+
+	if (type == SerializeType_Number)
+	{
+		value = *((unsigned __int64 *)buf);
+		buf += sizeof(unsigned __int64);
+		return true;
+	}
+	return false;
+}
+
 bool CSerializeUtils::SaveString(FILE * hFile, string str)
 {
 	SerializeTypes type = SerializeType_String;
@@ -104,10 +118,45 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
 	return false;
 }
 
+bool CSerializeUtils::LoadString(const unsigned char *& buf, std::string &str)
+{
+	SerializeTypes type = *((SerializeTypes*)buf);
+	buf += sizeof(SerializeTypes);
+
+	if (type == SerializeType_String)
+	{
+		size_t length = *((size_t *)buf);
+		buf += sizeof(size_t);
+		if (length < (1024*100))
+		{
+			if (length)
+			{
+				str = string((const char *)buf, length);
+				buf += length;
+				return true;
+			}
+			str = string("");
+			return true;
+		}
+	}
+	return false;
+}
+
 bool CSerializeUtils::LoadString(FILE * hFile, wstring& str)
 {
 	string tempstr;
 	if (LoadString(hFile, tempstr))
+	{
+		str = CUnicodeUtils::StdGetUnicode(tempstr);
+		return true;
+	}
+	return false;
+}
+
+bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
+{
+	string tempstr;
+	if (LoadString(buf, tempstr))
 	{
 		str = CUnicodeUtils::StdGetUnicode(tempstr);
 		return true;

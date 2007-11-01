@@ -239,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MappedInFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsDlg.cpp"
 				>
 			</File>
@@ -362,6 +366,10 @@
 			</File>
 			<File
 				RelativePath=".\MainDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MappedInFile.h"
 				>
 			</File>
 			<File

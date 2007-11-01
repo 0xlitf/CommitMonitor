@@ -25,6 +25,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
+	CUrlInfos urlinfos;
+	urlinfos.Load();
+	urlinfos.Save();
+	return 0;
+
 	::OleInitialize(NULL);
 
 	// we need some of the common controls

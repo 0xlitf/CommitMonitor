@@ -104,6 +104,19 @@ public:
 			return false;
 		return true;
 	}
+	bool Load(const unsigned char *& buf)
+	{
+		unsigned __int64 value;
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		action = (wchar_t)value;
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		copyfrom_revision = (svn_revnum_t)value;
+		if (!CSerializeUtils::LoadString(buf, copyfrom_path))
+			return false;
+		return true;
+	}
 };
 
 class SVNLogEntry
@@ -189,6 +202,47 @@ public:
 		}
 		return false;
 	}
+
+	bool Load(const unsigned char *& buf)
+	{
+		unsigned __int64 value = 0;
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		read = !!value;
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		revision = (svn_revnum_t)value;
+		if (!CSerializeUtils::LoadString(buf, author))
+			return false;
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		date = value;
+		if (!CSerializeUtils::LoadString(buf, message))
+			return false;
+
+		m_changedPaths.clear();
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		if (CSerializeUtils::SerializeType_Map == value)
+		{
+			if (CSerializeUtils::LoadNumber(buf, value))
+			{
+				for (unsigned __int64 i=0; i<value; ++i)
+				{
+					wstring key;
+					SVNLogChangedPaths cpaths;
+					if (!CSerializeUtils::LoadString(buf, key))
+						return false;
+					if (!cpaths.Load(buf))
+						return false;
+					m_changedPaths[key] = cpaths;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 };
 
 class SVN

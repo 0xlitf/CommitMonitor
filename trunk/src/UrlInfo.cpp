@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "UrlInfo.h"
 #include "AppUtils.h"
+#include "MappedInFile.h"
 
 CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
@@ -65,68 +66,68 @@ bool CUrlInfo::Save(FILE * hFile)
 	return true;
 }
 
-bool CUrlInfo::Load(FILE * hFile)
+bool CUrlInfo::Load(const unsigned char *& buf)
 {
 	unsigned __int64 version = 0;
-	if (!CSerializeUtils::LoadNumber(hFile, version))
+	if (!CSerializeUtils::LoadNumber(buf, version))
 		return false;
 	unsigned __int64 value = 0;
-	if (!CSerializeUtils::LoadString(hFile, username))
+	if (!CSerializeUtils::LoadString(buf, username))
 		return false;
-	if (!CSerializeUtils::LoadString(hFile, password))
+	if (!CSerializeUtils::LoadString(buf, password))
 		return false;
-	if (!CSerializeUtils::LoadString(hFile, name))
+	if (!CSerializeUtils::LoadString(buf, name))
 		return false;
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	lastchecked = value;
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	lastcheckedrev = (svn_revnum_t)value;
 	if (version > 1)
 	{
-		if (!CSerializeUtils::LoadNumber(hFile, value))
+		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
 		lastcheckedrobots = (int)value;
 	}
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	minutesinterval = (int)value;
 	if (version > 1)
 	{
-		if (!CSerializeUtils::LoadNumber(hFile, value))
+		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
 		minminutesinterval = (int)value;
 	}
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	fetchdiffs = !!value;
 	if (version > 1)
 	{
-		if (!CSerializeUtils::LoadNumber(hFile, value))
+		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
 		disallowdiffs = !!value;
 	}
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	parentpath = !!value;
-	if (!CSerializeUtils::LoadString(hFile, error))
+	if (!CSerializeUtils::LoadString(buf, error))
 		return false;
 
 	logentries.clear();
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	if (CSerializeUtils::SerializeType_Map == value)
 	{
-		if (CSerializeUtils::LoadNumber(hFile, value))
+		if (CSerializeUtils::LoadNumber(buf, value))
 		{
 			for (unsigned __int64 i=0; i<value; ++i)
 			{
 				unsigned __int64 key;
 				SVNLogEntry logentry;
-				if (!CSerializeUtils::LoadNumber(hFile, key))
+				if (!CSerializeUtils::LoadNumber(buf, key))
 					return false;
-				if (!logentry.Load(hFile))
+				if (!logentry.Load(buf))
 					return false;
 				logentries[(svn_revnum_t)key] = logentry;
 			}
@@ -191,18 +192,12 @@ void CUrlInfos::Load(LPCWSTR filename)
 #ifdef _DEBUG
 	DWORD dwStartTicks = GetTickCount();
 #endif
-    FILE * hFile = NULL;
-    _tfopen_s(&hFile, filename, _T("rb"));
-	if (hFile == NULL)
-		return;
-    char filebuffer[4096];
-    setvbuf(hFile, filebuffer, _IOFBF, 4096);
-
+	CMappedInFile file(filename);
     guard.AcquireWriterLock();
-	Load(hFile);
+	const unsigned char * buf = file.GetBuffer();
+	Load(buf);
 	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
-	fclose(hFile);
 #ifdef _DEBUG
 	TCHAR timerbuf[MAX_PATH] = {0};
 	_stprintf_s(timerbuf, MAX_PATH, _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
@@ -230,26 +225,26 @@ bool CUrlInfos::Save(FILE * hFile)
 	return true;
 }
 
-bool CUrlInfos::Load(FILE * hFile)
+bool CUrlInfos::Load(const unsigned char *& buf)
 {
 	unsigned __int64 version = 0;
-	if (!CSerializeUtils::LoadNumber(hFile, version))
+	if (!CSerializeUtils::LoadNumber(buf, version))
 		return false;
 	infos.clear();
 	unsigned __int64 value = 0;
-	if (!CSerializeUtils::LoadNumber(hFile, value))
+	if (!CSerializeUtils::LoadNumber(buf, value))
 		return false;
 	if (CSerializeUtils::SerializeType_Map == value)
 	{
-		if (CSerializeUtils::LoadNumber(hFile, value))
+		if (CSerializeUtils::LoadNumber(buf, value))
 		{
 			for (unsigned __int64 i=0; i<value; ++i)
 			{
 				wstring key;
 				CUrlInfo info;
-				if (!CSerializeUtils::LoadString(hFile, key))
+				if (!CSerializeUtils::LoadString(buf, key))
 					return false;
-				if (!info.Load(hFile))
+				if (!info.Load(buf))
 					return false;
 				info.url = key;
 				infos[key] = info;

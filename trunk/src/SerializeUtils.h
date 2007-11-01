@@ -13,11 +13,14 @@ public:
 
 	static bool SaveNumber(FILE * hFile, unsigned __int64 value);
 	static bool LoadNumber(FILE * hFile, unsigned __int64& value);
+	static bool LoadNumber(const unsigned char *& buf, unsigned __int64& value);
 
 	static bool SaveString(FILE * hFile, string str);
 	static bool SaveString(FILE * hFile, wstring str);
 	static bool LoadString(FILE * hFile, string& str);
+	static bool LoadString(const unsigned char *& buf, string& str);
 	static bool LoadString(FILE * hFile, wstring& str);
+	static bool LoadString(const unsigned char *& buf, wstring& str);
 
 	enum SerializeTypes
 	{

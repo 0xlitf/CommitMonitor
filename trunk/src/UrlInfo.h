@@ -35,7 +35,7 @@ public:
 	wstring						error;
 
 	bool						Save(FILE * hFile);
-	bool						Load(FILE * hFile);
+	bool						Load(const unsigned char *& buf);
 };
 
 class CUrlInfos
@@ -57,7 +57,7 @@ public:
 
 protected:
 	bool						Save(FILE * hFile);
-	bool						Load(FILE * hFile);
+	bool						Load(const unsigned char *& buf);
 
 private:
 	map<wstring,CUrlInfo>		infos;
