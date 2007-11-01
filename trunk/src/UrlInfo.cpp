@@ -160,6 +160,9 @@ void CUrlInfos::Save()
 
 void CUrlInfos::Save(LPCWSTR filename)
 {
+#ifdef _DEBUG
+	DWORD dwStartTicks = GetTickCount();
+#endif
     FILE * hFile = NULL;
     _tfopen_s(&hFile, filename, _T("w+b"));
 	if (hFile == NULL)
@@ -175,11 +178,19 @@ void CUrlInfos::Save(LPCWSTR filename)
 	{
 		// rename the file to the original requested name
 		TRACE(_T("data saved\n"));
+#ifdef _DEBUG
+		TCHAR timerbuf[MAX_PATH] = {0};
+		_stprintf_s(timerbuf, MAX_PATH, _T("time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+		TRACE(timerbuf);
+#endif
 	}
 }
 
 void CUrlInfos::Load(LPCWSTR filename)
 {
+#ifdef _DEBUG
+	DWORD dwStartTicks = GetTickCount();
+#endif
     FILE * hFile = NULL;
     _tfopen_s(&hFile, filename, _T("rb"));
 	if (hFile == NULL)
@@ -192,6 +203,12 @@ void CUrlInfos::Load(LPCWSTR filename)
 	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
 	fclose(hFile);
+#ifdef _DEBUG
+	TCHAR timerbuf[MAX_PATH] = {0};
+	_stprintf_s(timerbuf, MAX_PATH, _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+	TRACE(timerbuf);
+#endif
+
 }
 
 bool CUrlInfos::Save(FILE * hFile)
