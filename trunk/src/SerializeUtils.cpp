@@ -155,11 +155,37 @@ bool CSerializeUtils::LoadString(FILE * hFile, wstring& str)
 
 bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
 {
-	string tempstr;
-	if (LoadString(buf, tempstr))
+	SerializeTypes type = *((SerializeTypes*)buf);
+	buf += sizeof(SerializeTypes);
+
+	if (type == SerializeType_String)
 	{
-		str = CUnicodeUtils::StdGetUnicode(tempstr);
-		return true;
+		size_t length = *((size_t *)buf);
+		buf += sizeof(size_t);
+		if (length < (1024*100))
+		{
+			if (length)
+			{
+				int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, NULL, 0);
+				if (size < 4096)
+				{
+					TCHAR wide[4096];
+					int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
+					str = wstring(wide, ret);
+				}
+				else
+				{
+					wchar_t * wide = new wchar_t[size+1];
+					int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
+					str = wstring(wide, ret);
+					delete [] wide;
+				}
+				buf += length;
+				return true;
+			}
+			str = wstring(_T(""));
+			return true;
+		}
 	}
 	return false;
 }
