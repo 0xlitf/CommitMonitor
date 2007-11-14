@@ -21,7 +21,6 @@
 	<target name="build" >
 		<mkdir dir="${configuration}_${platform}" />
 		<copy file="subversion\svn_private_config.hw" tofile="subversion\svn_private_config.h" overwrite="true" />
-		<copy file="..\build\utf.c" tofile="subversion\libsvn_subr\utf.c" overwrite="true" />
 		<loadfile file="subversion\svn_private_config.hw" property="configfile">
 			<filterchain>
 				<replacestring from="#define SVN_LIBSVN_FS_LINKS_FS_FS" to="/* #define SVN_LIBSVN_FS_LINKS_FS_FS */" />
@@ -98,6 +97,7 @@
 						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_SERF=1" />
 						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
 						<define name="SVN_HAVE_SASL=1" />
+						<define name="APR_HAVE_IPV6" />
 						<define name="alloca=_alloca" />
 						<define name="snprintf=_snprintf" />
 						<define name="WIN32" />
