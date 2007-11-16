@@ -1,0 +1,84 @@
+First, you need to install the compiler package.
+
+- You need VS.NET2005 (or at least Visual C++ .NET 2005) 
+  If you want to build the msi make sure the "Tools for Redistributing
+  Applications" are installed.
+  Also, make sure ServicePack 1 for VS.NET2005 is installed.
+
+- If you do not have access to VS.NET you can download the free
+  Visual C++ 2005 Express Edition.
+  - Install Visual C++ 2005 Express Edition.
+    Download it from http://msdn.microsoft.com/vstudio/express/visualc/
+  - Install Microsoft SDK for Windows Vista (February 2007 Update)
+      - http://www.microsoft.com/downloads/details.aspx?FamilyID=FF6467E6-5BBA-4BF5-B562-9199BE864D29
+
+Next you need to install some utilities/programs:
+- boost(#)                : http://www.boost.org/
+- Python 2.4(*)           : http://www.python.org/windows/
+- Perl                    : http://www.activestate.com/Products/ActivePerl/
+- WiX(*)                  : http://wix.sourceforge.net
+- NAnt(*)                 : http://nant.sourceforge.net
+
+(*) Add the paths of the binaries to the PATH environment variable
+    You may have to logoff/logon to make the new environment variables take effect!
+(#) Compile boost, then add the paths in the VS2005 options for the includes and libs
+
+Now you're almost ready. Only a few more steps to do:
+- create a new folder on your harddisk, e.g. SVN.
+- Checkout the CommitMonitor sources from the Subversion repository into
+  SVN\CommitMonitor
+- Make a copy of the file default.build.user.tmpl in the CommitMonitor root folder and
+  rename that copy to default.build.user. Then adjust the paths as mentioned
+  in that file.
+
+
+Building packages
+
+  Hint: before you can start building CommitMonitor, you need to call the vsvars32.bat
+  file which is located in %VS80COMNTOOLS%. 
+  
+  Note that for the Express edition you need to sort out the vars for the platform SDK
+  as well. The easiest way I found was to edit the supplied VC++ file
+  C:\Program Files\Microsoft Visual Studio 8\VC\vcvarsall.bat
+  Look for the :x86 label and add an extra call to setenv.cmd as shown below:
+
+	:x86
+	if not exist "%~dp0bin\vcvars32.bat" goto missing
+	call "%~dp0bin\vcvars32.bat"
+	if exist "%ProgramFiles%\Microsoft SDKs\Windows\v6.0\bin\setenv.cmd" call "%ProgramFiles%\Microsoft SDKs\Windows\v6.0\bin\setenv.cmd" /Release /x86 /vista
+	if exist "%ProgramFiles%\Microsoft SDKs\Windows\v6.0\bin\setenv.cmd" goto :eof
+	if exist "%ProgramFiles%\Microsoft Platform SDK\setenv.cmd" call "%ProgramFiles%\Microsoft Platform SDK\setenv.cmd"
+	if exist "%ProgramFiles%\Microsoft Platform SDK\setenv.cmd" goto :eof
+	goto :eof
+
+  Then call vsvarsall.bat when you start your command processor instead
+  of vsvars32 as described above.
+
+  > nant
+  will show you some help about the targets you can use
+
+  > nant setup
+  will compile everything and create the msi installer
+
+  If you encounter any build errors, you can run nant again like this:
+
+  > nant setup -l:buildlog.txt
+
+  which will create a build log file which you can use to analyse where
+  exactly the build failed.
+
+  If you are building using VC++ Express, your options are somewhat limited.
+  Firstly you need to change the build tool in default.build.user.
+  There is already a line to set this up which you need to un-comment:
+
+	<property name="buildtool" value="vcexpress.exe" />
+
+  Note that the VC Express compiler works in the background without a console
+  window. There is a lot of disk activity with no apparent result showing
+  in the Nant console window. Be patient!
+
+  Before building the applications, update the version info:
+  > nant VersionInfo
+
+
+  After the script finished, the packages can be found in .\bin .
