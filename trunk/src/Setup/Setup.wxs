@@ -28,7 +28,7 @@
 		  <Directory Id='INSTALLDIR' Name='cMonitor' LongName='CommitMonitor'>
 	
 			<Component Id='MainEXE' Guid='325E1EEF-97EE-4b0e-8FCB-7A0CADE42934'>
-			  <File Id='grepWin.EXE' Name='CMonitor.exe' LongName='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes'>
+			  <File Id='CommitMonitor.EXE' Name='CMonitor.exe' LongName='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes'>
 			  </File>
         <Shortcut Id="startMenuCommitMonitor" Directory="ProgramMenuDir" Name="cMonitor" LongName="CommitMonitor" Target="[INSTALLDIR]CommitMonitor.exe" Description="Subversion Commit Monitor" />
 			</Component>
@@ -41,7 +41,7 @@
       <Directory Id="ProgramMenuDir" Name='CMonitor' LongName="CommitMonitor" />
     </Directory>
     
-    <Feature Id='Complete' Title='grepWin' Description='The complete package.'
+    <Feature Id='Complete' Title='CommitMonitor' Description='The complete package.'
       Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
       <Feature Id='MainEXE' Title='Program' Description='The main executable.' Level='1'>
         <ComponentRef Id='MainEXE' />
