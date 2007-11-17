@@ -4,7 +4,7 @@
   UpgradeCode="B49D2664-0941-465d-A704-CAC63D1D0789"  
   Name='CommitMonitor' 
   Id='????????-????-????-????-????????????'
-  Language='1031' 
+  Language='1033' 
   Codepage='1252' 
   Version='1.0.0' 
   Manufacturer='Stefans Tools'>
@@ -12,7 +12,7 @@
     <Package Id='????????-????-????-????-????????????' Keywords='Installer'
       Description="Subversion Commit Monitor"
       Comments='http://tools.tortoisesvn.net' Manufacturer='Stefans Tools'
-      InstallerVersion='100' Languages='1031' Compressed='yes' SummaryCodepage='1252' />
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
       
     <Upgrade Id="722E7031-EF2E-44ae-BD9E-E80C120E5862" >
       <!-- flag is set if the install will trigger an upgrade of an existing install -->
