@@ -114,6 +114,10 @@
 			<arg value="/rebuild" />
 			<arg value="${configuration}|${platform}" />
 		</exec>
+		<exec program="Tools\upx.exe" >
+      <arg value="-q" />
+      <arg value="bin\${configuration}\CommitMonitor.exe" />
+		</exec>
 	</target>
 
 	<target name="setup" depends="Subversion,CommitMonitor">
