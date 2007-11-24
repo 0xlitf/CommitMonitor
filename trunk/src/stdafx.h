@@ -25,6 +25,8 @@
 
 // Windows Header Files:
 #include <WinSock2.h>
+#include <Ws2tcpip.h>
+#include <Wspiapi.h>
 #include <windows.h>
 #include <windowsx.h>
 

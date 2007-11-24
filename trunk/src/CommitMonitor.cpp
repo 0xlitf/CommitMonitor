@@ -75,7 +75,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	INITCOMMONCONTROLSEX used = {
 		sizeof(INITCOMMONCONTROLSEX),
-		ICC_STANDARD_CLASSES | ICC_BAR_CLASSES
+		ICC_BAR_CLASSES
 	};
 	InitCommonControlsEx(&used);
 

@@ -50,6 +50,8 @@
    Note that we can't include both winsock.h and winsock2.h as
    they conflict */
 #include <winsock2.h>
+#include <Ws2tcpip.h>
+#include <Wspiapi.h>
 
 /* Our package */
 #define PACKAGE "cyrus-sasl"
