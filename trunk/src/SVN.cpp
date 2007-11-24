@@ -548,6 +548,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
 		&peg,
 		&rev1,
 		&rev2,
+		NULL,
 		svn_depth_infinity,
 		ignoreancestry,
 		nodiffdeleted,
