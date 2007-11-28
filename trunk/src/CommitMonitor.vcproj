@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="CommitMonitor"
 	ProjectGUID="{920638BE-13B0-4A76-B132-B3E3A56DCB42}"
 	RootNamespace="CommitMonitor"
@@ -25,6 +25,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Create VersionInfo"
+				CommandLine="&quot;%VS80COMNTOOLS%\vsvars32.bat&quot; &amp; nant -buildfile:$(SolutionDir)default.build VersionInfo"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -105,6 +107,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Create VersionInfo"
+				CommandLine="&quot;%VS80COMNTOOLS%\vsvars32.bat&quot; &amp; nant -buildfile:$(SolutionDir)default.build VersionInfo"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
