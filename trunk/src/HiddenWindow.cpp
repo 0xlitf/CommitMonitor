@@ -722,7 +722,14 @@ DWORD CHiddenWindow::RunThread()
 				callback->SetAuthData(it->second.username, it->second.password);
 				DeleteFile(tempfile.c_str());
 				wstring projName = it->second.name;
-				if (URLDownloadToFile(NULL, it->first.c_str(), tempfile.c_str(), 0, callback) == S_OK)
+                wstring parentpathurl = it->first;
+                wstring parentpathurl2 = parentpathurl + _T("/");
+                HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback);
+                if (hResUDL != S_OK)
+                {
+                    hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback);
+                }
+				if (hResUDL == S_OK)
 				{
 					if (callback)
 					{
