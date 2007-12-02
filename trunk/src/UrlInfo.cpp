@@ -20,6 +20,9 @@
 #include "UrlInfo.h"
 #include "AppUtils.h"
 #include "MappedInFile.h"
+#include <Wincrypt.h>
+
+#pragma comment(lib, "Crypt32.lib")
 
 CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
@@ -41,8 +44,21 @@ bool CUrlInfo::Save(FILE * hFile)
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, username))
 		return false;
-	if (!CSerializeUtils::SaveString(hFile, password))
-		return false;
+	// encrypt the password
+	DATA_BLOB blob, outblob;
+	string encpwd = CUnicodeUtils::StdGetUTF8(password);
+	encpwd = "encrypted_" + encpwd;
+	blob.cbData = encpwd.size();
+	blob.pbData = (BYTE*)encpwd.c_str();
+	if (CryptProtectData(&blob, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
+	{
+		if (!CSerializeUtils::SaveBuffer(hFile, outblob.pbData, outblob.cbData))
+		{
+			LocalFree(outblob.pbData);
+			return false;
+		}
+		LocalFree(outblob.pbData);
+	}
 	if (!CSerializeUtils::SaveString(hFile, name))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, lastchecked))
@@ -92,8 +108,33 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	unsigned __int64 value = 0;
 	if (!CSerializeUtils::LoadString(buf, username))
 		return false;
-	if (!CSerializeUtils::LoadString(buf, password))
-		return false;
+
+	const unsigned char * buf2 = buf;
+	BYTE * pbData = NULL;
+	size_t len = 0;
+	if (!CSerializeUtils::LoadBuffer(buf, pbData, len))
+	{
+		buf = buf2;
+		if (!CSerializeUtils::LoadString(buf, password))
+			return false;
+	}
+
+	// decrypt the password
+	DATA_BLOB blob, outblob;
+	blob.cbData = len;
+	blob.pbData = pbData;
+	if (CryptUnprotectData(&blob, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
+	{
+		string encpwd = string((const char*)outblob.pbData, outblob.cbData);
+		if (_strnicmp(encpwd.c_str(), "encrypted_", 10) == 0)
+		{
+			encpwd = encpwd.substr(10);
+			password = CUnicodeUtils::StdGetUnicode(encpwd);
+		}
+		LocalFree(outblob.pbData);
+	}
+	delete [] pbData;
+
 	if (!CSerializeUtils::LoadString(buf, name))
 		return false;
 	if (!CSerializeUtils::LoadNumber(buf, value))
@@ -213,7 +254,8 @@ void CUrlInfos::Load(LPCWSTR filename)
 	CMappedInFile file(filename);
     guard.AcquireWriterLock();
 	const unsigned char * buf = file.GetBuffer();
-	Load(buf);
+	if (buf)
+		Load(buf);
 	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
 #ifdef _DEBUG
