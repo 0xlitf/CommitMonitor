@@ -93,6 +93,21 @@ bool CSerializeUtils::SaveString(FILE * hFile, wstring str)
 	return SaveString(hFile, CUnicodeUtils::StdGetUTF8(str));
 }
 
+bool CSerializeUtils::SaveBuffer(FILE * hFile, BYTE * pbData, size_t len)
+{
+	SerializeTypes type = SerializeType_Buffer;
+	if (fwrite(&type, sizeof(type), 1, hFile))
+	{
+		assert(len < (1024*100));
+		if (fwrite(&len, sizeof(len), 1, hFile))
+		{
+			if (fwrite(pbData, sizeof(BYTE), len, hFile)>=0)
+				return true;
+		}
+	}
+	return false;
+}
+
 bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
 {
 	SerializeTypes type;
@@ -202,6 +217,33 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
 				return true;
 			}
 			str = wstring(_T(""));
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CSerializeUtils::LoadBuffer(const unsigned char *& buf, BYTE *& pbData, size_t & len)
+{
+	SerializeTypes type = *((SerializeTypes*)buf);
+	buf += sizeof(SerializeTypes);
+
+	if (type == SerializeType_Buffer)
+	{
+		size_t length = *((size_t *)buf);
+		buf += sizeof(size_t);
+		if (length < (1024*100))
+		{
+			if (length)
+			{
+				pbData = new BYTE[length];
+				memcpy(pbData, buf, length);
+				len = length;
+				buf += length;
+				return true;
+			}
+			len = 0;
+			pbData = NULL;
 			return true;
 		}
 	}
