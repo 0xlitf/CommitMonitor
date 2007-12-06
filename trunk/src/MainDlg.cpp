@@ -631,7 +631,7 @@ LRESULT CMainDlg::DoCommand(int id)
 						wstring mask = it->second.name;
 						// ask the user if he really wants to remove the url
 						TCHAR question[4096] = {0};
-						_stprintf_s(question, 4096, _T("Do you really want to remove the project\n%s ?"), mask.c_str());
+						_stprintf_s(question, 4096, _T("Do you really want to stop monitoring the project\n%s ?"), mask.c_str());
 						if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO)==IDYES)
 						{
 							// delete all fetched and stored diff files
