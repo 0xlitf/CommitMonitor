@@ -18,10 +18,14 @@
 //
 #include "StdAfx.h"
 #include "Resource.h"
+#include <algorithm>
 #include "URLDlg.h"
 
 #include "SVN.h"
 
+#include <boost/regex.hpp>
+using namespace boost;
+using namespace std;
 
 CURLDlg::CURLDlg(void)
 {
@@ -96,6 +100,15 @@ LRESULT CURLDlg::DoCommand(int id)
 			GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
 			info.url = svn.CanonicalizeURL(wstring(buffer, len));
 			delete [] buffer;
+
+			wstring tempurl = info.url.substr(0, 7);
+			std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), (int(*)(int))std::tolower);
+
+			if (tempurl.compare(_T("file://")) == 0)
+			{
+				::MessageBox(*this, _T("file:/// urls are not supported!"), _T("CommitMonitor"), MB_ICONERROR);
+				return 1;
+			}
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
 			buffer = new WCHAR[len+1];
