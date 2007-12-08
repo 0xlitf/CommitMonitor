@@ -224,6 +224,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
 			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
 
+			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
+			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
+
 			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
 			if (DWORD(regXY))
 			{
@@ -241,14 +244,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					rc.bottom = LOWORD(DWORD(regWH)) + rc.top;
 					if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
 					{
-						SetWindowPos(*this, HWND_TOP, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, SWP_SHOWWINDOW); 
+						SetWindowPos(*this, HWND_TOP, rc.left, rc.top, 0, 0, SWP_NOSIZE);
+						DoResize(rc.right-rc.left, rc.bottom-rc.top);
 						DoResize(rc.right-rc.left, rc.bottom-rc.top);
 					}
 				}
 			}
-
-			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
-			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
 		}
 		break;
 	case WM_SIZE:
@@ -657,6 +658,7 @@ LRESULT CMainDlg::DoCommand(int id)
 
 			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
 			regXY = MAKELONG(rc.top, rc.left);
+			::GetClientRect(*this, &rc);
 			CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
 			regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
 			EndDialog(*this, IDCANCEL);
