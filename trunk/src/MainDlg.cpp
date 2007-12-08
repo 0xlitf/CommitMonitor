@@ -176,6 +176,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
+
 			CreateToolbar();
 			m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
 			m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
@@ -223,13 +224,31 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
 			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
 
+			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+			if (DWORD(regXY))
+			{
+				CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+				if (DWORD(regWH))
+				{
+					// x,y position and width/height are valid
+					//
+					// check whether the rectangle is at least partly
+					// visible in at least one monitor
+					RECT rc = {0};
+					rc.left = HIWORD(DWORD(regXY));
+					rc.top = LOWORD(DWORD(regXY));
+					rc.right = HIWORD(DWORD(regWH)) + rc.left;
+					rc.bottom = LOWORD(DWORD(regWH)) + rc.top;
+					if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
+					{
+						SetWindowPos(*this, HWND_TOP, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, SWP_SHOWWINDOW); 
+						DoResize(rc.right-rc.left, rc.bottom-rc.top);
+					}
+				}
+			}
+
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
-			CRegStdWORD regSize(_T("Software\\CommitMonitor\\size"));
-			if (DWORD(regSize) != 0)
-			{
-				SetWindowPos(hwndDlg, HWND_TOP, 0, 0, LOWORD(DWORD(regSize)), HIWORD(DWORD(regSize)), SWP_NOMOVE); 
-			}
 		}
 		break;
 	case WM_SIZE:
@@ -593,10 +612,13 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDCANCEL:
 	case IDOK:
 		{
-			CRegStdWORD regSize(_T("Software\\CommitMonitor\\size"));
 			RECT rc;
 			::GetWindowRect(*this, &rc);
-			regSize = MAKELONG(rc.right-rc.left, rc.bottom-rc.top);
+
+			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+			regXY = MAKELONG(rc.top, rc.left);
+			CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+			regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
