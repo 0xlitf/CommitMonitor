@@ -261,6 +261,46 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			DoResize(LOWORD(lParam), HIWORD(lParam));
 		}
 		break;
+	case WM_MOVING:
+		{
+#define STICKYSIZE 3
+			LPRECT pRect = (LPRECT)lParam;
+			if (pRect)
+			{
+				HMONITOR hMonitor = MonitorFromRect(pRect, MONITOR_DEFAULTTONEAREST);
+				if (hMonitor)
+				{
+					MONITORINFO minfo = {0};
+					minfo.cbSize = sizeof(minfo);
+					if (GetMonitorInfo(hMonitor, &minfo))
+					{
+						int width = pRect->right - pRect->left;
+						int heigth = pRect->bottom - pRect->top;
+						if (abs(pRect->left - minfo.rcWork.left) < STICKYSIZE)
+						{
+							pRect->left = minfo.rcWork.left;
+							pRect->right = pRect->left + width;
+						}
+						if (abs(pRect->right - minfo.rcWork.right) < STICKYSIZE)
+						{
+							pRect->right = minfo.rcWork.right;
+							pRect->left = pRect->right - width;
+						}
+						if (abs(pRect->top - minfo.rcWork.top) < STICKYSIZE)
+						{
+							pRect->top = minfo.rcWork.top;
+							pRect->bottom = pRect->top + heigth;
+						}
+						if (abs(pRect->bottom - minfo.rcWork.bottom) < STICKYSIZE)
+						{
+							pRect->bottom = minfo.rcWork.bottom;
+							pRect->top = pRect->bottom - heigth;
+						}
+					}
+				}
+			}
+		}
+		break;
 	case WM_GETMINMAXINFO:
 		{
 			MINMAXINFO * mmi = (MINMAXINFO*)lParam;
