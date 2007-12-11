@@ -230,22 +230,26 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
 			if (DWORD(regXY))
 			{
-				CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
-				if (DWORD(regWH))
+				CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+				if (DWORD(regWHWindow))
 				{
-					// x,y position and width/height are valid
-					//
-					// check whether the rectangle is at least partly
-					// visible in at least one monitor
-					RECT rc = {0};
-					rc.left = HIWORD(DWORD(regXY));
-					rc.top = LOWORD(DWORD(regXY));
-					rc.right = HIWORD(DWORD(regWH)) + rc.left;
-					rc.bottom = LOWORD(DWORD(regWH)) + rc.top;
-					if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
+					CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+					if (DWORD(regWH))
 					{
-						SetWindowPos(*this, HWND_TOP, rc.left, rc.top, 0, 0, SWP_NOSIZE);
-						DoResize(HIWORD(DWORD(regWH)), LOWORD(DWORD(regWH)));
+						// x,y position and width/height are valid
+						//
+						// check whether the rectangle is at least partly
+						// visible in at least one monitor
+						RECT rc = {0};
+						rc.left = HIWORD(DWORD(regXY));
+						rc.top = LOWORD(DWORD(regXY));
+						rc.right = HIWORD(DWORD(regWHWindow)) + rc.left;
+						rc.bottom = LOWORD(DWORD(regWHWindow)) + rc.top;
+						if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
+						{
+							SetWindowPos(*this, HWND_TOP, rc.left, rc.top, HIWORD(DWORD(regWHWindow)), LOWORD(DWORD(regWHWindow)), SWP_SHOWWINDOW);
+							DoResize(HIWORD(DWORD(regWH)), LOWORD(DWORD(regWH)));
+						}
 					}
 				}
 			}
@@ -657,6 +661,8 @@ LRESULT CMainDlg::DoCommand(int id)
 
 			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
 			regXY = MAKELONG(rc.top, rc.left);
+			CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+			regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
 			::GetClientRect(*this, &rc);
 			CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
 			regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
