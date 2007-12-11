@@ -19,6 +19,7 @@
 #pragma once
 #include <string>
 #include "basedialog.h"
+#include "ListCtrl.h"
 #include "UrlInfo.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
@@ -78,6 +79,8 @@ private:
 	HWND					m_hTreeControl;
 	HWND					m_hListControl;
 	HWND					m_hLogMsgControl;
+
+	CListCtrl				m_ListCtrl;
 
 	HWND					m_hParent;
 	HWND					m_hwndToolbar;

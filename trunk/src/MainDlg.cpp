@@ -224,6 +224,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
 			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
 
+			m_ListCtrl.SubClassListCtrl(m_hListControl);
+
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
 
@@ -1085,8 +1087,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			// Show a message box with the error.
 			int len = info->error.length()+info->url.length()+1024;
 			TCHAR * pBuf = new TCHAR[len];
-			_stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s"), info->url.c_str(), info->error.c_str());
-			::MessageBox(*this, pBuf, _T("CommitMonitor"), MB_ICONERROR);
+			_stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s\n\nDoubleclick here to clear the error message."), info->url.c_str(), info->error.c_str());
+			m_ListCtrl.SetInfoText(pBuf);
 			delete [] pBuf;
 			// clear the error so it won't show up again
 			map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
