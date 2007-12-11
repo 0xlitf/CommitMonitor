@@ -245,8 +245,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
 					{
 						SetWindowPos(*this, HWND_TOP, rc.left, rc.top, 0, 0, SWP_NOSIZE);
-						DoResize(rc.right-rc.left, rc.bottom-rc.top);
-						DoResize(rc.right-rc.left, rc.bottom-rc.top);
+						DoResize(HIWORD(DWORD(regWH)), LOWORD(DWORD(regWH)));
 					}
 				}
 			}
