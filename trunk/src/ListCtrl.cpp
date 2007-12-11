@@ -42,6 +42,15 @@ static CGlobalAtom ga;
 #define PROP_OBJECT_PTR			MAKEINTATOM(ga.atom)
 #define PROP_ORIGINAL_PROC		MAKEINTATOM(ga.atom)
 
+
+CListCtrl::CListCtrl()  
+	: m_pfnOrigCtlProc(NULL)
+	, m_bInfoTextPermanent(false)
+	, m_hwnd(NULL)
+{
+
+}
+
 bool CListCtrl::SubClassListCtrl(HWND hWnd)
 {
 	m_hwnd = hWnd;
@@ -50,8 +59,9 @@ bool CListCtrl::SubClassListCtrl(HWND hWnd)
 	return (SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG) (WNDPROC) stWinMsgHandler) != 0);
 }
 
-void CListCtrl::SetInfoText(LPCTSTR sText)
+void CListCtrl::SetInfoText(LPCTSTR sText, bool bPermanent /* = false */)
 {
+	m_bInfoTextPermanent = bPermanent;
 	if (sText)
 	{
 		m_sInfoText = sText;
@@ -107,7 +117,7 @@ LRESULT CALLBACK CListCtrl::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 		break;
 	case WM_LBUTTONDBLCLK:
 		{
-			if (!pListCtrl->m_sInfoText.empty())
+			if ((!pListCtrl->m_bInfoTextPermanent)&&(!pListCtrl->m_sInfoText.empty()))
 			{
 				pListCtrl->m_sInfoText.clear();
 				::InvalidateRect(*pListCtrl, NULL, FALSE);

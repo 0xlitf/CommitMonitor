@@ -27,10 +27,10 @@ using namespace std;
 class CListCtrl
 {
 public:
-	CListCtrl() : m_pfnOrigCtlProc(NULL) {}
+	CListCtrl();
 	bool SubClassListCtrl(HWND hWnd);
 
-	void SetInfoText(LPCTSTR sText);
+	void SetInfoText(LPCTSTR sText, bool bPermanent = false);
 
 
 	/// static message handler to put in WNDCLASSEX structure
@@ -41,5 +41,6 @@ protected:
 	HWND		m_hwnd;
 	WNDPROC		m_pfnOrigCtlProc;
 	wstring		m_sInfoText;
+	bool		m_bInfoTextPermanent;
 };
 
