@@ -238,6 +238,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ListCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainDlg.cpp"
 				>
 			</File>
@@ -365,6 +369,10 @@
 			</File>
 			<File
 				RelativePath=".\hyperlink.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ListCtrl.h"
 				>
 			</File>
 			<File
