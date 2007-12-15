@@ -515,7 +515,11 @@ DWORD CHiddenWindow::RunThread()
 						if (writeIt != pWrite->end())
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
-                            bNewEntries = true;
+							if ((!writeIt->second.ignoreSelf)||(logit->second.author.compare(writeIt->second.username)))
+								bNewEntries = true;
+							else
+								// set own commit as already read
+								writeIt->second.logentries[logit->first].read = true;
 							writeIt->second.error.clear();
 						}
 						m_UrlInfos.ReleaseWriteData();

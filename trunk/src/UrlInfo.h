@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		2
+#define URLINFO_VERSION		3
 #define URLINFOS_VERSION	1
 
 class CUrlInfo
@@ -46,6 +46,7 @@ public:
 	int							minminutesinterval;
 	bool						fetchdiffs;
 	bool						disallowdiffs;
+	bool						ignoreSelf;
 
 	map<svn_revnum_t,SVNLogEntry> logentries;
 

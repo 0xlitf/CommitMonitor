@@ -54,6 +54,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			AddToolTip(IDC_CREATEDIFFS, _T("Fetches the diff for each revision automatically\nPlease do NOT enable this for repositories which are not on your LAN!"));
 			AddToolTip(IDC_PROJECTNAME, _T("Enter here a name for the project"));
 			AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
+			AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
 			if (info.minminutesinterval)
 			{
 				TCHAR infobuf[MAX_PATH] = {0};
@@ -72,6 +73,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetWindowText(GetDlgItem(*this, IDC_USERNAME), info.username.c_str());
 			SetWindowText(GetDlgItem(*this, IDC_PASSWORD), info.password.c_str());
 			SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendMessage(GetDlgItem(*this, IDC_IGNORESELF), BM_SETCHECK, info.ignoreSelf ? BST_CHECKED : BST_UNCHECKED, NULL);
 			if (info.disallowdiffs)
 				EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
 		}
@@ -135,6 +137,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			info.password = wstring(buffer, len);
 			delete [] buffer;
 			info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);
+			info.ignoreSelf = (SendMessage(GetDlgItem(*this, IDC_IGNORESELF), BM_GETCHECK, 0, 0) == BST_CHECKED);
 
 			// make sure this entry gets checked again as soon as the next timer fires
 			info.lastchecked = 0;
