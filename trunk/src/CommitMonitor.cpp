@@ -25,8 +25,10 @@
 #include "MainDlg.h"
 #include "CmdLineParser.h"
 #include "DiffViewer.h"
+#include "version.h"
 
 #include "apr_general.h"
+#include "svn_ra.h"
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -43,11 +45,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
-	//CUrlInfos urlinfos;
-	//urlinfos.Load();
-	//urlinfos.Save();
-	//return 0;
-
 	::OleInitialize(NULL);
 
 	// we need some of the common controls
@@ -62,6 +59,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	const char* const * argv = NULL;
 	apr_app_initialize(&argc, &argv, NULL);
 	setlocale(LC_ALL, ""); 
+
+	// create a client name string to be used for all http/https connections
+	char namestring[MAX_PATH] = {0};
+	sprintf_s(namestring, MAX_PATH, "CommitMonitor-%d.%d.%d.%d", CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
+	svn_ra_set_client_namestring(namestring);
 
 	// first create a hidden window which serves as our main window for receiving
 	// the window messages, starts the monitoring thread and handles the icon
