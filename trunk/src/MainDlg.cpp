@@ -205,7 +205,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_SMALL);
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_NORMAL);
 			}
-			RefreshURLTree();
+			RefreshURLTree(true);
 
 			// initialize the window position infos
 			RECT rect;
@@ -768,7 +768,7 @@ LRESULT CMainDlg::DoCommand(int id)
 						(*pWrite)[inf->url] = *inf;
 					}
 					m_pURLInfos->ReleaseWriteData();
-					RefreshURLTree();
+					RefreshURLTree(false);
                     m_pURLInfos->Save();
 				}
 				else
@@ -794,7 +794,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				m_pURLInfos->ReleaseWriteData();
                 m_pURLInfos->Save();
 			}
-			RefreshURLTree();
+			RefreshURLTree(false);
 		}
 		break;
 	case ID_MAIN_SHOWDIFF:
@@ -933,7 +933,7 @@ bool CMainDlg::ShowDiff()
 /******************************************************************************/
 /* tree handling                                                              */
 /******************************************************************************/
-void CMainDlg::RefreshURLTree()
+void CMainDlg::RefreshURLTree(bool bSelectUnread)
 {
 	// the m_URLInfos member must be up-to-date here
 
@@ -946,6 +946,8 @@ void CMainDlg::RefreshURLTree()
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(false, 0));
+
+	HTREEITEM tvToSel = 0;
 
 	// now add a tree item for every entry in m_URLInfos
 	const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
@@ -995,12 +997,18 @@ void CMainDlg::RefreshURLTree()
 				tv.itemex.iSelectedImage = 2;
 			}
 		}
-		TreeView_InsertItem(m_hTreeControl, &tv);
+		HTREEITEM hItem = TreeView_InsertItem(m_hTreeControl, &tv);
+		if ((unread)&&(tvToSel == 0))
+			tvToSel = hItem;
 		TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
 		delete [] str;
 	}
 	m_pURLInfos->ReleaseReadOnlyData();
 	m_bBlockListCtrlUI = false;
+	if ((tvToSel)&&(bSelectUnread))
+	{
+		TreeView_SelectItem(m_hTreeControl, tvToSel);
+	}
 	::InvalidateRect(m_hListControl, NULL, true);
 }
 

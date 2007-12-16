@@ -58,7 +58,7 @@ private:
 	void					DoResize(int width, int height);
 	bool					CreateToolbar();
 
-	void					RefreshURLTree();
+	void					RefreshURLTree(bool bSelectUnread);
 	HTREEITEM				FindParentTreeNode(const wstring& url);
 	HTREEITEM				FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
