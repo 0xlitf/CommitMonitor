@@ -239,7 +239,12 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 					m_SystemTray.uID    = 1;
 					m_SystemTray.uFlags = NIF_TIP;
 					if (nNewCommits)
-						_stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commits"), nNewCommits);
+					{
+						if (nNewCommits == 1)
+							_stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commit"), nNewCommits);
+						else
+							_stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commits"), nNewCommits);
+					}
 					else
 						_tcscpy_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor"));
 					Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray);
