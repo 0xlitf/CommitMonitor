@@ -823,6 +823,7 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.password = it->second.password;
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
+								newinfo.ignoreSelf = it->second.ignoreSelf;
 								(*pWrite)[url] = newinfo;
 								hasNewEntries = true;
 								nCountNewEntries++;
@@ -870,6 +871,7 @@ DWORD CHiddenWindow::RunThread()
 								newinfo.password = it->second.password;
 								newinfo.fetchdiffs = it->second.fetchdiffs;
 								newinfo.minutesinterval = it->second.minutesinterval;
+								newinfo.ignoreSelf = it->second.ignoreSelf;
 								(*pWrite)[url] = newinfo;
 								hasNewEntries = true;
 								nCountNewEntries++;
