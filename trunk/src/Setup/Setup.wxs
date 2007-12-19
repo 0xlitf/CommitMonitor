@@ -6,7 +6,7 @@
   Id='????????-????-????-????-????????????'
   Language='1033' 
   Codepage='1252' 
-  Version='1.1.0' 
+  Version='1.1.1' 
   Manufacturer='Stefans Tools'>
 
     <Package Id='????????-????-????-????-????????????' Keywords='Installer'
@@ -16,7 +16,7 @@
       
     <Upgrade Id="722E7031-EF2E-44ae-BD9E-E80C120E5862" >
       <!-- flag is set if the install will trigger an upgrade of an existing install -->
-      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="1.1.0" IncludeMaximum="no" />
+      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="1.1.1" IncludeMaximum="no" />
     </Upgrade>
 
     <Media Id='1' Cabinet='cmtmonitor.cab' EmbedCab='yes' />
@@ -48,7 +48,7 @@
       </Feature>
     </Feature>
 
-    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_Custom" />
     <UIRef Id="WixUI_ErrorProgressText" />
     
     <InstallExecuteSequence>
