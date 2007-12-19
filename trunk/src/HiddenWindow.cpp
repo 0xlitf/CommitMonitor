@@ -512,6 +512,7 @@ DWORD CHiddenWindow::RunThread()
 					m_UrlInfos.ReleaseWriteData();
 
 					wstring sPopupText;
+					int nNewCommits = 0;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						// again, only block for a short time
@@ -521,7 +522,10 @@ DWORD CHiddenWindow::RunThread()
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
 							if ((!writeIt->second.ignoreSelf)||(logit->second.author.compare(writeIt->second.username)))
+							{
 								bNewEntries = true;
+								nNewCommits++;
+							}
 							else
 								// set own commit as already read
 								writeIt->second.logentries[logit->first].read = true;
@@ -672,10 +676,10 @@ DWORD CHiddenWindow::RunThread()
 					if (bNewEntries)
 					{
 						TCHAR sTitle[1024] = {0};
-						if (svn.m_logs.size() == 1)
-							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), svn.m_logs.size());
+						if (nNewCommits == 1)
+							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
 						else
-							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), svn.m_logs.size());
+							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
 						popupData data;
 						data.sText = sPopupText;
 						data.sTitle = wstring(sTitle);
