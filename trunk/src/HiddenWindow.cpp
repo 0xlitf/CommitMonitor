@@ -667,7 +667,6 @@ DWORD CHiddenWindow::RunThread()
 								writeIt->second.lastcheckedrobots = currenttime;
 								writeIt->second.disallowdiffs = disallowdiffs;
 								writeIt->second.minminutesinterval = minutes;
-								bNewEntries = true;
 							}
 							m_UrlInfos.ReleaseWriteData();
 						}
