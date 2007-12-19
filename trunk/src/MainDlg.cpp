@@ -900,6 +900,7 @@ bool CMainDlg::ShowDiff()
 				{
 					// fetch the diff
 					SVN svn;
+                    svn.SetAuthInfo(pInfo->username, pInfo->password);
 					CProgressDlg progDlg;
 					svn.SetAndClearProgressInfo(&progDlg);
 					progDlg.SetTitle(_T("Fetching Diff"));
