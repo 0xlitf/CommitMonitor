@@ -727,188 +727,194 @@ DWORD CHiddenWindow::RunThread()
 					writeIt->second.error = svn.GetLastErrorMsg();
 				}
 				m_UrlInfos.ReleaseWriteData();
-
-				// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
-				// instead of pointing to an actual repository.
-
-				// we have to include the authentication in the URL itself
-				wstring tempfile = CAppUtils::GetTempFilePath();
-				CCallback * callback = new CCallback;
-				callback->SetAuthData(it->second.username, it->second.password);
-				DeleteFile(tempfile.c_str());
-				wstring projName = it->second.name;
-                wstring parentpathurl = it->first;
-                wstring parentpathurl2 = parentpathurl + _T("/");
-                HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback);
-                if (hResUDL != S_OK)
-                {
-                    hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback);
-                }
-				if (hResUDL == S_OK)
+				// if we already have log entries, then there's no need to
+				// check whether the url points to an SVNParentPath: it points
+				// to a repository, but we got an error for some reason when
+				// trying to find the HEAD revision
+				if (svn.Err && (it->second.logentries.size() == 0)&&((svn.Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(svn.Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)))
 				{
+					// if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
+					// instead of pointing to an actual repository.
+
+					// we have to include the authentication in the URL itself
+					wstring tempfile = CAppUtils::GetTempFilePath();
+					CCallback * callback = new CCallback;
+					callback->SetAuthData(it->second.username, it->second.password);
+					DeleteFile(tempfile.c_str());
+					wstring projName = it->second.name;
+					wstring parentpathurl = it->first;
+					wstring parentpathurl2 = parentpathurl + _T("/");
+					HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback);
+					if (hResUDL != S_OK)
+					{
+						hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback);
+					}
+					if (hResUDL == S_OK)
+					{
+						if (callback)
+						{
+							delete callback;
+							callback = NULL;
+						}
+						// we got a web page! But we can't be sure that it's the page from SVNParentPath.
+						// Use a regex to parse the website and find out...
+						ifstream fs(tempfile.c_str());
+						string in;
+						if (!fs.bad())
+						{
+							in.reserve(fs.rdbuf()->in_avail());
+							char c;
+							while (fs.get(c))
+							{
+								if (in.capacity() == in.size())
+									in.reserve(in.capacity() * 3);
+								in.append(1, c);
+							}
+							fs.close();
+							DeleteFile(tempfile.c_str());
+
+							// make sure this is a html page from an SVNParentPathList
+							// we do this by checking for header titles looking like
+							// "<h2>Revision XX: /</h2> - if we find that, it's a html
+							// page from inside a repository
+							const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
+							// xsl transformed pages don't have an easy way to determine
+							// the inside from outside of a repository.
+							// We therefore check for <index rev="0" to make sure it's either
+							// an empty repository or really an SVNParentPathList
+							const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
+							regex titex = regex(reTitle, regex::normal | regbase::icase);
+							regex titex2 = regex(reTitle2, regex::normal | regbase::icase);
+							string::const_iterator start = in.begin();
+							string::const_iterator end = in.end();
+							match_results<string::const_iterator> fwhat;
+							if (regex_search(start, end, fwhat, titex, match_default))
+							{
+								TRACE(_T("found repository url instead of SVNParentPathList\n"));
+								continue;
+							}
+
+							const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*HREF\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
+							const char * re2 = "<\\s*DIR\\s*name\\s*=\\s*\"([^\"]*)\"\\s*HREF\\s*=\\s*\"([^\"]*)\"\\s*/\\s*>";
+
+							regex expression = regex(re, regex::normal | regbase::icase);
+							regex expression2 = regex(re2, regex::normal | regbase::icase);
+							start = in.begin();
+							end = in.end();
+							match_results<string::const_iterator> what;
+							match_flag_type flags = match_default;
+							bool hasNewEntries = false;
+							int nCountNewEntries = 0;
+							wstring popupText;
+							while (regex_search(start, end, what, expression, flags))	
+							{
+								// what[0] contains the whole string
+								// what[1] contains the url part.
+								// what[2] contains the name
+								wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+								url = it->first + _T("/") + url;
+								url = svn.CanonicalizeURL(url);
+
+								map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+								map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+								if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
+								{
+									// we found a new URL, add it to our list
+									CUrlInfo newinfo;
+									newinfo.url = url;
+									newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
+									newinfo.username = it->second.username;
+									newinfo.password = it->second.password;
+									newinfo.fetchdiffs = it->second.fetchdiffs;
+									newinfo.minutesinterval = it->second.minutesinterval;
+									newinfo.ignoreSelf = it->second.ignoreSelf;
+									(*pWrite)[url] = newinfo;
+									hasNewEntries = true;
+									nCountNewEntries++;
+									if (!popupText.empty())
+										popupText += _T(", ");
+									popupText += newinfo.name;
+								}
+								writeIt = pWrite->find(it->first);
+								if (writeIt != pWrite->end())
+									writeIt->second.parentpath = true;
+								m_UrlInfos.ReleaseWriteData();
+
+								// update search position:
+								start = what[0].second;		 
+								// update flags:
+								flags |= match_prev_avail;
+								flags |= match_not_bob;
+							}
+							start = in.begin();
+							end = in.end();
+							if (!regex_search(start, end, fwhat, titex2, match_default))
+							{
+								TRACE(_T("found repository url instead of SVNParentPathList\n"));
+								continue;
+							}
+							while (regex_search(start, end, what, expression2, flags))	 
+							{
+								// what[0] contains the whole string
+								// what[1] contains the url part.
+								// what[2] contains the name
+								wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+								url = it->first + _T("/") + url;
+								url = svn.CanonicalizeURL(url);
+
+								map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+								map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+								if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
+								{
+									// we found a new URL, add it to our list
+									CUrlInfo newinfo;
+									newinfo.url = url;
+									newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
+									newinfo.username = it->second.username;
+									newinfo.password = it->second.password;
+									newinfo.fetchdiffs = it->second.fetchdiffs;
+									newinfo.minutesinterval = it->second.minutesinterval;
+									newinfo.ignoreSelf = it->second.ignoreSelf;
+									(*pWrite)[url] = newinfo;
+									hasNewEntries = true;
+									nCountNewEntries++;
+									if (!popupText.empty())
+										popupText += _T(", ");
+									popupText += newinfo.name;
+								}
+								writeIt = pWrite->find(it->first);
+								if (writeIt != pWrite->end())
+									writeIt->second.parentpath = true;
+								m_UrlInfos.ReleaseWriteData();
+
+								// update search position:
+								start = what[0].second;		 
+								// update flags:
+								flags |= match_prev_avail;
+								flags |= match_not_bob;
+							}
+							if (hasNewEntries)
+							{
+								it = pUrlInfoReadOnly->begin();
+								TCHAR popupTitle[1024] = {0};
+								_stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
+								popupData data;
+								data.sText = popupText;
+								data.sTitle = wstring(popupTitle);
+								::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+								bNewEntries = false;
+							}
+						}
+					}
 					if (callback)
 					{
 						delete callback;
 						callback = NULL;
 					}
-					// we got a web page! But we can't be sure that it's the page from SVNParentPath.
-					// Use a regex to parse the website and find out...
-					ifstream fs(tempfile.c_str());
-					string in;
-					if (!fs.bad())
-					{
-						in.reserve(fs.rdbuf()->in_avail());
-						char c;
-						while (fs.get(c))
-						{
-							if (in.capacity() == in.size())
-								in.reserve(in.capacity() * 3);
-							in.append(1, c);
-						}
-						fs.close();
-						DeleteFile(tempfile.c_str());
-
-						// make sure this is a html page from an SVNParentPathList
-						// we do this by checking for header titles looking like
-						// "<h2>Revision XX: /</h2> - if we find that, it's a html
-						// page from inside a repository
-                        const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
-                        // xsl transformed pages don't have an easy way to determine
-                        // the inside from outside of a repository.
-                        // We therefore check for <index rev="0" to make sure it's either
-                        // an empty repository or really an SVNParentPathList
-                        const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
-                        regex titex = regex(reTitle, regex::normal | regbase::icase);
-                        regex titex2 = regex(reTitle2, regex::normal | regbase::icase);
-						string::const_iterator start = in.begin();
-						string::const_iterator end = in.end();
-						match_results<string::const_iterator> fwhat;
-						if (regex_search(start, end, fwhat, titex, match_default))
-						{
-							TRACE(_T("found repository url instead of SVNParentPathList\n"));
-							continue;
-						}
-
-						const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*HREF\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
-						const char * re2 = "<\\s*DIR\\s*name\\s*=\\s*\"([^\"]*)\"\\s*HREF\\s*=\\s*\"([^\"]*)\"\\s*/\\s*>";
-
-						regex expression = regex(re, regex::normal | regbase::icase);
-						regex expression2 = regex(re2, regex::normal | regbase::icase);
-						start = in.begin();
-						end = in.end();
-						match_results<string::const_iterator> what;
-						match_flag_type flags = match_default;
-						bool hasNewEntries = false;
-						int nCountNewEntries = 0;
-						wstring popupText;
-						while (regex_search(start, end, what, expression, flags))	
-						{
-							// what[0] contains the whole string
-							// what[1] contains the url part.
-							// what[2] contains the name
-							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
-							url = it->first + _T("/") + url;
-							url = svn.CanonicalizeURL(url);
-
-							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
-							if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
-							{
-								// we found a new URL, add it to our list
-								CUrlInfo newinfo;
-								newinfo.url = url;
-								newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
-								newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
-								newinfo.username = it->second.username;
-								newinfo.password = it->second.password;
-								newinfo.fetchdiffs = it->second.fetchdiffs;
-								newinfo.minutesinterval = it->second.minutesinterval;
-								newinfo.ignoreSelf = it->second.ignoreSelf;
-								(*pWrite)[url] = newinfo;
-								hasNewEntries = true;
-								nCountNewEntries++;
-								if (!popupText.empty())
-									popupText += _T(", ");
-								popupText += newinfo.name;
-							}
-							writeIt = pWrite->find(it->first);
-							if (writeIt != pWrite->end())
-								writeIt->second.parentpath = true;
-							m_UrlInfos.ReleaseWriteData();
-
-							// update search position:
-							start = what[0].second;		 
-							// update flags:
-							flags |= match_prev_avail;
-							flags |= match_not_bob;
-						}
-						start = in.begin();
-						end = in.end();
-                        if (!regex_search(start, end, fwhat, titex2, match_default))
-                        {
-                            TRACE(_T("found repository url instead of SVNParentPathList\n"));
-                            continue;
-                        }
-						while (regex_search(start, end, what, expression2, flags))	 
-						{
-							// what[0] contains the whole string
-							// what[1] contains the url part.
-							// what[2] contains the name
-							wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
-							url = it->first + _T("/") + url;
-							url = svn.CanonicalizeURL(url);
-
-							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
-							if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
-							{
-								// we found a new URL, add it to our list
-								CUrlInfo newinfo;
-								newinfo.url = url;
-								newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
-								newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
-								newinfo.username = it->second.username;
-								newinfo.password = it->second.password;
-								newinfo.fetchdiffs = it->second.fetchdiffs;
-								newinfo.minutesinterval = it->second.minutesinterval;
-								newinfo.ignoreSelf = it->second.ignoreSelf;
-								(*pWrite)[url] = newinfo;
-								hasNewEntries = true;
-								nCountNewEntries++;
-								if (!popupText.empty())
-									popupText += _T(", ");
-								popupText += newinfo.name;
-							}
-                            writeIt = pWrite->find(it->first);
-                            if (writeIt != pWrite->end())
-                                writeIt->second.parentpath = true;
-							m_UrlInfos.ReleaseWriteData();
-
-							// update search position:
-							start = what[0].second;		 
-							// update flags:
-							flags |= match_prev_avail;
-							flags |= match_not_bob;
-						}
-						if (hasNewEntries)
-						{
-							it = pUrlInfoReadOnly->begin();
-							TCHAR popupTitle[1024] = {0};
-							_stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
-							popupData data;
-							data.sText = popupText;
-							data.sTitle = wstring(popupTitle);
-							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
-                            bNewEntries = false;
-						}
-					}
+					DeleteFile(tempfile.c_str());
 				}
-				if (callback)
-				{
-					delete callback;
-					callback = NULL;
-				}
-				DeleteFile(tempfile.c_str());
 			}
 		}
 	}
