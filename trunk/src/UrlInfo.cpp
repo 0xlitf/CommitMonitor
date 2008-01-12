@@ -51,7 +51,7 @@ bool CUrlInfo::Save(FILE * hFile)
 	encpwd = "encrypted_" + encpwd;
 	blob.cbData = encpwd.size();
 	blob.pbData = (BYTE*)encpwd.c_str();
-	if (CryptProtectData(&blob, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
+	if (CryptProtectData(&blob, _T("CommitMonitorLogin"), NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
 	{
 		if (!CSerializeUtils::SaveBuffer(hFile, outblob.pbData, outblob.cbData))
 		{
