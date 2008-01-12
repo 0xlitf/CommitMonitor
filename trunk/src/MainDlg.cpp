@@ -730,6 +730,13 @@ LRESULT CMainDlg::DoCommand(int id)
 								hPrev = TreeView_GetRoot(m_hTreeControl);
 							if ((hPrev)&&(hPrev != TVI_ROOT))
 								TreeView_SelectItem(m_hTreeControl, hPrev);
+							else
+							{
+								// no more tree items, deactivate the remove button and clear the list control
+								SetRemoveButtonState();
+								ListView_DeleteAllItems(m_hListControl);
+								SetWindowText(m_hLogMsgControl, _T(""));
+							}
 						}
 						else
 							m_pURLInfos->ReleaseWriteData();
