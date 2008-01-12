@@ -21,6 +21,7 @@
 #include "svn_sorts.h"
 
 #include "AppUtils.h"
+#include "version.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -106,6 +107,10 @@ SVN::SVN(void)
 	m_pctx->cancel_baton = this;
 	m_pctx->progress_func = progress_func;
 	m_pctx->progress_baton = this;
+	// create a client name string to be used for all http/https connections
+	char namestring[MAX_PATH] = {0};
+	sprintf_s(namestring, MAX_PATH, "CommitMonitor-%d.%d.%d.%d", CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
+	m_pctx->client_name = apr_pstrdup(pool, namestring);
 
 	//set up the SVN_SSH param
 	wstring tsvn_ssh = CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
