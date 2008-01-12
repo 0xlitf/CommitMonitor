@@ -1167,6 +1167,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 /******************************************************************************/
 void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 {
+	if (m_bBlockListCtrlUI)
+		return;
 	if (lpNMListView->uNewState & LVIS_SELECTED)
 	{
 		const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
@@ -1308,6 +1310,24 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 	{
 		// remove the selected entry
 		RemoveSelectedListItems();
+	}
+	if ((pnkd->wVKey == 'A')&&(GetKeyState(VK_CONTROL)&0x8000))
+	{
+		// select all
+		int nCount = ListView_GetItemCount(m_hListControl);
+		if (nCount > 1)
+		{
+			m_bBlockListCtrlUI = true;
+			for (int i=0; i<(nCount-1); ++i)
+			{
+				ListView_SetItemState(m_hListControl, i, LVIS_SELECTED, LVIS_SELECTED);
+			}
+			m_bBlockListCtrlUI = false;
+			ListView_SetItemState(m_hListControl, nCount-1, LVIS_SELECTED, LVIS_SELECTED);
+			// clear the text of the selected log message: there are more than
+			// one selected now
+			SetWindowText(m_hLogMsgControl, _T(""));
+		}
 	}
 }
 
