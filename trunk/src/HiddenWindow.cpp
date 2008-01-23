@@ -682,7 +682,18 @@ DWORD CHiddenWindow::RunThread()
 						popupData data;
 						data.sText = sPopupText;
 						data.sTitle = wstring(sTitle);
-						::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+						// check if there still are unread items
+						bool bUnread = false;
+						for (map<svn_revnum_t,SVNLogEntry>::const_iterator lit = it->second.logentries.begin(); lit != it->second.logentries.end(); ++lit)
+						{
+							if (!lit->second.read)
+							{
+								bUnread = true;
+								break;
+							}
+						}
+						if (bUnread)
+							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 					}
 					bNewEntries = false;
 				}
