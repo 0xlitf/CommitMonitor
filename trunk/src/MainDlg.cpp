@@ -1115,6 +1115,10 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			}
 			m_pURLInfos->ReleaseWriteData();
 		}
+		else
+			// remove the info text if there's no error
+			m_ListCtrl.SetInfoText(_T(""));
+
 
 		m_bBlockListCtrlUI = true;
 		DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
