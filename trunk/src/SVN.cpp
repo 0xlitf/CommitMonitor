@@ -561,6 +561,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
 		APR_LOCALE_CHARSET,
 		outfile,
 		errfile,
+		NULL,
 		m_pctx,
 		localpool);
 	if (Err)
