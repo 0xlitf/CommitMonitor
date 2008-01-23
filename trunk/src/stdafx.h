@@ -23,6 +23,10 @@
 #define _WIN32_IE 0x0600	// Change this to the appropriate value to target other versions of IE.
 #endif
 
+#ifndef NTDDI_VERSION
+#define NTDDI_VERSION NTDDI_WINXP
+#endif
+
 // Windows Header Files:
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
