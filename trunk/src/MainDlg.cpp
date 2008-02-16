@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -133,7 +133,7 @@ bool CMainDlg::CreateToolbar()
 
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-	tbb[index].idCommand = ID_MAIN_SHOWDIFF; 
+	tbb[index].idCommand = ID_MAIN_SHOWDIFFTSVN; 
 	tbb[index].fsState = BTNS_SHOWTEXT; 
 	tbb[index].fsStyle = BTNS_BUTTON; 
 	tbb[index].dwData = 0; 
@@ -613,7 +613,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 				if (hittest.flags & LVHT_ONITEM)
 				{
-					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
+					HMENU hMenu = NULL;
+					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+					if (wstring(tsvninstalled).empty())
+						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
+					else
+						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUPTSVN));
 					hMenu = ::GetSubMenu(hMenu, 0);
 
 					// set the default entry
@@ -627,6 +632,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
 					switch (cmd)
 					{
+					case ID_MAIN_SHOWDIFFTSVN:
 					case ID_MAIN_SHOWDIFF:
 					case ID_MAIN_REMOVE:
 						{
@@ -806,7 +812,12 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case ID_MAIN_SHOWDIFF:
 		{
-			ShowDiff();
+			ShowDiff(false);
+		}
+		break;
+	case ID_MAIN_SHOWDIFFTSVN:
+		{
+			ShowDiff(true);
 		}
 		break;
 	case ID_MISC_OPTIONS:
@@ -842,7 +853,7 @@ void CMainDlg::SetRemoveButtonState()
 	}
 }
 
-bool CMainDlg::ShowDiff()
+bool CMainDlg::ShowDiff(bool bUseTSVN)
 {
 	TCHAR buf[4096];
 	// find the revision we have to show the diff for
@@ -879,82 +890,79 @@ bool CMainDlg::ShowDiff()
 				_stprintf_s(buf, 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
 				wstring title = wstring(buf);
 				// start the diff viewer
-				TCHAR apppath[4096];
-				GetModuleFileName(NULL, apppath, 4096);
 				wstring cmd;
-				CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
-				if (wstring(diffViewer).empty())
+				CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+				if ((bUseTSVN)&&(!wstring(tsvninstalled).empty()))
 				{
-					// check if TSVN is installed
-					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-					if (!wstring(tsvninstalled).empty())
-					{
-						// yes, we have TSVN installed
-						// call TortoiseProc to do the diff for us
-						cmd = wstring(tsvninstalled);
-						cmd += _T(" /command:diff /path:\"");
-						cmd += pInfo->url;
-						cmd += _T("\" /startrev:");
+					// yes, we have TSVN installed
+					// call TortoiseProc to do the diff for us
+					cmd = wstring(tsvninstalled);
+					cmd += _T(" /command:diff /path:\"");
+					cmd += pInfo->url;
+					cmd += _T("\" /startrev:");
 
-						TCHAR numBuf[100] = {0};
-						_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
-						cmd += numBuf;
-						cmd += _T(" /endrev:"); 
-						_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
-						cmd += numBuf;
-						CAppUtils::LaunchApplication(cmd);
-						m_pURLInfos->ReleaseReadOnlyData();
-						return TRUE;
-					}
-					else
+					TCHAR numBuf[100] = {0};
+					_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
+					cmd += numBuf;
+					cmd += _T(" /endrev:"); 
+					_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+					cmd += numBuf;
+					CAppUtils::LaunchApplication(cmd);
+				}
+				else
+				{
+					TCHAR apppath[4096];
+					GetModuleFileName(NULL, apppath, 4096);
+					CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+					if (wstring(diffViewer).empty())
 					{
 						cmd = apppath;
 						cmd += _T(" /patchfile:\"");
 					}
-				}
-				else
-				{
-					cmd = (wstring)diffViewer;
-					cmd += _T(" \"");
-				}
-				cmd += diffFileName;
-                cmd += _T("\"");
-                if (wstring(diffViewer).empty())
-                {
-                    cmd += _T(" /title:\"");
-                    cmd += title;
-                    cmd += _T("\"");
-                }
-				// Check if the diff file exists. If it doesn't, we have to fetch
-				// the diff first
-				if (!PathFileExists(diffFileName.c_str()))
-				{
-					// fetch the diff
-					SVN svn;
-                    svn.SetAuthInfo(pInfo->username, pInfo->password);
-					CProgressDlg progDlg;
-					svn.SetAndClearProgressInfo(&progDlg);
-					progDlg.SetTitle(_T("Fetching Diff"));
-					TCHAR dispbuf[MAX_PATH] = {0};
-					_stprintf_s(dispbuf, MAX_PATH, _T("fetching diff of revision %ld"), pLogEntry->revision);
-					progDlg.SetLine(1, dispbuf);
-					progDlg.SetShowProgressBar(false);
-					progDlg.ShowModeless(*this);
-					if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, wstring(), false, diffFileName, wstring()))
-					{
-						progDlg.Stop();
-						if (svn.Err->apr_err != SVN_ERR_CANCELLED)
-							::MessageBox(*this, svn.GetLastErrorMsg().c_str(), _T("CommitMonitor"), MB_ICONERROR);
-						DeleteFile(diffFileName.c_str());
-					}
 					else
 					{
-						TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
-						progDlg.Stop();
+						cmd = (wstring)diffViewer;
+						cmd += _T(" \"");
 					}
+					cmd += diffFileName;
+					cmd += _T("\"");
+					if (wstring(diffViewer).empty())
+					{
+						cmd += _T(" /title:\"");
+						cmd += title;
+						cmd += _T("\"");
+					}
+					// Check if the diff file exists. If it doesn't, we have to fetch
+					// the diff first
+					if (!PathFileExists(diffFileName.c_str()))
+					{
+						// fetch the diff
+						SVN svn;
+						svn.SetAuthInfo(pInfo->username, pInfo->password);
+						CProgressDlg progDlg;
+						svn.SetAndClearProgressInfo(&progDlg);
+						progDlg.SetTitle(_T("Fetching Diff"));
+						TCHAR dispbuf[MAX_PATH] = {0};
+						_stprintf_s(dispbuf, MAX_PATH, _T("fetching diff of revision %ld"), pLogEntry->revision);
+						progDlg.SetLine(1, dispbuf);
+						progDlg.SetShowProgressBar(false);
+						progDlg.ShowModeless(*this);
+						if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, wstring(), false, diffFileName, wstring()))
+						{
+							progDlg.Stop();
+							if (svn.Err->apr_err != SVN_ERR_CANCELLED)
+								::MessageBox(*this, svn.GetLastErrorMsg().c_str(), _T("CommitMonitor"), MB_ICONERROR);
+							DeleteFile(diffFileName.c_str());
+						}
+						else
+						{
+							TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
+							progDlg.Stop();
+						}
+					}
+					if (PathFileExists(diffFileName.c_str()))
+						CAppUtils::LaunchApplication(cmd);
 				}
-				if (PathFileExists(diffFileName.c_str()))
-					CAppUtils::LaunchApplication(cmd);
 			}
 		}
 	}
@@ -975,7 +983,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 	TreeView_SelectItem(m_hTreeControl, NULL);
 	TreeView_DeleteAllItems(m_hTreeControl);
 	SetWindowText(m_hLogMsgControl, _T(""));
-	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(false, 0));
+	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFTSVN, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, MAKELONG(false, 0));
 	SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_REMOVE, MAKELONG(false, 0));
 
@@ -1292,7 +1300,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			wstring diffFileName = CAppUtils::GetAppDataDir();
 			diffFileName += _T("\\");
 			diffFileName += wstring(buf);
-			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFF, MAKELONG(true, 0));
+			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFTSVN, MAKELONG(true, 0));
 		}
 		m_pURLInfos->ReleaseReadOnlyData();
 	}
@@ -1300,7 +1308,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
 {
-	ShowDiff();
+	ShowDiff(true);
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)

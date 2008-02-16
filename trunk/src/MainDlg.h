@@ -69,7 +69,7 @@ private:
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 	void					RemoveSelectedListItems();
 	void					SetRemoveButtonState();
-	bool					ShowDiff();
+	bool					ShowDiff(bool bUseTSVN);
 
 	/// window procedure of the sub classed tree view control
 	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
