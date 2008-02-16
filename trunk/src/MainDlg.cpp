@@ -885,8 +885,32 @@ bool CMainDlg::ShowDiff()
 				CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 				if (wstring(diffViewer).empty())
 				{
-					cmd = apppath;
-					cmd += _T(" /patchfile:\"");
+					// check if TSVN is installed
+					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+					if (!wstring(tsvninstalled).empty())
+					{
+						// yes, we have TSVN installed
+						// call TortoiseProc to do the diff for us
+						cmd = wstring(tsvninstalled);
+						cmd += _T(" /command:diff /path:\"");
+						cmd += pInfo->url;
+						cmd += _T("\" /startrev:");
+
+						TCHAR numBuf[100] = {0};
+						_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
+						cmd += numBuf;
+						cmd += _T(" /endrev:"); 
+						_stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+						cmd += numBuf;
+						CAppUtils::LaunchApplication(cmd);
+						m_pURLInfos->ReleaseReadOnlyData();
+						return TRUE;
+					}
+					else
+					{
+						cmd = apppath;
+						cmd += _T(" /patchfile:\"");
+					}
 				}
 				else
 				{
