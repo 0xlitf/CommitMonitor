@@ -581,7 +581,7 @@ static void AllFour(DWORD *pixels, int width, int height, int x, int y, DWORD va
 
 void SurfaceImpl::AlphaRectangle(PRectangle rc, int cornerSize, ColourAllocated fill, int alphaFill,
 		ColourAllocated outline, int alphaOutline, int /* flags*/ ) {
-	if (AlphaBlendFn) {
+	if (AlphaBlendFn && rc.Width() > 0) {
 		HDC hMemDC = ::CreateCompatibleDC(reinterpret_cast<HDC>(hdc));
 		int width = rc.Width();
 		int height = rc.Height();
@@ -631,7 +631,7 @@ void SurfaceImpl::AlphaRectangle(PRectangle rc, int cornerSize, ColourAllocated 
 
 		SelectBitmap(hMemDC, hbmOld);
 		::DeleteObject(hbmMem);
-		::DeleteObject(hMemDC);
+		::DeleteDC(hMemDC);
 	} else {
 		BrushColor(outline);
 		RECT rcw = RectFromPRectangle(rc);
@@ -684,7 +684,7 @@ void SurfaceImpl::DrawTextCommon(PRectangle rc, Font &font_, int ybase, const ch
 		wchar_t tbuf[MAX_US_LEN];
 		int tlen;
 		if (unicodeMode) {
-			tlen = UCS2FromUTF8(s, len, tbuf, MAX_US_LEN);
+			tlen = UTF16FromUTF8(s, len, tbuf, MAX_US_LEN);
 		} else {
 			// Support Asian string display in 9x English
 			tlen = ::MultiByteToWideChar(codePage, 0, s, len, NULL, 0);
@@ -740,7 +740,7 @@ int SurfaceImpl::WidthText(Font &font_, const char *s, int len) {
 	SIZE sz={0,0};
 	if (unicodeMode) {
 		wchar_t tbuf[MAX_US_LEN];
-		int tlen = UCS2FromUTF8(s, len, tbuf, MAX_US_LEN);
+		int tlen = UTF16FromUTF8(s, len, tbuf, MAX_US_LEN);
 		::GetTextExtentPoint32W(hdc, tbuf, tlen, &sz);
 	} else if (IsNT() || (codePage==0) || win9xACPSame) {
 		::GetTextExtentPoint32A(hdc, s, Platform::Minimum(len, maxLenText), &sz);
@@ -760,7 +760,7 @@ void SurfaceImpl::MeasureWidths(Font &font_, const char *s, int len, int *positi
 	int fit = 0;
 	if (unicodeMode) {
 		wchar_t tbuf[MAX_US_LEN];
-		int tlen = UCS2FromUTF8(s, len, tbuf, MAX_US_LEN);
+		int tlen = UTF16FromUTF8(s, len, tbuf, MAX_US_LEN);
 		int poses[MAX_US_LEN];
 		fit = tlen;
 		if (!::GetTextExtentExPointW(hdc, tbuf, tlen, maxWidthMeasure, &fit, poses, &sz)) {
@@ -778,14 +778,17 @@ void SurfaceImpl::MeasureWidths(Font &font_, const char *s, int len, int *positi
 		int i=0;
 		while (ui<fit) {
 			unsigned char uch = us[i];
-			positions[i++] = poses[ui];
-			if (uch >= 0x80) {
-				if (uch < (0x80 + 0x40 + 0x20)) {
-					positions[i++] = poses[ui];
-				} else {
-					positions[i++] = poses[ui];
-					positions[i++] = poses[ui];
-				}
+			unsigned int lenChar = 1;
+			if (uch >= (0x80 + 0x40 + 0x20 + 0x10)) {
+				lenChar = 4;
+				ui++;
+			} else if (uch >= (0x80 + 0x40 + 0x20)) {
+				lenChar = 3;
+			} else if (uch >= (0x80)) {
+				lenChar = 2;
+			}
+			for (unsigned int bytePos=0; (bytePos<lenChar) && (i<len); bytePos++) {
+				positions[i++] = poses[ui];
 			}
 			ui++;
 		}
@@ -1048,6 +1051,34 @@ void Window::SetCursor(Cursor curs) {
 void Window::SetTitle(const char *s) {
 	::SetWindowTextA(reinterpret_cast<HWND>(id), s);
 }
+
+/* Returns rectangle of monitor pt is on, both rect and pt are in Window's
+   coordinates */
+#ifdef MULTIPLE_MONITOR_SUPPORT
+PRectangle Window::GetMonitorRect(Point pt) {
+	// MonitorFromPoint and GetMonitorInfo are not available on Windows 95 so are not used.
+	// There could be conditional code and dynamic loading in a future version
+	// so this would work on those platforms where they are available.
+	PRectangle rcPosition = GetPosition();
+	POINT ptDesktop = {pt.x + rcPosition.left, pt.y + rcPosition.top};
+	HMONITOR hMonitor = ::MonitorFromPoint(ptDesktop, MONITOR_DEFAULTTONEAREST);
+	MONITORINFOEX mi;
+	memset(&mi, 0, sizeof(mi));
+	mi.cbSize = sizeof(mi);
+	if (::GetMonitorInfo(hMonitor, &mi)) {
+		PRectangle rcMonitor(
+			mi.rcWork.left - rcPosition.left,
+			mi.rcWork.top - rcPosition.top,
+			mi.rcWork.right - rcPosition.left,
+			mi.rcWork.bottom - rcPosition.top);
+		return rcMonitor;
+	}
+}
+#else
+PRectangle Window::GetMonitorRect(Point) {
+	return PRectangle();
+}
+#endif
 
 struct ListItemData {
 	const char *text;
@@ -1312,7 +1343,7 @@ PRectangle ListBoxX::GetDesiredRect() {
 	int len = widestItem ? strlen(widestItem) : 0;
 	if (unicodeMode) {
 		wchar_t tbuf[MAX_US_LEN];
-		len = UCS2FromUTF8(widestItem, len, tbuf, sizeof(tbuf)/sizeof(wchar_t)-1);
+		len = UTF16FromUTF8(widestItem, len, tbuf, sizeof(tbuf)/sizeof(wchar_t)-1);
 		tbuf[len] = L'\0';
 		::GetTextExtentPoint32W(hdc, tbuf, len, &textSize);
 	} else {
@@ -1431,7 +1462,7 @@ void ListBoxX::Draw(DRAWITEMSTRUCT *pDrawItem) {
 
 		if (unicodeMode) {
 			wchar_t tbuf[MAX_US_LEN];
-			int tlen = UCS2FromUTF8(text, len, tbuf, sizeof(tbuf)/sizeof(wchar_t)-1);
+			int tlen = UTF16FromUTF8(text, len, tbuf, sizeof(tbuf)/sizeof(wchar_t)-1);
 			tbuf[tlen] = L'\0';
 			::DrawTextW(pDrawItem->hDC, tbuf, tlen, &rcText, DT_NOPREFIX|DT_END_ELLIPSIS|DT_SINGLELINE|DT_NOCLIP);
 		} else {
