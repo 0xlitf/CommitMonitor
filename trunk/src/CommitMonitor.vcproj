@@ -676,6 +676,30 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ext\scintilla\src\Decoration.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Decoration.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ext\scintilla\src\Document.cxx"
 				>
 				<FileConfiguration
@@ -932,6 +956,30 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\ext\scintilla\src\PositionCache.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\PositionCache.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ext\scintilla\src\PropSet.cxx"
 				>
 				<FileConfiguration
@@ -977,6 +1025,30 @@
 			</File>
 			<File
 				RelativePath="..\ext\scintilla\src\RESearch.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\RunStyles.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\RunStyles.h"
 				>
 			</File>
 			<File
