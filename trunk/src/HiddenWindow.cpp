@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -684,7 +684,9 @@ DWORD CHiddenWindow::RunThread()
 						data.sTitle = wstring(sTitle);
 						// check if there still are unread items
 						bool bUnread = false;
-						for (map<svn_revnum_t,SVNLogEntry>::const_iterator lit = it->second.logentries.begin(); lit != it->second.logentries.end(); ++lit)
+						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+						for (map<svn_revnum_t,SVNLogEntry>::const_iterator lit = writeIt->second.logentries.begin(); lit != writeIt->second.logentries.end(); ++lit)
 						{
 							if (!lit->second.read)
 							{
@@ -692,6 +694,7 @@ DWORD CHiddenWindow::RunThread()
 								break;
 							}
 						}
+						m_UrlInfos.ReleaseWriteData();
 						if (bUnread)
 							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 					}
