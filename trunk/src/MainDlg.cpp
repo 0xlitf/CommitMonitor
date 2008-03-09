@@ -871,7 +871,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
 		LVITEM item = {0};
-		for (int i=0; i<ListView_GetItemCount(m_hListControl); ++i)
+		int nItemCount = ListView_GetItemCount(m_hListControl);
+		for (int i=0; i<nItemCount; ++i)
 		{
 			item.mask = LVIF_PARAM|LVIF_STATE;
 			item.stateMask = LVIS_SELECTED;
