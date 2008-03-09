@@ -1173,25 +1173,32 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		ListView_InsertColumn(m_hListControl, 2, &lvc);
 
 		LVITEM item = {0};
-		int i = 0;
 		TCHAR buf[1024];
+		int iLastUnread = -1;
 		for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
 		{
 			item.mask = LVIF_TEXT|LVIF_PARAM;
-			item.iItem = i;
+			item.iItem = 0;
 			item.lParam = (LPARAM)&it->second;
 			_stprintf_s(buf, 1024, _T("%ld"), it->first);
 			item.pszText = buf;
 			ListView_InsertItem(m_hListControl, &item);
 			_tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
-			ListView_SetItemText(m_hListControl, i, 1, buf);
+			ListView_SetItemText(m_hListControl, 0, 1, buf);
 			_tcscpy_s(buf, 1024, it->second.author.c_str());
-			ListView_SetItemText(m_hListControl, i, 2, buf);
+			ListView_SetItemText(m_hListControl, 0, 2, buf);
+			if ((iLastUnread < 0)&&(!it->second.read))
+			{
+				iLastUnread = 0;
+			}
+			if (iLastUnread >= 0)
+				iLastUnread++;
 		}
 		m_bBlockListCtrlUI = false;
 		ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
 
 		::InvalidateRect(m_hListControl, NULL, false);
 	}
