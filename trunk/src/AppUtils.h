@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,5 +34,6 @@ public:
 	static void						SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
 	static bool						LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
 	static wstring					GetTempFilePath();
+	static wstring					ConvertName(const wstring& name);
 
 };

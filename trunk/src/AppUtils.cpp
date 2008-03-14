@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -149,4 +149,30 @@ wstring CAppUtils::GetTempFilePath()
 	delete temppath;
 	delete tempF;
 	return tempfile;
+}
+
+wstring CAppUtils::ConvertName(const wstring& name)
+{
+	TCHAR convertedName[4096] = {0};
+	_tcscpy_s(convertedName, 4096, name.c_str());
+	int cI = 0;
+	while (convertedName[cI])
+	{
+		switch (convertedName[cI])
+		{
+		case '/':
+		case '\\':
+		case '?':
+		case ':':
+		case '*':
+		case '.':
+		case '<':
+		case '>':
+		case '\"':
+		case '|':
+			convertedName[cI] = '_';
+		}
+		cI++;
+	}
+	return wstring(convertedName);
 }

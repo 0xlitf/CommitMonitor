@@ -883,7 +883,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 				// find the diff name
 				const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
-				_stprintf_s(buf, 4096, _T("%s_%ld"), pInfo->name.c_str(), pLogEntry->revision);
+				// in case the project name has 'path' chars in it, we have to remove those first
+				_stprintf_s(buf, 4096, _T("%s_%ld"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
 				wstring diffFileName = CAppUtils::GetAppDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
