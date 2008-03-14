@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -459,7 +459,9 @@ svn_error_t* SVN::logReceiver(void* baton,
 	SVN * svn = (SVN *)baton;
 
 	logEntry.revision = rev;
-	error = svn_time_from_cstring (&logEntry.date, date, pool);
+	if (date && date[0])
+		error = svn_time_from_cstring (&logEntry.date, date, pool);
+	
 	if (author)
 		logEntry.author = CUnicodeUtils::StdGetUnicode(author);
 
