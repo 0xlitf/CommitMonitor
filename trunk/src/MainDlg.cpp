@@ -1184,9 +1184,15 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			_stprintf_s(buf, 1024, _T("%ld"), it->first);
 			item.pszText = buf;
 			ListView_InsertItem(m_hListControl, &item);
-			_tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
+			if (it->second.date)
+				_tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
+			else
+				_tcscpy_s(buf, 1024, _T("(no date)"));
 			ListView_SetItemText(m_hListControl, 0, 1, buf);
-			_tcscpy_s(buf, 1024, it->second.author.c_str());
+			if (it->second.author.size())
+				_tcscpy_s(buf, 1024, it->second.author.c_str());
+			else
+				_tcscpy_s(buf, 1024, _T("(no author)"));
 			ListView_SetItemText(m_hListControl, 0, 2, buf);
 			if ((iLastUnread < 0)&&(!it->second.read))
 			{
