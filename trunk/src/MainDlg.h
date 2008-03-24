@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@ private:
 	bool					OnLButtonDown(UINT nFlags, POINT point);
 	bool					OnLButtonUp(UINT nFlags, POINT point);
 	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+	void					PositionChildWindows(POINT point, bool bHorz, bool bShowBar);
 	void					DoResize(int width, int height);
 	bool					CreateToolbar();
 

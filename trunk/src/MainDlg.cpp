@@ -251,6 +251,21 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						{
 							SetWindowPos(*this, HWND_TOP, rc.left, rc.top, HIWORD(DWORD(regWHWindow)), LOWORD(DWORD(regWHWindow)), SWP_SHOWWINDOW);
 							DoResize(HIWORD(DWORD(regWH)), LOWORD(DWORD(regWH)));
+							// now restore the slider positions
+							CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+							if (DWORD(regHorzPos))
+							{
+								POINT pt;
+								pt.x = pt.y = DWORD(regHorzPos);
+								PositionChildWindows(pt, true, false);
+							}
+							CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+							if (DWORD(regVertPos))
+							{
+								POINT pt;
+								pt.x = pt.y = DWORD(regVertPos);
+								PositionChildWindows(pt, false, false);
+							}
 						}
 					}
 				}
@@ -674,6 +689,14 @@ LRESULT CMainDlg::DoCommand(int id)
 			::GetClientRect(*this, &rc);
 			CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
 			regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
+			::GetWindowRect(m_hTreeControl, &rc);
+			::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+			CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+			regHorzPos = rc.right;
+			CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+			::GetWindowRect(m_hListControl, &rc);
+			::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+			regVertPos = rc.bottom;
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
@@ -1656,11 +1679,38 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 {
 	UNREFERENCED_PARAMETER(nFlags);
 
-	HDC hDC;
-	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
-
 	if (m_nDragMode == DRAGMODE_NONE)
 		return false;
+
+	PositionChildWindows(point, m_nDragMode == DRAGMODE_HORIZONTAL, true);
+
+	//convert the mouse coordinates relative to the top-left of
+	//the window
+	ClientToScreen(*this, &point);
+	RECT rect;
+	GetClientRect(*this, &rect);
+	MapWindowPoints(*this, NULL, (LPPOINT)&rect, 2);
+
+	m_oldx = point.x;
+	m_oldy = point.y;
+
+	ReleaseCapture();
+
+	// initialize the window position infos
+	GetClientRect(m_hTreeControl, &rect);
+	m_xSliderPos = rect.right+4;
+	GetClientRect(m_hListControl, &rect);
+	m_ySliderPos = rect.bottom+m_topmarg;
+
+	m_nDragMode = DRAGMODE_NONE;
+
+	return true;
+}
+
+void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
+{
+	HDC hDC;
+	RECT rect, tree, list, treelist, treelistclient, logrect, loglist, loglistclient;
 
 	// create an union of the tree and list control rectangle
 	::GetWindowRect(m_hListControl, &list);
@@ -1711,25 +1761,23 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 		point.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
 
 
-	hDC = GetDC(*this);
-	if (m_nDragMode == DRAGMODE_HORIZONTAL)
-		DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
-	else
-		DrawXorBar(hDC, loglistclient.left, m_oldy+2, loglistclient.right-loglistclient.left-2, 4);
+	if (bShowBar)
+	{
+		hDC = GetDC(*this);
+		if (bHorz)
+			DrawXorBar(hDC, m_oldx+2, treelistclient.top, 4, treelistclient.bottom-treelistclient.top-2);
+		else
+			DrawXorBar(hDC, loglistclient.left, m_oldy+2, loglistclient.right-loglistclient.left-2, 4);
 
 
-	ReleaseDC(*this, hDC);
-
-	m_oldx = point.x;
-	m_oldy = point.y;
-
-	ReleaseCapture();
+		ReleaseDC(*this, hDC);
+	}
 
 	//position the child controls
 	HDWP hdwp = BeginDeferWindowPos(3);
 	if (hdwp)
 	{
-		if (m_nDragMode == DRAGMODE_HORIZONTAL)
+		if (bHorz)
 		{
 			GetWindowRect(m_hTreeControl, &treelist);
 			treelist.right = point2.x - 2;
@@ -1770,17 +1818,6 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 		}
 		EndDeferWindowPos(hdwp);
 	}
-
-	// initialize the window position infos
-	GetClientRect(m_hTreeControl, &rect);
-	m_xSliderPos = rect.right+4;
-	GetClientRect(m_hListControl, &rect);
-	m_ySliderPos = rect.bottom+m_topmarg;
-
-
-	m_nDragMode = DRAGMODE_NONE;
-
-	return true;
 }
 
 void CMainDlg::DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height)
