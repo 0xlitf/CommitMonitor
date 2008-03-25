@@ -35,5 +35,7 @@ public:
 	static bool						LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
 	static wstring					GetTempFilePath();
 	static wstring					ConvertName(const wstring& name);
+	static string					PathEscape(const string& path);
+
 
 };
