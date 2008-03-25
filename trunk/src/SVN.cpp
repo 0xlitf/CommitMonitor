@@ -275,8 +275,8 @@ bool SVN::Cat(wstring sUrl, wstring sFile)
 	svn_opt_revision_t pegrev, rev;
 	pegrev.kind = svn_opt_revision_head;
 	rev.kind = svn_opt_revision_head;
-
-	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(sUrl).c_str(), localpool);
+	
+	const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
 	Err = svn_client_cat2(stream, urla, 
 		&pegrev, &rev, m_pctx, localpool);
 
@@ -309,7 +309,7 @@ const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn
 		rev.value.number = revision;
 	}
 
-	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(path).c_str(), localpool);
+	const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(path)).c_str(), localpool);
 
 	Err = svn_client_info(urla, &peg, &rev, infoReceiver, this, recurse, m_pctx, localpool);
 	if (Err != NULL)
@@ -396,7 +396,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& url)
 	svn_revnum_t rev = 0;
 
 	// make sure the url is canonical.
-	const char * urla = svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool);
+	const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
 
 	if (urla == NULL)
 		return rev;
@@ -418,7 +418,7 @@ bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 
 	apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
 	(*((const char **) apr_array_push (targets))) = 
-		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool);
+		svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
 
 	svn_opt_revision_t end;
 	end.kind = svn_opt_revision_number;
@@ -551,7 +551,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
 
 
 	Err = svn_client_diff_peg4 (opts,
-		svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url1).c_str(), localpool),
+		svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url1)).c_str(), localpool),
 		&peg,
 		&rev1,
 		&rev2,
