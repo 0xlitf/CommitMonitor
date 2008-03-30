@@ -1346,7 +1346,11 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
 {
-	ShowDiff(true);
+	CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+	bool bUseTSVN = !(wstring(tsvninstalled).empty());
+	bUseTSVN = bUseTSVN && !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+
+	ShowDiff(bUseTSVN);
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)

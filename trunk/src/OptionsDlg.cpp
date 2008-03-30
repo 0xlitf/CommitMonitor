@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,20 +48,27 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			AddToolTip(IDC_DIFFVIEWER, _T("Path to a viewer for unified diff files."));
 			AddToolTip(IDC_DIFFVIEWERLABEL, _T("Path to a viewer for unified diff files."));
 			AddToolTip(IDC_ANIMATEICON, _T("Animates the system tray icon as long as there are unread commits"));
+			AddToolTip(IDC_USETSVN, _T("If TortoiseSVN is installed, use it for showing the differences of commits"));
 
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
 			bool bAnimateIcon = !!CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
 			bool bPlaySound = !!CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+			bool bUseTSVN = !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendMessage(GetDlgItem(*this, IDC_USETSVN), BM_SETCHECK, bUseTSVN ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
 			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
 			SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
+
+			CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+			if (wstring(tsvninstalled).empty())
+				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -81,13 +88,16 @@ LRESULT COptionsDlg::DoCommand(int id)
 			CRegStdString regStartWithWindows = CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
 			CRegStdWORD regAnimateIcon = CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
 			CRegStdWORD regPlaySound = CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+			CRegStdWORD regUseTSVN = CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			bool bShowTaskbarIcon = !!SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_GETCHECK, 0, NULL);
 			bool bPlaySound = !!SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_GETCHECK, 0, NULL);
+			bool bUseTSVN = !!SendMessage(GetDlgItem(*this, IDC_USETSVN), BM_GETCHECK, 0, NULL);
 			regShowTaskbarIcon = bShowTaskbarIcon;
 			regAnimateIcon = bAnimateIcon;
 			regPlaySound = bPlaySound;
+			regUseTSVN = bUseTSVN;
 			::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
 			if (bStartWithWindows)
 			{
