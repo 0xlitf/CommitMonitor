@@ -907,7 +907,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 				// find the diff name
 				const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
 				// in case the project name has 'path' chars in it, we have to remove those first
-				_stprintf_s(buf, 4096, _T("%s_%ld"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
+				_stprintf_s(buf, 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
 				wstring diffFileName = CAppUtils::GetAppDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
@@ -1334,7 +1334,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			SetWindowText(m_hLogMsgControl, msg.c_str());
 
 			// find the diff name
-			_stprintf_s(buf, 1024, _T("%s_%ld"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+			_stprintf_s(buf, 1024, _T("%s_%ld.diff"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
 			wstring diffFileName = CAppUtils::GetAppDataDir();
 			diffFileName += _T("\\");
 			diffFileName += wstring(buf);
@@ -1434,7 +1434,7 @@ void CMainDlg::RemoveSelectedListItems()
 			{
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 				// find the diff name
-				_stprintf_s(buf, 4096, _T("%s_%ld"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+				_stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
 				wstring diffFileName = CAppUtils::GetAppDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);

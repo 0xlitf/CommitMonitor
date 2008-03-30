@@ -540,7 +540,7 @@ DWORD CHiddenWindow::RunThread()
 						if ((!it->second.disallowdiffs)&&(it->second.fetchdiffs))
 						{
 							// first, find a name where to store the diff for that revision
-							_stprintf_s(buf, 4096, _T("%s_%ld"), it->second.name.c_str(), logit->first);
+							_stprintf_s(buf, 4096, _T("%s_%ld.diff"), it->second.name.c_str(), logit->first);
 							wstring diffFileName = CAppUtils::GetAppDataDir();
 							diffFileName += _T("/");
 							diffFileName += wstring(buf);
