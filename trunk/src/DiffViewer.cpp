@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -136,10 +136,12 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 		{
 			CRegStdWORD w = CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)CW_USEDEFAULT);
 			CRegStdWORD h = CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)CW_USEDEFAULT);
+			CRegStdWORD p = CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerPos"), 0);
 			RECT rect;
 			::GetWindowRect(*this, &rect);
 			w = rect.right-rect.left;
 			h = rect.bottom-rect.top;
+			p = MAKELONG(rect.left, rect.top);
 		}
 		::DestroyWindow(m_hwnd);
 		break;
@@ -264,10 +266,24 @@ LRESULT CDiffViewer::SendEditor(UINT Msg, WPARAM wParam, LPARAM lParam)
 
 bool CDiffViewer::Initialize()
 {
-	::SetWindowPos(*this, HWND_TOP, 0, 0, 
-		(int)(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)640), 
-		(int)(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)480),
-		SWP_NOMOVE);
+	CRegStdWORD pos(_T("Software\\CommitMonitor\\DiffViewerPos"), 0);
+	CRegStdWORD width(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)640);
+	CRegStdWORD height(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)480);
+	if (DWORD(pos) && DWORD(width) && DWORD(height))
+	{
+		RECT rc;
+		rc.left = LOWORD(DWORD(pos));
+		rc.top = HIWORD(DWORD(pos));
+		rc.right = rc.left + DWORD(width);
+		rc.bottom = rc.top + DWORD(height);
+		HMONITOR hMon = MonitorFromRect(&rc, MONITOR_DEFAULTTONULL);
+		if (hMon)
+		{
+			// only restore the window position if the monitor is valid
+			MoveWindow(*this, LOWORD(DWORD(pos)), HIWORD(DWORD(pos)),
+				DWORD(width), DWORD(height), FALSE);
+		}
+	}
 
 	m_hWndEdit = ::CreateWindow(
 		_T("Scintilla"),
