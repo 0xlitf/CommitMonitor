@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,9 +22,8 @@
 #include "URLDlg.h"
 
 #include "SVN.h"
-
-#include <boost/regex.hpp>
-using namespace boost;
+#include <cctype>
+#include <regex>
 using namespace std;
 
 CURLDlg::CURLDlg(void)
@@ -104,7 +103,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			delete [] buffer;
 
 			wstring tempurl = info.url.substr(0, 7);
-			std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), (int(*)(int))std::tolower);
+			std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
 
 			if (tempurl.compare(_T("file://")) == 0)
 			{

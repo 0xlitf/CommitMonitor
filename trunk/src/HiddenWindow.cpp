@@ -30,8 +30,8 @@
 #include "AppUtils.h"
 #include "StatusBarMsgWnd.h"
 
-#include <boost/regex.hpp>
-using namespace boost;
+#include <regex>
+using namespace std;
 
 // for Vista
 #define MSGFLT_ADD 1
@@ -797,12 +797,10 @@ DWORD CHiddenWindow::RunThread()
 							// We therefore check for <index rev="0" to make sure it's either
 							// an empty repository or really an SVNParentPathList
 							const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
-							regex titex = regex(reTitle, regex::normal | regbase::icase);
-							regex titex2 = regex(reTitle2, regex::normal | regbase::icase);
-							string::const_iterator start = in.begin();
-							string::const_iterator end = in.end();
-							match_results<string::const_iterator> fwhat;
-							if (regex_search(start, end, fwhat, titex, match_default))
+							const tr1::regex titex(reTitle, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+							const tr1::regex titex2(reTitle2, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+							tr1::match_results<string::const_iterator> fwhat;
+							if (tr1::regex_search(in.begin(), in.end(), titex, tr1::regex_constants::match_default))
 							{
 								TRACE(_T("found repository url instead of SVNParentPathList\n"));
 								continue;
@@ -811,21 +809,20 @@ DWORD CHiddenWindow::RunThread()
 							const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*HREF\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
 							const char * re2 = "<\\s*DIR\\s*name\\s*=\\s*\"([^\"]*)\"\\s*HREF\\s*=\\s*\"([^\"]*)\"\\s*/\\s*>";
 
-							regex expression = regex(re, regex::normal | regbase::icase);
-							regex expression2 = regex(re2, regex::normal | regbase::icase);
-							start = in.begin();
-							end = in.end();
-							match_results<string::const_iterator> what;
-							match_flag_type flags = match_default;
+							const tr1::regex expression(re, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+							const tr1::regex expression2(re2, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+							tr1::match_results<string::const_iterator> what;
 							bool hasNewEntries = false;
 							int nCountNewEntries = 0;
 							wstring popupText;
-							while (regex_search(start, end, what, expression, flags))	
+							const tr1::sregex_iterator end;
+							for (tr1::sregex_iterator i(in.begin(), in.end(), expression); i != end; ++i)
 							{
+								const tr1::smatch match = *i;
 								// what[0] contains the whole string
 								// what[1] contains the url part.
 								// what[2] contains the name
-								wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+								wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
 								url = it->first + _T("/") + url;
 								url = svn.CanonicalizeURL(url);
 
@@ -836,7 +833,7 @@ DWORD CHiddenWindow::RunThread()
 									// we found a new URL, add it to our list
 									CUrlInfo newinfo;
 									newinfo.url = url;
-									newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+									newinfo.name = CUnicodeUtils::StdGetUnicode(string(match[2]));
 									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
@@ -854,26 +851,19 @@ DWORD CHiddenWindow::RunThread()
 								if (writeIt != pWrite->end())
 									writeIt->second.parentpath = true;
 								m_UrlInfos.ReleaseWriteData();
-
-								// update search position:
-								start = what[0].second;		 
-								// update flags:
-								flags |= match_prev_avail;
-								flags |= match_not_bob;
 							}
-							start = in.begin();
-							end = in.end();
-							if (!regex_search(start, end, fwhat, titex2, match_default))
+							if (!regex_search(in.begin(), in.end(), titex2))
 							{
 								TRACE(_T("found repository url instead of SVNParentPathList\n"));
 								continue;
 							}
-							while (regex_search(start, end, what, expression2, flags))	 
+							for (tr1::sregex_iterator i(in.begin(), in.end(), expression2); i != end; ++i)
 							{
+								const tr1::smatch match = *i;
 								// what[0] contains the whole string
 								// what[1] contains the url part.
 								// what[2] contains the name
-								wstring url = CUnicodeUtils::StdGetUnicode(string(what[1].first, what[1].second));
+								wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
 								url = it->first + _T("/") + url;
 								url = svn.CanonicalizeURL(url);
 
@@ -884,7 +874,7 @@ DWORD CHiddenWindow::RunThread()
 									// we found a new URL, add it to our list
 									CUrlInfo newinfo;
 									newinfo.url = url;
-									newinfo.name = CUnicodeUtils::StdGetUnicode(string(what[2].first, what[2].second));
+									newinfo.name = CUnicodeUtils::StdGetUnicode(string(match[2]));
 									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
@@ -902,12 +892,6 @@ DWORD CHiddenWindow::RunThread()
 								if (writeIt != pWrite->end())
 									writeIt->second.parentpath = true;
 								m_UrlInfos.ReleaseWriteData();
-
-								// update search position:
-								start = what[0].second;		 
-								// update flags:
-								flags |= match_prev_avail;
-								flags |= match_not_bob;
 							}
 							if (hasNewEntries)
 							{
