@@ -256,14 +256,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							if (DWORD(regHorzPos))
 							{
 								POINT pt;
-								pt.x = pt.y = DWORD(regHorzPos);
+								pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
 								PositionChildWindows(pt, true, false);
 							}
 							CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
 							if (DWORD(regVertPos))
 							{
 								POINT pt;
-								pt.x = pt.y = DWORD(regVertPos);
+								pt.x = pt.y = DWORD(regVertPos)+2;	// +2 because the slider is 4 pixels wide
 								PositionChildWindows(pt, false, false);
 							}
 						}
