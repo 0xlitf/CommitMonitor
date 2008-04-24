@@ -75,7 +75,7 @@
 		<echo file="src\version.h" message="${versionheaderfile}" />
 	</target>
 	
-	<target name="Subversion" depends="VSNET,env">
+	<target name="Subversion" depends="VSNET,env,VersionInfo">
 		<description>
 			Builds all the libraries CommitMonitor depends on:
 			Subversion, apr, OpenSSL, ...
