@@ -190,6 +190,14 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	{
 		if (CSerializeUtils::LoadNumber(buf, value))
 		{
+			// we had a bug where the size could be bigger than 1000, but
+			// only the first 1000 entries were actually saved.
+			// instead of bailing out if the value is bigger than 1000, we
+			// adjust it to the max saved values instead.
+			// in case the value is out of range for other reasons,
+			// the further serialization should bail out soon enough.
+			if (value >= 1000)
+				value = 999;
 			for (unsigned __int64 i=0; i<value; ++i)
 			{
 				unsigned __int64 key;
