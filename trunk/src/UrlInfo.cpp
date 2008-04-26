@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,15 +83,15 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveString(hFile, error))
 		return false;
 
-	if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
-		return false;
-	if (!CSerializeUtils::SaveNumber(hFile, logentries.size()))
-		return false;
-
     // prevent caching more than 1000 revisions - this is a commit monitor, not a full featured
     // log dialog!
     while (logentries.size() > 1000)
         logentries.erase(logentries.begin());
+
+	if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, logentries.size()))
+		return false;
 
 	for (map<svn_revnum_t,SVNLogEntry>::iterator it = logentries.begin(); it != logentries.end(); ++it)
 	{
