@@ -120,7 +120,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_CHECKTIME, buffer, len+1);
 			info.minutesinterval = _ttoi(buffer);
-			if ((info.minminutesinterval)&&(info.minminutesinterval < info.minutesinterval))
+			if ((info.minminutesinterval)&&(info.minminutesinterval > info.minutesinterval))
 				info.minutesinterval = info.minminutesinterval;
 			delete [] buffer;
 
