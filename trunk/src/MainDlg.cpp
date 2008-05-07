@@ -282,6 +282,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			DoResize(LOWORD(lParam), HIWORD(lParam));
 		}
 		break;
+	case WM_SYSCOMMAND:
+		{
+			if (wParam == SC_MAXIMIZE)
+				SaveWndPosition();
+			return FALSE;
+		}
+		break;
 	case WM_MOVING:
 		{
 #define STICKYSIZE 3
@@ -679,24 +686,8 @@ LRESULT CMainDlg::DoCommand(int id)
 	case IDCANCEL:
 	case IDOK:
 		{
-			RECT rc;
-			::GetWindowRect(*this, &rc);
-
-			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
-			regXY = MAKELONG(rc.top, rc.left);
-			CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
-			regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
-			::GetClientRect(*this, &rc);
-			CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
-			regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
-			::GetWindowRect(m_hTreeControl, &rc);
-			::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-			CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
-			regHorzPos = rc.right;
-			CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
-			::GetWindowRect(m_hListControl, &rc);
-			::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-			regVertPos = rc.bottom;
+			if (!IsZoomed(*this))
+				SaveWndPosition();
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
@@ -1847,6 +1838,28 @@ void CMainDlg::DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height)
 
 	DeleteObject(hbr);
 	DeleteObject(hbm);
+}
+
+void CMainDlg::SaveWndPosition()
+{
+	RECT rc;
+	::GetWindowRect(*this, &rc);
+
+	CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+	regXY = MAKELONG(rc.top, rc.left);
+	CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+	regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
+	::GetClientRect(*this, &rc);
+	CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+	regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
+	::GetWindowRect(m_hTreeControl, &rc);
+	::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+	CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+	regHorzPos = rc.right;
+	CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+	::GetWindowRect(m_hListControl, &rc);
+	::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+	regVertPos = rc.bottom;
 }
 
 LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)

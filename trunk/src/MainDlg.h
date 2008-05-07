@@ -71,6 +71,7 @@ private:
 	void					RemoveSelectedListItems();
 	void					SetRemoveButtonState();
 	bool					ShowDiff(bool bUseTSVN);
+	void					SaveWndPosition();
 
 	/// window procedure of the sub classed tree view control
 	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
