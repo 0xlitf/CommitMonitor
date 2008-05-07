@@ -141,6 +141,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
+		ShowTrayIcon(false);
 		m_hMainDlg = NULL;
 		m_UrlInfos.Save();
 		m_bMainDlgShown = false;
