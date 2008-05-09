@@ -270,6 +270,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
+
+			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
+			if( DWORD(regMaximized) )
+				ShowWindow(*this, SW_MAXIMIZE);				
 		}
 		break;
 	case WM_SIZE:
@@ -284,8 +288,18 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SYSCOMMAND:
 		{
+			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if (wParam == SC_MAXIMIZE)
+			{
 				SaveWndPosition();
+				regMaximized = 1;
+			}
+			
+			if (wParam == SC_RESTORE)
+			{
+				regMaximized = 0;
+			}
+
 			return FALSE;
 		}
 		break;
