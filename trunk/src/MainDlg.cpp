@@ -289,13 +289,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSCOMMAND:
 		{
 			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
-			if (wParam == SC_MAXIMIZE)
+			if ((wParam & 0xFFF0) == SC_MAXIMIZE)
 			{
 				SaveWndPosition();
 				regMaximized = 1;
 			}
 			
-			if (wParam == SC_RESTORE)
+			if ((wParam & 0xFFF0) == SC_RESTORE)
 			{
 				regMaximized = 0;
 			}
