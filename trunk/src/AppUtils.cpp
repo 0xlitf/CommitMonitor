@@ -158,31 +158,46 @@ wstring CAppUtils::GetAppDataDir()
 	return wstring(path);
 }
 
+
+/* Number of micro-seconds between the beginning of the Windows epoch
+* (Jan. 1, 1601) and the Unix epoch (Jan. 1, 1970) 
+*/
+#define APR_DELTA_EPOCH_IN_USEC   APR_TIME_C(11644473600000000);
+
+__inline void AprTimeToFileTime(LPFILETIME pft, apr_time_t t)
+{
+	LONGLONG ll;
+	t += APR_DELTA_EPOCH_IN_USEC;
+	ll = t * 10;
+	pft->dwLowDateTime = (DWORD)ll;
+	pft->dwHighDateTime = (DWORD) (ll >> 32);
+	return;
+}
+
 wstring CAppUtils::ConvertDate(apr_time_t time)
 {
-	apr_time_exp_t exploded_time = {0};
+	FILETIME ft = {0};
+	AprTimeToFileTime(&ft, time);
+
+	// Convert UTC to local time
+	FILETIME localfiletime;
+	FileTimeToLocalFileTime(&ft,&localfiletime);
+
 	SYSTEMTIME systime;
-	TCHAR timebuf[1024];
-	TCHAR datebuf[1024];
+	FileTimeToSystemTime(&localfiletime,&systime);
+
+	TCHAR timebuf[1024] = {0};
+	TCHAR datebuf[1024] = {0};
 
 	LCID locale = MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT);
 
-	apr_time_exp_lt (&exploded_time, time);
-
-	systime.wDay = (WORD)exploded_time.tm_mday;
-	systime.wDayOfWeek = (WORD)exploded_time.tm_wday;
-	systime.wHour = (WORD)exploded_time.tm_hour;
-	systime.wMilliseconds = (WORD)(exploded_time.tm_usec/1000);
-	systime.wMinute = (WORD)exploded_time.tm_min;
-	systime.wMonth = (WORD)exploded_time.tm_mon+1;
-	systime.wSecond = (WORD)exploded_time.tm_sec;
-	systime.wYear = (WORD)exploded_time.tm_year+1900;
-
 	GetDateFormat(locale, DATE_SHORTDATE, &systime, NULL, datebuf, 1024);
 	GetTimeFormat(locale, 0, &systime, NULL, timebuf, 1024);
+
 	wstring sRet = datebuf;
 	sRet += _T(" ");
 	sRet += timebuf;
+
 	return sRet;
 }
 
