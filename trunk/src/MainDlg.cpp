@@ -1248,7 +1248,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 {
 	if (m_bBlockListCtrlUI)
 		return;
-	if (lpNMListView->uNewState & LVIS_SELECTED)
+	if ((lpNMListView->uOldState ^ lpNMListView->uNewState) & LVIS_SELECTED)
 	{
 		const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
 		LVITEM item = {0};
@@ -1313,7 +1313,12 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 				::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
             }
 			TCHAR buf[1024];
-			wstring msg = pLogEntry->message.c_str();
+			wstring msg;
+			if (ListView_GetSelectedCount(m_hListControl) > 1)
+			{
+				msg = _T("multiple log entries selected. Info for the last selected one:\n-------------------------------\n\n");
+			}
+			msg += pLogEntry->message.c_str();
 			msg += _T("\n\n-------------------------------\n");
 			// now add all changed paths, one path per line
 			for (map<stdstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
