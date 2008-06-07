@@ -29,6 +29,7 @@
 #include "Callback.h"
 #include "AppUtils.h"
 #include "StatusBarMsgWnd.h"
+#include "OptionsDlg.h"
 
 #include <regex>
 using namespace std;
@@ -288,6 +289,14 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 						break;
 					case ID_POPUP_OPENCOMMITMONITOR:
 						ShowDialog();
+						break;
+					case ID_POPUP_CHECKNOW:
+						DoTimer(true);
+						break;
+					case ID_POPUP_OPTIONS:
+						COptionsDlg dlg(*this);
+						dlg.SetHiddenWnd(*this);
+						dlg.DoModal(hResource, IDD_OPTIONS, *this);
 						break;
 					}
 				}

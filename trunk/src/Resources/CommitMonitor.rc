@@ -210,6 +210,9 @@ BEGIN
     POPUP "POPUP"
     BEGIN
         MENUITEM "&Open CommitMonitor",         ID_POPUP_OPENCOMMITMONITOR
+        MENUITEM "Check &now",                  ID_POPUP_CHECKNOW
+        MENUITEM "O&ptions",                    ID_POPUP_OPTIONS
+        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
     END
 END
