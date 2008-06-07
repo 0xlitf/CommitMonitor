@@ -239,6 +239,7 @@ BEGIN
     BEGIN
         MENUITEM "&Edit",                       ID_MAIN_EDIT
         MENUITEM "&Remove",                     ID_MAIN_REMOVE
+        MENUITEM "Mark &node as read",          ID_POPUP_MARKNODEASREAD
         MENUITEM "&Mark all as read",           ID_POPUP_MARKALLASREAD
     END
 END

@@ -69,6 +69,7 @@ private:
 	void					OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
 	void					RemoveSelectedListItems();
+	void					MarkAllAsRead(HTREEITEM hItem, bool includingChildren);
 	void					SetRemoveButtonState();
 	bool					ShowDiff(bool bUseTSVN);
 	void					SaveWndPosition();
