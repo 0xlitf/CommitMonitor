@@ -205,7 +205,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_SMALL);
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_NORMAL);
 			}
-			RefreshURLTree(true);
 
 			// initialize the window position infos
 			RECT rect;
@@ -274,6 +273,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if( DWORD(regMaximized) )
 				ShowWindow(*this, SW_MAXIMIZE);				
+			RefreshURLTree(true);
 		}
 		break;
 	case WM_SIZE:
@@ -1815,21 +1815,21 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 			GetWindowRect(m_hTreeControl, &treelist);
 			treelist.right = point2.x - 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, m_hTreeControl, NULL, 
+			hdwp = DeferWindowPos(hdwp, m_hTreeControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
 			GetWindowRect(m_hListControl, &treelist);
 			treelist.left = point2.x + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, m_hListControl, NULL, 
+			hdwp = DeferWindowPos(hdwp, m_hListControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
 			GetWindowRect(m_hLogMsgControl, &treelist);
 			treelist.left = point2.x + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
+			hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
@@ -1838,14 +1838,14 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 			GetWindowRect(m_hListControl, &treelist);
 			treelist.bottom = point3.y - 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, m_hListControl, NULL,
+			hdwp = DeferWindowPos(hdwp, m_hListControl, NULL,
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
 			GetWindowRect(m_hLogMsgControl, &treelist);
 			treelist.top = point3.y + 2;
 			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-			DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
+			hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
