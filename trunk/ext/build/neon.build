@@ -33,12 +33,13 @@
 					<token key="MAJOR" value="${NEON_MAJOR_VERSION}" />
 					<token key="MINOR" value="${NEON_MINOR_VERSION}" />
 				</replacetokens>
-				<!-- <replacestring from="#define HAVE_SSPI" to="" /> -->
+				<replacestring from="#define NE_DEBUGGING 1" to="/* #define NE_DEBUGGING 1 */" if="${configuration == 'release'}" />
 			</filterchain>
 		</loadfile>
 		<echo file="config.hw" message="${configfile}" unless="${file::exists('config.hw')}" />
 		<echo file="config.h" message="${configfile}" unless="${file::exists('config.h')}" />
-		<!-- patch neon to use our own default-ca file -->
+		<!-- patch neon 0.28.2 to make sure the socket options are set correctly -->
+		<copy file="..\build\ne_socket.c" tofile="src\ne_socket.c" overwrite="true" />
 		<cl outputdir="${configuration}_${platform}">
 			<arg value="/O2" if="${configuration == 'release'}" />
 			<arg value="/Ob1" if="${configuration == 'release'}" />
