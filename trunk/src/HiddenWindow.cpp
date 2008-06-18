@@ -204,8 +204,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
         break;
 	case COMMITMONITOR_SAVEINFO:
 		{
-			wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-			m_UrlInfos.Save(urlfile.c_str());
+			m_UrlInfos.Save();
 			return TRUE;
 		}
 		break;
@@ -312,7 +311,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		if (m_hMainDlg)
 			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, lParam);
 		break;
+	case WM_QUIT:
+		StopThread();
+		break;
 	case WM_DESTROY:
+		StopThread();
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
