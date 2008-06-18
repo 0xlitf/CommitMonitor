@@ -233,10 +233,15 @@ void CUrlInfos::Load()
 void CUrlInfos::Save()
 {
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-	return Save(urlfile.c_str());
+	wstring urlfilenew = CAppUtils::GetAppDataDir() + _T("\\urls_new");
+	if (Save(urlfilenew.c_str()))
+	{
+		DeleteFile(urlfile.c_str());
+		MoveFile(urlfilenew.c_str(), urlfile.c_str());
+	}
 }
 
-void CUrlInfos::Save(LPCWSTR filename)
+bool CUrlInfos::Save(LPCWSTR filename)
 {
 #ifdef _DEBUG
 	DWORD dwStartTicks = GetTickCount();
@@ -244,7 +249,7 @@ void CUrlInfos::Save(LPCWSTR filename)
     FILE * hFile = NULL;
     _tfopen_s(&hFile, filename, _T("w+b"));
 	if (hFile == NULL)
-		return;
+		return false;
     char filebuffer[4096];
     setvbuf(hFile, filebuffer, _IOFBF, 4096);
 
@@ -261,7 +266,9 @@ void CUrlInfos::Save(LPCWSTR filename)
 		_stprintf_s(timerbuf, MAX_PATH, _T("time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
 		TRACE(timerbuf);
 #endif
+		return true;
 	}
+	return false;
 }
 
 void CUrlInfos::Load(LPCWSTR filename)

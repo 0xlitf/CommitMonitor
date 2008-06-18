@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,7 +65,7 @@ public:
 
 	void						Save();
 	void						Load();
-	void						Save(LPCWSTR filename);
+	bool						Save(LPCWSTR filename);
 	void						Load(LPCWSTR filename);
 	bool						IsEmpty();
 
