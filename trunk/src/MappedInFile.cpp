@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ void CMappedInFile::MapToMemory (const std::wstring& fileName)
 	size = (size_t)fileSize.QuadPart;
 
     mapping = CreateFileMapping (file, NULL, PAGE_READONLY, 0, 0, NULL);
-	if (mapping == INVALID_HANDLE_VALUE)
+	if (mapping == NULL)
 	{
 		UnMap();
 		return;
