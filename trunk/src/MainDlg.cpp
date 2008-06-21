@@ -265,6 +265,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								pt.x = pt.y = DWORD(regVertPos)+2;	// +2 because the slider is 4 pixels wide
 								PositionChildWindows(pt, false, false);
 							}
+							// adjust the slider position infos
+							GetClientRect(m_hTreeControl, &rect);
+							m_xSliderPos = rect.right+4;
+							GetClientRect(m_hListControl, &rect);
+							m_ySliderPos = rect.bottom+m_topmarg;
 						}
 					}
 				}
