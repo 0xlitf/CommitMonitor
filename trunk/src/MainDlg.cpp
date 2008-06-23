@@ -1461,6 +1461,7 @@ void CMainDlg::RemoveSelectedListItems()
 		LVITEM item = {0};
 		int i = 0;
 		TCHAR buf[4096];
+		m_bBlockListCtrlUI = true;
 		while (i<ListView_GetItemCount(m_hListControl))
 		{
 			item.mask = LVIF_PARAM|LVIF_STATE;
@@ -1486,6 +1487,7 @@ void CMainDlg::RemoveSelectedListItems()
 			else
 				++i;
 		}
+		m_bBlockListCtrlUI = false;
 	}
 	m_pURLInfos->ReleaseWriteData();
 	if (nFirstDeleted >= 0)
