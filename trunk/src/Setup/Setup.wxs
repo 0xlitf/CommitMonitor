@@ -6,7 +6,7 @@
   Id='????????-????-????-????-????????????'
   Language='1033' 
   Codepage='1252' 
-  Version='1.2.0' 
+  Version='1.2.1' 
   Manufacturer='Stefans Tools'>
 
     <Package Id='????????-????-????-????-????????????' Keywords='Installer'
@@ -16,7 +16,7 @@
       
     <Upgrade Id="B49D2664-0941-465d-A704-CAC63D1D0789" >
       <!-- flag is set if the install will trigger an upgrade of an existing install -->
-      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="1.2.0" IncludeMaximum="no" />
+      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="1.2.1" IncludeMaximum="no" />
     </Upgrade>
 
     <Media Id='1' Cabinet='cmtmonitor.cab' EmbedCab='yes' />
