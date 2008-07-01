@@ -249,7 +249,11 @@ END
 
 IDR_LISTPOPUP MENU 
 BEGIN
-    MENUITEM "Popup",                       65535
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "&Show Unified Diff",          ID_MAIN_SHOWDIFF
+        MENUITEM "&Remove",                     ID_MAIN_REMOVE
+    END
 END
 
 IDR_LISTPOPUPTSVN MENU 
