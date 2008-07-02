@@ -33,6 +33,7 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_oldx(-1)
 	, m_oldy(-1)
 	, m_boldFont(NULL)
+	, m_font(NULL)
 	, m_pURLInfos(NULL)
 	, m_bBlockListCtrlUI(false)
 	, m_hTreeControl(NULL)
@@ -56,6 +57,8 @@ CMainDlg::~CMainDlg(void)
 {
 	if (m_boldFont)
 		DeleteObject(m_boldFont);
+	if (m_font)
+		DeleteObject(m_font);
 	if (m_hToolbarImages)
 		ImageList_Destroy(m_hToolbarImages);
 	if (m_hImgList)
@@ -205,6 +208,15 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_SMALL);
 				TreeView_SetImageList(m_hTreeControl, m_hImgList, LVSIL_NORMAL);
 			}
+
+			LOGFONT lf = {0};
+			HDC hDC = ::GetDC(m_hLogMsgControl);
+			lf.lfHeight = -MulDiv(8, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+			lf.lfCharSet = DEFAULT_CHARSET;
+			_tcscpy_s(lf.lfFaceName, 32, _T("Courier New"));
+			m_font = ::CreateFontIndirect(&lf);
+			ReleaseDC(m_hLogMsgControl, hDC);
+			::SendMessage(m_hLogMsgControl, WM_SETFONT, (WPARAM)m_font, 1);
 
 			// initialize the window position infos
 			RECT rect;

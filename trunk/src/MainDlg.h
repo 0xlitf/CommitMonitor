@@ -82,6 +82,7 @@ private:
 	HWND					m_hTreeControl;
 	HWND					m_hListControl;
 	HWND					m_hLogMsgControl;
+	HFONT					m_font;
 
 	CListCtrl				m_ListCtrl;
 
