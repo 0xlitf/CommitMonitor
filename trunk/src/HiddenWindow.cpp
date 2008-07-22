@@ -169,7 +169,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		{
 			m_hwnd = hwnd;
 			// set the timers we use to start the monitoring threads
-			::SetTimer(*this, IDT_MONITOR, 10, NULL);
+			// we wait a minute before starting the initial monitoring
+			// to avoid problems after booting up
+			// See issue #63 for details:
+			// http://code.google.com/p/commitmonitor/issues/detail?id=63
+			::SetTimer(*this, IDT_MONITOR, 60000, NULL);
 		}
 		break;
 	case WM_TIMER:
@@ -193,7 +197,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			case PBT_APMRESUMESUSPEND:
 			case PBT_APMRESUMECRITICAL:
 				// waking up again
-				::SetTimer(*this, IDT_MONITOR, 10, NULL);
+				// we wait a minute before starting the initial monitoring
+				// to avoid problems after booting up
+				// See issue #63 for details:
+				// http://code.google.com/p/commitmonitor/issues/detail?id=63
+				::SetTimer(*this, IDT_MONITOR, 60000, NULL);
 				break;
 			case PBT_APMSUSPEND:
 				// going to sleep
