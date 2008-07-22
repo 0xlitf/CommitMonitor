@@ -185,6 +185,23 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			}
 		}
 		break;
+	case WM_POWERBROADCAST:
+		{
+			switch (wParam)
+			{
+			case PBT_APMRESUMEAUTOMATIC:
+			case PBT_APMRESUMESUSPEND:
+			case PBT_APMRESUMECRITICAL:
+				// waking up again
+				::SetTimer(*this, IDT_MONITOR, 10, NULL);
+				break;
+			case PBT_APMSUSPEND:
+				// going to sleep
+				::KillTimer(*this, IDT_MONITOR);
+				break;
+			}
+		}
+		break;
 	case COMMITMONITOR_GETALL:
 		DoTimer(true);
 		break;
