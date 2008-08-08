@@ -523,6 +523,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				OnSelectTreeItem((LPNMTREEVIEW)lParam);
 				return TRUE;
 			}
+			if ((lpnmhdr->code == LVN_ITEMCHANGING)&&(lpnmhdr->hwndFrom == m_hListControl))
+			{
+				LPNMLISTVIEW lpNMListView = (LPNMLISTVIEW)lParam;
+				if ((lpNMListView)&&(((lpNMListView->uOldState ^ lpNMListView->uNewState) & LVIS_SELECTED)&&(m_ListCtrl.InfoTextShown())))
+				{
+					return TRUE;
+				}
+			}
 			if ((lpnmhdr->code == LVN_ITEMCHANGED)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
 				OnSelectListItem((LPNMLISTVIEW)lParam);
@@ -1286,7 +1294,7 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
 /******************************************************************************/
 void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 {
-	if (m_bBlockListCtrlUI)
+	if ((m_bBlockListCtrlUI)||(m_ListCtrl.InfoTextShown()))
 		return;
 	if ((lpNMListView->uOldState ^ lpNMListView->uNewState) & LVIS_SELECTED)
 	{
