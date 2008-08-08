@@ -1127,11 +1127,14 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 		MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
 	SetRemoveButtonState();
 	if (lpNMTreeView->itemNew.state & TVIS_SELECTED)
+	{
 		TreeItemSelected(lpNMTreeView->hdr.hwndFrom, hSelectedItem);
+	}
 	else
 	{
 		ListView_DeleteAllItems(m_hListControl);
 		SetWindowText(m_hLogMsgControl, _T(""));
+		SetDlgItemText(*this, IDC_INFOLABEL, _T(""));
 	}
 	SetWindowText(m_hLogMsgControl, _T(""));
 }
@@ -1169,6 +1172,15 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		else
 			// remove the info text if there's no error
 			m_ListCtrl.SetInfoText(_T(""));
+
+		// show the last update time on the info label
+		TCHAR updateTime[1000] = {0};
+		struct tm upTime;
+		if (_localtime64_s(&upTime, &info->lastchecked) == 0)
+		{
+			_tcsftime(updateTime, 1000, _T(" last checked: %X"), &upTime);
+			SetDlgItemText(*this, IDC_INFOLABEL, updateTime);
+		}
 
 
 		m_bBlockListCtrlUI = true;
