@@ -346,6 +346,10 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 	case WM_CLOSE:
 		::DestroyWindow(m_hwnd);
 		break;
+	case WM_QUERYENDSESSION:
+		StopThread();
+		PostQuitMessage(0);
+		break;
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
