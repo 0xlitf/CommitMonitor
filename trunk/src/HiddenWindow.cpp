@@ -31,6 +31,7 @@
 #include "StatusBarMsgWnd.h"
 #include "OptionsDlg.h"
 
+#include <cctype>
 #include <regex>
 using namespace std;
 
@@ -563,7 +564,13 @@ DWORD CHiddenWindow::RunThread()
 						if (writeIt != pWrite->end())
 						{
 							writeIt->second.logentries[logit->first] = logit->second;
-							if ((!writeIt->second.ignoreSelf)||(logit->second.author.compare(writeIt->second.username)))
+
+							wstring author1 = logit->second.author;
+							wstring author2 = writeIt->second.username;
+							std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
+							std::transform(author2.begin(), author2.end(), author2.begin(), std::tolower);
+
+							if ((!writeIt->second.ignoreSelf)||(author1.compare(author2)))
 							{
 								bNewEntries = true;
 								nNewCommits++;
