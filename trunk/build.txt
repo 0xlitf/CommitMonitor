@@ -4,7 +4,7 @@ First, you need to install the compiler package.
   If you want to build the msi make sure the "Tools for Redistributing
   Applications" are installed.
   Also, you need the MFC feature pack which contains the tr1 c-runtime
-  extensions.
+  extensions (or the SP1 for VS2008 which contains the feature pack).
 
 Next you need to install some utilities/programs:
 - Python 2.4(*)           : http://www.python.org/windows/
