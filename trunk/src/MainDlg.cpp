@@ -686,8 +686,24 @@ LRESULT CMainDlg::DoCommand(int id)
 {
 	switch (id)
 	{
-	case IDCANCEL:
 	case IDOK:
+		{
+			if (::GetFocus() != GetDlgItem(*this, IDOK))
+			{
+				// focus is not on the OK/Hide button
+				if (GetFocus() == m_hListControl)
+				{
+					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+					int cmd = ID_MAIN_SHOWDIFF;
+					if ((!wstring(tsvninstalled).empty()) && (DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+						cmd = ID_MAIN_SHOWDIFFTSVN;
+					::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+				}
+				break;
+			}
+		}
+		// intentional fall-through
+	case IDCANCEL:
 		{
 			if (!IsZoomed(*this))
 				SaveWndPosition();
