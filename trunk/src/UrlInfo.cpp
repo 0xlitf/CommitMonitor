@@ -196,8 +196,8 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 			// adjust it to the max saved values instead.
 			// in case the value is out of range for other reasons,
 			// the further serialization should bail out soon enough.
-			if (value >= 1000)
-				value = 999;
+			if (value > 1000)
+				value = 1000;
 			for (unsigned __int64 i=0; i<value; ++i)
 			{
 				unsigned __int64 key;
