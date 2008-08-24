@@ -62,6 +62,7 @@ private:
 	void					RefreshURLTree(bool bSelectUnread);
 	HTREEITEM				FindParentTreeNode(const wstring& url);
 	HTREEITEM				FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
+	bool					SelectNextWithUnread(HTREEITEM hItem = TVI_ROOT);
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);

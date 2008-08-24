@@ -1136,6 +1136,40 @@ HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
 	return TVI_ROOT;
 }
 
+bool CMainDlg::SelectNextWithUnread(HTREEITEM hItem)
+{
+	if (hItem == TVI_ROOT)
+		hItem = TreeView_GetRoot(m_hTreeControl);
+	TVITEM item;
+	item.mask = TVIF_STATE;
+	item.stateMask = TVIS_BOLD;
+	while (hItem)
+	{
+		item.hItem = hItem;
+		TreeView_GetItem(m_hTreeControl, &item);
+		if (item.state & TVIS_BOLD)
+		{
+			TreeView_SelectItem(m_hTreeControl, hItem);
+			TreeItemSelected(m_hTreeControl, hItem);
+			ListView_SetSelectionMark(m_hListControl, 0);
+			ListView_SetItemState(m_hListControl, 0, LVIS_SELECTED, LVIS_SELECTED);
+			::SetFocus(m_hListControl);
+			return true;
+		}
+		HTREEITEM hChild = TreeView_GetChild(m_hTreeControl, hItem);
+		if (hChild)
+		{
+			item.hItem = hChild;
+			TreeView_GetItem(m_hTreeControl, &item);
+			if (SelectNextWithUnread(hChild))
+				return true;
+		}
+		hItem = TreeView_GetNextSibling(m_hTreeControl, hItem);
+	};
+	return false;
+}
+
+
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
 	HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
@@ -1470,28 +1504,79 @@ LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
 
 void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 {
-	if (pnkd->wVKey == VK_DELETE)
+	switch (pnkd->wVKey)
 	{
-		// remove the selected entry
+	case VK_DELETE:
 		RemoveSelectedListItems();
-	}
-	if ((pnkd->wVKey == 'A')&&(GetKeyState(VK_CONTROL)&0x8000))
-	{
-		// select all
-		int nCount = ListView_GetItemCount(m_hListControl);
-		if (nCount > 1)
+		break;
+	case 'A':
+		if (GetKeyState(VK_CONTROL)&0x8000)
 		{
-			m_bBlockListCtrlUI = true;
-			for (int i=0; i<(nCount-1); ++i)
+			// select all
+			int nCount = ListView_GetItemCount(m_hListControl);
+			if (nCount > 1)
 			{
-				ListView_SetItemState(m_hListControl, i, LVIS_SELECTED, LVIS_SELECTED);
+				m_bBlockListCtrlUI = true;
+				for (int i=0; i<(nCount-1); ++i)
+				{
+					ListView_SetItemState(m_hListControl, i, LVIS_SELECTED, LVIS_SELECTED);
+				}
+				m_bBlockListCtrlUI = false;
+				ListView_SetItemState(m_hListControl, nCount-1, LVIS_SELECTED, LVIS_SELECTED);
+				// clear the text of the selected log message: there are more than
+				// one selected now
+				SetWindowText(m_hLogMsgControl, _T(""));
 			}
-			m_bBlockListCtrlUI = false;
-			ListView_SetItemState(m_hListControl, nCount-1, LVIS_SELECTED, LVIS_SELECTED);
-			// clear the text of the selected log message: there are more than
-			// one selected now
-			SetWindowText(m_hLogMsgControl, _T(""));
 		}
+		break;
+	case 'N':	// next unread
+		{
+			int selMark = ListView_GetSelectionMark(m_hListControl);
+			if (selMark >= 0)
+			{
+				// find the next unread message
+				LVITEM item = {0};
+				int i = selMark + 1;
+				int nCount = ListView_GetItemCount(m_hListControl);
+				do 
+				{
+					item.mask = LVIF_PARAM;
+					item.iItem = i;
+					if (ListView_GetItem(m_hListControl, &item))
+					{
+						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+						if ((pLogEntry)&&(!pLogEntry->read))
+						{
+							// we have the next unread
+							ListView_SetSelectionMark(m_hListControl, i);
+							ListView_SetItemState(m_hListControl, selMark, 0, LVIS_SELECTED);
+							ListView_SetItemState(m_hListControl, i, LVIS_SELECTED, LVIS_SELECTED);
+							break;
+						}
+
+					}
+					++i;
+				} while (i < nCount);
+				
+				if (i == nCount)
+				{
+					// no unread item found anymore.
+					SelectNextWithUnread();
+				}
+			}
+		}
+		break;
+	case 'B':	// back one message
+		{
+			int selMark = ListView_GetSelectionMark(m_hListControl);
+			if (selMark > 0)
+			{
+				ListView_SetItemState(m_hListControl, selMark, 0, LVIS_SELECTED);
+				ListView_SetSelectionMark(m_hListControl, selMark-1);
+				ListView_SetItemState(m_hListControl, selMark-1, LVIS_SELECTED, LVIS_SELECTED);
+			}
+		}
+		break;
 	}
 }
 
