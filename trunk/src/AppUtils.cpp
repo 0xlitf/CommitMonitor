@@ -18,6 +18,7 @@
 //
 #include "StdAfx.h"
 #include "AppUtils.h"
+#include "Registry.h"
 
 
 #include <shlwapi.h>
@@ -306,3 +307,42 @@ wstring CAppUtils::ConvertName(const wstring& name)
 	}
 	return wstring(convertedName);
 }
+
+typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+
+LPFN_ISWOW64PROCESS fnIsWow64Process;
+
+bool CAppUtils::IsWow64()
+{
+	BOOL bIsWow64 = false;
+
+	fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(
+		GetModuleHandle(TEXT("kernel32")),"IsWow64Process");
+
+	if (NULL != fnIsWow64Process)
+	{
+		if (!fnIsWow64Process(GetCurrentProcess(),&bIsWow64))
+		{
+			// handle error
+		}
+	}
+	return !!bIsWow64;
+}
+
+wstring CAppUtils::GetTSVNPath()
+{
+	wstring sRet;
+	CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+	sRet = wstring(tsvninstalled);
+	if (sRet.empty())
+	{
+		if (IsWow64())
+		{
+			CRegStdString tsvninstalled64 = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
+			sRet = wstring(tsvninstalled64);
+		}
+	}
+	return sRet;
+}
+
+

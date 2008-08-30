@@ -36,6 +36,6 @@ public:
 	static wstring					GetTempFilePath();
 	static wstring					ConvertName(const wstring& name);
 	static string					PathEscape(const string& path);
-
-
+	static bool						IsWow64();
+	static wstring					GetTSVNPath();
 };
