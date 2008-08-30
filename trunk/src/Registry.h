@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,14 +38,14 @@ public:	//methods
 	 * HKCU\Software\Company\Product key in the registry.
 	 * \return ERROR_SUCCESS or an nonzero errorcode. Use FormatMessage() to get an error description.
 	 */
-	DWORD removeKey() { RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_WRITE, &m_hKey); return SHDeleteKey(m_base, m_path.c_str()); }
+	DWORD removeKey() { RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_WRITE | m_sam, &m_hKey); return SHDeleteKey(m_base, m_path.c_str()); }
 	/**
 	 * Removes the value of the registry object. If you set the registry entry to
 	 * be HKCU\Software\Company\Product\key\value there will only be
 	 * HKCU\Software\Company\Product\key\ in the registry.
 	 * \return ERROR_SUCCESS or an nonzero errorcode. Use FormatMessage() to get an error description.
 	 */
-	LONG removeValue() { RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_WRITE, &m_hKey); return RegDeleteValue(m_hKey, m_key.c_str()); }
+	LONG removeValue() { RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_WRITE | m_sam, &m_hKey); return RegDeleteValue(m_hKey, m_key.c_str()); }
 
 	stdstring getErrorString()
 	{
@@ -64,6 +64,7 @@ public:	//methods
 public:	//members
 	HKEY m_base;		///< handle to the registry base
 	HKEY m_hKey;		///< handle to the open registry key
+	REGSAM m_sam;
 	stdstring m_key;		///< the name of the value
 	stdstring m_path;		///< the path to the key
 	LONG LastError;		///< the last value of the last occurred error
@@ -112,7 +113,7 @@ public:
 	 * \param force set to TRUE if no cache should be used, i.e. always read and write directly from/to registry
 	 * \param base a predefined base key like HKEY_LOCAL_MACHINE. see the SDK documentation for more information.
 	 */
-	CRegStdString(const stdstring& key, const stdstring& def = _T(""), BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER);
+	CRegStdString(const stdstring& key, const stdstring& def = _T(""), BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
 	~CRegStdString(void);
 	
 	stdstring read();						///< reads the value from the registry
@@ -180,7 +181,7 @@ public:
 	 * \param force set to TRUE if no cache should be used, i.e. always read and write directly from/to registry
 	 * \param base a predefined base key like HKEY_LOCAL_MACHINE. see the SDK documentation for more information.
 	 */
-	CRegStdWORD(const stdstring& key, DWORD def = 0, BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER);
+	CRegStdWORD(const stdstring& key, DWORD def = 0, BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
 	~CRegStdWORD(void);
 	
 	DWORD read();						///< reads the value from the registry

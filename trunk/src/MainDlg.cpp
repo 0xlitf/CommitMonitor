@@ -635,8 +635,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (hittest.flags & LVHT_ONITEM)
 				{
 					HMENU hMenu = NULL;
-					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-					if (wstring(tsvninstalled).empty())
+					wstring tsvninstalled = CAppUtils::GetTSVNPath();
+					if (tsvninstalled.empty())
 						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
 					else
 						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUPTSVN));
@@ -693,9 +693,9 @@ LRESULT CMainDlg::DoCommand(int id)
 				// focus is not on the OK/Hide button
 				if (GetFocus() == m_hListControl)
 				{
-					CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
+					wstring tsvninstalled = CAppUtils::GetTSVNPath();
 					int cmd = ID_MAIN_SHOWDIFF;
-					if ((!wstring(tsvninstalled).empty()) && (DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+					if ((!tsvninstalled.empty()) && (DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
 						cmd = ID_MAIN_SHOWDIFFTSVN;
 					::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
 				}
@@ -926,8 +926,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 				wstring title = wstring(buf);
 				// start the diff viewer
 				wstring cmd;
-				CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-				if ((bUseTSVN)&&(!wstring(tsvninstalled).empty()))
+				wstring tsvninstalled = CAppUtils::GetTSVNPath();
+				if ((bUseTSVN)&&(!tsvninstalled.empty()))
 				{
 					// yes, we have TSVN installed
 					// call TortoiseProc to do the diff for us
@@ -1466,8 +1466,8 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
 {
-	CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-	bool bUseTSVN = !(wstring(tsvninstalled).empty());
+	wstring tsvninstalled = CAppUtils::GetTSVNPath();
+	bool bUseTSVN = !(tsvninstalled.empty());
 	bUseTSVN = bUseTSVN && !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 
 	ShowDiff(bUseTSVN);

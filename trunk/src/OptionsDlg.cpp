@@ -20,6 +20,7 @@
 #include "Resource.h"
 #include "OptionsDlg.h"
 #include "Registry.h"
+#include "AppUtils.h"
 #include <string>
 #include <Commdlg.h>
 
@@ -66,8 +67,8 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
 			SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
 
-			CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-			if (wstring(tsvninstalled).empty())
+			wstring tsvninstalled = CAppUtils::GetTSVNPath();
+			if (tsvninstalled.empty())
 				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
 		}
 		return TRUE;
