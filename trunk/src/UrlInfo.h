@@ -64,9 +64,9 @@ public:
 	~CUrlInfos(void);
 
 	void						Save();
-	void						Load();
+	bool						Load();
 	bool						Save(LPCWSTR filename);
-	void						Load(LPCWSTR filename);
+	bool						Load(LPCWSTR filename);
 	bool						IsEmpty();
 
 	const map<wstring,CUrlInfo> *	GetReadOnlyData();

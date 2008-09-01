@@ -222,12 +222,24 @@ CUrlInfos::~CUrlInfos(void)
 {
 }
 
-void CUrlInfos::Load()
+bool CUrlInfos::Load()
 {
 	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+	wstring urlfilebak = CAppUtils::GetAppDataDir() + _T("\\urls_backup");
 	if (!PathFileExists(urlfile.c_str()))
-		return;
-	return Load(urlfile.c_str());
+		return false;
+	if (Load(urlfile.c_str()))
+	{
+		// urls file successfully loaded: create a backup copy
+		CopyFile(urlfile.c_str(), urlfilebak.c_str(), FALSE);
+		return true;
+	}
+	else
+	{
+		// loading the file failed. Check whether there's a backup
+		// file available to load instead
+		return Load(urlfilebak.c_str());
+	}
 }
 
 void CUrlInfos::Save()
@@ -271,8 +283,9 @@ bool CUrlInfos::Save(LPCWSTR filename)
 	return false;
 }
 
-void CUrlInfos::Load(LPCWSTR filename)
+bool CUrlInfos::Load(LPCWSTR filename)
 {
+	bool bRet = false;
 #ifdef _DEBUG
 	DWORD dwStartTicks = GetTickCount();
 #endif
@@ -280,7 +293,7 @@ void CUrlInfos::Load(LPCWSTR filename)
     guard.AcquireWriterLock();
 	const unsigned char * buf = file.GetBuffer();
 	if (buf)
-		Load(buf);
+		bRet = Load(buf);
 	guard.ReleaseWriterLock();
 	TRACE(_T("data loaded\n"));
 #ifdef _DEBUG
@@ -288,7 +301,7 @@ void CUrlInfos::Load(LPCWSTR filename)
 	_stprintf_s(timerbuf, MAX_PATH, _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
 	TRACE(timerbuf);
 #endif
-
+	return bRet;
 }
 
 bool CUrlInfos::Save(FILE * hFile)
