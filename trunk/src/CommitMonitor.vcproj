@@ -1267,6 +1267,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="WiX"
+			>
+			<File
+				RelativePath=".\Setup\Setup.wxs"
+				>
+			</File>
+			<File
+				RelativePath=".\Setup\WixUI_Custom.wxs"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
