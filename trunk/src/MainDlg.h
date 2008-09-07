@@ -44,6 +44,7 @@ public:
 	~CMainDlg(void);
 
 	void					SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
+	void					SetUpdateAvailable(bool bUpdate) {m_bNewerVersionAvailable = bUpdate;}
 
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -104,4 +105,5 @@ private:
 	CUrlInfos *				m_pURLInfos;
 
 	bool					m_bBlockListCtrlUI;
+	bool					m_bNewerVersionAvailable;
 };

@@ -23,6 +23,7 @@
 #include "URLDlg.h"
 #include "OptionsDlg.h"
 #include "AboutDlg.h"
+#include "UpdateDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
 #include <algorithm>
@@ -41,6 +42,7 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_hLogMsgControl(NULL)
 	, m_hToolbarImages(NULL)
 	, m_hImgList(NULL)
+	, m_bNewerVersionAvailable(false)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -291,6 +293,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if( DWORD(regMaximized) )
 				ShowWindow(*this, SW_MAXIMIZE);				
 			RefreshURLTree(true);
+			if (m_bNewerVersionAvailable)
+			{
+				CUpdateDlg dlg(*this);
+				dlg.DoModal(hResource, IDD_NEWERNOTIFYDLG, *this);
+			}
 		}
 		break;
 	case WM_SIZE:

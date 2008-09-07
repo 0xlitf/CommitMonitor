@@ -305,6 +305,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UpdateDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\URLDlg.cpp"
 				>
 			</File>
@@ -428,6 +432,10 @@
 			</File>
 			<File
 				RelativePath=".\UnicodeUtils.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateDlg.h"
 				>
 			</File>
 			<File

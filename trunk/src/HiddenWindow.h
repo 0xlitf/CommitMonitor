@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007-2008 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,6 +91,7 @@ private:
 	CRegStdWORD			regShowTaskbarIcon;
 
 	bool				m_bIsTask;
+	bool				m_bNewerVersionAvailable;
 
 	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
 	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;

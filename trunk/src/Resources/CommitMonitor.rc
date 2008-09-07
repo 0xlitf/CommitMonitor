@@ -154,6 +154,17 @@ BEGIN
     CONTROL         "Mat&ch case",IDC_MATCHCASECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,182,4,52,10
 END
 
+IDD_NEWERNOTIFYDLG DIALOGEX 0, 0, 316, 136
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Update available"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,259,115,50,14
+    LTEXT           "A newer version of CommitMonitor is available.",IDC_STATIC,7,7,150,8
+    LTEXT           "Please get it from the homepage:",IDC_STATIC,7,20,108,8
+    LTEXT           "http://tools.tortoisesvn.net/CommitMonitor",IDC_WEBURL,7,34,140,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -195,6 +206,14 @@ BEGIN
         VERTGUIDE, 287
         TOPMARGIN, 7
         BOTTOMMARGIN, 135
+    END
+
+    IDD_NEWERNOTIFYDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 129
     END
 END
 #endif    // APSTUDIO_INVOKED

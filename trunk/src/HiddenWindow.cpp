@@ -30,6 +30,7 @@
 #include "AppUtils.h"
 #include "StatusBarMsgWnd.h"
 #include "OptionsDlg.h"
+#include "version.h"
 
 #include <cctype>
 #include <regex>
@@ -56,6 +57,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_nIcon(0)
 	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE)
 	, m_bIsTask(false)
+	, m_bNewerVersionAvailable(false)
 {
 	m_hIconNew0 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW0));
 	m_hIconNew1 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW1));
@@ -142,7 +144,9 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		m_bMainDlgRemovedItems = false;
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
+		dlg.SetUpdateAvailable(m_bNewerVersionAvailable);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
+		m_bNewerVersionAvailable = false;
 		ShowTrayIcon(false);
 		m_hMainDlg = NULL;
 		m_UrlInfos.Save();
@@ -965,6 +969,95 @@ DWORD CHiddenWindow::RunThread()
 			}
 		}
 	}
+
+
+	// check for newer versions
+	if (CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE)
+	{
+		time_t now;
+		struct tm ptm;
+
+		time(&now);
+		if ((now != 0) && (localtime_s(&ptm, &now)==0))
+		{
+			int week = 0;
+			// we don't calculate the real 'week of the year' here
+			// because just to decide if we should check for an update
+			// that's not needed.
+			week = ptm.tm_yday / 7;
+
+			CRegStdWORD oldweek = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewerWeek"), (DWORD)-1);
+			if (((DWORD)oldweek) == -1)
+				oldweek = week;		// first start of CommitMonitor, no update check needed
+			else
+			{
+				if ((DWORD)week != oldweek)
+				{
+					oldweek = week;
+					// 
+					wstring temp;
+					wstring tempfile = CAppUtils::GetTempFilePath();
+
+					CRegStdString checkurluser = CRegStdString(_T("Software\\CommitMonitor\\UpdateCheckURL"), _T(""));
+					CRegStdString checkurlmachine = CRegStdString(_T("Software\\CommitMonitor\\UpdateCheckURL"), _T(""), FALSE, HKEY_LOCAL_MACHINE);
+					wstring sCheckURL = (wstring)checkurluser;
+					if (sCheckURL.empty())
+					{
+						sCheckURL = (wstring)checkurlmachine;
+						if (sCheckURL.empty())
+							sCheckURL = _T("http://commitmonitor.googlecode.com/svn/trunk/version.txt");
+					}
+					HRESULT res = URLDownloadToFile(NULL, sCheckURL.c_str(), tempfile.c_str(), 0, NULL);
+					if (res == S_OK)
+					{
+						ifstream File;
+						File.open(tempfile.c_str());
+						if (File.good())
+						{
+							char line[1024];
+							char * pLine = line;
+							File.getline(line, sizeof(line));
+							string vertemp = line;
+							int major = 0;
+							int minor = 0;
+							int micro = 0;
+							int build = 0;
+							
+							major = atoi(pLine);
+							pLine = strchr(pLine, '.');
+							if (pLine)
+							{
+								pLine++;
+								minor = atoi(pLine);
+								pLine = strchr(pLine, '.');
+								if (pLine)
+								{
+									pLine++;
+									micro = atoi(pLine);
+									pLine = strchr(pLine, '.');
+									if (pLine)
+									{
+										pLine++;
+										build = atoi(pLine);
+									}
+								}
+							}
+							if (major > CM_VERMAJOR)
+								m_bNewerVersionAvailable = true;
+							else if ((minor > CM_VERMINOR)&&(major == CM_VERMAJOR))
+								m_bNewerVersionAvailable = true;
+							else if ((micro > CM_VERMICRO)&&(minor == CM_VERMINOR)&&(major == CM_VERMAJOR))
+								m_bNewerVersionAvailable = true;
+							else if ((build > CM_VERBUILD)&&(micro == CM_VERMICRO)&&(minor == CM_VERMINOR)&&(major == CM_VERMAJOR))
+								m_bNewerVersionAvailable = true;
+						}
+						File.close();
+					}
+				}
+			}
+		}
+	}
+
 	SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
 	// save the changed entries
 	::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
