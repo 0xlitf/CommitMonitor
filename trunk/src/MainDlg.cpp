@@ -1252,6 +1252,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		ListView_InsertColumn(m_hListControl, 1, &lvc);
 		lvc.pszText = _T("author");
 		ListView_InsertColumn(m_hListControl, 2, &lvc);
+		lvc.pszText = _T("log message");
+		ListView_InsertColumn(m_hListControl, 3, &lvc);
 
 		LVITEM item = {0};
 		TCHAR buf[1024];
@@ -1274,6 +1276,12 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			else
 				_tcscpy_s(buf, 1024, _T("(no author)"));
 			ListView_SetItemText(m_hListControl, 0, 2, buf);
+			wstring msg = it->second.message;
+			std::remove(msg.begin(), msg.end(), '\r');
+			std::replace(msg.begin(), msg.end(), '\n', ' ');
+			_tcsncpy_s(buf, 1024, msg.c_str(), 1023);
+			ListView_SetItemText(m_hListControl, 0, 3, buf);
+
 			if ((iLastUnread < 0)&&(!it->second.read))
 			{
 				iLastUnread = 0;
@@ -1285,6 +1293,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
+		ListView_SetColumnWidth(m_hListControl, 3, LVSCW_AUTOSIZE_USEHEADER);
 		ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
 
 		::InvalidateRect(m_hListControl, NULL, false);
