@@ -107,6 +107,7 @@
 #define ID_POPUP_ADDPROJECT             32801
 #define ID_POPUP_OPTIONS                32802
 #define ID_POPUP                        32803
+#define ID_MAIN_SHOWDIFFCHOOSE          32804
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -115,7 +116,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        159
-#define _APS_NEXT_COMMAND_VALUE         32804
+#define _APS_NEXT_COMMAND_VALUE         32805
 #define _APS_NEXT_CONTROL_VALUE         1035
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

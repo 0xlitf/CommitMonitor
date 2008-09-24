@@ -138,7 +138,7 @@ bool CMainDlg::CreateToolbar()
 
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-	tbb[index].idCommand = ID_MAIN_SHOWDIFFTSVN; 
+	tbb[index].idCommand = ID_MAIN_SHOWDIFFCHOOSE; 
 	tbb[index].fsState = BTNS_SHOWTEXT; 
 	tbb[index].fsStyle = BTNS_BUTTON; 
 	tbb[index].dwData = 0; 
@@ -700,11 +700,7 @@ LRESULT CMainDlg::DoCommand(int id)
 				// focus is not on the OK/Hide button
 				if (GetFocus() == m_hListControl)
 				{
-					wstring tsvninstalled = CAppUtils::GetTSVNPath();
-					int cmd = ID_MAIN_SHOWDIFF;
-					if ((!tsvninstalled.empty()) && (DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
-						cmd = ID_MAIN_SHOWDIFFTSVN;
-					::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+					::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
 				}
 				break;
 			}
@@ -858,6 +854,15 @@ LRESULT CMainDlg::DoCommand(int id)
 	case ID_MAIN_SHOWDIFFTSVN:
 		{
 			ShowDiff(true);
+		}
+		break;
+	case ID_MAIN_SHOWDIFFCHOOSE:
+		{
+			wstring tsvninstalled = CAppUtils::GetTSVNPath();
+			bool bUseTSVN = !(tsvninstalled.empty());
+			bUseTSVN = bUseTSVN && !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+			
+			ShowDiff(bUseTSVN);
 		}
 		break;
 	case ID_MISC_OPTIONS:
@@ -1474,7 +1479,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			wstring diffFileName = CAppUtils::GetAppDataDir();
 			diffFileName += _T("\\");
 			diffFileName += wstring(buf);
-			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFTSVN, MAKELONG(true, 0));
+			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(true, 0));
 		}
 		m_pURLInfos->ReleaseReadOnlyData();
 	}
@@ -1482,11 +1487,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
 {
-	wstring tsvninstalled = CAppUtils::GetTSVNPath();
-	bool bUseTSVN = !(tsvninstalled.empty());
-	bUseTSVN = bUseTSVN && !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-
-	ShowDiff(bUseTSVN);
+	::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
