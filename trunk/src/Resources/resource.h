@@ -81,6 +81,8 @@
 #define IDC_CHECK1                      1033
 #define IDC_USETSVN                     1033
 #define IDC_WEBURL                      1034
+#define IDC_CHECK2                      1035
+#define IDC_CHECKNEWER                  1035
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -117,7 +119,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        159
 #define _APS_NEXT_COMMAND_VALUE         32805
-#define _APS_NEXT_CONTROL_VALUE         1035
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
