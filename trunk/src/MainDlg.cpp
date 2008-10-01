@@ -1587,6 +1587,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 							ListView_SetItemState(m_hListControl, selMark, 0, LVIS_SELECTED);
 							ListView_SetSelectionMark(m_hListControl, selMark+1);
 							ListView_SetItemState(m_hListControl, selMark+1, LVIS_SELECTED, LVIS_SELECTED);
+							ListView_EnsureVisible(m_hListControl, selMark+1, false);
 						}
 					}
 				}
@@ -1601,6 +1602,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
 				ListView_SetItemState(m_hListControl, selMark, 0, LVIS_SELECTED);
 				ListView_SetSelectionMark(m_hListControl, selMark-1);
 				ListView_SetItemState(m_hListControl, selMark-1, LVIS_SELECTED, LVIS_SELECTED);
+				ListView_EnsureVisible(m_hListControl, selMark-1, false);
 			}
 		}
 		break;
