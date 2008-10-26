@@ -111,8 +111,6 @@ BEGIN
     LTEXT           "Check every",IDC_STATIC,14,93,41,8
     EDITTEXT        IDC_CHECKTIME,59,91,26,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "minutes",IDC_STATIC,90,93,26,8
-    CONTROL         "Automatically create diffs of commits",IDC_CREATEDIFFS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,111,133,10
     LTEXT           "Username:",IDC_STATIC,14,128,36,8
     EDITTEXT        IDC_USERNAME,89,124,152,14,ES_AUTOHSCROLL
     LTEXT           "Password:",IDC_STATIC,14,146,34,8

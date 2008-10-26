@@ -585,38 +585,10 @@ DWORD CHiddenWindow::RunThread()
 							writeIt->second.error.clear();
 						}
 						m_UrlInfos.ReleaseWriteData();
-						TCHAR buf[4096];
 						// popup info text
 						if (!sPopupText.empty())
 							sPopupText += _T(", ");
 						sPopupText += logit->second.author;
-						if ((!it->second.disallowdiffs)&&(it->second.fetchdiffs))
-						{
-							// first, find a name where to store the diff for that revision
-							_stprintf_s(buf, 4096, _T("%s_%ld.diff"), it->second.name.c_str(), logit->first);
-							wstring diffFileName = CAppUtils::GetAppDataDir();
-							diffFileName += _T("/");
-							diffFileName += wstring(buf);
-							// do we already have that diff?
-							if (!PathFileExists(diffFileName.c_str()))
-							{
-								// get the diff
-								if (m_hMainDlg)
-								{
-									_stprintf_s(infotextbuf, 1024, _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
-									SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
-								}
-								if (!svn.Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
-								{
-									TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
-									DeleteFile(diffFileName.c_str());
-								}
-								else
-									TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
-								if (!m_bRun)
-									break;
-							}
-						}
 					}
 					if ((it->second.lastcheckedrobots + (60*60*24*2)) < currenttime)
 					{
@@ -890,7 +862,6 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
-									newinfo.fetchdiffs = it->second.fetchdiffs;
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreSelf = it->second.ignoreSelf;
 									(*pWrite)[url] = newinfo;
@@ -931,7 +902,6 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
-									newinfo.fetchdiffs = it->second.fetchdiffs;
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreSelf = it->second.ignoreSelf;
 									(*pWrite)[url] = newinfo;

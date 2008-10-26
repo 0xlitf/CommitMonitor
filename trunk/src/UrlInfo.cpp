@@ -28,7 +28,6 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
 	, minutesinterval(90)
 	, minminutesinterval(0)
-	, fetchdiffs(false)
 	, disallowdiffs(false)
 	, parentpath(false)
 	, ignoreSelf(false)
@@ -71,8 +70,6 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, minutesinterval))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, minminutesinterval))
-		return false;
-	if (!CSerializeUtils::SaveNumber(hFile, fetchdiffs))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, disallowdiffs))
 		return false;
@@ -161,9 +158,11 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 			return false;
 		minminutesinterval = (int)value;
 	}
-	if (!CSerializeUtils::LoadNumber(buf, value))
-		return false;
-	fetchdiffs = !!value;
+	if (version < 4)
+	{
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+	}
 	if (version > 1)
 	{
 		if (!CSerializeUtils::LoadNumber(buf, value))

@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		3
+#define URLINFO_VERSION		4
 #define URLINFOS_VERSION	1
 
 class CUrlInfo
@@ -44,7 +44,6 @@ public:
 
 	int							minutesinterval;
 	int							minminutesinterval;
-	bool						fetchdiffs;
 	bool						disallowdiffs;
 	bool						ignoreSelf;
 
