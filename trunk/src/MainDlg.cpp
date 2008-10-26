@@ -473,8 +473,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							if (tv.itemex.state & TVIS_SELECTED)
 							{
 								m_bBlockListCtrlUI = true;
+								int listCount = ListView_GetItemCount(m_hListControl);
+								int listSelMark = ListView_GetSelectionMark(m_hListControl);
 								TreeItemSelected(m_hTreeControl, tv.itemex.hItem);
+								// re-set the currently selected item
+								int itemsAdded = ListView_GetItemCount(m_hListControl) - listCount;
 								m_bBlockListCtrlUI = false;
+								ListView_SetSelectionMark(m_hListControl, listSelMark + itemsAdded);
+								ListView_SetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED, LVIS_SELECTED);
 							}
 						}
 					}
