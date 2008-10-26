@@ -617,112 +617,112 @@ DWORD CHiddenWindow::RunThread()
 									break;
 							}
 						}
-						if ((it->second.lastcheckedrobots + (60*60*24*2)) < currenttime)
+					}
+					if ((it->second.lastcheckedrobots + (60*60*24*2)) < currenttime)
+					{
+						wstring sRobotsURL = it->first;
+						sRobotsURL += _T("/svnrobots.txt");
+						wstring sRootRobotsURL;
+						wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
+						const SVNInfoData * data = svn.GetFirstFileInfo(it->first, headrev, headrev);
+						if (data)
 						{
-							wstring sRobotsURL = it->first;
-							sRobotsURL += _T("/svnrobots.txt");
-							wstring sRootRobotsURL;
-							wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
-							const SVNInfoData * data = svn.GetFirstFileInfo(it->first, headrev, headrev);
-							if (data)
-							{
-								sRootRobotsURL = data->reposRoot;
-								sRootRobotsURL += _T("/svnrobots.txt");
-							}
-							wstring sFile = CAppUtils::GetTempFilePath();
-							string in;
-							CCallback * callback = new CCallback;
-							callback->SetAuthData(it->second.username, it->second.password);
-							if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback) == S_OK))
-							{
-								ifstream fs(sFile.c_str());
-								if (!fs.bad())
-								{
-									in.reserve(fs.rdbuf()->in_avail());
-									char c;
-									while (fs.get(c))
-									{
-										if (in.capacity() == in.size())
-											in.reserve(in.capacity() * 3);
-										in.append(1, c);
-									}
-								}
-							}
-							else if ((!sRootRobotsURL.empty())&&(svn.Cat(sRootRobotsURL, sFile)))
-							{
-								ifstream fs(sFile.c_str());
-								if (!fs.bad())
-								{
-									in.reserve(fs.rdbuf()->in_avail());
-									char c;
-									while (fs.get(c))
-									{
-										if (in.capacity() == in.size())
-											in.reserve(in.capacity() * 3);
-										in.append(1, c);
-									}
-									fs.close();
-								}
-							}
-							else if (svn.Cat(sRobotsURL, sFile))
-							{
-								ifstream fs(sFile.c_str());
-								if (!fs.bad())
-								{
-									in.reserve(fs.rdbuf()->in_avail());
-									char c;
-									while (fs.get(c))
-									{
-										if (in.capacity() == in.size())
-											in.reserve(in.capacity() * 3);
-										in.append(1, c);
-									}
-									fs.close();
-								}
-							}
-							delete callback;
-							DeleteFile(sFile.c_str());
-							// the format of the svnrobots.txt file is as follows:
-							// # comment
-							// disallowautodiff
-							// checkinterval = XXX
-							//
-							// with 'checkinterval' being the minimum amount of time to wait
-							// between checks in minutes.
-
-							istringstream iss(in);
-							string line;
-							int minutes = 0;
-							bool disallowdiffs = false;
-							while (getline(iss, line)) 
-							{
-								if (line.length())
-								{
-									if (line.at(0) != '#')
-									{
-										if (line.compare("disallowautodiff") == 0)
-										{
-											disallowdiffs = true;
-										}
-										else if ((line.length() > 13) && (line.substr(0, 13).compare("checkinterval") == 0))
-										{
-											string num = line.substr(line.find('=')+1);
-											minutes = atoi(num.c_str());
-										}
-									}
-								}
-							}
-							// again, only block for a short time
-							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-							map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
-							if (writeIt != pWrite->end())
-							{
-								writeIt->second.lastcheckedrobots = currenttime;
-								writeIt->second.disallowdiffs = disallowdiffs;
-								writeIt->second.minminutesinterval = minutes;
-							}
-							m_UrlInfos.ReleaseWriteData();
+							sRootRobotsURL = data->reposRoot;
+							sRootRobotsURL += _T("/svnrobots.txt");
 						}
+						wstring sFile = CAppUtils::GetTempFilePath();
+						string in;
+						CCallback * callback = new CCallback;
+						callback->SetAuthData(it->second.username, it->second.password);
+						if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback) == S_OK))
+						{
+							ifstream fs(sFile.c_str());
+							if (!fs.bad())
+							{
+								in.reserve(fs.rdbuf()->in_avail());
+								char c;
+								while (fs.get(c))
+								{
+									if (in.capacity() == in.size())
+										in.reserve(in.capacity() * 3);
+									in.append(1, c);
+								}
+							}
+						}
+						else if ((!sRootRobotsURL.empty())&&(svn.Cat(sRootRobotsURL, sFile)))
+						{
+							ifstream fs(sFile.c_str());
+							if (!fs.bad())
+							{
+								in.reserve(fs.rdbuf()->in_avail());
+								char c;
+								while (fs.get(c))
+								{
+									if (in.capacity() == in.size())
+										in.reserve(in.capacity() * 3);
+									in.append(1, c);
+								}
+								fs.close();
+							}
+						}
+						else if (svn.Cat(sRobotsURL, sFile))
+						{
+							ifstream fs(sFile.c_str());
+							if (!fs.bad())
+							{
+								in.reserve(fs.rdbuf()->in_avail());
+								char c;
+								while (fs.get(c))
+								{
+									if (in.capacity() == in.size())
+										in.reserve(in.capacity() * 3);
+									in.append(1, c);
+								}
+								fs.close();
+							}
+						}
+						delete callback;
+						DeleteFile(sFile.c_str());
+						// the format of the svnrobots.txt file is as follows:
+						// # comment
+						// disallowautodiff
+						// checkinterval = XXX
+						//
+						// with 'checkinterval' being the minimum amount of time to wait
+						// between checks in minutes.
+
+						istringstream iss(in);
+						string line;
+						int minutes = 0;
+						bool disallowdiffs = false;
+						while (getline(iss, line)) 
+						{
+							if (line.length())
+							{
+								if (line.at(0) != '#')
+								{
+									if (line.compare("disallowautodiff") == 0)
+									{
+										disallowdiffs = true;
+									}
+									else if ((line.length() > 13) && (line.substr(0, 13).compare("checkinterval") == 0))
+									{
+										string num = line.substr(line.find('=')+1);
+										minutes = atoi(num.c_str());
+									}
+								}
+							}
+						}
+						// again, only block for a short time
+						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+						if (writeIt != pWrite->end())
+						{
+							writeIt->second.lastcheckedrobots = currenttime;
+							writeIt->second.disallowdiffs = disallowdiffs;
+							writeIt->second.minminutesinterval = minutes;
+						}
+						m_UrlInfos.ReleaseWriteData();
 					}
 					// prepare notification strings
 					if (bNewEntries)
