@@ -437,7 +437,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	TRACE(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
 
 	DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
-	if ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE))
+	if ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE)&&(m_SystemTray.hIcon))
 	{
 		m_SystemTray.hIcon = NULL;
 		msg = NIM_DELETE;
@@ -450,10 +450,6 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
 	Shell_NotifyIcon(msg, &m_SystemTray);
 	m_nIcon = 2;
-	if ((!newCommits)&&(DWORD(regShowTaskbarIcon) == FALSE))
-	{
-		m_SystemTray.hIcon = NULL;
-	}
 	if ((newCommits)&&(m_SystemTray.hIcon)&&(DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
 		SetTimer(*this, IDT_ANIMATE, TIMER_ANIMATE, NULL);
 	else
