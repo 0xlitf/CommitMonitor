@@ -19,6 +19,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "svn_time.h"
 
 using namespace std;
@@ -32,6 +33,7 @@ public:
 	static wstring					GetAppDataDir();
 	static wstring					ConvertDate(apr_time_t time);
 	static void						SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
+	static vector<wstring>			tokenize_str(const wstring& str, const wstring& delims);
 	static bool						LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
 	static wstring					GetTempFilePath();
 	static wstring					ConvertName(const wstring& name);

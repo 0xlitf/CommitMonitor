@@ -223,6 +223,29 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
 	str.swap(result);
 }
 
+vector<wstring> CAppUtils::tokenize_str(const wstring& str, const wstring& delims)
+{
+	// Skip delims at beginning, find start of first token
+	wstring::size_type lastPos = str.find_first_not_of(delims, 0);
+	// Find next delimiter @ end of token
+	wstring::size_type pos     = str.find_first_of(delims, lastPos);
+
+	// output vector
+	vector<wstring> tokens;
+
+	while (wstring::npos != pos || wstring::npos != lastPos)
+	{
+		// Found a token, add it to the vector.
+		tokens.push_back(str.substr(lastPos, pos - lastPos));
+		// Skip delims.  Note the "not_of". this is beginning of token
+		lastPos = str.find_first_not_of(delims, pos);
+		// Find next delimiter at end of token.
+		pos     = str.find_first_of(delims, lastPos);
+	}
+
+	return tokens;
+}
+
 bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup)
 {
 	STARTUPINFO startup;
