@@ -405,7 +405,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (wParam == TIMER_LABEL)
 			{
-				SetWindowText(GetDlgItem(*this, IDC_INFOLABEL), _T(""));
+				SetDlgItemText(*this, IDC_INFOLABEL, _T(""));
 				KillTimer(*this, TIMER_LABEL);
 			}
 			else if (wParam == TIMER_REFRESH)
@@ -685,7 +685,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (lParam)
 			{
-				SetWindowText(GetDlgItem(*this, IDC_INFOLABEL), (LPCTSTR)lParam);
+				SetDlgItemText(*this, IDC_INFOLABEL, (LPCTSTR)lParam);
 			}
 		}
 		break;

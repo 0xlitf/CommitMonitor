@@ -65,8 +65,8 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_USETSVN), BM_SETCHECK, bUseTSVN ? BST_CHECKED : BST_UNCHECKED, NULL);
-			SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), wstring(diffViewer).c_str());
-			SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), wstring(notifySound).c_str());
+			SetDlgItemText(*this, IDC_DIFFVIEWER, wstring(diffViewer).c_str());
+			SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, wstring(notifySound).c_str());
 			SendMessage(GetDlgItem(*this, IDC_NOTIFICATIONSOUND), BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_CHECKNEWER), BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
@@ -159,7 +159,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 			// Display the Open dialog box. 
 			if (GetOpenFileName(&ofn)==TRUE)
 			{
-				SetWindowText(GetDlgItem(*this, IDC_DIFFVIEWER), szFile);
+				SetDlgItemText(*this, IDC_DIFFVIEWER, szFile);
 			}
 		}
 		break;
@@ -179,7 +179,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 			// Display the Open dialog box. 
 			if (GetOpenFileName(&ofn)==TRUE)
 			{
-				SetWindowText(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH), szFile);
+				SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, szFile);
 			}
 		}
 		break;

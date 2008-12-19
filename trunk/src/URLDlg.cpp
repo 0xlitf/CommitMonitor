@@ -63,14 +63,14 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				AddToolTip(IDC_CHECKTIME, _T("Interval for repository update checks"));
 
 			// initialize the controls
-			SetWindowText(GetDlgItem(*this, IDC_URLTOMONITOR), info.url.c_str());
+			SetDlgItemText(*this, IDC_URLTOMONITOR, info.url.c_str());
 			WCHAR buf[20];
 			_stprintf_s(buf, 20, _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
-			SetWindowText(GetDlgItem(*this, IDC_CHECKTIME), buf);
-			SetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), info.name.c_str());
-			SetWindowText(GetDlgItem(*this, IDC_USERNAME), info.username.c_str());
-			SetWindowText(GetDlgItem(*this, IDC_PASSWORD), info.password.c_str());
-			SetWindowText(GetDlgItem(*this, IDC_IGNOREUSERS), info.ignoreUsers.c_str());
+			SetDlgItemText(*this, IDC_CHECKTIME, buf);
+			SetDlgItemText(*this, IDC_PROJECTNAME, info.name.c_str());
+			SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
+			SetDlgItemText(*this, IDC_PASSWORD, info.password.c_str());
+			SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
