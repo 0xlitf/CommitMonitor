@@ -53,6 +53,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			AddToolTip(IDC_PROJECTNAME, _T("Enter here a name for the project"));
 			AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
 			AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
+			AddToolTip(IDC_IGNOREUSERS, _T("enter a list of usernames to ignore, separated by newlines"));
 			if (info.minminutesinterval)
 			{
 				TCHAR infobuf[MAX_PATH] = {0};
