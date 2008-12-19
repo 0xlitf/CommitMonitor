@@ -70,7 +70,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetWindowText(GetDlgItem(*this, IDC_PROJECTNAME), info.name.c_str());
 			SetWindowText(GetDlgItem(*this, IDC_USERNAME), info.username.c_str());
 			SetWindowText(GetDlgItem(*this, IDC_PASSWORD), info.password.c_str());
-			SendMessage(GetDlgItem(*this, IDC_IGNORESELF), BM_SETCHECK, info.ignoreSelf ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SetWindowText(GetDlgItem(*this, IDC_IGNOREUSERS), info.ignoreUsers.c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -131,7 +131,12 @@ LRESULT CURLDlg::DoCommand(int id)
 			GetDlgItemText(*this, IDC_PASSWORD, buffer, len+1);
 			info.password = wstring(buffer, len);
 			delete [] buffer;
-			info.ignoreSelf = (SendMessage(GetDlgItem(*this, IDC_IGNORESELF), BM_GETCHECK, 0, 0) == BST_CHECKED);
+
+			len = GetWindowTextLength(GetDlgItem(*this, IDC_IGNOREUSERS));
+			buffer = new WCHAR[len+1];
+			GetDlgItemText(*this, IDC_IGNOREUSERS, buffer, len+1);
+			info.ignoreUsers = wstring(buffer, len);
+			delete [] buffer;
 
 			// make sure this entry gets checked again as soon as the next timer fires
 			info.lastchecked = 0;

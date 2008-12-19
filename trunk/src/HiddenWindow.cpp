@@ -566,11 +566,20 @@ DWORD CHiddenWindow::RunThread()
 							writeIt->second.logentries[logit->first] = logit->second;
 
 							wstring author1 = logit->second.author;
-							wstring author2 = writeIt->second.username;
 							std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
-							std::transform(author2.begin(), author2.end(), author2.begin(), std::tolower);
+							
+							wstring s1 = writeIt->second.ignoreUsers;
+							std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+							CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+							vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+							bool bIgnore = false;
+							for (vector<wstring>::iterator it = ignoreVector.begin(); it != ignoreVector.end(); ++it)
+							{
+								if (author1.compare(*it) == 0)
+									bIgnore = true;
+							}
 
-							if ((!writeIt->second.ignoreSelf)||(author1.compare(author2)))
+							if (!bIgnore)
 							{
 								bNewEntries = true;
 								nNewCommits++;
@@ -859,7 +868,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
 									newinfo.minutesinterval = it->second.minutesinterval;
-									newinfo.ignoreSelf = it->second.ignoreSelf;
+									newinfo.ignoreUsers = it->second.ignoreUsers;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;
@@ -899,7 +908,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.username = it->second.username;
 									newinfo.password = it->second.password;
 									newinfo.minutesinterval = it->second.minutesinterval;
-									newinfo.ignoreSelf = it->second.ignoreSelf;
+									newinfo.ignoreUsers = it->second.ignoreUsers;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;
