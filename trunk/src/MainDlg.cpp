@@ -1102,6 +1102,13 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 	{
 		TreeView_SelectItem(m_hTreeControl, tvToSel);
 	}
+	else if (tvToSel == NULL)
+	{
+		tvToSel = TreeView_GetRoot(m_hTreeControl);
+		if (TreeView_GetChild(m_hTreeControl, tvToSel))
+			tvToSel = TreeView_GetChild(m_hTreeControl, tvToSel);
+		TreeView_SelectItem(m_hTreeControl, tvToSel);
+	}
 	::InvalidateRect(m_hListControl, NULL, true);
 }
 
