@@ -80,6 +80,8 @@ bool CUrlInfo::Save(FILE * hFile)
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, callcommand))
 		return false;
+	if (!CSerializeUtils::SaveString(hFile, webviewer))
+		return false;
 
     // prevent caching more than 1000 revisions - this is a commit monitor, not a full featured
     // log dialog!
@@ -194,6 +196,11 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	if (version >= 6)
 	{
 		if (!CSerializeUtils::LoadString(buf, callcommand))
+			return false;
+	}
+	if (version >= 7)
+	{
+		if (!CSerializeUtils::LoadString(buf, webviewer))
 			return false;
 	}
 

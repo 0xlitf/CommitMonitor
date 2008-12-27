@@ -905,6 +905,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreUsers = it->second.ignoreUsers;
 									newinfo.callcommand = it->second.callcommand;
+									newinfo.webviewer = it->second.webviewer;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;
@@ -946,6 +947,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreUsers = it->second.ignoreUsers;
 									newinfo.callcommand = it->second.callcommand;
+									newinfo.webviewer = it->second.webviewer;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;

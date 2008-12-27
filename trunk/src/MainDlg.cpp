@@ -667,6 +667,26 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					iinfo.fState |= MFS_DEFAULT;
 					SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
 
+					// enable the "Open WebViewer" entry if there is one specified
+					// get the url this entry refers to
+					TVITEMEX itemex = {0};
+					itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+					itemex.mask = TVIF_PARAM;
+					TreeView_GetItem(m_hTreeControl, &itemex);
+					const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+					if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+					{
+						const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+						if ((info)&&(!info->webviewer.empty()))
+						{
+							uItem = wstring(tsvninstalled).empty() ? 1 : 2;
+							GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+							iinfo.fState &= ~MFS_DISABLED;
+							SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+						}
+					}
+					m_pURLInfos->ReleaseReadOnlyData();
+
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
 					switch (cmd)
 					{
@@ -675,6 +695,74 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					case ID_MAIN_REMOVE:
 						{
 							::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+						}
+						break;
+					case ID_POPUP_OPENWEBVIEWER:
+						{
+							TVITEMEX itemex = {0};
+							itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+							itemex.mask = TVIF_PARAM;
+							TreeView_GetItem(m_hTreeControl, &itemex);
+							const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+							if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+							{
+								const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+								if ((info)&&(!info->webviewer.empty()))
+								{
+									// replace "%revision" with the new HEAD revision
+									wstring tag(_T("%revision"));
+									wstring commandline = info->webviewer;
+									wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+									if (it_begin != commandline.end())
+									{
+										// find the revision
+										LVITEM item = {0};
+										int nItemCount = ListView_GetItemCount(m_hListControl);
+										for (int i=0; i<nItemCount; ++i)
+										{
+											item.mask = LVIF_PARAM|LVIF_STATE;
+											item.stateMask = LVIS_SELECTED;
+											item.iItem = i;
+											ListView_GetItem(m_hListControl, &item);
+											if (item.state & LVIS_SELECTED)
+											{
+												SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+												if (pLogEntry)
+												{
+													// prepare the revision
+													TCHAR revBuf[40] = {0};
+													_stprintf_s(revBuf, 40, _T("%ld"), pLogEntry->revision);
+													wstring srev = revBuf;
+													wstring::iterator it_end= it_begin + tag.size();
+													commandline.replace(it_begin, it_end, srev);
+													break;
+												}
+											}
+										}
+									}
+									// replace "%url" with the repository url
+									tag = _T("%url");
+									it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+									if (it_begin != commandline.end())
+									{
+										wstring::iterator it_end= it_begin + tag.size();
+										commandline.replace(it_begin, it_end, info->url);
+									}
+									// replace "%project" with the project name
+									tag = _T("%project");
+									it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+									if (it_begin != commandline.end())
+									{
+										wstring::iterator it_end= it_begin + tag.size();
+										commandline.replace(it_begin, it_end, info->name);
+									}
+									if (!commandline.empty())
+									{
+										ShellExecute(*this, _T("open"), commandline.c_str(), NULL, NULL, SW_SHOWNORMAL);
+									}
+								}
+							}
+							m_pURLInfos->ReleaseReadOnlyData();
 						}
 					}
 				}
