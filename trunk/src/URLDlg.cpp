@@ -54,6 +54,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
 			AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
 			AddToolTip(IDC_IGNOREUSERS, _T("enter a list of usernames to ignore, separated by newlines"));
+			AddToolTip(IDC_SCRIPT, _T("enter here a command which gets called after new revisions were detected.\n\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name\n\nExample command line:\nTortoiseProc.exe /command:update /rev:%revision path\\to\\working\\copy"));
 			if (info.minminutesinterval)
 			{
 				TCHAR infobuf[MAX_PATH] = {0};
@@ -72,6 +73,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
 			SetDlgItemText(*this, IDC_PASSWORD, info.password.c_str());
 			SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
+			SetDlgItemText(*this, IDC_SCRIPT, info.callcommand.c_str());
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -137,6 +139,12 @@ LRESULT CURLDlg::DoCommand(int id)
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_IGNOREUSERS, buffer, len+1);
 			info.ignoreUsers = wstring(buffer, len);
+			delete [] buffer;
+
+			len = GetWindowTextLength(GetDlgItem(*this, IDC_SCRIPT));
+			buffer = new WCHAR[len+1];
+			GetDlgItemText(*this, IDC_SCRIPT, buffer, len+1);
+			info.callcommand = wstring(buffer, len);
 			delete [] buffer;
 
 			// make sure this entry gets checked again as soon as the next timer fires

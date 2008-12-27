@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		5
+#define URLINFO_VERSION		6
 #define URLINFOS_VERSION	1
 
 class CUrlInfo
@@ -51,6 +51,7 @@ public:
 
 	bool						parentpath;
 	wstring						error;
+	wstring						callcommand;
 
 	bool						Save(FILE * hFile);
 	bool						Load(const unsigned char *& buf);

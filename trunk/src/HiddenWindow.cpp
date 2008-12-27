@@ -578,7 +578,7 @@ DWORD CHiddenWindow::RunThread()
 								if (author1.compare(*it) == 0)
 									bIgnore = true;
 							}
-
+							
 							if (!bIgnore)
 							{
 								bNewEntries = true;
@@ -742,6 +742,41 @@ DWORD CHiddenWindow::RunThread()
 					}
 					m_UrlInfos.ReleaseWriteData();
 				}
+				// call the custom script
+				if (!it->second.callcommand.empty())
+				{
+					// replace "%revision" with the new HEAD revision
+					wstring tag(_T("%revision"));
+					wstring commandline = it->second.callcommand;
+					wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+					if (it_begin != commandline.end())
+					{
+						// prepare the revision
+						TCHAR revBuf[40] = {0};
+						_stprintf_s(revBuf, 40, _T("%ld"), headrev);
+						wstring srev = revBuf;
+						wstring::iterator it_end= it_begin + tag.size();
+						commandline.replace(it_begin, it_end, srev);
+					}
+					// replace "%url" with the repository url
+					tag = _T("%url");
+					it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+					if (it_begin != commandline.end())
+					{
+						wstring::iterator it_end= it_begin + tag.size();
+						commandline.replace(it_begin, it_end, it->second.url);
+					}
+					// replace "%project" with the project name
+					tag = _T("%project");
+					it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+					if (it_begin != commandline.end())
+					{
+						wstring::iterator it_end= it_begin + tag.size();
+						commandline.replace(it_begin, it_end, it->second.name);
+					}
+					CAppUtils::LaunchApplication(commandline);
+				}
+				
 			}
 			else if (headrev > 0)
 			{
@@ -869,6 +904,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.password = it->second.password;
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreUsers = it->second.ignoreUsers;
+									newinfo.callcommand = it->second.callcommand;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;
@@ -909,6 +945,7 @@ DWORD CHiddenWindow::RunThread()
 									newinfo.password = it->second.password;
 									newinfo.minutesinterval = it->second.minutesinterval;
 									newinfo.ignoreUsers = it->second.ignoreUsers;
+									newinfo.callcommand = it->second.callcommand;
 									(*pWrite)[url] = newinfo;
 									hasNewEntries = true;
 									nCountNewEntries++;
