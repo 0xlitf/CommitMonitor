@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,6 +76,8 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
 			SetDlgItemText(*this, IDC_SCRIPT, info.callcommand.c_str());
 			SetDlgItemText(*this, IDC_WEBDIFF, info.webviewer.c_str());
+			SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_SETCHECK, info.noexecuteignored ? BST_CHECKED : BST_UNCHECKED, NULL);
+
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -154,6 +156,8 @@ LRESULT CURLDlg::DoCommand(int id)
 			GetDlgItemText(*this, IDC_WEBDIFF, buffer, len+1);
 			info.webviewer = wstring(buffer, len);
 			delete [] buffer;
+
+			info.noexecuteignored = !!SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_GETCHECK, 0, NULL);
 
 			// make sure this entry gets checked again as soon as the next timer fires
 			info.lastchecked = 0;

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,8 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveString(hFile, error))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, callcommand))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, noexecuteignored))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, webviewer))
 		return false;
@@ -198,6 +200,14 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 		if (!CSerializeUtils::LoadString(buf, callcommand))
 			return false;
 	}
+	if (version >= 8)
+	{
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		noexecuteignored = !!value;
+	}
+	else
+		noexecuteignored = false;
 	if (version >= 7)
 	{
 		if (!CSerializeUtils::LoadString(buf, webviewer))

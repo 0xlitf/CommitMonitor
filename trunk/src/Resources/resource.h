@@ -80,6 +80,7 @@
 #define IDC_IGNORESELF                  1032
 #define IDC_CHECK1                      1033
 #define IDC_USETSVN                     1033
+#define IDC_EXECUTEIGNORED              1033
 #define IDC_WEBURL                      1034
 #define IDC_CHECKNEWER                  1035
 #define IDC_IGNOREUSERS                 1036
