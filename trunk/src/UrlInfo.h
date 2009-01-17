@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		7
+#define URLINFO_VERSION		8
 #define URLINFOS_VERSION	1
 
 class CUrlInfo
