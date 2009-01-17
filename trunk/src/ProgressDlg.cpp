@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007,2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,11 +19,12 @@
 #include "stdafx.h"
 #include "ProgressDlg.h"
 
-CProgressDlg::CProgressDlg() :
-			m_pIDlg(NULL),
-		    m_bValid(false),			//not valid by default
-            m_isVisible(false),
-		    m_dwDlgFlags(PROGDLG_NORMAL)
+CProgressDlg::CProgressDlg() 
+	: m_pIDlg(NULL)
+	, m_bValid(false)		//not valid by default
+	, m_isVisible(false)
+	, m_dwDlgFlags(PROGDLG_NORMAL)
+	, m_hWndProgDlg(NULL)
 {
 	EnsureValid();
 }
@@ -36,6 +37,7 @@ CProgressDlg::~CProgressDlg()
 	        m_pIDlg->StopProgressDialog();
 
     	m_pIDlg->Release();
+		m_hWndProgDlg = NULL;
     }
 }
 
@@ -180,7 +182,7 @@ HRESULT CProgressDlg::ShowModeless(HWND hWndParent)
 {
 	EnsureValid();
 	HRESULT hr = E_FAIL;
-
+	m_hWndProgDlg = NULL;
 	if (m_bValid)
 	{
 		hr = m_pIDlg->StartProgressDialog(hWndParent, NULL, m_dwDlgFlags, NULL);
@@ -193,15 +195,13 @@ HRESULT CProgressDlg::ShowModeless(HWND hWndParent)
 			// if its parent is blocked.
 			// This process finds the hwnd for the progress window and gives it a kick...
 			IOleWindow *pOleWindow;
-			HRESULT hr=m_pIDlg->QueryInterface(IID_IOleWindow,(LPVOID *)&pOleWindow);
-			if(SUCCEEDED(hr))
+			HRESULT hr2 = m_pIDlg->QueryInterface(IID_IOleWindow,(LPVOID *)&pOleWindow);
+			if(SUCCEEDED(hr2))
 			{
-				HWND hDlgWnd;
-
-				hr=pOleWindow->GetWindow(&hDlgWnd);
-				if(SUCCEEDED(hr))
+				hr2 = pOleWindow->GetWindow(&m_hWndProgDlg);
+				if(SUCCEEDED(hr2))
 				{
-					ShowWindow(hDlgWnd, SW_NORMAL);
+					ShowWindow(m_hWndProgDlg, SW_NORMAL);
 				}
 				pOleWindow->Release();
 			}
@@ -242,26 +242,17 @@ void CProgressDlg::Stop()
     if ((m_isVisible)&&(m_bValid))
     {
         m_pIDlg->StopProgressDialog();
-		//Sometimes the progress dialog sticks around after stopping it,
-		//until the mousepointer is moved over it or some other triggers.
-		//This process finds the hwnd of the progress dialog and hides it
-		//immediately.
-		IOleWindow *pOleWindow;
-		HRESULT hr=m_pIDlg->QueryInterface(IID_IOleWindow,(LPVOID *)&pOleWindow);
-		if(SUCCEEDED(hr))
+		// Sometimes the progress dialog sticks around after stopping it,
+		// until the mouse pointer is moved over it or some other triggers.
+		// We hide the window here immediately.
+		if (m_hWndProgDlg)
 		{
-			HWND hDlgWnd;
-
-			hr=pOleWindow->GetWindow(&hDlgWnd);
-			if(SUCCEEDED(hr))
-			{
-				ShowWindow(hDlgWnd, SW_HIDE);
-			}
-			pOleWindow->Release();
+			ShowWindow(m_hWndProgDlg, SW_HIDE);
 		}
         m_isVisible = false;
 		m_pIDlg->Release();
 		m_bValid = false;
+		m_hWndProgDlg = NULL;
     }
 }
 

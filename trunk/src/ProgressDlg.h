@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007,2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,7 +112,7 @@ public:
      */
     void ResetTimer();
 
-	/**
+    /**
 	 * Shows the progress dialog box modal.
 	 */
 #ifdef _MFC_VER
@@ -146,7 +146,7 @@ public:
     void SetProgress64 ( ULONGLONG u64Progress, ULONGLONG u64ProgressMax );
 
 	/**
-	 * Checks whether the user has cancelled the operation.
+	 * Checks whether the user has canceled the operation.
 	 */
     bool HasUserCancelled();
 
@@ -164,9 +164,10 @@ public:
 	bool EnsureValid();
 
 protected:
-    IProgressDialog* m_pIDlg;
-    bool      m_bValid;
-    bool      m_isVisible;
-    DWORD     m_dwDlgFlags;
+    IProgressDialog*	m_pIDlg;
+    bool				m_bValid;
+    bool				m_isVisible;
+    DWORD				m_dwDlgFlags;
+	HWND				m_hWndProgDlg;
 };
 
