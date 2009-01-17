@@ -437,15 +437,18 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	TRACE(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
 
 	DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
-	if ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE)&&(m_SystemTray.hIcon))
+	bool bClearIcon = ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE)&&(m_SystemTray.hIcon));
+	if (bClearIcon)
 	{
-		m_SystemTray.hIcon = NULL;
 		msg = NIM_DELETE;
 	}
 	m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
 	m_SystemTray.hWnd   = *this;
 	m_SystemTray.uID    = 1;
-	m_SystemTray.hIcon  = newCommits ? m_hIconNew1 : m_hIconNormal;
+	if (bClearIcon)
+		m_SystemTray.hIcon = NULL;
+	else
+		m_SystemTray.hIcon  = newCommits ? m_hIconNew1 : m_hIconNormal;
 	m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
 	Shell_NotifyIcon(msg, &m_SystemTray);
