@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -540,6 +540,8 @@ DWORD CHiddenWindow::RunThread()
 					_stprintf_s(infotextbuf, 1024, _T("getting log for %s"), it->first.c_str());
 					SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
 				}
+				int nNewCommits = 0;		// commits without ignored ones
+				int nTotalNewCommits = 0;	// all commits, including ignored ones
 				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev + 1))
 				{
 					TRACE(_T("log fetched for %s\n"), it->first.c_str());
@@ -555,7 +557,6 @@ DWORD CHiddenWindow::RunThread()
 					m_UrlInfos.ReleaseWriteData();
 
 					wstring sPopupText;
-					int nNewCommits = 0;
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						// again, only block for a short time
@@ -578,7 +579,7 @@ DWORD CHiddenWindow::RunThread()
 								if (author1.compare(*it) == 0)
 									bIgnore = true;
 							}
-							
+							nTotalNewCommits++;
 							if (!bIgnore)
 							{
 								bNewEntries = true;
@@ -743,7 +744,7 @@ DWORD CHiddenWindow::RunThread()
 					m_UrlInfos.ReleaseWriteData();
 				}
 				// call the custom script
-				if (!it->second.callcommand.empty())
+				if ((nTotalNewCommits > 0)&&(!it->second.callcommand.empty()))
 				{
 					// replace "%revision" with the new HEAD revision
 					wstring tag(_T("%revision"));
