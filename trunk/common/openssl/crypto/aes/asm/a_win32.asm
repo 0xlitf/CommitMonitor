@@ -1096,8 +1096,9 @@ $L004enc_out:
 	pushfd
 	ALIGN	4
 $L012enc_tail:
-	push	edi
+	mov	eax,		edi
 	mov	edi,		DWORD PTR 24[esp]
+	push	eax
 	mov	ebx,		16
 	sub	ebx,		ecx
 	cmp	edi,		esi
