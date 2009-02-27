@@ -40,6 +40,12 @@
 		</loadfile>
 		<echo file="..\cyrus-sasl\include\prop.h" message="${propfile}" />
 
+		<exec program="python.exe">
+			<arg value="build\transform_sql.py" />
+			<arg value="subversion\libsvn_fs_fs\rep-cache-db.sql" />
+			<arg value="subversion\libsvn_fs_fs\rep-cache-db.h" />
+		</exec>
+
 		<property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
 		<property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
 		<foreach item="Folder" property="foldername">
@@ -48,6 +54,8 @@
 					<include name="subversion\libsvn*" />
 					<exclude name="subversion\libsvn_ra_local" />
 					<exclude name="subversion\libsvn_fs*" />
+					<exclude name="subversion\libsvn_auth_gnome_keyring" />
+					<exclude name="subversion\libsvn_auth_kwallet" />
 				</items>
 			</in>
 			<do>
@@ -97,6 +105,8 @@
 						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_SERF=1" />
 						<define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
 						<define name="SVN_HAVE_SASL=1" />
+						<define name="SVN_HAVE_NEON" />
+						<define name="SVN_HAVE_SERF" />
 						<define name="APR_HAVE_IPV6" />
 						<define name="alloca=_alloca" />
 						<define name="snprintf=_snprintf" />
@@ -120,10 +130,6 @@
 				</lib>
 			</do>
 		</foreach>
-		<exec program="svn" failonerror="false">
-			<arg value="revert" />
-			<arg value="subversion\libsvn_subr\utf.c" />
-		</exec>
 		<copy file="..\cyrus-sasl\include\orig_prop.h" tofile="..\cyrus-sasl\include\prop.h" overwrite="true" />
 	</target>
 
