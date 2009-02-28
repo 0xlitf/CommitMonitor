@@ -781,6 +781,23 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+	case COMMITMONITOR_LISTCTRLDBLCLICK:
+		{
+			// clear the error so it won't show up again
+			TVITEMEX itemex = {0};
+			itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(m_hTreeControl, &itemex);
+			map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+			if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+			{
+				CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+				info->error.clear();
+			}
+			m_pURLInfos->ReleaseWriteData();
+			::InvalidateRect(m_hTreeControl, NULL, FALSE);
+		}
+		break;
 	default:
 		return FALSE;
 	}
@@ -1357,14 +1374,6 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			_stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s\n\nDoubleclick here to clear the error message."), info->url.c_str(), info->error.c_str());
 			m_ListCtrl.SetInfoText(pBuf);
 			delete [] pBuf;
-			// clear the error so it won't show up again
-			map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-			if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
-			{
-				CUrlInfo * infoWrite = &pWrite->find(*(wstring*)itemex.lParam)->second;
-				infoWrite->error.clear();
-			}
-			m_pURLInfos->ReleaseWriteData();
 		}
 		else
 			// remove the info text if there's no error

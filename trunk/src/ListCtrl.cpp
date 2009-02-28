@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007,2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,9 @@ LRESULT CALLBACK CListCtrl::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 			{
 				pListCtrl->m_sInfoText.clear();
 				::InvalidateRect(*pListCtrl, NULL, FALSE);
+#ifdef COMMITMONITOR_LISTCTRLDBLCLICK
+				SendMessage(GetParent(*pListCtrl), COMMITMONITOR_LISTCTRLDBLCLICK, 0, 0);
+#endif
 				return 0;
 			}
 		}
