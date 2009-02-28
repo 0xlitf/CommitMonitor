@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -555,6 +555,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
 				return OnCustomDrawListItem((LPNMLVCUSTOMDRAW)lParam);
+			}
+			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == m_hTreeControl))
+			{
+				return OnCustomDrawTreeItem((LPNMLVCUSTOMDRAW)lParam);
 			}
 			if ((lpnmhdr->code == NM_DBLCLK)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
@@ -1198,6 +1202,36 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 		TreeView_SelectItem(m_hTreeControl, tvToSel);
 	}
 	::InvalidateRect(m_hListControl, NULL, true);
+}
+
+LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
+{
+	// First thing - check the draw stage. If it's the control's prepaint
+	// stage, then tell Windows we want messages for every item.
+	LRESULT result =  CDRF_DODEFAULT;
+
+	switch (lpNMCustomDraw->nmcd.dwDrawStage)
+	{
+	case CDDS_PREPAINT:
+		result = CDRF_NOTIFYITEMDRAW;
+		break;
+	case CDDS_ITEMPREPAINT:
+		{
+			const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+			const CUrlInfo * info = &pRead->find(*(wstring*)lpNMCustomDraw->nmcd.lItemlParam)->second;
+			COLORREF crText = lpNMCustomDraw->clrText;
+
+			if ((info)&&(!info->error.empty() && !info->parentpath))
+			{
+				crText = GetSysColor(COLOR_GRAYTEXT);
+			}
+			m_pURLInfos->ReleaseReadOnlyData();
+			// Store the color back in the NMLVCUSTOMDRAW struct.
+			lpNMCustomDraw->clrText = crText;
+		}
+		break;
+	}
+	return result;
 }
 
 HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)

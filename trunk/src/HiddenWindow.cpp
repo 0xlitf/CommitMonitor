@@ -560,6 +560,7 @@ DWORD CHiddenWindow::RunThread()
 					m_UrlInfos.ReleaseWriteData();
 
 					wstring sPopupText;
+					bool hadError = !it->second.error.empty();
 					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						// again, only block for a short time
@@ -706,10 +707,15 @@ DWORD CHiddenWindow::RunThread()
 						m_UrlInfos.ReleaseWriteData();
 					}
 					// prepare notification strings
-					if (bNewEntries)
+					if ((bNewEntries)||(!hadError && !it->second.error.empty()))
 					{
 						TCHAR sTitle[1024] = {0};
-						if (nNewCommits == 1)
+						if (!it->second.error.empty())
+						{
+							_stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+							sPopupText = it->second.error;
+						}
+						else if (nNewCommits == 1)
 							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
 						else
 							_stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
@@ -793,7 +799,20 @@ DWORD CHiddenWindow::RunThread()
 				if (writeIt != pWrite->end())
 				{
 					writeIt->second.lastchecked = currenttime;
+					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
+					TCHAR sTitle[1024] = {0};
+					if (!writeIt->second.error.empty())
+					{
+						if (!hadError)
+						{
+							_stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+							popupData data;
+							data.sText = svn.GetLastErrorMsg();
+							data.sTitle = wstring(sTitle);
+							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+						}
+					}
 				}
 				m_UrlInfos.ReleaseWriteData();
 				if (m_hMainDlg)
@@ -810,7 +829,20 @@ DWORD CHiddenWindow::RunThread()
 				if (writeIt != pWrite->end())
 				{
 					writeIt->second.lastchecked = currenttime;
+					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
+					TCHAR sTitle[1024] = {0};
+					if (!writeIt->second.error.empty())
+					{
+						if (!hadError)
+						{
+							_stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+							popupData data;
+							data.sText = svn.GetLastErrorMsg();
+							data.sTitle = wstring(sTitle);
+							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
+						}
+					}
 				}
 				m_UrlInfos.ReleaseWriteData();
 				// if we already have log entries, then there's no need to

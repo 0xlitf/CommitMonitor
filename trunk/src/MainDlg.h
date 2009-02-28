@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@ private:
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
+	LRESULT					OnCustomDrawTreeItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 	void					OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
