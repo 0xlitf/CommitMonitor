@@ -561,37 +561,48 @@ DWORD CHiddenWindow::RunThread()
 
 					wstring sPopupText;
 					bool hadError = !it->second.error.empty();
-					for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
+					for (map<svn_revnum_t,SVNLogEntry>::iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
 					{
 						// again, only block for a short time
 						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
 						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
 						if (writeIt != pWrite->end())
 						{
+							map<svn_revnum_t,SVNLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
+							bool bEntryExists = existIt != writeIt->second.logentries.end();
+							bool readState = false;
+							if (bEntryExists)
+								readState = existIt->second.read;
+							logit->second.read = readState;
+
 							writeIt->second.logentries[logit->first] = logit->second;
 
-							wstring author1 = logit->second.author;
-							std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
-							
-							wstring s1 = writeIt->second.ignoreUsers;
-							std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
-							CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
-							vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-							bool bIgnore = false;
-							for (vector<wstring>::iterator it = ignoreVector.begin(); it != ignoreVector.end(); ++it)
+
+							if (!bEntryExists)
 							{
-								if (author1.compare(*it) == 0)
-									bIgnore = true;
+								wstring author1 = logit->second.author;
+								std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
+
+								wstring s1 = writeIt->second.ignoreUsers;
+								std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+								CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+								vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+								bool bIgnore = false;
+								for (vector<wstring>::iterator it = ignoreVector.begin(); it != ignoreVector.end(); ++it)
+								{
+									if (author1.compare(*it) == 0)
+										bIgnore = true;
+								}
+								nTotalNewCommits++;
+								if (!bIgnore)
+								{
+									bNewEntries = true;
+									nNewCommits++;
+								}
+								else
+									// set own commit as already read
+									writeIt->second.logentries[logit->first].read = true;
 							}
-							nTotalNewCommits++;
-							if (!bIgnore)
-							{
-								bNewEntries = true;
-								nNewCommits++;
-							}
-							else
-								// set own commit as already read
-								writeIt->second.logentries[logit->first].read = true;
 							writeIt->second.error.clear();
 						}
 						m_UrlInfos.ReleaseWriteData();

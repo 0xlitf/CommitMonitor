@@ -623,6 +623,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					case ID_POPUP_MARKNODEASREAD:
 						MarkAllAsRead(hittest.hItem, false);
 						break;
+					case ID_POPUP_REFRESHALL:
+						RefreshAll(hittest.hItem);
+						break;
 					}
 				}
 			}
@@ -1514,6 +1517,35 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
 	}
 	if (bChanged)
 		::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
+}
+
+void CMainDlg::RefreshAll(HTREEITEM hItem)
+{
+	// get the url this entry refers to
+	TVITEMEX itemex = {0};
+	itemex.hItem = hItem;
+	itemex.mask = TVIF_PARAM;
+	TreeView_GetItem(m_hTreeControl, &itemex);
+	map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+	bool bChanged = false;
+	if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+	{
+		CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+
+		map<svn_revnum_t,SVNLogEntry>::iterator it = info->logentries.begin();
+		if (it != info->logentries.end())
+		{
+			svn_revnum_t lowestRev = it->second.revision;
+			// set the 'last checked revision to the lowest revision so that
+			// all the subsequent revisions are fetched again.
+			info->lastcheckedrev = lowestRev > 0 ? lowestRev-1 : lowestRev;
+			// and make sure this repository is checked even if the timeout has
+			// not been reached yet on the next fetch round
+			info->lastchecked = 0;
+		}
+	}
+	m_pURLInfos->ReleaseWriteData();
+	SendMessage(m_hParent, COMMITMONITOR_GETALL, 0, 0);
 }
 
 /******************************************************************************/
