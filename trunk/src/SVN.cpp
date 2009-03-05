@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -432,7 +432,7 @@ bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 
 	int limit = 0;
 	if ((startrev <= 1)||(endrev <= 1))
-		limit = 10;
+		limit = 1000;
 	Err = svn_client_log3 (targets, 
 		&start,
 		&start, 
