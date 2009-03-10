@@ -431,8 +431,9 @@ bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 	m_logs.clear();
 
 	int limit = 0;
+	CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
 	if ((startrev <= 1)||(endrev <= 1))
-		limit = 1000;
+		limit = DWORD(numlogs);
 	Err = svn_client_log3 (targets, 
 		&start,
 		&start, 

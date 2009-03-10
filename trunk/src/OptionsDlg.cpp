@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,9 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+			CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
+			TCHAR numBuf[30] = {0};
+			_stprintf_s(numBuf, 30, _T("%ld"), DWORD(numlogs));
 			SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -72,6 +75,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
 			if (tsvninstalled.empty())
 				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
+			SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -93,6 +97,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 			CRegStdWORD regPlaySound = CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 			CRegStdWORD regUseTSVN = CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+			CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
 			bool bShowTaskbarIcon = !!SendMessage(GetDlgItem(*this, IDC_TASKBAR_ALWAYSON), BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendMessage(GetDlgItem(*this, IDC_AUTOSTART), BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendMessage(GetDlgItem(*this, IDC_ANIMATEICON), BM_GETCHECK, 0, NULL);
@@ -138,6 +143,12 @@ LRESULT COptionsDlg::DoCommand(int id)
 			else
 				notifySound.removeValue();
 
+			len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NUMLOGS));
+			divi = new TCHAR[len+1];
+			::GetDlgItemText(*this, IDC_NUMLOGS, divi, len+1);
+			DWORD nLogs = _ttol(divi);
+			numlogs = nLogs;
+			delete [] divi;
 		}
 		// fall through
 	case IDCANCEL:
