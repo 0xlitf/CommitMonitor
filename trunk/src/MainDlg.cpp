@@ -1528,7 +1528,6 @@ void CMainDlg::RefreshAll(HTREEITEM hItem)
 	itemex.mask = TVIF_PARAM;
 	TreeView_GetItem(m_hTreeControl, &itemex);
 	map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-	bool bChanged = false;
 	if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
 	{
 		CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
