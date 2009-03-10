@@ -885,6 +885,7 @@ LRESULT CMainDlg::DoCommand(int id)
 							::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
 							hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
 							m_pURLInfos->ReleaseWriteData();
+							m_pURLInfos->Save();
 							TreeView_DeleteItem(m_hTreeControl, hItem);
 							if (hPrev == NULL)
 								hPrev = TreeView_GetRoot(m_hTreeControl);
