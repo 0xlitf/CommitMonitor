@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007,2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,9 +25,12 @@
 #include "MainDlg.h"
 #include "CmdLineParser.h"
 #include "DiffViewer.h"
+#include "AppUtils.h"
 
 #include "apr_general.h"
 #include "svn_ra.h"
+#define STRUCT_IOVEC_DEFINED
+#include "sasl.h"
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -58,6 +61,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	const char* const * argv = NULL;
 	apr_app_initialize(&argc, &argv, NULL);
 	setlocale(LC_ALL, ""); 
+	// to avoid that SASL will look for and load its plugin dlls all around the
+	// system, we set the path here.
+	// Note that SASL doesn't have to be initialized yet for this to work
+	sasl_set_path(SASL_PATH_TYPE_PLUGIN, (LPSTR)(LPCSTR)CUnicodeUtils::StdGetUTF8(CAppUtils::GetAppDirectory()).c_str());
 
 	// first create a hidden window which serves as our main window for receiving
 	// the window messages, starts the monitoring thread and handles the icon
@@ -155,6 +162,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	::OleUninitialize();
+	sasl_done();
 	apr_terminate();
 	return (int) msg.wParam;
 }

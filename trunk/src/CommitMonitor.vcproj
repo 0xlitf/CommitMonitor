@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"

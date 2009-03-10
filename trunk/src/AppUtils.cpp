@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -157,6 +157,18 @@ wstring CAppUtils::GetAppDataDir()
 	if (!PathFileExists(path))
 		CreateDirectory(path, NULL);
 	return wstring(path);
+}
+
+wstring CAppUtils::GetAppDirectory(HMODULE hMod /* = NULL */)
+{
+	TCHAR pathbuf[MAX_PATH] = {0};
+	wstring path;
+	DWORD bufferlen = MAX_PATH;
+	GetModuleFileName(hMod, pathbuf, bufferlen);
+	path = pathbuf;
+	path = path.substr(0, path.find_last_of('\\'));
+
+	return path;
 }
 
 
