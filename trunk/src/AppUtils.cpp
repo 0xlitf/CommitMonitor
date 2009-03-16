@@ -193,19 +193,19 @@ wstring CAppUtils::ConvertDate(apr_time_t time)
 	AprTimeToFileTime(&ft, time);
 
 	// Convert UTC to local time
-	FILETIME localfiletime;
-	FileTimeToLocalFileTime(&ft,&localfiletime);
+	SYSTEMTIME systemtime;
+	FileTimeToSystemTime(&ft,&systemtime);
 
-	SYSTEMTIME systime;
-	FileTimeToSystemTime(&localfiletime,&systime);
+	SYSTEMTIME localsystime;
+	SystemTimeToTzSpecificLocalTime(NULL, &systemtime,&localsystime);
 
 	TCHAR timebuf[1024] = {0};
 	TCHAR datebuf[1024] = {0};
 
 	LCID locale = MAKELCID(MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), SORT_DEFAULT);
 
-	GetDateFormat(locale, DATE_SHORTDATE, &systime, NULL, datebuf, 1024);
-	GetTimeFormat(locale, 0, &systime, NULL, timebuf, 1024);
+	GetDateFormat(locale, DATE_SHORTDATE, &localsystime, NULL, datebuf, 1024);
+	GetTimeFormat(locale, 0, &localsystime, NULL, timebuf, 1024);
 
 	wstring sRet = datebuf;
 	sRet += _T(" ");
