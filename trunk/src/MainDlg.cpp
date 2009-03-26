@@ -935,9 +935,9 @@ LRESULT CMainDlg::DoCommand(int id)
 						pWrite->erase(*(wstring*)itemex.lParam);
 						(*pWrite)[inf->url] = *inf;
 					}
+					m_pURLInfos->Save();
 					m_pURLInfos->ReleaseWriteData();
 					RefreshURLTree(false);
-                    m_pURLInfos->Save();
 				}
 				else
 					m_pURLInfos->ReleaseWriteData();
@@ -1238,17 +1238,20 @@ LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
 		break;
 	case CDDS_ITEMPREPAINT:
 		{
-			const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-			const CUrlInfo * info = &pRead->find(*(wstring*)lpNMCustomDraw->nmcd.lItemlParam)->second;
-			COLORREF crText = lpNMCustomDraw->clrText;
-
-			if ((info)&&(!info->error.empty() && !info->parentpath))
+			if (!m_bBlockListCtrlUI)
 			{
-				crText = GetSysColor(COLOR_GRAYTEXT);
+				const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+				const CUrlInfo * info = &pRead->find(*(wstring*)lpNMCustomDraw->nmcd.lItemlParam)->second;
+				COLORREF crText = lpNMCustomDraw->clrText;
+
+				if ((info)&&(!info->error.empty() && !info->parentpath))
+				{
+					crText = GetSysColor(COLOR_GRAYTEXT);
+				}
+				m_pURLInfos->ReleaseReadOnlyData();
+				// Store the color back in the NMLVCUSTOMDRAW struct.
+				lpNMCustomDraw->clrText = crText;
 			}
-			m_pURLInfos->ReleaseReadOnlyData();
-			// Store the color back in the NMLVCUSTOMDRAW struct.
-			lpNMCustomDraw->clrText = crText;
 		}
 		break;
 	}
