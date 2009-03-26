@@ -67,7 +67,7 @@ private:
 	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
 	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
 	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
-	LRESULT					OnCustomDrawTreeItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
+	LRESULT					OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw);
 	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
 	void					OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
 	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);

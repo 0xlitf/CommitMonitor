@@ -558,7 +558,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 			if ((lpnmhdr->code == NM_CUSTOMDRAW)&&(lpnmhdr->hwndFrom == m_hTreeControl))
 			{
-				return OnCustomDrawTreeItem((LPNMLVCUSTOMDRAW)lParam);
+				return OnCustomDrawTreeItem((LPNMTVCUSTOMDRAW)lParam);
 			}
 			if ((lpnmhdr->code == NM_DBLCLK)&&(lpnmhdr->hwndFrom == m_hListControl))
 			{
@@ -1225,7 +1225,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 	::InvalidateRect(m_hListControl, NULL, true);
 }
 
-LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
+LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw)
 {
 	// First thing - check the draw stage. If it's the control's prepaint
 	// stage, then tell Windows we want messages for every item.
