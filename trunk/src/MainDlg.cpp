@@ -188,7 +188,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
 			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
-			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 4, 4);
+			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 5, 5);
 			if (m_hImgList)
 			{
 				HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDER));
@@ -204,6 +204,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				DestroyIcon(hIcon);
 
 				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLNEW));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLFAIL));
 				ImageList_AddIcon(m_hImgList, hIcon);
 				DestroyIcon(hIcon);
 
@@ -437,6 +441,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						tv.itemex.cchTextMax = it->second.name.size()+9;
 						TreeView_GetItem(m_hTreeControl, &tv.itemex);
 						wstring sTitle = wstring(str);
+						bool bRequiresUpdate = false;
 						if (unread)
 						{
 							_stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
@@ -451,23 +456,33 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						if (it->second.parentpath)
 						{
+							bRequiresUpdate = (tv.itemex.iImage != 0) || (tv.itemex.iSelectedImage != 1);
 							tv.itemex.iImage = 0;
 							tv.itemex.iSelectedImage = 1;
 						}
 						else
 						{
-							if (unread)
+
+							if (!it->second.error.empty())
 							{
+								bRequiresUpdate = tv.itemex.iImage != 4;
+								tv.itemex.iImage = 4;
+								tv.itemex.iSelectedImage = 4;
+							}
+							else if (unread)
+							{
+								bRequiresUpdate = tv.itemex.iImage != 3;
 								tv.itemex.iImage = 3;
 								tv.itemex.iSelectedImage = 3;
 							}
 							else
 							{
+								bRequiresUpdate = tv.itemex.iImage != 2;
 								tv.itemex.iImage = 2;
 								tv.itemex.iSelectedImage = 2;
 							}
 						}
-						if (sTitle.compare(str) != 0)
+						if ((bRequiresUpdate)||(sTitle.compare(str) != 0))
 						{
 							TreeView_SetItem(m_hTreeControl, &tv.itemex);
 							if (tv.itemex.state & TVIS_SELECTED)
@@ -506,7 +521,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						else
 						{
-							if (unread)
+							if (!it->second.error.empty())
+							{
+								tv.itemex.iImage = 4;
+								tv.itemex.iSelectedImage = 4;
+							}
+							else if (unread)
 							{
 								tv.itemex.iImage = 3;
 								tv.itemex.iSelectedImage = 3;
@@ -1192,7 +1212,12 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 		}
 		else
 		{
-			if (unread)
+			if (!it->second.error.empty())
+			{
+				tv.itemex.iImage = 4;
+				tv.itemex.iSelectedImage = 4;
+			}
+			else if (unread)
 			{
 				tv.itemex.iImage = 3;
 				tv.itemex.iSelectedImage = 3;

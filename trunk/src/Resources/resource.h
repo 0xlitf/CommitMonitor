@@ -42,6 +42,8 @@
 #define IDI_REPOURLNEW                  156
 #define IDR_LISTPOPUPTSVN               157
 #define IDD_NEWERNOTIFYDLG              158
+#define IDI_ICON4                       159
+#define IDI_REPOURLFAIL                 159
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -87,7 +89,6 @@
 #define IDC_SCRIPT                      1037
 #define IDC_WEBDIFF                     1038
 #define IDC_NUMLOGLABEL                 1039
-#define IDC_EDIT1                       1040
 #define IDC_NUMLOGS                     1040
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
@@ -125,7 +126,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        159
+#define _APS_NEXT_RESOURCE_VALUE        160
 #define _APS_NEXT_COMMAND_VALUE         32807
 #define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           110

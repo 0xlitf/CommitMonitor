@@ -48,6 +48,7 @@ IDI_PARENTPATHFOLDER    ICON                    "folder.ico"
 IDI_PARENTPATHFOLDEROPEN ICON                    "folder_open.ico"
 IDI_REPOURL             ICON                    "repourl.ico"
 IDI_REPOURLNEW          ICON                    "repourl_new.ico"
+IDI_REPOURLFAIL         ICON                    "repourlfail.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -381,7 +382,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
