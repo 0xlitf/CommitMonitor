@@ -1,0 +1,389 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#ifndef APSTUDIO_INVOKED
+#include "CommitMonitor.rc2"
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_COMMITMONITOR       ICON                    "CommitMonitor.ico"
+IDI_NOTIFYNEW1          ICON                    "CommitMonitorRed1.ico"
+IDI_ABOUT               ICON                    "about.ico"
+IDI_ADD                 ICON                    "add.ico"
+IDI_EDIT                ICON                    "edit.ico"
+IDI_OPTIONS             ICON                    "options.ico"
+IDI_REMOVE              ICON                    "remove.ico"
+IDI_DIFF                ICON                    "diff.ico"
+IDI_GETALL              ICON                    "getall.ico"
+IDI_NOTIFYNEW0          ICON                    "CommitMonitorRed0.ico"
+IDI_NOTIFYNEW2          ICON                    "CommitMonitorRed2.ico"
+IDI_NOTIFYNEW3          ICON                    "CommitMonitorRed3.ico"
+IDI_PARENTPATHFOLDER    ICON                    "folder.ico"
+IDI_PARENTPATHFOLDEROPEN ICON                    "folder_open.ico"
+IDI_REPOURL             ICON                    "repourl.ico"
+IDI_REPOURLNEW          ICON                    "repourl_new.ico"
+IDI_REPOURLFAIL         ICON                    "repourlfail.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CANCELNORMAL        BITMAP                  "cancel-normal.bmp"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 22, 17, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "System", 0, 0, 0x0
+BEGIN
+    ICON            IDI_COMMITMONITOR,IDC_MYICON,14,9,20,20
+    LTEXT           "CommitMonitor Version 1.0",IDC_VERSIONLABEL,49,10,119,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
+    LTEXT           "Visit our Website",IDC_WEBLINK,49,49,57,8
+    LTEXT           "Author: Stefan Küng",IDC_STATIC,49,23,65,8
+END
+
+IDD_MAINDLG DIALOGEX 0, 0, 412, 238
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Commit Monitor"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_URLTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | TVS_SHOWSELALWAYS | TVS_TRACKSELECT | WS_BORDER | WS_HSCROLL | WS_TABSTOP,0,31,155,191
+    CONTROL         "",IDC_MONITOREDURLS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,158,31,254,86
+    EDITTEXT        IDC_LOGINFO,158,120,254,102,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "",IDC_INFOLABEL,0,222,303,16
+    PUSHBUTTON      "&Exit",IDC_EXIT,309,224,50,14
+    DEFPUSHBUTTON   "&Hide",IDOK,362,224,50,14
+END
+
+IDD_URLCONFIG DIALOGEX 0, 0, 255, 309
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit project settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Project name:",IDC_STATIC,14,17,50,8
+    EDITTEXT        IDC_PROJECTNAME,89,15,152,14,ES_AUTOHSCROLL
+    GROUPBOX        "URL settings",IDC_STATIC,7,38,241,245
+    LTEXT           "URL to monitor",IDC_STATIC,14,54,48,8
+    EDITTEXT        IDC_URLTOMONITOR,89,50,152,14,ES_AUTOHSCROLL
+    LTEXT           "Check every",IDC_STATIC,14,73,41,8
+    EDITTEXT        IDC_CHECKTIME,59,71,26,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "minutes",IDC_STATIC,90,73,26,8
+    LTEXT           "Username:",IDC_STATIC,14,108,36,8
+    EDITTEXT        IDC_USERNAME,89,105,152,14,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_STATIC,14,126,34,8
+    EDITTEXT        IDC_PASSWORD,89,122,152,14,ES_PASSWORD | ES_AUTOHSCROLL
+    GROUPBOX        "Ignore users",IDC_STATIC,14,147,227,45
+    EDITTEXT        IDC_IGNOREUSERS,21,158,212,27,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    GROUPBOX        "Script/Command to call when new revisions are detected:",IDC_STATIC,14,198,227,45
+    EDITTEXT        IDC_SCRIPT,21,212,212,14,ES_AUTOHSCROLL
+    CONTROL         "Do not execute if only ignored commits are detected",IDC_EXECUTEIGNORED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,229,212,10
+    LTEXT           "URL for a web based viewer:",IDC_STATIC,14,249,94,8
+    EDITTEXT        IDC_WEBDIFF,14,259,227,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,136,288,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,198,288,50,14
+END
+
+IDD_OPTIONS DIALOGEX 0, 0, 308, 180
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Always show tray icon",IDC_TASKBAR_ALWAYSON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,87,10
+    CONTROL         "Animate tray icon",IDC_ANIMATEICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,22,72,10
+    CONTROL         "Automatically start with Windows",IDC_AUTOSTART,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,37,122,10
+    CONTROL         "Use TortoiseSVN for showing diffs",IDC_USETSVN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,53,173,10
+    LTEXT           "Diff Viewer (leave empty for default):",IDC_DIFFVIEWERLABEL,7,71,121,8,SS_NOTIFY
+    EDITTEXT        IDC_DIFFVIEWER,180,68,103,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_DIFFBROWSE,287,68,14,14
+    CONTROL         "Notification Sound (leave empty for default):",IDC_NOTIFICATIONSOUND,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,89,159,10
+    EDITTEXT        IDC_NOTIFICATIONSOUNDPATH,180,87,103,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_SOUNDBROWSE,287,87,14,14
+    DEFPUSHBUTTON   "OK",IDOK,122,159,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,251,159,50,14
+    CONTROL         "Notify when updates for CommitMonitor are available",IDC_CHECKNEWER,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,108,186,10
+    LTEXT           "Number of log messages to fetch for new projects:",IDC_NUMLOGLABEL,9,127,164,8
+    EDITTEXT        IDC_NUMLOGS,243,125,40,14,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+IDD_FINDBAR DIALOGEX 0, 0, 246, 21
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "",IDC_FINDEXIT,0,3,15,14,BS_BITMAP | NOT WS_TABSTOP,WS_EX_TRANSPARENT
+    LTEXT           "Find:",IDC_STATIC,19,5,17,8
+    EDITTEXT        IDC_FINDTEXT,40,2,55,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Next",IDC_FINDNEXT,100,2,38,14
+    PUSHBUTTON      "&Previous",IDC_FINDPREV,140,2,38,14
+    CONTROL         "Mat&ch case",IDC_MATCHCASECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,182,4,52,10
+END
+
+IDD_NEWERNOTIFYDLG DIALOGEX 0, 0, 207, 74
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Update available"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,150,53,50,14
+    LTEXT           "A newer version of CommitMonitor is available.",IDC_STATIC,7,7,150,8
+    LTEXT           "Please get it from the homepage:",IDC_STATIC,7,20,108,8
+    LTEXT           "http://tools.tortoisesvn.net/CommitMonitor",IDC_WEBURL,7,34,140,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        VERTGUIDE, 49
+    END
+
+    IDD_MAINDLG, DIALOG
+    BEGIN
+        VERTGUIDE, 158
+        HORZGUIDE, 31
+        HORZGUIDE, 222
+    END
+
+    IDD_URLCONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 248
+        VERTGUIDE, 14
+        VERTGUIDE, 21
+        VERTGUIDE, 89
+        VERTGUIDE, 233
+        VERTGUIDE, 241
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 302
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 301
+        VERTGUIDE, 180
+        VERTGUIDE, 283
+        VERTGUIDE, 287
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
+
+    IDD_NEWERNOTIFYDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 200
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_COMMITMONITOR MENU 
+BEGIN
+    POPUP "POPUP"
+    BEGIN
+        MENUITEM "&Open CommitMonitor",         ID_POPUP_OPENCOMMITMONITOR
+        MENUITEM "Check &now",                  ID_POPUP_CHECKNOW
+        MENUITEM "O&ptions",                    ID_POPUP_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+END
+
+IDR_MAINDLG MENU 
+BEGIN
+    POPUP "Main"
+    BEGIN
+        MENUITEM "Check Repositories &now",     ID_MAIN_CHECKREPOSITORIESNOW
+        MENUITEM "Add Project",                 ID_MAIN_ADDPROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "Edit",                        ID_MAIN_EDIT
+        MENUITEM "Remove",                      ID_MAIN_REMOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Show Diff",                   ID_MAIN_SHOWDIFF
+    END
+    POPUP "Misc"
+    BEGIN
+        MENUITEM "Options",                     ID_MISC_OPTIONS
+        MENUITEM "About",                       ID_MISC_ABOUT
+    END
+END
+
+IDR_TREEPOPUP MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "&Edit",                       ID_MAIN_EDIT
+        MENUITEM "&Remove",                     ID_MAIN_REMOVE
+        MENUITEM "Mark &node as read",          ID_POPUP_MARKNODEASREAD
+        MENUITEM "&Mark all as read",           ID_POPUP_MARKALLASREAD
+        MENUITEM "Re&fresh all on next check",  ID_POPUP_REFRESHALL
+    END
+END
+
+IDR_LISTPOPUP MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "&Show Unified Diff",          ID_MAIN_SHOWDIFF
+        MENUITEM "&Open WebViewer",             ID_POPUP_OPENWEBVIEWER, INACTIVE
+        MENUITEM "&Remove",                     ID_MAIN_REMOVE
+    END
+END
+
+IDR_LISTPOPUPTSVN MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "Show &Diff with TortoiseSVN", ID_MAIN_SHOWDIFFTSVN
+        MENUITEM "&Show Unified Diff",          ID_MAIN_SHOWDIFF
+        MENUITEM "&Open WebViewer",             ID_POPUP_OPENWEBVIEWER, INACTIVE
+        MENUITEM "&Remove",                     ID_MAIN_REMOVE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_COMMITMONITOR ACCELERATORS 
+BEGIN
+    VK_ESCAPE,      IDM_EXIT,               VIRTKEY, NOINVERT
+END
+
+IDC_CMVIEWER ACCELERATORS 
+BEGIN
+    VK_F3,          IDM_FINDNEXT,           VIRTKEY, NOINVERT
+    VK_F3,          IDM_FINDPREV,           VIRTKEY, SHIFT, NOINVERT
+    "F",            IDM_SHOWFINDBAR,        VIRTKEY, CONTROL, NOINVERT
+    VK_ESCAPE,      IDM_FINDEXIT,           VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "CommitMonitor"
+    IDC_COMMITMONITOR       "COMMITMONITOR"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Switzerland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DES)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""CommitMonitor.rc2""\r\n"
+    "#endif\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // German (Switzerland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
