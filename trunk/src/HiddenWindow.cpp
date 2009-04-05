@@ -437,7 +437,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	TRACE(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
 
 	DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
-	bool bClearIcon = ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE)&&(m_SystemTray.hIcon));
+	bool bClearIcon = ((!newCommits)&&(regShowTaskbarIcon.read() == FALSE));
 	if (bClearIcon)
 	{
 		msg = NIM_DELETE;
