@@ -494,8 +494,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								// re-set the currently selected item
 								int itemsAdded = ListView_GetItemCount(m_hListControl) - listCount;
 								m_bBlockListCtrlUI = false;
-								ListView_SetSelectionMark(m_hListControl, listSelMark + itemsAdded);
-								ListView_SetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED, LVIS_SELECTED);
+								if (ListView_GetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED) & LVIS_SELECTED)
+								{
+									ListView_SetSelectionMark(m_hListControl, listSelMark + itemsAdded);
+									ListView_SetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED, LVIS_SELECTED);
+								}
 							}
 						}
 					}
