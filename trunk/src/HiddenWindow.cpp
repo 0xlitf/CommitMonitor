@@ -721,7 +721,7 @@ DWORD CHiddenWindow::RunThread()
 					if ((bNewEntries)||(!hadError && !it->second.error.empty()))
 					{
 						TCHAR sTitle[1024] = {0};
-						if (!it->second.error.empty())
+						if (!it->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 						{
 							_stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
 							sPopupText = it->second.error;
@@ -813,7 +813,7 @@ DWORD CHiddenWindow::RunThread()
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
 					TCHAR sTitle[1024] = {0};
-					if (!writeIt->second.error.empty())
+					if (!writeIt->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{
 						if (!hadError)
 						{
@@ -843,7 +843,7 @@ DWORD CHiddenWindow::RunThread()
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
 					TCHAR sTitle[1024] = {0};
-					if (!writeIt->second.error.empty())
+					if (!writeIt->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{
 						if (!hadError)
 						{

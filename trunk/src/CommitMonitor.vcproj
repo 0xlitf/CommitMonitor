@@ -552,6 +552,10 @@
 				RelativePath=".\Resources\repourl_new.ico"
 				>
 			</File>
+			<File
+				RelativePath=".\Resources\repourlfail.ico"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Scintilla"

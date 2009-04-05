@@ -90,6 +90,8 @@
 #define IDC_WEBDIFF                     1038
 #define IDC_NUMLOGLABEL                 1039
 #define IDC_NUMLOGS                     1040
+#define IDC_CHECK2                      1041
+#define IDC_NOTIFYCONNECTERROR          1041
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -128,7 +130,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        160
 #define _APS_NEXT_COMMAND_VALUE         32807
-#define _APS_NEXT_CONTROL_VALUE         1041
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

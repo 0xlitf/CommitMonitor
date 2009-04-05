@@ -51,6 +51,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			AddToolTip(IDC_ANIMATEICON, _T("Animates the system tray icon as long as there are unread commits"));
 			AddToolTip(IDC_USETSVN, _T("If TortoiseSVN is installed, use it for showing the differences of commits"));
 			AddToolTip(IDC_CHECKNEWER, _T("Automatically check for newer versions of CommitMonitor"));
+			AddToolTip(IDC_NOTIFYCONNECTERROR, _T("When a repository can not be checked due to connection problems,\nchange/animate the icon as if new commits were available."));
 
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
@@ -58,6 +59,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			bool bAnimateIcon = !!CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
 			bool bPlaySound = !!CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 			bool bUseTSVN = !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+			bool bIndicateConnectErrors = !!CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
@@ -72,6 +74,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, wstring(notifySound).c_str());
 			SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
 			if (tsvninstalled.empty())
 				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
@@ -98,17 +101,20 @@ LRESULT COptionsDlg::DoCommand(int id)
 			CRegStdWORD regUseTSVN = CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
 			CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
+			CRegStdWORD regIndicateErrors = CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
 			bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendDlgItemMessage(*this, IDC_AUTOSTART, BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_GETCHECK, 0, NULL);
 			bool bPlaySound = !!SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_GETCHECK, 0, NULL);
 			bool bUseTSVN = !!SendDlgItemMessage(*this, IDC_USETSVN, BM_GETCHECK, 0, NULL);
 			bool bUpdateCheck = !!SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_GETCHECK, 0, NULL);
+			bool bIndicateConnectErrors = !!SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_GETCHECK, 0, NULL);
 			regShowTaskbarIcon = bShowTaskbarIcon;
 			regAnimateIcon = bAnimateIcon;
 			regPlaySound = bPlaySound;
 			regUseTSVN = bUseTSVN;
 			updatecheck = bUpdateCheck;
+			regIndicateErrors = bIndicateConnectErrors;
 			::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
 			if (bStartWithWindows)
 			{
