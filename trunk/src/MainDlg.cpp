@@ -1038,9 +1038,11 @@ LRESULT CMainDlg::DoCommand(int id)
 		break;
 	case ID_MISC_ABOUT:
 		{
+			::KillTimer(*this, TIMER_REFRESH);
 			CAboutDlg dlg(*this);
 			dlg.SetHiddenWnd(m_hParent);
 			dlg.DoModal(hResource, IDD_ABOUTBOX, *this);
+			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 		}
 		break;
 	default:
