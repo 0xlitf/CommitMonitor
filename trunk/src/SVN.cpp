@@ -440,7 +440,7 @@ bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 		&end, 
 		limit,
 		true,
-		false,
+		true,
 		logReceiver,	// log_message_receiver
 		(void *)this, m_pctx, localpool);
 
