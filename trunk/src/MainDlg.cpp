@@ -295,7 +295,30 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if( DWORD(regMaximized) )
-				ShowWindow(*this, SW_MAXIMIZE);				
+			{
+				ShowWindow(*this, SW_MAXIMIZE);
+
+				// now restore the slider positions
+				CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
+				if (DWORD(regHorzPos))
+				{
+					POINT pt;
+					pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
+					PositionChildWindows(pt, true, false);
+				}
+				CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
+				if (DWORD(regVertPos))
+				{
+					POINT pt;
+					pt.x = pt.y = DWORD(regVertPos)+2;	// +2 because the slider is 4 pixels wide
+					PositionChildWindows(pt, false, false);
+				}
+				// adjust the slider position infos
+				GetClientRect(m_hTreeControl, &rect);
+				m_xSliderPos = rect.right+4;
+				GetClientRect(m_hListControl, &rect);
+				m_ySliderPos = rect.bottom+m_topmarg;
+			}
 			RefreshURLTree(true);
 			if (m_bNewerVersionAvailable)
 			{
@@ -319,7 +342,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if ((wParam & 0xFFF0) == SC_MAXIMIZE)
 			{
-				SaveWndPosition();
 				regMaximized = 1;
 			}
 			
@@ -327,6 +349,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				regMaximized = 0;
 			}
+			SaveWndPosition();
 
 			return FALSE;
 		}
@@ -849,8 +872,7 @@ LRESULT CMainDlg::DoCommand(int id)
 		// intentional fall-through
 	case IDCANCEL:
 		{
-			if (!IsZoomed(*this))
-				SaveWndPosition();
+			SaveWndPosition();
 			EndDialog(*this, IDCANCEL);
 		}
 		break;
@@ -2263,21 +2285,38 @@ void CMainDlg::SaveWndPosition()
 	RECT rc;
 	::GetWindowRect(*this, &rc);
 
-	CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
-	regXY = MAKELONG(rc.top, rc.left);
-	CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
-	regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
-	::GetClientRect(*this, &rc);
-	CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
-	regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
-	::GetWindowRect(m_hTreeControl, &rc);
-	::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-	CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
-	regHorzPos = rc.right;
-	CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
-	::GetWindowRect(m_hListControl, &rc);
-	::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-	regVertPos = rc.bottom;
+	if (!IsZoomed(*this))
+	{
+		CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+		regXY = MAKELONG(rc.top, rc.left);
+		CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+		regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
+		::GetClientRect(*this, &rc);
+		CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+		regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
+	}
+	if (IsZoomed(*this))
+	{
+		::GetWindowRect(m_hTreeControl, &rc);
+		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+		CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
+		regHorzPos = rc.right;
+		CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
+		::GetWindowRect(m_hListControl, &rc);
+		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+		regVertPos = rc.bottom;
+	}
+	else
+	{
+		::GetWindowRect(m_hTreeControl, &rc);
+		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+		CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+		regHorzPos = rc.right;
+		CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+		::GetWindowRect(m_hListControl, &rc);
+		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
+		regVertPos = rc.bottom;
+	}
 }
 
 LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
