@@ -158,7 +158,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 				}
 			}
 		}
-		hiddenWindow.StopThread();
+		if (!hiddenWindow.StopThread(2000))
+		{
+			hiddenWindow.RemoveTrayIcon();
+			TerminateProcess(GetCurrentProcess(), 0);
+		}
 	}
 
 	::OleUninitialize();

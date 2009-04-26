@@ -78,6 +78,11 @@ CHiddenWindow::~CHiddenWindow(void)
 	Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
 }
 
+void CHiddenWindow::RemoveTrayIcon()
+{
+	Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
+}
+
 bool CHiddenWindow::RegisterAndCreateWindow()
 {
 	WNDCLASSEX wcx; 
@@ -341,18 +346,21 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		if (m_hMainDlg)
 			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, lParam);
 		break;
-	case WM_QUIT:
-		StopThread();
-		break;
 	case WM_DESTROY:
-		StopThread();
+		if (!StopThread(2000))
+		{
+			TerminateProcess(GetCurrentProcess(), 0);
+		}
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
 		::DestroyWindow(m_hwnd);
 		break;
 	case WM_QUERYENDSESSION:
-		StopThread();
+		if (!StopThread(2000))
+		{
+			TerminateProcess(GetCurrentProcess(), 0);
+		}
 		PostQuitMessage(0);
 		break;
 	default:
@@ -535,6 +543,8 @@ DWORD CHiddenWindow::RunThread()
 				SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
 			}
 			svn_revnum_t headrev = svn.GetHEADRevision(it->first);
+			if (!m_bRun)
+				continue;
 			if (headrev > it->second.lastcheckedrev)
 			{
 				TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
@@ -548,6 +558,8 @@ DWORD CHiddenWindow::RunThread()
 				if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev + 1))
 				{
 					TRACE(_T("log fetched for %s\n"), it->first.c_str());
+					if (!m_bRun)
+						continue;
 					
 					// only block the object for a short time
 					map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
@@ -558,6 +570,9 @@ DWORD CHiddenWindow::RunThread()
 						writeIt->second.lastchecked = currenttime;
 					}
 					m_UrlInfos.ReleaseWriteData();
+
+					if (!m_bRun)
+						continue;
 
 					wstring sPopupText;
 					bool hadError = !it->second.error.empty();
@@ -608,6 +623,8 @@ DWORD CHiddenWindow::RunThread()
 							writeIt->second.error.clear();
 						}
 						m_UrlInfos.ReleaseWriteData();
+						if (!m_bRun)
+							continue;
 						// popup info text
 						if (!bIgnore)
 						{
@@ -634,6 +651,8 @@ DWORD CHiddenWindow::RunThread()
 						callback->SetAuthData(it->second.username, it->second.password);
 						if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback) == S_OK))
 						{
+							if (!m_bRun)
+								continue;
 							ifstream fs(sFile.c_str());
 							if (!fs.bad())
 							{
@@ -879,10 +898,14 @@ DWORD CHiddenWindow::RunThread()
 					wstring parentpathurl = it->first;
 					wstring parentpathurl2 = parentpathurl + _T("/");
 					HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback);
+					if (!m_bRun)
+						continue;
 					if (hResUDL != S_OK)
 					{
 						hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback);
 					}
+					if (!m_bRun)
+						continue;
 					if (hResUDL == S_OK)
 					{
 						if (callback)
@@ -936,7 +959,7 @@ DWORD CHiddenWindow::RunThread()
 							int nCountNewEntries = 0;
 							wstring popupText;
 							const tr1::sregex_iterator end;
-							for (tr1::sregex_iterator i(in.begin(), in.end(), expression); i != end; ++i)
+							for (tr1::sregex_iterator i(in.begin(), in.end(), expression); i != end && m_bRun; ++i)
 							{
 								const tr1::smatch match = *i;
 								// what[0] contains the whole string
@@ -978,7 +1001,7 @@ DWORD CHiddenWindow::RunThread()
 								TRACE(_T("found repository url instead of SVNParentPathList\n"));
 								continue;
 							}
-							for (tr1::sregex_iterator i(in.begin(), in.end(), expression2); i != end; ++i)
+							for (tr1::sregex_iterator i(in.begin(), in.end(), expression2); i != end && m_bRun; ++i)
 							{
 								const tr1::smatch match = *i;
 								// what[0] contains the whole string
@@ -1041,7 +1064,7 @@ DWORD CHiddenWindow::RunThread()
 
 
 	// check for newer versions
-	if (CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE)
+	if (m_bRun && (CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE))
 	{
 		time_t now;
 		struct tm ptm;
@@ -1156,20 +1179,20 @@ DWORD WINAPI MonitorThread(LPVOID lpParam)
 	return 0L;
 }
 
-void CHiddenWindow::StopThread()
+bool CHiddenWindow::StopThread(DWORD wait)
 {
+	bool bRet = true;
 	m_bRun = false;
 	if (m_hMonitorThread)
 	{
-		WaitForSingleObject(m_hMonitorThread, 2000);
+		WaitForSingleObject(m_hMonitorThread, wait);
 		if (m_ThreadRunning)
 		{
-			// we gave the thread a chance to quit. Since the thread didn't
-			// listen to us we have to kill it.
-			TerminateThread(m_hMonitorThread, (DWORD)-1);
-			m_ThreadRunning = false;
+			bRet = false;
 		}
 		CloseHandle(m_hMonitorThread);
 		m_hMonitorThread = NULL;
 	}
+
+	return bRet;
 }
