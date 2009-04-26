@@ -566,6 +566,7 @@ DWORD CHiddenWindow::RunThread()
 						// again, only block for a short time
 						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
 						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+						bool bIgnore = false;
 						if (writeIt != pWrite->end())
 						{
 							map<svn_revnum_t,SVNLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
@@ -577,7 +578,6 @@ DWORD CHiddenWindow::RunThread()
 
 							writeIt->second.logentries[logit->first] = logit->second;
 
-
 							if (!bEntryExists)
 							{
 								wstring author1 = logit->second.author;
@@ -587,11 +587,13 @@ DWORD CHiddenWindow::RunThread()
 								std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
 								CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
 								vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-								bool bIgnore = false;
 								for (vector<wstring>::iterator it = ignoreVector.begin(); it != ignoreVector.end(); ++it)
 								{
 									if (author1.compare(*it) == 0)
+									{
 										bIgnore = true;
+										break;
+									}
 								}
 								nTotalNewCommits++;
 								if (!bIgnore)
@@ -607,9 +609,12 @@ DWORD CHiddenWindow::RunThread()
 						}
 						m_UrlInfos.ReleaseWriteData();
 						// popup info text
-						if (!sPopupText.empty())
-							sPopupText += _T(", ");
-						sPopupText += logit->second.author;
+						if (!bIgnore)
+						{
+							if (!sPopupText.empty())
+								sPopupText += _T(", ");
+							sPopupText += logit->second.author;
+						}
 					}
 					if ((it->second.lastcheckedrobots + (60*60*24*2)) < currenttime)
 					{
