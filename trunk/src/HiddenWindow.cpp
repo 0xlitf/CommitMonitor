@@ -406,17 +406,37 @@ void CHiddenWindow::DoTimer(bool bForce)
 		m_UrlInfos.Save();
 	}
 
+	bool bAllRead = true;
+	bool bHasErrors = false;
 	const map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
 	for (map<wstring,CUrlInfo>::const_iterator it = pInfos->begin(); it != pInfos->end(); ++it)
 	{
-		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
+		CUrlInfo inf = it->second;
+		if ((!it->second.error.empty())&&(!it->second.parentpath))
+			bHasErrors = true;
+
+		// go through the log entries and find unread items
+		for (map<svn_revnum_t,SVNLogEntry>::const_iterator rit = it->second.logentries.begin(); rit != it->second.logentries.end(); ++rit)
 		{
-			bStartThread = true;
-			break;
+			if (!rit->second.read)
+			{
+				bAllRead = false;
+				break;
+			}
 		}
+
+		if ((it->second.lastchecked + (it->second.minutesinterval*60)) < currenttime)
+			bStartThread = true;
 	}
 	m_UrlInfos.ReleaseReadOnlyData();
 
+	if (bAllRead && !bHasErrors && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
+	{
+		// no errors (anymore) and all items are marked as read:
+		// stop the animated icon
+		KillTimer(*this, IDT_ANIMATE);
+		ShowTrayIcon(false);
+	}
 	if ((bStartThread)&&(m_ThreadRunning == 0))
 	{
 		// start the monitoring thread to update the infos
