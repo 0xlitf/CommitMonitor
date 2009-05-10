@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,9 +86,12 @@ void CDialog::InitDialog(HWND hwndDlg, UINT iconID)
 {
 	HWND hwndOwner; 
 	RECT rc, rcDlg, rcOwner;
+	WINDOWPLACEMENT placement;
+	placement.length = sizeof(WINDOWPLACEMENT);
 
 	hwndOwner = ::GetParent(hwndDlg);
-	if (hwndOwner == NULL)
+	GetWindowPlacement(hwndOwner, &placement);
+	if ((hwndOwner == NULL)||(placement.showCmd == SW_SHOWMINIMIZED)||(placement.showCmd == SW_SHOWMINNOACTIVE))
 		hwndOwner = ::GetDesktopWindow();
 
 	GetWindowRect(hwndOwner, &rcOwner); 
