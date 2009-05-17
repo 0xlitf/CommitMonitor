@@ -28,6 +28,8 @@
 #include "DirFileEnum.h"
 #include <algorithm>
 #include <assert.h>
+#include <cctype>
+#include <regex>
 
 #define FILTERBOXHEIGHT 20
 #define FILTERLABELWIDTH 50
@@ -406,6 +408,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_COMMAND:
+		if ((HIWORD(wParam) == EN_CHANGE)&&((HWND)lParam == GetDlgItem(*this, IDC_FILTERSTRING)))
+		{
+			// start the filter timer
+			::SetTimer(*this, TIMER_FILTER, FILTER_ELAPSE, NULL);
+		}
 		return DoCommand(LOWORD(wParam));
 		break;
 	case WM_SETCURSOR:
@@ -437,6 +444,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				SetDlgItemText(*this, IDC_INFOLABEL, _T(""));
 				KillTimer(*this, TIMER_LABEL);
+			}
+			else if (wParam == TIMER_FILTER)
+			{
+				KillTimer(*this, TIMER_FILTER);
+				TreeItemSelected(m_hTreeControl, TreeView_GetSelection(m_hTreeControl));
 			}
 			else if (wParam == TIMER_REFRESH)
 			{
@@ -1476,8 +1488,71 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		LVITEM item = {0};
 		TCHAR buf[1024];
 		int iLastUnread = -1;
+
+		int len = GetWindowTextLength(GetDlgItem(*this, IDC_FILTERSTRING));
+		WCHAR * buffer = new WCHAR[len+1];
+		GetDlgItemText(*this, IDC_FILTERSTRING, buffer, len+1);
+		wstring filterstring = wstring(buffer, len);
+		wstring filterstringlower = filterstring;
+		std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
+
+		delete [] buffer;
+
 		for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
 		{
+			// only add entries that match the filter string
+			bool addEntry = true;
+			bool bUseRegex = filterstring[0] == '\\';
+
+			if (bUseRegex)
+			{
+				try
+				{
+					const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+
+					addEntry = tr1::regex_search(it->second.author, regCheck);
+					if (!addEntry)
+					{
+						addEntry = tr1::regex_search(it->second.message, regCheck);
+						if (!addEntry)
+						{
+							_stprintf_s(buf, 1024, _T("%ld"), it->first);
+							wstring s = wstring(buf);
+							addEntry = tr1::regex_search(s, regCheck);
+						}
+					}
+				}
+				catch (exception) 
+				{
+					bUseRegex = false;
+				}
+			}
+			if (!bUseRegex)
+			{
+				// search plain text
+				// note: \Q...\E doesn't seem to work with tr1 - it still
+				// throws an exception if the regex in between is not a valid regex :(
+
+				wstring s = it->second.author;
+				std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+				addEntry = s.find(filterstringlower) != wstring::npos;
+
+				if (!addEntry)
+				{
+					s = it->second.message;
+					std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+					addEntry = s.find(filterstringlower) != wstring::npos;
+					if (!addEntry)
+					{
+						_stprintf_s(buf, 1024, _T("%ld"), it->first);
+						addEntry = s.find(buf) != wstring::npos;
+					}
+				}
+			}
+
+			if (!addEntry)
+				continue;
+
 			item.mask = LVIF_TEXT|LVIF_PARAM;
 			item.iItem = 0;
 			item.lParam = (LPARAM)&it->second;

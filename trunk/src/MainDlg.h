@@ -31,6 +31,10 @@
 
 #define TIMER_REFRESH			101
 #define TIMER_LABEL				102
+#define TIMER_FILTER			103
+
+
+#define FILTER_ELAPSE 500
 
 using namespace std;
 
