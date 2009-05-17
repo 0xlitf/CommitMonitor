@@ -29,6 +29,9 @@
 #include <algorithm>
 #include <assert.h>
 
+#define FILTERBOXHEIGHT 20
+#define FILTERLABELWIDTH 50
+
 CMainDlg::CMainDlg(HWND hParent) 
 	: m_nDragMode(DRAGMODE_NONE)
 	, m_oldx(-1)
@@ -1908,21 +1911,27 @@ void CMainDlg::RemoveSelectedListItems()
 void CMainDlg::DoResize(int width, int height)
 {
 	// when we get here, the controls haven't been resized yet
-	RECT tree, list, log, ex, ok, label;
+	RECT tree, list, log, ex, ok, label, filterlabel, filterbox;
 	HWND hExit = GetDlgItem(*this, IDC_EXIT);
 	HWND hOK = GetDlgItem(*this, IDOK);
 	HWND hLabel = GetDlgItem(*this, IDC_INFOLABEL);
+	HWND hFilterLabel = GetDlgItem(*this, IDC_FILTERLABEL);
+	HWND hFilterBox = GetDlgItem(*this, IDC_FILTERSTRING);
 	::GetClientRect(m_hTreeControl, &tree);
 	::GetClientRect(m_hListControl, &list);
 	::GetClientRect(m_hLogMsgControl, &log);
 	::GetClientRect(hExit, &ex);
 	::GetClientRect(hOK, &ok);
 	::GetClientRect(hLabel, &label);
-	HDWP hdwp = BeginDeferWindowPos(7);
+	::GetClientRect(hFilterLabel, &filterlabel);
+	::GetClientRect(hFilterBox, &filterbox);
+	HDWP hdwp = BeginDeferWindowPos(9);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
+	hdwp = DeferWindowPos(hdwp, hFilterBox, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
-	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hExit, *this, width-ok.right+ok.left-ex.right+ex.left-3, height-ex.bottom+ex.top, ex.right-ex.left, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hLabel, *this, 2, height-label.bottom+label.top+2, width-ok.right-ex.right-8, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
@@ -2079,7 +2088,7 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
 	OffsetRect(&treelist, -tempx, -tempy);
 	OffsetRect(&loglist, -tempx, -tempy);
 
-	if ((point.y < treelist.top) || 
+	if ((point.y < loglist.top) || 
 		(point.y > treelist.bottom))
 		return false;
 
@@ -2137,7 +2146,7 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
 	GetClientRect(m_hTreeControl, &rect);
 	m_xSliderPos = rect.right+4;
 	GetClientRect(m_hListControl, &rect);
-	m_ySliderPos = rect.bottom+m_topmarg;
+	m_ySliderPos = rect.bottom+m_topmarg+FILTERBOXHEIGHT;
 
 	m_nDragMode = DRAGMODE_NONE;
 
@@ -2211,7 +2220,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 	}
 
 	//position the child controls
-	HDWP hdwp = BeginDeferWindowPos(3);
+	HDWP hdwp = BeginDeferWindowPos(5);
 	if (hdwp)
 	{
 		if (bHorz)
@@ -2223,11 +2232,18 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-			GetWindowRect(m_hListControl, &treelist);
-			treelist.left = point2.x + 2;
-			MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
+			GetWindowRect(m_hListControl, &loglist);
+			loglist.left = point2.x + 2;
+			MapWindowPoints(NULL, *this, (LPPOINT)&loglist, 2);
+			hdwp = DeferWindowPos(hdwp, GetDlgItem(*this, IDC_FILTERLABEL), NULL,
+				loglist.left, treelist.top+5, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_NOSIZE);
+
+			hdwp = DeferWindowPos(hdwp, GetDlgItem(*this, IDC_FILTERSTRING), NULL,
+				loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT, 
+				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+
 			hdwp = DeferWindowPos(hdwp, m_hListControl, NULL, 
-				treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
+				loglist.left, treelist.top+FILTERBOXHEIGHT, loglist.right-loglist.left, loglist.bottom-treelist.top-FILTERBOXHEIGHT,
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
 			GetWindowRect(m_hLogMsgControl, &treelist);
