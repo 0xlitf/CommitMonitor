@@ -2003,7 +2003,7 @@ void CMainDlg::DoResize(int width, int height)
 	HDWP hdwp = BeginDeferWindowPos(9);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
-	hdwp = DeferWindowPos(hdwp, hFilterBox, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, hFilterBox, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg+1, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT-1, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+5, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
