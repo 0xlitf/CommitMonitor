@@ -56,28 +56,33 @@ SVN::SVN(void)
 	Err = svn_ra_initialize(parentpool);
 
 	// set up authentication
+
 	svn_auth_provider_object_t *provider;
 
 	/* The whole list of registered providers */
 	apr_array_header_t *providers = apr_array_make (pool, 10, sizeof (svn_auth_provider_object_t *));
 
+	svn_config_t * cfg_config = (svn_config_t *)apr_hash_get(m_pctx->config, SVN_CONFIG_CATEGORY_CONFIG, APR_HASH_KEY_STRING);
+
+	/* Populate the registered providers with the platform-specific providers */
+	svn_auth_get_platform_specific_client_providers(&providers, cfg_config, pool);
+
 	/* The main disk-caching auth providers, for both
 	'username/password' creds and 'username' creds.  */
-	svn_auth_get_windows_simple_provider (&provider, pool);
-	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
-	svn_auth_get_simple_provider (&provider, pool);
+	svn_auth_get_simple_provider2 (&provider, svn_auth_plaintext_prompt, this, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 	svn_auth_get_username_provider (&provider, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 
 	/* The server-cert, client-cert, and client-cert-password providers. */
-	svn_auth_get_windows_ssl_server_trust_provider(&provider, pool); 
-	APR_ARRAY_PUSH(providers, svn_auth_provider_object_t *) = provider;
+	svn_auth_get_platform_specific_provider (&provider, "windows", "ssl_server_trust", pool);
+	if (provider)
+		APR_ARRAY_PUSH(providers, svn_auth_provider_object_t *) = provider;
 	svn_auth_get_ssl_server_trust_file_provider (&provider, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 	svn_auth_get_ssl_client_cert_file_provider (&provider, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
-	svn_auth_get_ssl_client_cert_pw_file_provider (&provider, pool);
+	svn_auth_get_ssl_client_cert_pw_file_provider2 (&provider, svn_auth_plaintext_passphrase_prompt, this, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 
 	/* Two prompting providers, one for username/password, one for
@@ -91,18 +96,19 @@ SVN::SVN(void)
 	and client-cert-passphrases.  */
 	svn_auth_get_ssl_server_trust_prompt_provider (&provider, sslserverprompt, this, pool);
 	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
-	//svn_auth_get_ssl_client_cert_prompt_provider (&provider, sslclientprompt, this, 2, pool);
-	//APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
-	//svn_auth_get_ssl_client_cert_pw_prompt_provider (&provider, sslpwprompt, this, 2, pool);
-	//APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
+	svn_auth_get_ssl_client_cert_prompt_provider (&provider, sslclientprompt, this, 2, pool);
+	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
+	svn_auth_get_ssl_client_cert_pw_prompt_provider (&provider, sslpwprompt, this, 2, pool);
+	APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
 
 	/* Build an authentication baton to give to libsvn_client. */
 	svn_auth_open (&auth_baton, providers, pool);
+	m_pctx->auth_baton = auth_baton;
+
 	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_NON_INTERACTIVE, "");
 	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_DONT_STORE_PASSWORDS, "");
 	svn_auth_set_parameter(auth_baton, SVN_AUTH_PARAM_NO_AUTH_CACHE, "");
 
-	m_pctx->auth_baton = auth_baton;
 	m_pctx->cancel_func = cancel;
 	m_pctx->cancel_baton = this;
 	m_pctx->progress_func = progress_func;
@@ -158,6 +164,44 @@ svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, voi
 {
 	*cred_p = (svn_auth_cred_ssl_server_trust_t*)apr_pcalloc (pool, sizeof (**cred_p));
 	(*cred_p)->may_save = FALSE;
+	return SVN_NO_ERROR;
+}
+
+svn_error_t* SVN::svn_auth_plaintext_prompt(svn_boolean_t *may_save_plaintext, const char * /*realmstring*/, void * /*baton*/, apr_pool_t * /*pool*/)
+{
+	// never save passwords in plaintext
+	// we never save passwords in CommitMonitor anyway, since we have the auth info
+	// stored in the monitored-url info.
+	// So we shouldn't even get here.
+	*may_save_plaintext = false;
+	return SVN_NO_ERROR;
+}
+
+svn_error_t* SVN::svn_auth_plaintext_passphrase_prompt(svn_boolean_t *may_save_plaintext, const char * /*realmstring*/, void * /*baton*/, apr_pool_t * /*pool*/)
+{
+	// never save passwords in plaintext
+	// we never save passwords in CommitMonitor anyway, since we have the auth info
+	// stored in the monitored-url info.
+	// So we shouldn't even get here.
+	*may_save_plaintext = false;
+	return SVN_NO_ERROR;
+}
+
+svn_error_t* SVN::sslclientprompt(svn_auth_cred_ssl_client_cert_t **cred, void * /*baton*/, const char * /*realm*/, svn_boolean_t /*may_save*/, apr_pool_t * /*pool*/)
+{
+	*cred = NULL;
+	return SVN_NO_ERROR;
+}
+
+svn_error_t* SVN::sslpwprompt(svn_auth_cred_ssl_client_cert_pw_t **cred, void *baton, const char * /*realm*/, svn_boolean_t may_save, apr_pool_t *pool)
+{
+	SVN* svn = (SVN *)baton;
+	svn_auth_cred_ssl_client_cert_pw_t *ret = (svn_auth_cred_ssl_client_cert_pw_t *)apr_pcalloc (pool, sizeof (*ret));
+
+	// return the password from the auth info
+	ret->password = apr_pstrdup(pool, CUnicodeUtils::StdGetUTF8(svn->password).c_str());
+	ret->may_save = may_save;
+	*cred = ret;
 	return SVN_NO_ERROR;
 }
 
@@ -238,6 +282,7 @@ wstring SVN::GetLastErrorMsg()
 
 void SVN::SetAuthInfo(const wstring& username, const wstring& password)
 {
+	this->password = password;
 	if (m_pctx)
 	{
 		if (!username.empty())

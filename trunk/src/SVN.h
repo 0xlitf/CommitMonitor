@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -343,6 +343,7 @@ private:
 	apr_off_t					progress_lasttotal;
 	DWORD						progress_lastTicks;
 	std::vector<apr_off_t>		progress_vector;
+	stdstring					password;
 
 private:
 	static svn_error_t *		cancel(void *baton);
@@ -356,6 +357,10 @@ private:
 											apr_uint32_t failures, 
 											const svn_auth_ssl_server_cert_info_t *cert_info, 
 											svn_boolean_t may_save, apr_pool_t *pool);
+	static svn_error_t* sslclientprompt(svn_auth_cred_ssl_client_cert_t **cred, void *baton, const char * realm, svn_boolean_t may_save, apr_pool_t *pool);
+	static svn_error_t* sslpwprompt(svn_auth_cred_ssl_client_cert_pw_t **cred, void *baton, const char * realm, svn_boolean_t may_save, apr_pool_t *pool);
+	static svn_error_t* svn_auth_plaintext_prompt(svn_boolean_t *may_save_plaintext, const char *realmstring, void *baton, apr_pool_t *pool);
+	static svn_error_t* svn_auth_plaintext_passphrase_prompt(svn_boolean_t *may_save_plaintext, const char *realmstring, void *baton, apr_pool_t *pool);
 	static void					progress_func(apr_off_t progress, apr_off_t total, 
 											void *baton, apr_pool_t *pool);
 
