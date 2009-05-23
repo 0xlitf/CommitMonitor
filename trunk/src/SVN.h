@@ -38,15 +38,6 @@
 #include "SerializeUtils.h"
 #include "ProgressDlg.h"
 
-typedef std::wstring wide_string;
-#ifndef stdstring
-#	ifdef UNICODE
-#		define stdstring wide_string
-#	else
-#		define stdstring std::string
-#	endif
-#endif
-
 #include <string>
 
 using namespace std;
@@ -56,34 +47,34 @@ class SVNInfoData
 public:
 	SVNInfoData(){}
 
-	stdstring			url;
+	std::wstring		url;
 	svn_revnum_t		rev;
 	svn_node_kind_t		kind;
-	stdstring			reposRoot;
-	stdstring			reposUUID;
+	std::wstring		reposRoot;
+	std::wstring		reposUUID;
 	svn_revnum_t		lastchangedrev;
 	__time64_t			lastchangedtime;
-	stdstring			author;
+	std::wstring		author;
 
-	stdstring			lock_path;
-	stdstring			lock_token;
-	stdstring			lock_owner;
-	stdstring			lock_comment;
+	std::wstring		lock_path;
+	std::wstring		lock_token;
+	std::wstring		lock_owner;
+	std::wstring		lock_comment;
 	bool				lock_davcomment;
 	__time64_t			lock_createtime;
 	__time64_t			lock_expirationtime;
 
 	bool				hasWCInfo;
 	svn_wc_schedule_t	schedule;
-	stdstring			copyfromurl;
+	std::wstring		copyfromurl;
 	svn_revnum_t		copyfromrev;
 	__time64_t			texttime;
 	__time64_t			proptime;
-	stdstring			checksum;
-	stdstring			conflict_old;
-	stdstring			conflict_new;
-	stdstring			conflict_wrk;
-	stdstring			prejfile;
+	std::wstring		checksum;
+	std::wstring		conflict_old;
+	std::wstring		conflict_new;
+	std::wstring		conflict_wrk;
+	std::wstring		prejfile;
 };
 
 class SVNLogChangedPaths
@@ -97,7 +88,7 @@ public:
 
 	wchar_t				action;
 	svn_revnum_t		copyfrom_revision;
-	stdstring			copyfrom_path;
+	std::wstring		copyfrom_path;
 
 	bool Save(FILE * hFile) const
 	{
@@ -150,10 +141,10 @@ public:
 
 	bool				read;
 	svn_revnum_t		revision;
-	stdstring			author;
+	std::wstring		author;
 	apr_time_t			date;
-	stdstring			message;
-	map<stdstring, SVNLogChangedPaths>	m_changedPaths;
+	std::wstring		message;
+	map<std::wstring, SVNLogChangedPaths>	m_changedPaths;
 
 	bool Save(FILE * hFile) const
 	{
@@ -172,7 +163,7 @@ public:
 			return false;
 		if (!CSerializeUtils::SaveNumber(hFile, m_changedPaths.size()))
 			return false;
-		for (map<stdstring,SVNLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
+		for (map<std::wstring,SVNLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
 		{
 			if (!CSerializeUtils::SaveString(hFile, it->first))
 				return false;
@@ -269,9 +260,9 @@ public:
 	SVN(void);
 	~SVN(void);
 
-	void SetAuthInfo(const stdstring& username, const stdstring& password);
+	void SetAuthInfo(const std::wstring& username, const std::wstring& password);
 
-	bool Cat(stdstring sUrl, stdstring sFile);
+	bool Cat(std::wstring sUrl, std::wstring sFile);
 
 	/**
 	 * returns the info for the \a path.
@@ -281,7 +272,7 @@ public:
 	 * \param recurse if TRUE, then GetNextFileInfo() returns the info also
 	 * for all children of \a path.
 	 */
-	const SVNInfoData * GetFirstFileInfo(stdstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false);
+	const SVNInfoData * GetFirstFileInfo(std::wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false);
 	size_t GetFileCount() {return m_arInfo.size();}
 	/**
 	 * Returns the info of the next file in the file list. If no more files are in the list then NULL is returned.
@@ -289,9 +280,9 @@ public:
 	 */
 	const SVNInfoData * GetNextFileInfo();
 
-	svn_revnum_t GetHEADRevision(const stdstring& url);
+	svn_revnum_t GetHEADRevision(const std::wstring& url);
 
-	bool GetLog(const stdstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
+	bool GetLog(const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
 	map<svn_revnum_t,SVNLogEntry> m_logs;		///< contains the gathered log information
 
 	bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
@@ -343,7 +334,7 @@ private:
 	apr_off_t					progress_lasttotal;
 	DWORD						progress_lastTicks;
 	std::vector<apr_off_t>		progress_vector;
-	stdstring					password;
+	std::wstring				password;
 
 private:
 	static svn_error_t *		cancel(void *baton);
@@ -357,10 +348,18 @@ private:
 											apr_uint32_t failures, 
 											const svn_auth_ssl_server_cert_info_t *cert_info, 
 											svn_boolean_t may_save, apr_pool_t *pool);
-	static svn_error_t* sslclientprompt(svn_auth_cred_ssl_client_cert_t **cred, void *baton, const char * realm, svn_boolean_t may_save, apr_pool_t *pool);
-	static svn_error_t* sslpwprompt(svn_auth_cred_ssl_client_cert_pw_t **cred, void *baton, const char * realm, svn_boolean_t may_save, apr_pool_t *pool);
-	static svn_error_t* svn_auth_plaintext_prompt(svn_boolean_t *may_save_plaintext, const char *realmstring, void *baton, apr_pool_t *pool);
-	static svn_error_t* svn_auth_plaintext_passphrase_prompt(svn_boolean_t *may_save_plaintext, const char *realmstring, void *baton, apr_pool_t *pool);
+	static svn_error_t*			sslclientprompt(svn_auth_cred_ssl_client_cert_t **cred, 
+											void *baton, const char * realm, 
+											svn_boolean_t may_save, apr_pool_t *pool);
+	static svn_error_t*			sslpwprompt(svn_auth_cred_ssl_client_cert_pw_t **cred, 
+											void *baton, const char * realm, 
+											svn_boolean_t may_save, apr_pool_t *pool);
+	static svn_error_t*			svn_auth_plaintext_prompt(svn_boolean_t *may_save_plaintext, 
+											const char *realmstring, void *baton, 
+											apr_pool_t *pool);
+	static svn_error_t*			svn_auth_plaintext_passphrase_prompt(svn_boolean_t *may_save_plaintext, 
+											const char *realmstring, void *baton, 
+											apr_pool_t *pool);
 	static void					progress_func(apr_off_t progress, apr_off_t total, 
 											void *baton, apr_pool_t *pool);
 

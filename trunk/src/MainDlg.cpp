@@ -251,13 +251,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 			SendMessage(m_hParent, COMMITMONITOR_SETWINDOWHANDLE, (WPARAM)(HWND)*this, NULL);
 
-			CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+			CRegStdDWORD regXY(_T("Software\\CommitMonitor\\XY"));
 			if (DWORD(regXY))
 			{
-				CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+				CRegStdDWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
 				if (DWORD(regWHWindow))
 				{
-					CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+					CRegStdDWORD regWH(_T("Software\\CommitMonitor\\WH"));
 					if (DWORD(regWH))
 					{
 						// x,y position and width/height are valid
@@ -274,14 +274,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							SetWindowPos(*this, HWND_TOP, rc.left, rc.top, HIWORD(DWORD(regWHWindow)), LOWORD(DWORD(regWHWindow)), SWP_SHOWWINDOW);
 							DoResize(HIWORD(DWORD(regWH)), LOWORD(DWORD(regWH)));
 							// now restore the slider positions
-							CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+							CRegStdDWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
 							if (DWORD(regHorzPos))
 							{
 								POINT pt;
 								pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
 								PositionChildWindows(pt, true, false);
 							}
-							CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+							CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
 							if (DWORD(regVertPos))
 							{
 								POINT pt;
@@ -298,20 +298,20 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
+			CRegStdDWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if( DWORD(regMaximized) )
 			{
 				ShowWindow(*this, SW_MAXIMIZE);
 
 				// now restore the slider positions
-				CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
+				CRegStdDWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
 				if (DWORD(regHorzPos))
 				{
 					POINT pt;
 					pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
 					PositionChildWindows(pt, true, false);
 				}
-				CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
+				CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
 				if (DWORD(regVertPos))
 				{
 					POINT pt;
@@ -344,7 +344,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SYSCOMMAND:
 		{
-			CRegStdWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
+			CRegStdDWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
 			if ((wParam & 0xFFF0) == SC_MAXIMIZE)
 			{
 				regMaximized = 1;
@@ -725,7 +725,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 					UINT uItem = 0;
 					
-					if ((!wstring(tsvninstalled).empty()) && (!DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+					if ((!wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
 						uItem = 1;
 					// set the default entry
 					MENUITEMINFO iinfo = {0};
@@ -1039,7 +1039,7 @@ LRESULT CMainDlg::DoCommand(int id)
 		{
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
 			bool bUseTSVN = !(tsvninstalled.empty());
-			bUseTSVN = bUseTSVN && !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+			bUseTSVN = bUseTSVN && !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			
 			ShowDiff(bUseTSVN);
 		}
@@ -1761,7 +1761,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 			msg += pLogEntry->message.c_str();
 			msg += _T("\n\n-------------------------------\n");
 			// now add all changed paths, one path per line
-			for (map<stdstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+			for (map<std::wstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
 			{
 				// action
 				msg += it->second.action;
@@ -2380,21 +2380,21 @@ void CMainDlg::SaveWndPosition()
 
 	if (!IsZoomed(*this))
 	{
-		CRegStdWORD regXY(_T("Software\\CommitMonitor\\XY"));
+		CRegStdDWORD regXY(_T("Software\\CommitMonitor\\XY"));
 		regXY = MAKELONG(rc.top, rc.left);
-		CRegStdWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
+		CRegStdDWORD regWHWindow(_T("Software\\CommitMonitor\\WHWindow"));
 		regWHWindow = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
 		::GetClientRect(*this, &rc);
-		CRegStdWORD regWH(_T("Software\\CommitMonitor\\WH"));
+		CRegStdDWORD regWH(_T("Software\\CommitMonitor\\WH"));
 		regWH = MAKELONG(rc.bottom-rc.top, rc.right-rc.left);
 	}
 	if (IsZoomed(*this))
 	{
 		::GetWindowRect(m_hTreeControl, &rc);
 		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-		CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
+		CRegStdDWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPosZoomed"));
 		regHorzPos = rc.right;
-		CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
+		CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
 		::GetWindowRect(m_hListControl, &rc);
 		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
 		regVertPos = rc.bottom;
@@ -2403,9 +2403,9 @@ void CMainDlg::SaveWndPosition()
 	{
 		::GetWindowRect(m_hTreeControl, &rc);
 		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
-		CRegStdWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
+		CRegStdDWORD regHorzPos(_T("Software\\CommitMonitor\\HorzPos"));
 		regHorzPos = rc.right;
-		CRegStdWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
+		CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
 		::GetWindowRect(m_hListControl, &rc);
 		::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
 		regVertPos = rc.bottom;

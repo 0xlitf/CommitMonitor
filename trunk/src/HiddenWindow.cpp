@@ -430,7 +430,7 @@ void CHiddenWindow::DoTimer(bool bForce)
 	}
 	m_UrlInfos.ReleaseReadOnlyData();
 
-	if (bAllRead && !bHasErrors && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
+	if (bAllRead && !bHasErrors && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 	{
 		// no errors (anymore) and all items are marked as read:
 		// stop the animated icon
@@ -481,7 +481,7 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
 	m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
 	Shell_NotifyIcon(msg, &m_SystemTray);
 	m_nIcon = 2;
-	if ((newCommits)&&(m_SystemTray.hIcon)&&(DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
+	if ((newCommits)&&(m_SystemTray.hIcon)&&(DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
 		SetTimer(*this, IDT_ANIMATE, TIMER_ANIMATE, NULL);
 	else
 		KillTimer(*this, IDT_ANIMATE);
@@ -765,7 +765,7 @@ DWORD CHiddenWindow::RunThread()
 					if ((bNewEntries)||(!hadError && !it->second.error.empty()))
 					{
 						TCHAR sTitle[1024] = {0};
-						if (!it->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
+						if (!it->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 						{
 							_stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
 							sPopupText = it->second.error;
@@ -857,7 +857,7 @@ DWORD CHiddenWindow::RunThread()
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
 					TCHAR sTitle[1024] = {0};
-					if (!writeIt->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
+					if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{
 						if (!hadError)
 						{
@@ -887,7 +887,7 @@ DWORD CHiddenWindow::RunThread()
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
 					TCHAR sTitle[1024] = {0};
-					if (!writeIt->second.error.empty() && DWORD(CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
+					if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{
 						if (!hadError)
 						{
@@ -1084,7 +1084,7 @@ DWORD CHiddenWindow::RunThread()
 
 
 	// check for newer versions
-	if (m_bRun && (CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE))
+	if (m_bRun && (CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE))
 	{
 		time_t now;
 		struct tm ptm;
@@ -1098,7 +1098,7 @@ DWORD CHiddenWindow::RunThread()
 			// that's not needed.
 			week = ptm.tm_yday / 7;
 
-			CRegStdWORD oldweek = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewerWeek"), (DWORD)-1);
+			CRegStdDWORD oldweek = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewerWeek"), (DWORD)-1);
 			if (((DWORD)oldweek) == -1)
 				oldweek = week;		// first start of CommitMonitor, no update check needed
 			else

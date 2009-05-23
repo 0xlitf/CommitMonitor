@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2008 - Stefan Kueng
+// Copyright (C) 2007-2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,14 +20,7 @@
 #include <string>
 #include "shlwapi.h"
 
-typedef std::wstring wide_string;
-#ifndef stdstring
-#	ifdef UNICODE
-#		define stdstring wide_string
-#	else
-#		define stdstring std::string
-#	endif
-#endif
+typedef std::basic_string<TCHAR> tstring;
 
 class CRegStdBase
 {
@@ -47,7 +40,7 @@ public:	//methods
 	 */
 	LONG removeValue() { RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_WRITE | m_sam, &m_hKey); return RegDeleteValue(m_hKey, m_key.c_str()); }
 
-	stdstring getErrorString()
+	tstring getErrorString()
 	{
 		LPVOID lpMsgBuf;
 
@@ -59,14 +52,14 @@ public:	//methods
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			(LPTSTR) &lpMsgBuf,
 			0, NULL );
-		return stdstring((LPCTSTR)lpMsgBuf);
+		return tstring((LPCTSTR)lpMsgBuf);
 	}
 public:	//members
 	HKEY m_base;		///< handle to the registry base
 	HKEY m_hKey;		///< handle to the open registry key
 	REGSAM m_sam;
-	stdstring m_key;		///< the name of the value
-	stdstring m_path;		///< the path to the key
+	tstring m_key;		///< the name of the value
+	tstring m_path;		///< the path to the key
 	LONG LastError;		///< the last value of the last occurred error
 };
 
@@ -113,21 +106,21 @@ public:
 	 * \param force set to TRUE if no cache should be used, i.e. always read and write directly from/to registry
 	 * \param base a predefined base key like HKEY_LOCAL_MACHINE. see the SDK documentation for more information.
 	 */
-	CRegStdString(const stdstring& key, const stdstring& def = _T(""), BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
+	CRegStdString(const tstring& key, const tstring& def = _T(""), BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
 	~CRegStdString(void);
 	
-	stdstring read();						///< reads the value from the registry
+	tstring read();						///< reads the value from the registry
 	void	write();					///< writes the value to the registry
 		
-	operator stdstring();
-	CRegStdString& operator=(stdstring s);
-	CRegStdString& operator+=(stdstring s) { return *this = (stdstring)*this + s; }
+	operator tstring();
+	CRegStdString& operator=(tstring s);
+	CRegStdString& operator+=(tstring s) { return *this = (tstring)*this + s; }
 	operator LPCTSTR();
 	
 protected:
 
-	stdstring	m_value;				///< the cached value of the registry
-	stdstring	m_defaultvalue;			///< the default value to use
+	tstring	m_value;				///< the cached value of the registry
+	tstring	m_defaultvalue;			///< the default value to use
 	BOOL	m_read;						///< indicates if the value has already been read from the registry
 	BOOL	m_force;					///< indicates if no cache should be used, i.e. always read and write directly from registry
 };
@@ -139,11 +132,11 @@ protected:
  * Usage:
  * in your header file, declare your registry DWORD variable:
  * \code
- * CRegStdWORD regvalue;
+ * CRegStdDWORD regvalue;
  * \endcode
  * next initialize the variable e.g. in the constructor of your class:
  * \code
- * regvalue = CRegStdWORD("Software\\Company\\SubKey\\MyValue", 100);
+ * regvalue = CRegStdDWORD("Software\\Company\\SubKey\\MyValue", 100);
  * \endcode
  * this will set the registry value "MyValue" under HKEY_CURRENT_USER with path 
  * "Software\Company\SubKey" to the variable. If the key does not yet exist or
@@ -170,10 +163,10 @@ protected:
  * another option to force reads and writes to the registry is to specify TRUE as the
  * third parameter in the constructor.
  */
-class CRegStdWORD : public CRegStdBase
+class CRegStdDWORD : public CRegStdBase
 {
 public:
-	CRegStdWORD();
+	CRegStdDWORD();
 	/**
 	 * Constructor.
 	 * \param key the path to the key, including the key. example: "Software\\Company\\SubKey\\MyValue"
@@ -181,24 +174,24 @@ public:
 	 * \param force set to TRUE if no cache should be used, i.e. always read and write directly from/to registry
 	 * \param base a predefined base key like HKEY_LOCAL_MACHINE. see the SDK documentation for more information.
 	 */
-	CRegStdWORD(const stdstring& key, DWORD def = 0, BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
-	~CRegStdWORD(void);
+	CRegStdDWORD(const tstring& key, DWORD def = 0, BOOL force = FALSE, HKEY base = HKEY_CURRENT_USER, REGSAM sam = 0);
+	~CRegStdDWORD(void);
 	
 	DWORD read();						///< reads the value from the registry
 	void	write();					///< writes the value to the registry
 		
 	operator DWORD();
-	CRegStdWORD& operator=(DWORD d);
-	CRegStdWORD& operator+=(DWORD d) { return *this = *this + d;}
-	CRegStdWORD& operator-=(DWORD d) { return *this = *this - d;}
-	CRegStdWORD& operator*=(DWORD d) { return *this = *this * d;}
-	CRegStdWORD& operator/=(DWORD d) { return *this = *this / d;}
-	CRegStdWORD& operator%=(DWORD d) { return *this = *this % d;}
-	CRegStdWORD& operator<<=(DWORD d) { return *this = *this << d;}
-	CRegStdWORD& operator>>=(DWORD d) { return *this = *this >> d;}
-	CRegStdWORD& operator&=(DWORD d) { return *this = *this & d;}
-	CRegStdWORD& operator|=(DWORD d) { return *this = *this | d;}
-	CRegStdWORD& operator^=(DWORD d) { return *this = *this ^ d;}
+	CRegStdDWORD& operator=(DWORD d);
+	CRegStdDWORD& operator+=(DWORD d) { return *this = *this + d;}
+	CRegStdDWORD& operator-=(DWORD d) { return *this = *this - d;}
+	CRegStdDWORD& operator*=(DWORD d) { return *this = *this * d;}
+	CRegStdDWORD& operator/=(DWORD d) { return *this = *this / d;}
+	CRegStdDWORD& operator%=(DWORD d) { return *this = *this % d;}
+	CRegStdDWORD& operator<<=(DWORD d) { return *this = *this << d;}
+	CRegStdDWORD& operator>>=(DWORD d) { return *this = *this >> d;}
+	CRegStdDWORD& operator&=(DWORD d) { return *this = *this & d;}
+	CRegStdDWORD& operator|=(DWORD d) { return *this = *this | d;}
+	CRegStdDWORD& operator^=(DWORD d) { return *this = *this ^ d;}
 	
 protected:
 

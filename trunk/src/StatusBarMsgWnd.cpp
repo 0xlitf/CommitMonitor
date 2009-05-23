@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,7 +100,7 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParent
 		m_slots.push_back(1);
 	SetTimer(*this, STATUSBARMSGWND_SHOWTIMER, 10, NULL);
 	// play the notification sound
-	CRegStdWORD regPlay(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+	CRegStdDWORD regPlay(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 	if (DWORD(regPlay))
 	{
 		CRegStdString regSound(_T("Software\\CommitMonitor\\NotificationSound"));

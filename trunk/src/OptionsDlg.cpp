@@ -54,16 +54,16 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			AddToolTip(IDC_NOTIFYCONNECTERROR, _T("When a repository can not be checked due to connection problems,\nchange/animate the icon as if new commits were available."));
 
 			// initialize the controls
-			bool bShowTaskbarIcon = !!(DWORD)CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
+			bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
-			bool bAnimateIcon = !!CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
-			bool bPlaySound = !!CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
-			bool bUseTSVN = !!CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-			bool bIndicateConnectErrors = !!CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
+			bool bAnimateIcon = !!CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
+			bool bPlaySound = !!CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+			bool bUseTSVN = !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+			bool bIndicateConnectErrors = !!CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
-			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
-			CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
+			CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+			CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
 			TCHAR numBuf[30] = {0};
 			_stprintf_s(numBuf, 30, _T("%ld"), DWORD(numlogs));
 			SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -94,14 +94,14 @@ LRESULT COptionsDlg::DoCommand(int id)
 	{
 	case IDOK:
 		{
-			CRegStdWORD regShowTaskbarIcon = CRegStdWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
+			CRegStdDWORD regShowTaskbarIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
 			CRegStdString regStartWithWindows = CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
-			CRegStdWORD regAnimateIcon = CRegStdWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
-			CRegStdWORD regPlaySound = CRegStdWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
-			CRegStdWORD regUseTSVN = CRegStdWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-			CRegStdWORD updatecheck = CRegStdWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
-			CRegStdWORD numlogs = CRegStdWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
-			CRegStdWORD regIndicateErrors = CRegStdWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
+			CRegStdDWORD regAnimateIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
+			CRegStdDWORD regPlaySound = CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+			CRegStdDWORD regUseTSVN = CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+			CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+			CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
+			CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
 			bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendDlgItemMessage(*this, IDC_AUTOSTART, BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_GETCHECK, 0, NULL);

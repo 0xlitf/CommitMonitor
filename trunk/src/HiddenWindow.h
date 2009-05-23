@@ -89,7 +89,7 @@ private:
 	bool				m_bMainDlgRemovedItems;
 	HWND				m_hMainDlg;
 
-	CRegStdWORD			regShowTaskbarIcon;
+	CRegStdDWORD		regShowTaskbarIcon;
 
 	bool				m_bIsTask;
 	bool				m_bNewerVersionAvailable;
