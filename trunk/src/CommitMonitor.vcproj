@@ -1287,6 +1287,22 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Build Scripts"
+			>
+			<File
+				RelativePath="..\default.build"
+				>
+			</File>
+			<File
+				RelativePath=".\Setup\setup.build"
+				>
+			</File>
+			<File
+				RelativePath="..\version.build.in"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

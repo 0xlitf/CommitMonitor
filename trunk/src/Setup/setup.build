@@ -4,6 +4,25 @@
 	<target name="setup">
 		<property name="verstring" value="${environment::get-variable('MajorVersion')}.${environment::get-variable('MinorVersion')}.${environment::get-variable('MicroVersion')}.${environment::get-variable('WCREV')}" />
 		<property name="msifilename" value="CommitMonitor-${verstring}" />
+		<!-- sign all binaries -->
+		<if test="${file::exists('..\..\signinfo.txt')}">
+			<foreach item="File" property="filename">
+				<in>
+					<items>
+						<include name="..\..\bin\${configuration}\*.dll" />
+						<include name="..\..\bin\${configuration}\*.exe" />
+					</items>
+				</in>
+				<do>
+					<exec program="signtool">
+						<arg value="sign" />
+						<arg value="${signinfo}" />
+						<arg value="${filename}" />
+					</exec>
+				</do>
+			</foreach>
+		</if>
+
 		<exec program="candle">
 			<arg value="-nologo" />
 			<arg value="-out" />
@@ -24,7 +43,15 @@
 		<delete>
 			<fileset>
 				<include name="..\..\bin\*.wixobj" />
+				<include name="..\..\bin\*.wixpdb" />
 			</fileset>
 		</delete>
+		<if test="${file::exists('..\..\signinfo.txt')}">
+			<exec program="signtool">
+				<arg value="sign" />
+				<arg value="${signinfo}" />
+				<arg value="..\..\bin\${msifilename}.msi" />
+			</exec>
+		</if>
 	</target>
 </project>

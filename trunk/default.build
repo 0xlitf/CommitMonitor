@@ -9,12 +9,17 @@
 	<property name="platform" value="win32" />
 	<!-- default build tool is VS.NET2005 -->
 	<property name="buildtool" value="devenv.com" />
+	<!-- the signinfo.txt file has to contain one line with parameters for signtool.exe,
+	     for example:
+		 /t "url/to/timestamp/server" /q
+	-->
+	<loadfile file="signinfo.txt" property="signinfo" failonerror="false" />
 
 	<include buildfile="default.build.user" />
-	
-<!-- ====================================================================== -->
-<!-- Configuration targets													-->
-<!-- ====================================================================== -->
+
+	<!-- ====================================================================== -->
+	<!-- Configuration targets													-->
+	<!-- ====================================================================== -->
 	<target name="debug">
 		<description>
 			Sets the environment up to build the debug versions.
@@ -30,9 +35,9 @@
 		<property name="devrelease" value="" />
 	</target>
 
-<!-- ====================================================================== -->
-<!-- Project targets														-->
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
+	<!-- Project targets														-->
+	<!-- ====================================================================== -->
 	<target name="clean" depends="VSNET">
 		<description>
 			Cleans every subproject.
@@ -49,7 +54,7 @@
 			<arg value="${configuration}|${platform}" />
 		</exec>
 	</target>
-	
+
 	<target name="VersionInfo" depends="VSNET,env">
 		<description>
 			Sets the version information as properties, env variables
@@ -74,7 +79,7 @@
 		</loadfile>
 		<echo file="src\version.h" message="${versionheaderfile}" />
 	</target>
-	
+
 	<target name="Subversion" depends="VSNET,env,VersionInfo">
 		<description>
 			Builds all the libraries CommitMonitor depends on:
@@ -115,8 +120,8 @@
 			<arg value="${configuration}|${platform}" />
 		</exec>
 		<exec program="Tools\upx.exe" >
-      <arg value="-q" />
-      <arg value="bin\${configuration}\CommitMonitor.exe" />
+			<arg value="-q" />
+			<arg value="bin\${configuration}\CommitMonitor.exe" />
 		</exec>
 	</target>
 
@@ -143,10 +148,10 @@
 	</target>
 
 
-<!-- ====================================================================== -->
-<!-- Help target															-->
-<!-- ====================================================================== -->
-    <target name="help">
+	<!-- ====================================================================== -->
+	<!-- Help target															-->
+	<!-- ====================================================================== -->
+	<target name="help">
 		<echo message="You must specify a target to tell us what you want to build!" />
 		<echo />
 		<echo message="The following targets are available:" />
@@ -160,7 +165,7 @@
 		<echo message="msi          : creates the msi, but doesn't build the libs first" />
 		<echo />
 		<echo message="The following targets can be used to tweak the builds:" />
-		<echo message="debug   : if this target is called before other build targets," /> 
+		<echo message="debug   : if this target is called before other build targets," />
 		<echo message="          those targets are built with debug support" />
 		<echo message="release : call this if you want to create official releases." />
 		<echo message="          It removes the '-dev' string from some builds" />
@@ -170,7 +175,7 @@
 		<echo />
 		<echo message="nant release setup" />
 		<echo />
-    </target>
+	</target>
 </project>
 
 
