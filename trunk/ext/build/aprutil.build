@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project name="aprutil" default="build" basedir="..\apr-util">
-	
-<!-- ====================================================================== -->
-<!-- Configuration targets													-->
-<!-- ====================================================================== -->
+
+	<!-- ====================================================================== -->
+	<!-- Configuration targets													-->
+	<!-- ====================================================================== -->
 	<target name="debug">
 		<description>
 			Sets the environment up to build the debug versions.
@@ -11,16 +11,16 @@
 		<property name="configuration" value="debug" />
 	</target>
 
-<!-- ====================================================================== -->
-<!-- Project targets														-->
-<!-- ====================================================================== -->
+	<!-- ====================================================================== -->
+	<!-- Project targets														-->
+	<!-- ====================================================================== -->
 	<target name="rebuild" depends="clean,build" />
-	
+
 	<target name="clean">
 		<description>
 			Cleans previous built files.
 		</description>
-		
+
 		<delete>
 			<fileset>
 				<include name="${configuration}_${platform}\**" />
@@ -82,8 +82,8 @@
 		</cl>
 		<property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
 		<property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
-		<lib 
-			output="xml\expat\lib\${configuration}_${platform}\xml.lib" 
+		<lib
+			output="xml\expat\lib\${configuration}_${platform}\xml.lib"
 			options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
 			<sources>
 				<include name="xml\expat\lib\${configuration}_${platform}\*.obj" />
@@ -118,7 +118,7 @@
 				<include name="include" />
 			</includedirs>
 		</rc>
-				
+
 		<cl outputdir="${configuration}_${platform}">
 			<arg value="/O2" if="${configuration == 'release'}" />
 			<arg value="/Ob1" if="${configuration == 'release'}" />
@@ -169,8 +169,8 @@
 		</cl>
 		<property name="machineoption" value="/MACHINE:X86" />
 		<property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
-		<lib 
-			output="${configuration}_${platform}\libaprutil.lib" 
+		<lib
+			output="${configuration}_${platform}\libaprutil.lib"
 			options='/NOLOGO /DEBUG /PDB:".\${configuration}_${platform}/libaprutil.pdb" /SUBSYSTEM:WINDOWS'>
 			<sources>
 				<include name="${configuration}_${platform}\*.obj" />

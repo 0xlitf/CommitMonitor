@@ -1302,6 +1302,46 @@
 				RelativePath="..\version.build.in"
 				>
 			</File>
+			<Filter
+				Name="ext"
+				>
+				<File
+					RelativePath="..\ext\build\apr.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\aprutil.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\default.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\neon.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\OpenSSL.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\sasl.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\serf.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\subversion.build"
+					>
+				</File>
+				<File
+					RelativePath="..\ext\build\zlib.build"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
