@@ -30,8 +30,10 @@ public:
 	CAppUtils(void);
 	~CAppUtils(void);
 
+	static wstring					GetDataDir();
 	static wstring					GetAppDataDir();
 	static wstring					GetAppDirectory(HMODULE hMod = NULL);
+	static wstring					GetAppName(HMODULE hMod = NULL);
 	static wstring					ConvertDate(apr_time_t time);
 	static void						SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
 	static vector<wstring>			tokenize_str(const wstring& str, const wstring& delims);

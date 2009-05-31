@@ -255,8 +255,8 @@ CUrlInfos::~CUrlInfos(void)
 
 bool CUrlInfos::Load()
 {
-	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-	wstring urlfilebak = CAppUtils::GetAppDataDir() + _T("\\urls_backup");
+	wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+	wstring urlfilebak = CAppUtils::GetDataDir() + _T("\\urls_backup");
 	if (!PathFileExists(urlfile.c_str()))
 		return false;
 	if (Load(urlfile.c_str()))
@@ -275,8 +275,8 @@ bool CUrlInfos::Load()
 
 void CUrlInfos::Save()
 {
-	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
-	wstring urlfilenew = CAppUtils::GetAppDataDir() + _T("\\urls_new");
+	wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+	wstring urlfilenew = CAppUtils::GetDataDir() + _T("\\urls_new");
 	if (Save(urlfilenew.c_str()))
 	{
 		DeleteFile(urlfile.c_str());

@@ -149,6 +149,15 @@ string CAppUtils::PathEscape(const string& path)
 }
 
 
+wstring CAppUtils::GetDataDir()
+{
+	if (CAppUtils::GetAppName().compare(_T("CommitMonitorLocal.exe"))==0)
+	{
+		return CAppUtils::GetAppDirectory();
+	}
+	return CAppUtils::GetAppDataDir();
+}
+
 wstring CAppUtils::GetAppDataDir()
 {
 	WCHAR path[MAX_PATH];
@@ -167,6 +176,18 @@ wstring CAppUtils::GetAppDirectory(HMODULE hMod /* = NULL */)
 	GetModuleFileName(hMod, pathbuf, bufferlen);
 	path = pathbuf;
 	path = path.substr(0, path.find_last_of('\\'));
+
+	return path;
+}
+
+wstring CAppUtils::GetAppName(HMODULE hMod /* = NULL */)
+{
+	TCHAR pathbuf[MAX_PATH] = {0};
+	wstring path;
+	DWORD bufferlen = MAX_PATH;
+	GetModuleFileName(hMod, pathbuf, bufferlen);
+	path = pathbuf;
+	path = path.substr(path.find_last_of('\\')+1);
 
 	return path;
 }

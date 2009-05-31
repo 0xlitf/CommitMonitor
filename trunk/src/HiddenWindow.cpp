@@ -534,7 +534,8 @@ DWORD CHiddenWindow::RunThread()
 
 	// load a copy of the url data
 	CUrlInfos urlinfoReadOnly;
-	wstring urlfile = CAppUtils::GetAppDataDir() + _T("\\urls");
+	wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+
 	if (!PathFileExists(urlfile.c_str()))
 	{
 		if (m_bIsTask)

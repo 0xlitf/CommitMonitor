@@ -927,7 +927,7 @@ LRESULT CMainDlg::DoCommand(int id)
 						{
 							// delete all fetched and stored diff files
 							mask += _T("*.*");
-							CSimpleFileFind sff(CAppUtils::GetAppDataDir(), mask.c_str());
+							CSimpleFileFind sff(CAppUtils::GetDataDir(), mask.c_str());
 							while (sff.FindNextFileNoDots())
 							{
 								DeleteFile(sff.GetFilePath().c_str());
@@ -1111,7 +1111,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 				const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
 				// in case the project name has 'path' chars in it, we have to remove those first
 				_stprintf_s(buf, 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
-				wstring diffFileName = CAppUtils::GetAppDataDir();
+				wstring diffFileName = CAppUtils::GetDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
 				// construct a title for the diff viewer
@@ -1785,7 +1785,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 			// find the diff name
 			_stprintf_s(buf, 1024, _T("%s_%ld.diff"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-			wstring diffFileName = CAppUtils::GetAppDataDir();
+			wstring diffFileName = CAppUtils::GetDataDir();
 			diffFileName += _T("\\");
 			diffFileName += wstring(buf);
 			SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(true, 0));
@@ -1949,7 +1949,7 @@ void CMainDlg::RemoveSelectedListItems()
 				SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
 				// find the diff name
 				_stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-				wstring diffFileName = CAppUtils::GetAppDataDir();
+				wstring diffFileName = CAppUtils::GetDataDir();
 				diffFileName += _T("\\");
 				diffFileName += wstring(buf);
 				DeleteFile(diffFileName.c_str());
