@@ -49,6 +49,7 @@ IDI_PARENTPATHFOLDEROPEN ICON                    "folder_open.ico"
 IDI_REPOURL             ICON                    "repourl.ico"
 IDI_REPOURLNEW          ICON                    "repourl_new.ico"
 IDI_REPOURLFAIL         ICON                    "repourlfail.ico"
+IDI_REPOURLINACTIVE     ICON                    "repourl_inactive.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -275,6 +276,7 @@ IDR_TREEPOPUP MENU
 BEGIN
     POPUP "Popup"
     BEGIN
+        MENUITEM "&Active",                     ID_POPUP_ACTIVE
         MENUITEM "&Edit",                       ID_MAIN_EDIT
         MENUITEM "&Remove",                     ID_MAIN_REMOVE
         MENUITEM "Mark &node as read",          ID_POPUP_MARKNODEASREAD

@@ -30,6 +30,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, minminutesinterval(0)
 	, disallowdiffs(false)
 	, parentpath(false)
+	, monitored(true)
 {
 }
 
@@ -71,6 +72,8 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, minminutesinterval))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, disallowdiffs))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, monitored))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, ignoreUsers))
 		return false;
@@ -173,6 +176,12 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
 		disallowdiffs = !!value;
+	}
+	if (version >= 9)
+	{
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		monitored = !!value;
 	}
 	if (version >= 3)
 	{

@@ -549,6 +549,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resources\repourl_inactive.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\repourl_inactive.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\repourl_new.ico"
 				>
 			</File>

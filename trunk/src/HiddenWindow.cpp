@@ -552,7 +552,7 @@ DWORD CHiddenWindow::RunThread()
 	{
 		int mit = max(it->second.minutesinterval, it->second.minminutesinterval);
 		SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
-		if ((it->second.lastchecked + (mit*60)) < currenttime)
+		if ((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))
 		{
 			TRACE(_T("checking %s for updates\n"), it->first.c_str());
 			// get the highest revision of the repository

@@ -44,6 +44,8 @@
 #define IDD_NEWERNOTIFYDLG              158
 #define IDI_ICON4                       159
 #define IDI_REPOURLFAIL                 159
+#define IDI_ICON6                       160
+#define IDI_REPOURLINACTIVE             160
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -92,7 +94,6 @@
 #define IDC_NUMLOGS                     1040
 #define IDC_CHECK2                      1041
 #define IDC_NOTIFYCONNECTERROR          1041
-#define IDC_EDIT1                       1042
 #define IDC_FILTERSTRING                1042
 #define IDC_FILTERLABEL                 1043
 #define ID_FILE_OPENCOMMITMONITOR       32771
@@ -124,6 +125,7 @@
 #define ID_MAIN_SHOWDIFFCHOOSE          32804
 #define ID_POPUP_OPENWEBVIEWER          32805
 #define ID_POPUP_REFRESHALL             32806
+#define ID_POPUP_ACTIVE                 32807
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -131,8 +133,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        160
-#define _APS_NEXT_COMMAND_VALUE         32807
+#define _APS_NEXT_RESOURCE_VALUE        161
+#define _APS_NEXT_COMMAND_VALUE         32808
 #define _APS_NEXT_CONTROL_VALUE         1044
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

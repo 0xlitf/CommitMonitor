@@ -193,7 +193,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
 			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
-			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 5, 5);
+			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 6, 6);
 			if (m_hImgList)
 			{
 				HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDER));
@@ -213,6 +213,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				DestroyIcon(hIcon);
 
 				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLFAIL));
+				ImageList_AddIcon(m_hImgList, hIcon);
+				DestroyIcon(hIcon);
+
+				hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLINACTIVE));
 				ImageList_AddIcon(m_hImgList, hIcon);
 				DestroyIcon(hIcon);
 
@@ -513,6 +517,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								tv.itemex.iImage = 3;
 								tv.itemex.iSelectedImage = 3;
 							}
+							else if (!it->second.monitored)
+							{
+								bRequiresUpdate = tv.itemex.iImage != 5;
+								tv.itemex.iImage = 5;
+								tv.itemex.iSelectedImage = 5;
+							}
 							else
 							{
 								bRequiresUpdate = tv.itemex.iImage != 2;
@@ -661,6 +671,20 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
 					hMenu = ::GetSubMenu(hMenu, 0);
+					TVITEMEX itemex = {0};
+					itemex.hItem = hittest.hItem;
+					itemex.mask = TVIF_PARAM;
+					TreeView_GetItem(m_hTreeControl, &itemex);
+					const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+					if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+					{
+						const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+						if (info)
+						{
+							CheckMenuItem(hMenu, ID_POPUP_ACTIVE, MF_BYCOMMAND | (info->monitored ? MF_CHECKED : MF_UNCHECKED));
+						}
+					}
+					m_pURLInfos->ReleaseReadOnlyData();
 
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
 					switch (cmd)
@@ -686,6 +710,19 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						break;
 					case ID_POPUP_REFRESHALL:
 						RefreshAll(hittest.hItem);
+						break;
+					case ID_POPUP_ACTIVE:
+						map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+						if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+						{
+							CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+							if (info)
+							{
+								info->monitored = !info->monitored;
+							}
+						}
+						m_pURLInfos->ReleaseWriteData();
+						::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
 						break;
 					}
 				}
