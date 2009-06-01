@@ -554,6 +554,8 @@ DWORD CHiddenWindow::RunThread()
 		SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
 		if ((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))
 		{
+			if ((it->second.errNr == SVN_ERR_RA_NOT_AUTHORIZED)&&(!it->second.error.empty()))
+				continue;	// don't check if the last error was 'not authorized'
 			TRACE(_T("checking %s for updates\n"), it->first.c_str());
 			// get the highest revision of the repository
 			SVN svn;
@@ -564,6 +566,20 @@ DWORD CHiddenWindow::RunThread()
 				SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
 			}
 			svn_revnum_t headrev = svn.GetHEADRevision(it->first);
+			if ((svn.Err)&&(svn.Err->apr_err == SVN_ERR_RA_NOT_AUTHORIZED))
+			{
+				// only block the object for a short time
+				map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+				map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+				if (writeIt != pWrite->end())
+				{
+					writeIt->second.lastchecked = currenttime;
+					writeIt->second.error = svn.GetLastErrorMsg();
+					writeIt->second.errNr = svn.Err->apr_err;
+				}
+				m_UrlInfos.ReleaseWriteData();
+				continue;
+			}
 			if (!m_bRun)
 				continue;
 			if (headrev > it->second.lastcheckedrev)
@@ -805,6 +821,8 @@ DWORD CHiddenWindow::RunThread()
 					{
 						writeIt->second.lastchecked = currenttime;
 						writeIt->second.error = svn.GetLastErrorMsg();
+						if (svn.Err)
+							writeIt->second.errNr = svn.Err->apr_err;
 					}
 					m_UrlInfos.ReleaseWriteData();
 				}
@@ -857,6 +875,8 @@ DWORD CHiddenWindow::RunThread()
 					writeIt->second.lastchecked = currenttime;
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
+					if (svn.Err)
+						writeIt->second.errNr = svn.Err->apr_err;
 					TCHAR sTitle[1024] = {0};
 					if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{
@@ -887,6 +907,8 @@ DWORD CHiddenWindow::RunThread()
 					writeIt->second.lastchecked = currenttime;
 					bool hadError = !writeIt->second.error.empty();
 					writeIt->second.error = svn.GetLastErrorMsg();
+					if (svn.Err)
+						writeIt->second.errNr = svn.Err->apr_err;
 					TCHAR sTitle[1024] = {0};
 					if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
 					{

@@ -31,6 +31,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, disallowdiffs(false)
 	, parentpath(false)
 	, monitored(true)
+	, errNr(0)
 {
 }
 
@@ -80,6 +81,8 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, parentpath))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, error))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, errNr))
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, callcommand))
 		return false;
@@ -204,6 +207,12 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	parentpath = !!value;
 	if (!CSerializeUtils::LoadString(buf, error))
 		return false;
+	if (version >= 10)
+	{
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		errNr = value;
+	}
 	if (version >= 6)
 	{
 		if (!CSerializeUtils::LoadString(buf, callcommand))
