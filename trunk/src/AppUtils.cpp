@@ -304,7 +304,7 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
 			0,
 			NULL 
 			);
-		::MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("CommitMonitor"), MB_ICONERROR);
+		::MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("CommitMonitor"), MB_ICONERROR|MB_TASKMODAL);
 		LocalFree(lpMsgBuf);
 		return false;
 	}
