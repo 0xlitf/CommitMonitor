@@ -54,7 +54,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			AddToolTip(IDC_NOTIFYCONNECTERROR, _T("When a repository can not be checked due to connection problems,\nchange/animate the icon as if new commits were available."));
 
 			// initialize the controls
-			bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
+			bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
 			bool bStartWithWindows = !wstring(CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
 			bool bAnimateIcon = !!CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
 			bool bPlaySound = !!CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
@@ -94,7 +94,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 	{
 	case IDOK:
 		{
-			CRegStdDWORD regShowTaskbarIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), FALSE);
+			CRegStdDWORD regShowTaskbarIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
 			CRegStdString regStartWithWindows = CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
 			CRegStdDWORD regAnimateIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
 			CRegStdDWORD regPlaySound = CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
