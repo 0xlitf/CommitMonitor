@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+	<?include Includes.wxi?>
 	<Product
 	UpgradeCode="B49D2664-0941-465d-A704-CAC63D1D0789"
-	Name='CommitMonitor'
+	Name="$(var.ProductName) $(var.VersionNumberUserVisible)"
 	Id='????????-????-????-????-????????????'
 	Language='1033'
 	Codepage='1252'
-	Version='1.4.0'
+	Version="$(var.VersionNumberInternal)"
 	Manufacturer='Stefans Tools'>
 
 		<Package Id='????????-????-????-????-????????????' Keywords='Installer'
@@ -16,7 +17,7 @@
 
 		<Upgrade Id="B49D2664-0941-465d-A704-CAC63D1D0789" >
 			<!-- flag is set if the install will trigger an upgrade of an existing install -->
-			<UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="1.4.0" IncludeMaximum="no" />
+			<UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="$(var.VersionNumberInternal)" IncludeMaximum="no" />
 		</Upgrade>
 
 		<Media Id='1' Cabinet='cmtmonitor.cab' EmbedCab='yes' />
