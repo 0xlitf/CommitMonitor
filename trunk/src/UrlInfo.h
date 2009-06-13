@@ -24,8 +24,10 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		10
+#define URLINFO_VERSION		11
 #define URLINFOS_VERSION	1
+
+#define URLINFO_MAXENTRIES 1000
 
 class CUrlInfo
 {
@@ -49,6 +51,7 @@ public:
 	wstring						ignoreUsers;
 
 	map<svn_revnum_t,SVNLogEntry> logentries;
+	int							maxentries;
 
 	bool						parentpath;
 	wstring						error;

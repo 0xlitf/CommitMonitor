@@ -44,7 +44,6 @@
 #define IDD_NEWERNOTIFYDLG              158
 #define IDI_ICON4                       159
 #define IDI_REPOURLFAIL                 159
-#define IDI_ICON6                       160
 #define IDI_REPOURLINACTIVE             160
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
@@ -96,6 +95,8 @@
 #define IDC_NOTIFYCONNECTERROR          1041
 #define IDC_FILTERSTRING                1042
 #define IDC_FILTERLABEL                 1043
+#define IDC_EDIT1                       1044
+#define IDC_MAXLOGENTRIES               1044
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -135,7 +136,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        161
 #define _APS_NEXT_COMMAND_VALUE         32808
-#define _APS_NEXT_CONTROL_VALUE         1044
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

@@ -32,6 +32,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, parentpath(false)
 	, monitored(true)
 	, errNr(0)
+	, maxentries(URLINFO_MAXENTRIES)
 {
 }
 
@@ -90,10 +91,12 @@ bool CUrlInfo::Save(FILE * hFile)
 		return false;
 	if (!CSerializeUtils::SaveString(hFile, webviewer))
 		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, maxentries))
+		return false;
 
-    // prevent caching more than 1000 revisions - this is a commit monitor, not a full featured
+    // prevent caching more than URLINFO_MAXENTRIES revisions - this is a commit monitor, not a full featured
     // log dialog!
-    while (logentries.size() > 1000)
+    while (logentries.size() > (size_t)min(URLINFO_MAXENTRIES, maxentries))
         logentries.erase(logentries.begin());
 
 	if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
@@ -211,7 +214,7 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	{
 		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
-		errNr = value;
+		errNr = (apr_status_t)value;
 	}
 	if (version >= 6)
 	{
@@ -231,6 +234,14 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 		if (!CSerializeUtils::LoadString(buf, webviewer))
 			return false;
 	}
+	if (version >= 11)
+	{
+		if (!CSerializeUtils::LoadNumber(buf, value))
+			return false;
+		maxentries = (int)value;
+	}
+	else
+		maxentries = URLINFO_MAXENTRIES;
 
 	logentries.clear();
 	if (!CSerializeUtils::LoadNumber(buf, value))
@@ -239,14 +250,14 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 	{
 		if (CSerializeUtils::LoadNumber(buf, value))
 		{
-			// we had a bug where the size could be bigger than 1000, but
-			// only the first 1000 entries were actually saved.
-			// instead of bailing out if the value is bigger than 1000, we
+			// we had a bug where the size could be bigger than URLINFO_MAXENTRIES, but
+			// only the first URLINFO_MAXENTRIES entries were actually saved.
+			// instead of bailing out if the value is bigger than URLINFO_MAXENTRIES, we
 			// adjust it to the max saved values instead.
 			// in case the value is out of range for other reasons,
 			// the further serialization should bail out soon enough.
-			if (value > 1000)
-				value = 1000;
+			if (value > URLINFO_MAXENTRIES)
+				value = URLINFO_MAXENTRIES;
 			for (unsigned __int64 i=0; i<value; ++i)
 			{
 				unsigned __int64 key;

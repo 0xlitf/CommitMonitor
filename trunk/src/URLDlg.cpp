@@ -74,6 +74,8 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
 			SetDlgItemText(*this, IDC_PASSWORD, info.password.c_str());
 			SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
+			_stprintf_s(buf, 20, _T("%ld"), min(URLINFO_MAXENTRIES, info.maxentries));
+			SetDlgItemText(*this, IDC_MAXLOGENTRIES, buf);
 			SetDlgItemText(*this, IDC_SCRIPT, info.callcommand.c_str());
 			SetDlgItemText(*this, IDC_WEBDIFF, info.webviewer.c_str());
 			SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_SETCHECK, info.noexecuteignored ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -137,6 +139,14 @@ LRESULT CURLDlg::DoCommand(int id)
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_PASSWORD, buffer, len+1);
 			info.password = wstring(buffer, len);
+			delete [] buffer;
+
+			len = GetWindowTextLength(GetDlgItem(*this, IDC_MAXLOGENTRIES));
+			buffer = new WCHAR[len+1];
+			GetDlgItemText(*this, IDC_MAXLOGENTRIES, buffer, len+1);
+			info.maxentries = _ttoi(buffer);
+			info.maxentries = min(URLINFO_MAXENTRIES, info.maxentries);
+			info.maxentries = max(10, info.maxentries);
 			delete [] buffer;
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_IGNOREUSERS));

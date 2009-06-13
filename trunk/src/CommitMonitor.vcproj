@@ -549,11 +549,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File
@@ -1287,7 +1287,15 @@
 			Name="WiX"
 			>
 			<File
+				RelativePath=".\Setup\Includes.wxi"
+				>
+			</File>
+			<File
 				RelativePath=".\Setup\Setup.wxs"
+				>
+			</File>
+			<File
+				RelativePath=".\Setup\VersionNumberInclude.in.wxi"
 				>
 			</File>
 			<File
