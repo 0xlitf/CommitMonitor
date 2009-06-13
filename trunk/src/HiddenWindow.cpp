@@ -150,7 +150,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		CMainDlg dlg(*this);
 		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.SetUpdateAvailable(m_bNewerVersionAvailable);
-		dlg.DoModal(hInst, IDD_MAINDLG, NULL);
+		dlg.DoModal(hInst, IDD_MAINDLG, NULL, IDC_COMMITMONITOR);
 		m_bNewerVersionAvailable = false;
 		ShowTrayIcon(false);
 		m_hMainDlg = NULL;

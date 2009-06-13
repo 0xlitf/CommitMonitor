@@ -1097,6 +1097,16 @@ LRESULT CMainDlg::DoCommand(int id)
 			::SetTimer(*this, TIMER_REFRESH, 1000, NULL);
 		}
 		break;
+	case ID_POPUP_MARKALLASREAD:
+		{
+			CURLDlg dlg;
+			HTREEITEM hItem = TreeView_GetSelection(m_hTreeControl);
+			if (hItem)
+			{
+				MarkAllAsRead(hItem, true);
+			}
+		}
+		break;
 	default:
 		return 0;
 	}

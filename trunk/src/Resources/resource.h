@@ -95,7 +95,6 @@
 #define IDC_NOTIFYCONNECTERROR          1041
 #define IDC_FILTERSTRING                1042
 #define IDC_FILTERLABEL                 1043
-#define IDC_EDIT1                       1044
 #define IDC_MAXLOGENTRIES               1044
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
@@ -135,7 +134,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        161
-#define _APS_NEXT_COMMAND_VALUE         32808
+#define _APS_NEXT_COMMAND_VALUE         32813
 #define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
