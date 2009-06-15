@@ -682,6 +682,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						if (info)
 						{
 							CheckMenuItem(hMenu, ID_POPUP_ACTIVE, MF_BYCOMMAND | (info->monitored ? MF_CHECKED : MF_UNCHECKED));
+							if (!info->parentpath)
+							{
+								// remove the 'mark all as read' since this is not a parent (SVNParentPath) item
+								DeleteMenu(hMenu, ID_POPUP_MARKALLASREAD, MF_BYCOMMAND);
+							}
 						}
 					}
 					m_pURLInfos->ReleaseReadOnlyData();
