@@ -295,6 +295,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			case NIN_KEYSELECT:
 			case NIN_SELECT:
 			case WM_RBUTTONUP:
+			case WM_LBUTTONUP:
 			case WM_CONTEXTMENU:
 				{
 					POINT pt;
