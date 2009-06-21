@@ -157,6 +157,7 @@ BEGIN
     EDITTEXT        IDC_NUMLOGS,243,125,40,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Notify for connection errors",IDC_NOTIFYCONNECTERROR,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,141,105,10
+    CONTROL         "Left click on tray icon shows menu",IDC_LEFTMENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,158,125,10
 END
 
 IDD_FINDBAR DIALOGEX 0, 0, 246, 21

@@ -292,12 +292,17 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 					ShowDialog();
 				}
 				break;
+			case WM_LBUTTONUP:
 			case NIN_KEYSELECT:
 			case NIN_SELECT:
 			case WM_RBUTTONUP:
-			case WM_LBUTTONUP:
 			case WM_CONTEXTMENU:
 				{
+					if (lParam == WM_LBUTTONUP)
+					{
+						if (CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE) == 0)
+							break;	// user doesn't want a left click to show the menu
+					}
 					POINT pt;
 					GetCursorPos( &pt );
 

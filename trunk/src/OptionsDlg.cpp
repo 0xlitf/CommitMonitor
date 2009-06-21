@@ -60,6 +60,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			bool bPlaySound = !!CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
 			bool bUseTSVN = !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			bool bIndicateConnectErrors = !!CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
+			bool bLeftMenu = !!CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
 			CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
 			CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
 			CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
@@ -75,6 +76,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
 			if (tsvninstalled.empty())
 				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
@@ -102,6 +104,7 @@ LRESULT COptionsDlg::DoCommand(int id)
 			CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
 			CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
 			CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
+			CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
 			bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
 			bool bStartWithWindows = !!SendDlgItemMessage(*this, IDC_AUTOSTART, BM_GETCHECK, 0, NULL);
 			bool bAnimateIcon = !!SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_GETCHECK, 0, NULL);
@@ -109,12 +112,14 @@ LRESULT COptionsDlg::DoCommand(int id)
 			bool bUseTSVN = !!SendDlgItemMessage(*this, IDC_USETSVN, BM_GETCHECK, 0, NULL);
 			bool bUpdateCheck = !!SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_GETCHECK, 0, NULL);
 			bool bIndicateConnectErrors = !!SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_GETCHECK, 0, NULL);
+			bool bLeftMenu = !!SendDlgItemMessage(*this, IDC_LEFTMENU, BM_GETCHECK, 0, NULL);
 			regShowTaskbarIcon = bShowTaskbarIcon;
 			regAnimateIcon = bAnimateIcon;
 			regPlaySound = bPlaySound;
 			regUseTSVN = bUseTSVN;
 			updatecheck = bUpdateCheck;
 			regIndicateErrors = bIndicateConnectErrors;
+			regLeftMenu = bLeftMenu;
 			::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
 			if (bStartWithWindows)
 			{

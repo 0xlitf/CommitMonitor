@@ -96,6 +96,8 @@
 #define IDC_FILTERSTRING                1042
 #define IDC_FILTERLABEL                 1043
 #define IDC_MAXLOGENTRIES               1044
+#define IDC_CHECK3                      1045
+#define IDC_LEFTMENU                    1045
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -135,7 +137,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        161
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
