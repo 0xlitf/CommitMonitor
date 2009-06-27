@@ -919,11 +919,12 @@ LRESULT CMainDlg::DoCommand(int id)
 			if (::GetFocus() != GetDlgItem(*this, IDOK))
 			{
 				// focus is not on the OK/Hide button
-				if (GetFocus() == m_hListControl)
+				if ((GetFocus() == m_hListControl)&&((GetKeyState(VK_MENU)&0x8000)==0))
 				{
 					::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
 				}
-				break;
+				if ((GetKeyState(VK_MENU)&0x8000)==0)
+					break;
 			}
 		}
 		// intentional fall-through
