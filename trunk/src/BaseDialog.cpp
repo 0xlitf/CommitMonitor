@@ -52,11 +52,14 @@ INT_PTR CDialog::DoModal(HINSTANCE hInstance, int resID, HWND hWndParent, UINT i
 		}
 		else
 		{
-			if (!IsDialogMessage(m_hwnd, &msg) &&
-				!TranslateAccelerator(hWndParent, hAccelTable, &msg)) 
-			{ 
-				TranslateMessage(&msg); 
-				DispatchMessage(&msg); 
+			if (!PreTranslateMessage(&msg))
+			{
+				if (!IsDialogMessage(m_hwnd, &msg) && 
+					!TranslateAccelerator(m_hwnd, hAccelTable, &msg)) 
+				{ 
+					TranslateMessage(&msg); 
+					DispatchMessage(&msg); 
+				}
 			}
 		}
 	} 
@@ -102,7 +105,7 @@ void CDialog::InitDialog(HWND hwndDlg, UINT iconID)
 	OffsetRect(&rc, -rc.left, -rc.top); 
 	OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom); 
 
-	SetWindowPos(hwndDlg, HWND_TOP, rcOwner.left + (rc.right / 2), rcOwner.top + (rc.bottom / 2), 0, 0,	SWP_NOSIZE); 
+	SetWindowPos(hwndDlg, HWND_TOP, rcOwner.left + (rc.right / 2), rcOwner.top + (rc.bottom / 2), 0, 0,	SWP_NOSIZE|SWP_SHOWWINDOW); 
 	HICON hIcon = (HICON)::LoadImage(hResource, MAKEINTRESOURCE(iconID), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE|LR_SHARED);
 	::SendMessage(hwndDlg, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
 	::SendMessage(hwndDlg, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
@@ -158,4 +161,9 @@ INT_PTR CALLBACK CDialog::stDlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 	}
 	else
 		return DefWindowProc(hwndDlg, uMsg, wParam, lParam);
+}
+
+bool CDialog::PreTranslateMessage(MSG* /*pMsg*/)
+{
+	return false;
 }
