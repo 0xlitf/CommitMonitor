@@ -9,7 +9,7 @@ First, you need to install the compiler package.
 Next you need to install some utilities/programs:
 - Python 2.4(*)           : http://www.python.org/windows/
 - Perl                    : http://www.activestate.com/Products/ActivePerl/
-- WiX(*)                  : http://wix.sourceforge.net
+- WiX 3(*)                : http://wix.sourceforge.net
 - NAnt(*)                 : http://nant.sourceforge.net
 
 (*) Add the paths of the binaries to the PATH environment variable
