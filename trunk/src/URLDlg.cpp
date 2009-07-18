@@ -144,6 +144,19 @@ LRESULT CURLDlg::DoCommand(int id)
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_MAXLOGENTRIES));
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_MAXLOGENTRIES, buffer, len+1);
+			if (_ttoi(buffer) > URLINFO_MAXENTRIES)
+			{
+				EDITBALLOONTIP ebt = {0};
+				ebt.cbStruct = sizeof(EDITBALLOONTIP);
+				ebt.pszTitle = _T("Invalid value!");
+				ebt.pszText = _T("The value for the maximum number of log entries to keep\nmust be between 0 and 1000");
+				ebt.ttiIcon = TTI_ERROR;
+				if (!::SendMessage(GetDlgItem(*this, IDC_MAXLOGENTRIES), EM_SHOWBALLOONTIP, 0, (LPARAM)&ebt))
+				{
+					::MessageBox(*this, _T("The value must be between 0 and 1000"), _T("Invalid Value!"), MB_ICONERROR);
+				}
+				return 0;
+			}
 			info.maxentries = _ttoi(buffer);
 			info.maxentries = min(URLINFO_MAXENTRIES, info.maxentries);
 			info.maxentries = max(10, info.maxentries);
