@@ -669,6 +669,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 				if (hittest.flags & TVHT_ONITEM)
 				{
+					HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
+					m_bBlockListCtrlUI = true;
+					TreeView_SelectItem(m_hTreeControl, hittest.hItem);
+					m_bBlockListCtrlUI = false;
+
 					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
 					hMenu = ::GetSubMenu(hMenu, 0);
 					TVITEMEX itemex = {0};
@@ -692,6 +697,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					m_pURLInfos->ReleaseReadOnlyData();
 
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+					m_bBlockListCtrlUI = true;
+					TreeView_SelectItem(m_hTreeControl, hSel);
+					m_bBlockListCtrlUI = false;
 					switch (cmd)
 					{
 					case ID_MAIN_EDIT:
