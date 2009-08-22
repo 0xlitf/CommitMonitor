@@ -24,6 +24,10 @@
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <Condition Message='This application only runs on Windows 2000 and later.'>VersionNT &gt;= 500</Condition>
 
+    <Property Id="INSTALLDIR">
+      <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" />
+    </Property>
+
     <!-- define directory structure -->
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='ProgramFilesFolder' Name='PFiles'>
@@ -37,8 +41,8 @@
     <!-- set up the components in the directory structure -->
     <DirectoryRef Id="INSTALLDIR">
       <Component Id='MainEXE' Guid='325E1EEF-97EE-4b0e-8FCB-7A0CADE42934'>
-        <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes'>
-        </File>
+        <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes' />
+        <RegistryValue Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Value='[INSTALLDIR]' Type="string" />
       </Component>
       <Component Id="C__sasl" Guid="44E0376D-ACFF-422f-A372-0AB08A1F7EE1" >
         <File Id="F__libsasl" Name="libsasl.dll" DiskId="1" Source="../../bin/release/libsasl.dll" KeyPath="yes" />
