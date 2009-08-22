@@ -530,7 +530,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 								tv.itemex.iSelectedImage = 2;
 							}
 						}
-						if ((bRequiresUpdate)||(sTitle.compare(str) != 0))
+						if ((bRequiresUpdate)||(sTitle.compare(str) != 0)||
+							((tv.itemex.state & TVIS_SELECTED)&&(it->second.logentries.size() > ListView_GetItemCount(m_hListControl))))
 						{
 							TreeView_SetItem(m_hTreeControl, &tv.itemex);
 							if (tv.itemex.state & TVIS_SELECTED)
@@ -1726,17 +1727,18 @@ void CMainDlg::RefreshAll(HTREEITEM hItem)
 	{
 		CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
 
+		svn_revnum_t lowestRev = 0;
 		map<svn_revnum_t,SVNLogEntry>::iterator it = info->logentries.begin();
 		if (it != info->logentries.end())
 		{
-			svn_revnum_t lowestRev = it->second.revision;
-			// set the 'last checked revision to the lowest revision so that
-			// all the subsequent revisions are fetched again.
-			info->lastcheckedrev = lowestRev > 0 ? lowestRev-1 : lowestRev;
-			// and make sure this repository is checked even if the timeout has
-			// not been reached yet on the next fetch round
-			info->lastchecked = 0;
+			lowestRev = it->second.revision;
 		}
+		// set the 'last checked revision to the lowest revision so that
+		// all the subsequent revisions are fetched again.
+		info->lastcheckedrev = lowestRev > 0 ? lowestRev-1 : lowestRev;
+		// and make sure this repository is checked even if the timeout has
+		// not been reached yet on the next fetch round
+		info->lastchecked = 0;
 	}
 	m_pURLInfos->ReleaseWriteData();
 	SendMessage(m_hParent, COMMITMONITOR_GETALL, 0, 0);
