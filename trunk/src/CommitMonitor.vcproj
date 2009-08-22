@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -267,6 +267,28 @@
 			<File
 				RelativePath=".\SerializeUtils.cpp"
 				>
+			</File>
+			<File
+				RelativePath="..\ext\snarl\SnarlInterface.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						WarningLevel="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						WarningLevel="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\StatusBarMsgWnd.cpp"
@@ -415,6 +437,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ext\snarl\SnarlInterface.h"
+				>
+			</File>
+			<File
 				RelativePath=".\StatusBarMsgWnd.h"
 				>
 			</File>
@@ -549,11 +575,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File

@@ -31,6 +31,7 @@
 #include "StatusBarMsgWnd.h"
 #include "OptionsDlg.h"
 #include "version.h"
+#include "SnarlInterface.h"
 
 #include <cctype>
 #include <regex>
@@ -228,14 +229,26 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 			popupData * pData = (popupData*)lParam;
 			if (pData)
 			{
-				CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
-				popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+				Snarl::SnarlInterface snarlIface;
+				if ((snarlIface.GetVersionEx() == Snarl::M_FAILED)||(Snarl::SnarlInterface::GetSnarlWindow() == NULL))
+				{
+					CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
+					popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+				}
+				else
+				{
+					wstring iconPath = CAppUtils::GetAppDirectory() + _T("\\CommitMonitor.png");
+					if (!PathFileExists(iconPath.c_str()))
+						iconPath = _T("");
+					snarlIface.ShowMessage(pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
+				}
                 ShowTrayIcon(true);
 			}
 		}
 		break;
     case COMMITMONITOR_POPUPCLICK:
-        ShowDialog();
+		if ((wParam != Snarl::SNARL_NOTIFICATION_TIMED_OUT)&&(wParam != Snarl::SNARL_NOTIFICATION_CLOSED))
+			ShowDialog();
         break;
 	case COMMITMONITOR_SAVEINFO:
 		{
