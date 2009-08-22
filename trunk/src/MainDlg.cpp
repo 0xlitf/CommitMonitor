@@ -531,7 +531,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							}
 						}
 						if ((bRequiresUpdate)||(sTitle.compare(str) != 0)||
-							((tv.itemex.state & TVIS_SELECTED)&&(it->second.logentries.size() > ListView_GetItemCount(m_hListControl))))
+							((tv.itemex.state & TVIS_SELECTED)&&((int)it->second.logentries.size() > ListView_GetItemCount(m_hListControl))))
 						{
 							TreeView_SetItem(m_hTreeControl, &tv.itemex);
 							if (tv.itemex.state & TVIS_SELECTED)
@@ -809,6 +809,77 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
 					switch (cmd)
 					{
+					case ID_POPUP_MARKASUNREAD:
+						{
+							const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+							HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+							// get the url this entry refers to
+							TVITEMEX itemex = {0};
+							itemex.hItem = hSelectedItem;
+							itemex.mask = TVIF_PARAM;
+							TreeView_GetItem(m_hTreeControl, &itemex);
+							if (itemex.lParam != 0)
+							{
+								LVITEM item = {0};
+								int nItemCount = ListView_GetItemCount(m_hListControl);
+								for (int i=0; i<nItemCount; ++i)
+								{
+									item.mask = LVIF_PARAM|LVIF_STATE;
+									item.stateMask = LVIS_SELECTED;
+									item.iItem = i;
+									ListView_GetItem(m_hListControl, &item);
+									if (item.state & LVIS_SELECTED)
+									{
+										SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+										if (pLogEntry)
+										{
+											// set the entry as unread
+											if (pLogEntry->read)
+											{
+												pLogEntry->read = false;
+												// refresh the name of the tree item to indicate the new
+												// number of unread log messages
+												// e.g. instead of 'TortoiseSVN (2)', show now 'TortoiseSVN (3)'
+												if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+												{
+													const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+													// count the number of unread messages
+													int unread = 0;
+													for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
+													{
+														if (!it->second.read)
+															unread++;
+													}
+													WCHAR * str = new WCHAR[uinfo->name.size()+10];
+													if (unread)
+													{
+														_stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
+														itemex.state = TVIS_BOLD;
+														itemex.stateMask = TVIS_BOLD;
+														itemex.iImage = 3;
+														itemex.iSelectedImage = 3;
+													}
+													else
+													{
+														_stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
+														itemex.state = 0;
+														itemex.stateMask = TVIS_BOLD;
+														itemex.iImage = 2;
+														itemex.iSelectedImage = 2;
+													}
+
+													itemex.pszText = str;
+													itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+													TreeView_SetItem(m_hTreeControl, &itemex);
+												}
+											}
+										}
+									}
+								}
+							}
+							m_pURLInfos->ReleaseReadOnlyData();
+						}
+						break;
 					case ID_MAIN_SHOWDIFFTSVN:
 					case ID_MAIN_SHOWDIFF:
 					case ID_MAIN_REMOVE:
@@ -1773,7 +1844,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 				return;
 			}
 			// set the entry as read
-            if (!pLogEntry->read)
+            if ((!pLogEntry->read)&&(lpNMListView->uNewState & LVIS_SELECTED))
             {
                 pLogEntry->read = true;
                 // refresh the name of the tree item to indicate the new

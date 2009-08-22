@@ -295,6 +295,7 @@ BEGIN
         MENUITEM "&Show Unified Diff",          ID_MAIN_SHOWDIFF
         MENUITEM "&Open WebViewer",             ID_POPUP_OPENWEBVIEWER, INACTIVE
         MENUITEM "&Remove",                     ID_MAIN_REMOVE
+        MENUITEM "&Mark as unread",             ID_POPUP_MARKASUNREAD
     END
 END
 
@@ -306,6 +307,7 @@ BEGIN
         MENUITEM "&Show Unified Diff",          ID_MAIN_SHOWDIFF
         MENUITEM "&Open WebViewer",             ID_POPUP_OPENWEBVIEWER, INACTIVE
         MENUITEM "&Remove",                     ID_MAIN_REMOVE
+        MENUITEM "&Mark as unread",             ID_POPUP_MARKASUNREAD
     END
 END
 
