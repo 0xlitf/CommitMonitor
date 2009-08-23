@@ -45,6 +45,7 @@
 #define IDI_ICON4                       159
 #define IDI_REPOURLFAIL                 159
 #define IDI_REPOURLINACTIVE             160
+#define IDD_PASSWORD                    161
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -77,7 +78,9 @@
 #define IDC_ANIMATEICON                 1026
 #define IDC_NOTIFICATIONSOUND           1027
 #define IDC_BUTTON2                     1028
+#define IDC_EXPORT                      1028
 #define IDC_VERSIONLABEL                1029
+#define IDC_IMPORT                      1029
 #define IDC_WEBLINK                     1030
 #define IDC_DIFFVIEWERLABEL             1031
 #define IDC_IGNORESELF                  1032
@@ -98,6 +101,8 @@
 #define IDC_MAXLOGENTRIES               1044
 #define IDC_CHECK3                      1045
 #define IDC_LEFTMENU                    1045
+#define IDC_PW1                         1046
+#define IDC_PW2                         1047
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -138,9 +143,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        161
+#define _APS_NEXT_RESOURCE_VALUE        162
 #define _APS_NEXT_COMMAND_VALUE         32816
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

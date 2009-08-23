@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl;..\ext\BlowFish"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="1"
-				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl"
+				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl;..\ext\BlowFish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -201,6 +201,26 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ext\BlowFish\BlowFish.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\Callback.cpp"
 				>
 			</File>
@@ -250,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\OptionsDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PasswordDlg.cpp"
 				>
 			</File>
 			<File
@@ -361,6 +385,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ext\BlowFish\Blowfish.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Callback.h"
 				>
 			</File>
@@ -417,6 +445,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PasswordDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ProgressDlg.h"
 				>
 			</File>
@@ -434,6 +466,10 @@
 			</File>
 			<File
 				RelativePath=".\SerializeUtils.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SimpleIni.h"
 				>
 			</File>
 			<File
@@ -575,11 +611,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File

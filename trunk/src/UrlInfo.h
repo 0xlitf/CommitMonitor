@@ -75,6 +75,9 @@ public:
 	bool						Save(LPCWSTR filename);
 	bool						Load(LPCWSTR filename);
 	bool						IsEmpty();
+	bool						Export(LPCWSTR filename, LPCWSTR password);
+	bool						CheckPassword(LPCWSTR filename, LPCWSTR password);
+	bool						Import(LPCWSTR filename, LPCWSTR password);
 
 	const map<wstring,CUrlInfo> *	GetReadOnlyData();
 	map<wstring,CUrlInfo> *		GetWriteData();
@@ -84,6 +87,7 @@ public:
 protected:
 	bool						Save(FILE * hFile);
 	bool						Load(const unsigned char *& buf);
+	string						CalcMD5(LPCWSTR s);
 
 private:
 	map<wstring,CUrlInfo>		infos;

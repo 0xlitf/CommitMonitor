@@ -20,6 +20,8 @@
 #include "UrlInfo.h"
 #include "AppUtils.h"
 #include "MappedInFile.h"
+#include "SimpleIni.h"
+#include "Blowfish.h"
 #include <Wincrypt.h>
 
 #pragma comment(lib, "Crypt32.lib")
@@ -420,6 +422,165 @@ bool CUrlInfos::IsEmpty()
 	bIsEmpty = (infos.size() == 0);
 	guard.ReleaseReaderLock();
 	return bIsEmpty;
+}
+
+string CUrlInfos::CalcMD5(LPCWSTR s)
+{
+	HCRYPTPROV hCryptProv; 
+	HCRYPTHASH hHash = 0; 
+	BYTE bHash[0x7f]; 
+	DWORD dwHashLen= 16; // The MD5 algorithm always returns 16 bytes. 
+	DWORD cbContent= wcslen(s)*sizeof(WCHAR);
+	BYTE* pbContent= (BYTE*)s;
+	string retHash;
+
+	if (CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET)) 
+	{
+		if (CryptCreateHash(hCryptProv, 
+							CALG_MD5,	// algorithm identifier definitions see: wincrypt.h
+							0, 0, &hHash)) 
+		{
+			if (CryptHashData(hHash, pbContent, cbContent, 0))
+			{
+
+				if (CryptGetHashParam(hHash, HP_HASHVAL, bHash, &dwHashLen, 0)) 
+				{
+					// Make a string version of the numeric digest value
+					char tmpBuf[3];
+					for (int i = 0; i<16; i++)
+					{
+						sprintf_s(tmpBuf, 3, "%02x", bHash[i]);
+						retHash += tmpBuf;
+					}
+				}
+			}
+		}
+	}
+
+	CryptDestroyHash(hHash); 
+	CryptReleaseContext(hCryptProv, 0); 
+
+	return retHash;
+}
+
+bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
+{
+	FILE * hFile = NULL;
+	_tfopen_s(&hFile, filename, _T("w+b"));
+	if (hFile == NULL)
+		return false;
+
+	string pwHash = CalcMD5(password);
+
+	guard.AcquireReaderLock();
+	
+	CSimpleIni iniFile;
+	CBlowFish blower((const unsigned char*)pwHash.c_str(), 16);
+	WCHAR numberBuf[1024];
+	
+	for (map<wstring,CUrlInfo>::iterator it = infos.begin(); it != infos.end(); ++it)
+	{
+		iniFile.SetValue(it->first.c_str(), L"username", it->second.username.c_str());
+		iniFile.SetValue(it->first.c_str(), L"url", it->second.url.c_str());
+		iniFile.SetValue(it->first.c_str(), L"name", it->second.name.c_str());
+		iniFile.SetValue(it->first.c_str(), L"ignoreUsers", it->second.ignoreUsers.c_str());
+		iniFile.SetValue(it->first.c_str(), L"callcommand", it->second.callcommand.c_str());
+		iniFile.SetValue(it->first.c_str(), L"webviewer", it->second.webviewer.c_str());
+
+		swprintf_s(numberBuf, 1024, L"%ld", it->second.minutesinterval);
+		iniFile.SetValue(it->first.c_str(), L"minutesinterval", numberBuf);
+		swprintf_s(numberBuf, 1024, L"%ld", it->second.minminutesinterval);
+		iniFile.SetValue(it->first.c_str(), L"minminutesinterval", numberBuf);
+		swprintf_s(numberBuf, 1024, L"%ld", (int)it->second.disallowdiffs);
+		iniFile.SetValue(it->first.c_str(), L"disallowdiffs", numberBuf);
+		swprintf_s(numberBuf, 1024, L"%ld", it->second.maxentries);
+		iniFile.SetValue(it->first.c_str(), L"maxentries", numberBuf);
+		swprintf_s(numberBuf, 1024, L"%ld", it->second.noexecuteignored);
+		iniFile.SetValue(it->first.c_str(), L"noexecuteignored", numberBuf);
+
+		if (it->second.password.size())
+		{
+			// encrypt the password
+			int bufSize = ((it->second.password.size() / 8) + 1) * 8;
+			WCHAR * pwBuf = new WCHAR[bufSize + 1];
+			SecureZeroMemory(pwBuf, bufSize*sizeof(WCHAR));
+			wcscpy_s(pwBuf, bufSize, it->second.password.c_str());
+			BYTE * pByteBuf = (BYTE*)pwBuf;
+			blower.Encrypt(pByteBuf, bufSize*sizeof(WCHAR));
+			WCHAR tmpBuf[3];
+			wstring encryptedPassword;
+			for (unsigned int i = 0; i < bufSize*sizeof(WCHAR); ++i)
+			{
+				swprintf_s(tmpBuf, 3, L"%02x", pByteBuf[i]);
+				encryptedPassword += tmpBuf;
+			}
+
+			iniFile.SetValue(it->first.c_str(), L"password", encryptedPassword.c_str());
+		}
+	}
+
+	SI_Error err = iniFile.SaveFile(hFile);
+	fclose(hFile);
+	guard.ReleaseReaderLock();
+
+	return (err == SI_OK);
+}
+
+bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
+{
+	CSimpleIni iniFile;
+	if (iniFile.LoadFile(filename) != SI_OK)
+		return false;
+
+	string pwHash = CalcMD5(password);
+	guard.AcquireWriterLock();
+	CBlowFish blower((const unsigned char*)pwHash.c_str(), 16);
+
+	CSimpleIni::TNamesDepend sections;
+	iniFile.GetAllSections(sections);
+	for (CSimpleIni::TNamesDepend::iterator it = sections.begin(); it != sections.end(); ++it)
+	{
+		CUrlInfo info;
+
+		info.username = wstring(iniFile.GetValue(*it, _T("username"), _T("")));
+		info.url = wstring(iniFile.GetValue(*it, _T("url"), _T("")));
+		info.name = wstring(iniFile.GetValue(*it, _T("name"), _T("")));
+		info.ignoreUsers = wstring(iniFile.GetValue(*it, _T("ignoreUsers"), _T("")));
+		info.callcommand = wstring(iniFile.GetValue(*it, _T("callcommand"), _T("")));
+		info.webviewer = wstring(iniFile.GetValue(*it, _T("webviewer"), _T("")));
+
+		info.minutesinterval = _wtol(iniFile.GetValue(*it, L"minutesinterval", L""));
+		info.minminutesinterval = _wtol(iniFile.GetValue(*it, L"minminutesinterval", L""));
+		info.disallowdiffs = !!_wtol(iniFile.GetValue(*it, L"disallowdiffs", L""));
+		info.maxentries = _wtol(iniFile.GetValue(*it, L"maxentries", L""));
+		info.noexecuteignored = !!_wtol(iniFile.GetValue(*it, L"noexecuteignored", L""));
+
+		wstring unencryptedPassword = wstring(iniFile.GetValue(*it, _T("password"), _T("")));
+		if (unencryptedPassword.size())
+		{
+			// decrypt the password
+			BYTE * pPwBuf = new BYTE[unencryptedPassword.size()/2];
+			SecureZeroMemory(pPwBuf, unencryptedPassword.size()/2);
+			const WCHAR * pUnencryptedString = unencryptedPassword.c_str();
+			for (unsigned int i = 0; i < unencryptedPassword.size()/2; ++i)
+			{
+				WCHAR tmpBuf[3];
+				wcsncpy_s(tmpBuf, 3, &pUnencryptedString[i*2], 2);
+				WCHAR * stopString;
+				pPwBuf[i] = (BYTE)wcstol(tmpBuf, &stopString, 16);
+			}
+			blower.Decrypt(pPwBuf, unencryptedPassword.size()/2);
+			WCHAR * pDecryptedPW = (WCHAR*)pPwBuf;
+			wstring plainPw = pDecryptedPW;
+			info.password = plainPw;
+		}
+
+		infos[info.url] = info;
+	}
+
+
+	guard.ReleaseWriterLock();
+	return true;
 }
 
 const map<wstring,CUrlInfo> * CUrlInfos::GetReadOnlyData()

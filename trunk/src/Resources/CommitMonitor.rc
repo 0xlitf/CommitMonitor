@@ -133,7 +133,7 @@ BEGIN
     EDITTEXT        IDC_MAXLOGENTRIES,201,125,40,14,ES_AUTOHSCROLL | ES_NUMBER
 END
 
-IDD_OPTIONS DIALOGEX 0, 0, 308, 192
+IDD_OPTIONS DIALOGEX 0, 0, 308, 227
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -149,8 +149,8 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,89,159,10
     EDITTEXT        IDC_NOTIFICATIONSOUNDPATH,180,87,103,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_SOUNDBROWSE,287,87,14,14
-    DEFPUSHBUTTON   "OK",IDOK,122,171,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,251,171,50,14
+    DEFPUSHBUTTON   "OK",IDOK,122,206,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,251,206,50,14
     CONTROL         "Notify when updates for CommitMonitor are available",IDC_CHECKNEWER,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,108,186,10
     LTEXT           "Number of log messages to fetch for new projects:",IDC_NUMLOGLABEL,9,127,164,8
@@ -158,6 +158,8 @@ BEGIN
     CONTROL         "Notify for connection errors",IDC_NOTIFYCONNECTERROR,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,141,105,10
     CONTROL         "Left click on tray icon shows menu",IDC_LEFTMENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,158,125,10
+    PUSHBUTTON      "&Export projects...",IDC_EXPORT,7,175,85,14
+    PUSHBUTTON      "&Import projects...",IDC_IMPORT,103,175,85,14
 END
 
 IDD_FINDBAR DIALOGEX 0, 0, 246, 21
@@ -181,6 +183,20 @@ BEGIN
     LTEXT           "A newer version of CommitMonitor is available.",IDC_STATIC,7,7,150,8
     LTEXT           "Please get it from the homepage:",IDC_STATIC,7,20,108,8
     LTEXT           "http://tools.tortoisesvn.net/CommitMonitor",IDC_WEBURL,7,34,140,8
+END
+
+IDD_PASSWORD DIALOGEX 0, 0, 229, 89
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter Password"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,111,68,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,172,68,50,14
+    LTEXT           "Please enter a password to encrypt/decrypt the login data of your monitored repositories.",IDC_STATIC,7,7,215,18
+    LTEXT           "Password:",IDC_STATIC,7,32,34,8
+    EDITTEXT        IDC_PW1,74,29,148,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "Retype password:",IDC_STATIC,7,48,60,8
+    EDITTEXT        IDC_PW2,74,46,148,14,ES_PASSWORD | ES_AUTOHSCROLL
 END
 
 
@@ -225,7 +241,7 @@ BEGIN
         VERTGUIDE, 283
         VERTGUIDE, 287
         TOPMARGIN, 7
-        BOTTOMMARGIN, 185
+        BOTTOMMARGIN, 220
     END
 
     IDD_NEWERNOTIFYDLG, DIALOG
@@ -234,6 +250,15 @@ BEGIN
         RIGHTMARGIN, 200
         TOPMARGIN, 7
         BOTTOMMARGIN, 67
+    END
+
+    IDD_PASSWORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        VERTGUIDE, 74
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 82
     END
 END
 #endif    // APSTUDIO_INVOKED

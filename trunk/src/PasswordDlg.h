@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2009 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,20 +23,17 @@
 /**
  * options dialog.
  */
-class COptionsDlg : public CDialog
+class CPasswordDlg : public CDialog
 {
 public:
-	COptionsDlg(HWND hParent);
-	~COptionsDlg(void);
+	CPasswordDlg(HWND hParent);
+	~CPasswordDlg(void);
 
-	void					SetHiddenWnd(HWND hWnd) {m_hHiddenWnd = hWnd;}
-	void					SetUrlInfos(CUrlInfos * pInfos) {m_pURLInfos = pInfos;}
+	std::wstring			password;
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT					DoCommand(int id);
 
 private:
 	HWND					m_hParent;
-	HWND					m_hHiddenWnd;
-	CUrlInfos *				m_pURLInfos;
 };

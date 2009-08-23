@@ -19,6 +19,7 @@
 #include "StdAfx.h"
 #include "Resource.h"
 #include "OptionsDlg.h"
+#include "PasswordDlg.h"
 #include "Registry.h"
 #include "AppUtils.h"
 #include <string>
@@ -26,7 +27,7 @@
 
 using namespace std;
 
-COptionsDlg::COptionsDlg(HWND hParent)
+COptionsDlg::COptionsDlg(HWND hParent) : m_pURLInfos(NULL)
 {
 	m_hParent = hParent;
 }
@@ -164,6 +165,62 @@ LRESULT COptionsDlg::DoCommand(int id)
 		// fall through
 	case IDCANCEL:
 		EndDialog(*this, id);
+		break;
+	case IDC_EXPORT:
+		{
+			if (m_pURLInfos)
+			{
+				CPasswordDlg dlg(*this);
+				if (dlg.DoModal(hResource, IDD_PASSWORD, *this) == IDOK)
+				{
+					OPENFILENAME ofn = {0};		// common dialog box structure
+					TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+					// Initialize OPENFILENAME
+					ofn.lStructSize = sizeof(OPENFILENAME);
+					ofn.hwndOwner = *this;
+					ofn.lpstrFile = szFile;
+					ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+					ofn.lpstrTitle = _T("Export monitored projects to...\0");
+					ofn.Flags = OFN_HIDEREADONLY|OFN_DONTADDTORECENT|OFN_EXPLORER|OFN_ENABLESIZING|OFN_OVERWRITEPROMPT;
+					ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
+					ofn.nFilterIndex = 1;
+					// Display the Open dialog box. 
+					if (GetSaveFileName(&ofn)==TRUE)
+					{
+						if (wcscmp(&szFile[wcslen(szFile)-6], L".cmprj"))
+							wcscat_s(szFile, MAX_PATH, L".cmprj");
+						m_pURLInfos->Export(szFile, dlg.password.c_str());
+					}
+				}
+			}
+		}
+		break;
+	case IDC_IMPORT:
+		{
+			if (m_pURLInfos)
+			{
+				CPasswordDlg dlg(*this);
+				if (dlg.DoModal(hResource, IDD_PASSWORD, *this) == IDOK)
+				{
+					OPENFILENAME ofn = {0};		// common dialog box structure
+					TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+					// Initialize OPENFILENAME
+					ofn.lStructSize = sizeof(OPENFILENAME);
+					ofn.hwndOwner = *this;
+					ofn.lpstrFile = szFile;
+					ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+					ofn.lpstrTitle = _T("Import monitored projects from...\0");
+					ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
+					ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
+					ofn.nFilterIndex = 1;
+					// Display the Open dialog box. 
+					if (GetOpenFileName(&ofn)==TRUE)
+					{
+						m_pURLInfos->Import(szFile, dlg.password.c_str());
+					}
+				}
+			}
+		}
 		break;
 	case IDC_DIFFBROWSE:
 		{

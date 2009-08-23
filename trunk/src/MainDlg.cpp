@@ -1171,6 +1171,7 @@ LRESULT CMainDlg::DoCommand(int id)
 		{
 			COptionsDlg dlg(*this);
 			dlg.SetHiddenWnd(m_hParent);
+			dlg.SetUrlInfos(m_pURLInfos);
 			dlg.DoModal(hResource, IDD_OPTIONS, *this);
 		}
 		break;

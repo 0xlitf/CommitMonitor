@@ -350,6 +350,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 						{
 							COptionsDlg dlg(*this);
 							dlg.SetHiddenWnd(*this);
+							dlg.SetUrlInfos(&m_UrlInfos);
 							dlg.DoModal(hResource, IDD_OPTIONS, *this);
 						}
 						break;
