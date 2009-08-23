@@ -347,9 +347,26 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 						DoTimer(true);
 						break;
 					case ID_POPUP_OPTIONS:
-						COptionsDlg dlg(*this);
-						dlg.SetHiddenWnd(*this);
-						dlg.DoModal(hResource, IDD_OPTIONS, *this);
+						{
+							COptionsDlg dlg(*this);
+							dlg.SetHiddenWnd(*this);
+							dlg.DoModal(hResource, IDD_OPTIONS, *this);
+						}
+						break;
+					case ID_POPUP_MARKALLASREAD:
+						{
+							map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+							for (map<wstring, CUrlInfo>::iterator it = pWrite->begin(); it != pWrite->end(); ++it)
+							{
+								CUrlInfo * pInfo = &it->second;
+								for (map<svn_revnum_t,SVNLogEntry>::iterator logit = pInfo->logentries.begin(); logit != pInfo->logentries.end(); ++logit)
+								{
+									logit->second.read = true;
+								}
+							}
+							m_UrlInfos.ReleaseWriteData();
+							ShowTrayIcon(false);
+						}
 						break;
 					}
 				}

@@ -250,6 +250,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open CommitMonitor",         ID_POPUP_OPENCOMMITMONITOR
         MENUITEM "Check &now",                  ID_POPUP_CHECKNOW
+        MENUITEM "&Mark all as read",           ID_POPUP_MARKALLASREAD
         MENUITEM "O&ptions",                    ID_POPUP_OPTIONS
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
