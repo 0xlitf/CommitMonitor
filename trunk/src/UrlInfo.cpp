@@ -575,7 +575,25 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
 			info.password = plainPw;
 		}
 
-		infos[info.url] = info;
+		if ((infos.size())&&(infos.find(info.url) != infos.end()))
+		{
+			CUrlInfo existingUrlInfo = infos.find(info.url)->second;
+			existingUrlInfo.username = info.username;
+			existingUrlInfo.url = info.url;
+			existingUrlInfo.name = info.name;
+			existingUrlInfo.ignoreUsers = info.ignoreUsers;
+			existingUrlInfo.callcommand = info.callcommand;
+			existingUrlInfo.webviewer = info.webviewer;
+			existingUrlInfo.minutesinterval = info.minutesinterval;
+			existingUrlInfo.minminutesinterval = info.minminutesinterval;
+			existingUrlInfo.disallowdiffs = info.disallowdiffs;
+			existingUrlInfo.maxentries = info.maxentries;
+			existingUrlInfo.noexecuteignored = info.noexecuteignored;
+
+			infos[existingUrlInfo.url] = existingUrlInfo;
+		}
+		else
+			infos[info.url] = info;
 	}
 
 
