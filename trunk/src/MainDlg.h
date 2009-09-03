@@ -112,4 +112,5 @@ private:
 
 	bool					m_bBlockListCtrlUI;
 	bool					m_bNewerVersionAvailable;
+	bool					m_refreshNeeded;
 };

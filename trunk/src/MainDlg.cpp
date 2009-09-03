@@ -48,6 +48,7 @@ CMainDlg::CMainDlg(HWND hParent)
 	, m_hToolbarImages(NULL)
 	, m_hImgList(NULL)
 	, m_bNewerVersionAvailable(false)
+	, m_refreshNeeded(false)
 {
 	m_hParent = hParent;
 	// use the default GUI font, create a copy of it and
@@ -531,8 +532,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							}
 						}
 						if ((bRequiresUpdate)||(sTitle.compare(str) != 0)||
-							((tv.itemex.state & TVIS_SELECTED)&&((int)it->second.logentries.size() > ListView_GetItemCount(m_hListControl))))
+							((tv.itemex.state & TVIS_SELECTED)&&(m_refreshNeeded)))
 						{
+							m_refreshNeeded = false;
 							TreeView_SetItem(m_hTreeControl, &tv.itemex);
 							if (tv.itemex.state & TVIS_SELECTED)
 							{
@@ -870,6 +872,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 													itemex.pszText = str;
 													itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+													m_refreshNeeded = true;
 													TreeView_SetItem(m_hTreeControl, &itemex);
 												}
 											}
