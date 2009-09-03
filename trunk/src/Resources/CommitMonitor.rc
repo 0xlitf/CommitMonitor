@@ -190,13 +190,13 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Enter Password"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    EDITTEXT        IDC_PW1,74,29,148,14,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_PW2,74,46,148,14,ES_PASSWORD | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,111,68,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,172,68,50,14
     LTEXT           "Please enter a password to encrypt/decrypt the login data of your monitored repositories.",IDC_STATIC,7,7,215,18
     LTEXT           "Password:",IDC_STATIC,7,32,34,8
-    EDITTEXT        IDC_PW1,74,29,148,14,ES_PASSWORD | ES_AUTOHSCROLL
     LTEXT           "Retype password:",IDC_STATIC,7,48,60,8
-    EDITTEXT        IDC_PW2,74,46,148,14,ES_PASSWORD | ES_AUTOHSCROLL
 END
 
 
