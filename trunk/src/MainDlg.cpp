@@ -1709,6 +1709,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 			wstring msg = it->second.message;
 			std::remove(msg.begin(), msg.end(), '\r');
 			std::replace(msg.begin(), msg.end(), '\n', ' ');
+			std::replace(msg.begin(), msg.end(), '\t', ' ');
 			_tcsncpy_s(buf, 1024, msg.c_str(), 1023);
 			ListView_SetItemText(m_hListControl, 0, 3, buf);
 
