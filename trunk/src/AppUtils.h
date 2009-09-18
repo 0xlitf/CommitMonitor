@@ -43,4 +43,6 @@ public:
 	static string					PathEscape(const string& path);
 	static bool						IsWow64();
 	static wstring					GetTSVNPath();
+	static wstring					GetVersionStringFromExe(LPCTSTR path);
+
 };

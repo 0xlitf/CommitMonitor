@@ -79,7 +79,8 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
 			SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
-			if (tsvninstalled.empty())
+			wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+			if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
 				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
 			SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
 		}

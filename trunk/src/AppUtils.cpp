@@ -25,6 +25,7 @@
 #include <shlobj.h>
 
 #pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "version.lib")
 
 
 static const char iri_escape_chars[256] = {
@@ -401,4 +402,56 @@ wstring CAppUtils::GetTSVNPath()
 	return sRet;
 }
 
+wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
+{
+	struct TRANSARRAY
+	{
+		WORD wLanguageID;
+		WORD wCharacterSet;
+	};
 
+	wstring sVersion;
+	DWORD dwReserved,dwBufferSize;
+	dwBufferSize = GetFileVersionInfoSize((LPTSTR)path,&dwReserved);
+
+	if (dwBufferSize > 0)
+	{
+		LPVOID pBuffer = (void*) malloc(dwBufferSize);
+
+		if (pBuffer != (void*) NULL)
+		{
+			UINT        nInfoSize = 0,
+				nFixedLength = 0;
+			LPSTR       lpVersion = NULL;
+			VOID*       lpFixedPointer;
+			TRANSARRAY* lpTransArray;
+			TCHAR       strLangProduktVersion[MAX_PATH];
+
+			GetFileVersionInfo((LPTSTR)path,
+				dwReserved,
+				dwBufferSize,
+				pBuffer);
+
+			VerQueryValue(	pBuffer,
+				_T("\\VarFileInfo\\Translation"),
+				&lpFixedPointer,
+				&nFixedLength);
+			lpTransArray = (TRANSARRAY*) lpFixedPointer;
+
+			_stprintf_s(strLangProduktVersion, MAX_PATH, 
+				_T("\\StringFileInfo\\%04x%04x\\ProductVersion"),
+				lpTransArray[0].wLanguageID,
+				lpTransArray[0].wCharacterSet);
+
+			VerQueryValue(pBuffer,
+				(LPTSTR)strLangProduktVersion,
+				(LPVOID *)&lpVersion,
+				&nInfoSize);
+
+			sVersion = (LPCTSTR)lpVersion;
+			free(pBuffer);
+		}
+	} 
+
+	return sVersion;
+}

@@ -1164,7 +1164,8 @@ LRESULT CMainDlg::DoCommand(int id)
 	case ID_MAIN_SHOWDIFFCHOOSE:
 		{
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
-			bool bUseTSVN = !(tsvninstalled.empty());
+			wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+			bool bUseTSVN = !(tsvninstalled.empty()) && (_tstoi(sVer.substr(3, 4).c_str()) > 4);
 			bUseTSVN = bUseTSVN && !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 			
 			ShowDiff(bUseTSVN);
@@ -1257,7 +1258,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 				// start the diff viewer
 				wstring cmd;
 				wstring tsvninstalled = CAppUtils::GetTSVNPath();
-				if ((bUseTSVN)&&(!tsvninstalled.empty()))
+				wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+				if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
 				{
 					// yes, we have TSVN installed
 					// call TortoiseProc to do the diff for us
