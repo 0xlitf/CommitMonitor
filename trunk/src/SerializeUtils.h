@@ -23,6 +23,7 @@
 
 using namespace std;
 
+#define SERIALIZEBUFFERSIZE	4096
 class CSerializeUtils
 {
 public:
@@ -50,5 +51,6 @@ public:
 		SerializeType_Buffer
 	};
 private:
-    static char buffer[4096];
+	static char buffer[SERIALIZEBUFFERSIZE];
+	static wchar_t wbuffer[SERIALIZEBUFFERSIZE];
 };

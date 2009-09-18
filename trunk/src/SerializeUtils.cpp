@@ -20,7 +20,8 @@
 #include "SerializeUtils.h"
 #include <assert.h>
 
-char CSerializeUtils::buffer[4096] = {0};
+char CSerializeUtils::buffer[SERIALIZEBUFFERSIZE] = {0};
+wchar_t CSerializeUtils::wbuffer[SERIALIZEBUFFERSIZE] = {0};
 
 CSerializeUtils::CSerializeUtils(void)
 {
@@ -79,7 +80,6 @@ bool CSerializeUtils::SaveString(FILE * hFile, string str)
     if (fwrite(&type, sizeof(type), 1, hFile))
 	{
 		size_t length = str.size();
-		assert(length < (1024*100));
         if (fwrite(&length, sizeof(length), 1, hFile))
 		{
             if (fwrite(str.c_str(), sizeof(char), length, hFile)>=0)
@@ -98,7 +98,6 @@ bool CSerializeUtils::SaveBuffer(FILE * hFile, BYTE * pbData, size_t len)
 	SerializeTypes type = SerializeType_Buffer;
 	if (fwrite(&type, sizeof(type), 1, hFile))
 	{
-		assert(len < (1024*100));
 		if (fwrite(&len, sizeof(len), 1, hFile))
 		{
 			if (fwrite(pbData, sizeof(BYTE), len, hFile)>=0)
@@ -118,32 +117,29 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
 			size_t length = 0;
             if (fread(&length, sizeof(length), 1, hFile))
 			{
-				if (length < (1024*100))
+				if (length)
 				{
-                    if (length)
-                    {
-                        if (length < 4096)
-                        {
-                            if (fread(buffer, sizeof(char), length, hFile))
-                            {
-                                str = string(buffer, length);
-                                return true;
-                            }
-                        }
-                        char * pBuffer = new char[length];
-                        if (fread(pBuffer, sizeof(char), length, hFile))
-                        {
-                            str = string(pBuffer, length);
-                            delete [] pBuffer;
-                            return true;
-                        }
-                        delete [] pBuffer;
-                    }
-                    else
-                    {
-                        str = string("");
-                        return true;
-                    }
+					if (length < SERIALIZEBUFFERSIZE)
+					{
+						if (fread(buffer, sizeof(char), length, hFile))
+						{
+							str = string(buffer, length);
+							return true;
+						}
+					}
+					char * pBuffer = new char[length];
+					if (fread(pBuffer, sizeof(char), length, hFile))
+					{
+						str = string(pBuffer, length);
+						delete [] pBuffer;
+						return true;
+					}
+					delete [] pBuffer;
+				}
+				else
+				{
+					str = string("");
+					return true;
 				}
 			}
 		}
@@ -160,17 +156,14 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, std::string &str)
 	{
 		size_t length = *((size_t *)buf);
 		buf += sizeof(size_t);
-		if (length < (1024*100))
+		if (length)
 		{
-			if (length)
-			{
-				str = string((const char *)buf, length);
-				buf += length;
-				return true;
-			}
-			str = string("");
+			str = string((const char *)buf, length);
+			buf += length;
 			return true;
 		}
+		str = string("");
+		return true;
 	}
 	return false;
 }
@@ -195,30 +188,26 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
 	{
 		size_t length = *((size_t *)buf);
 		buf += sizeof(size_t);
-		if (length < (1024*100))
+		if (length)
 		{
-			if (length)
+			int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, NULL, 0);
+			if (size < SERIALIZEBUFFERSIZE)
 			{
-				int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, NULL, 0);
-				if (size < 4096)
-				{
-					TCHAR wide[4096];
-					int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
-					str = wstring(wide, ret);
-				}
-				else
-				{
-					wchar_t * wide = new wchar_t[size+1];
-					int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
-					str = wstring(wide, ret);
-					delete [] wide;
-				}
-				buf += length;
-				return true;
+				int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wbuffer, size);
+				str = wstring(wbuffer, ret);
 			}
-			str = wstring(_T(""));
+			else
+			{
+				wchar_t * wide = new wchar_t[size+1];
+				int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
+				str = wstring(wide, ret);
+				delete [] wide;
+			}
+			buf += length;
 			return true;
 		}
+		str = wstring(_T(""));
+		return true;
 	}
 	return false;
 }
@@ -232,20 +221,17 @@ bool CSerializeUtils::LoadBuffer(const unsigned char *& buf, BYTE *& pbData, siz
 	{
 		size_t length = *((size_t *)buf);
 		buf += sizeof(size_t);
-		if (length < (1024*100))
+		if (length)
 		{
-			if (length)
-			{
-				pbData = new BYTE[length];
-				memcpy(pbData, buf, length);
-				len = length;
-				buf += length;
-				return true;
-			}
-			len = 0;
-			pbData = NULL;
+			pbData = new BYTE[length];
+			memcpy(pbData, buf, length);
+			len = length;
+			buf += length;
 			return true;
 		}
+		len = 0;
+		pbData = NULL;
+		return true;
 	}
 	return false;
 }
