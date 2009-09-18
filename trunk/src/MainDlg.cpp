@@ -192,6 +192,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
 			m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
+			m_hFilterControl = ::GetDlgItem(*this, IDC_FILTERSTRING);
 			::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 			assert(m_pURLInfos);
 			m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 6, 6);
@@ -250,6 +251,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// subclass the tree view control to intercept the WM_SETFOCUS messages
 			m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
 			SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
+			m_oldFilterWndProc = (WNDPROC)SetWindowLongPtr(m_hFilterControl, GWLP_WNDPROC, (LONG)FilterProc);
+			SetWindowLongPtr(m_hFilterControl, GWLP_USERDATA, (LONG)this);
 
 			m_ListCtrl.SubClassListCtrl(m_hListControl);
 
@@ -413,7 +416,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_COMMAND:
-		if ((HIWORD(wParam) == EN_CHANGE)&&((HWND)lParam == GetDlgItem(*this, IDC_FILTERSTRING)))
+		if ((HIWORD(wParam) == EN_CHANGE)&&((HWND)lParam == m_hFilterControl))
 		{
 			// start the filter timer
 			::SetTimer(*this, TIMER_FILTER, FILTER_ELAPSE, NULL);
@@ -1628,7 +1631,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		TCHAR buf[1024];
 		int iLastUnread = -1;
 
-		int len = GetWindowTextLength(GetDlgItem(*this, IDC_FILTERSTRING));
+		int len = GetWindowTextLength(m_hFilterControl);
 		WCHAR * buffer = new WCHAR[len+1];
 		GetDlgItemText(*this, IDC_FILTERSTRING, buffer, len+1);
 		wstring filterstring = wstring(buffer, len);
@@ -2132,7 +2135,6 @@ void CMainDlg::DoResize(int width, int height)
 	HWND hOK = GetDlgItem(*this, IDOK);
 	HWND hLabel = GetDlgItem(*this, IDC_INFOLABEL);
 	HWND hFilterLabel = GetDlgItem(*this, IDC_FILTERLABEL);
-	HWND hFilterBox = GetDlgItem(*this, IDC_FILTERSTRING);
 	::GetClientRect(m_hTreeControl, &tree);
 	::GetClientRect(m_hListControl, &list);
 	::GetClientRect(m_hLogMsgControl, &log);
@@ -2140,11 +2142,11 @@ void CMainDlg::DoResize(int width, int height)
 	::GetClientRect(hOK, &ok);
 	::GetClientRect(hLabel, &label);
 	::GetClientRect(hFilterLabel, &filterlabel);
-	::GetClientRect(hFilterBox, &filterbox);
+	::GetClientRect(m_hFilterControl, &filterbox);
 	HDWP hdwp = BeginDeferWindowPos(9);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
-	hdwp = DeferWindowPos(hdwp, hFilterBox, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg+1, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT-1, SWP_NOZORDER|SWP_NOACTIVATE);
+	hdwp = DeferWindowPos(hdwp, m_hFilterControl, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg+1, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT-1, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+FILTERBOXHEIGHT+4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
@@ -2454,7 +2456,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 			hdwp = DeferWindowPos(hdwp, GetDlgItem(*this, IDC_FILTERLABEL), NULL,
 				loglist.left, treelist.top+5, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_NOSIZE);
 
-			hdwp = DeferWindowPos(hdwp, GetDlgItem(*this, IDC_FILTERSTRING), NULL,
+			hdwp = DeferWindowPos(hdwp, m_hFilterControl, NULL,
 				loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT, 
 				SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
@@ -2561,4 +2563,16 @@ LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPA
 		pThis->SetRemoveButtonState();
 	}
 	return CallWindowProc(pThis->m_oldTreeWndProc, hWnd, uMessage, wParam, lParam);
+}
+
+LRESULT CALLBACK CMainDlg::FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	CMainDlg *pThis = (CMainDlg*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	if (pThis == NULL)
+		return 0;
+	if (uMessage == WM_LBUTTONDBLCLK)
+	{
+		::SetWindowText(pThis->m_hFilterControl, _T(""));
+	}
+	return CallWindowProc(pThis->m_oldFilterWndProc, hWnd, uMessage, wParam, lParam);
 }

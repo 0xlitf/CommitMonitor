@@ -85,11 +85,14 @@ private:
 	/// window procedure of the sub classed tree view control
 	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 	WNDPROC					m_oldTreeWndProc;	///< pointer to the original window proc of the tree view control
+	static LRESULT CALLBACK	FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+	WNDPROC					m_oldFilterWndProc;	///< pointer to the original window proc of the filter control
 
 private:
 	HWND					m_hTreeControl;
 	HWND					m_hListControl;
 	HWND					m_hLogMsgControl;
+	HWND					m_hFilterControl;
 	HFONT					m_font;
 
 	CListCtrl				m_ListCtrl;
