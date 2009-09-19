@@ -122,6 +122,8 @@ bool CHiddenWindow::RegisterAndCreateWindow()
 			ShowWindow(m_hwnd, SW_HIDE);
 			ShowTrayIcon(false);
 			m_UrlInfos.Load();
+			Snarl::SnarlInterface snarlIface;
+			snarlGlobalMsg = snarlIface.GetGlobalMsg();
 			return true;
 		}
 	}
@@ -133,7 +135,7 @@ INT_PTR CHiddenWindow::ShowDialog()
 	return ::SendMessage(*this, COMMITMONITOR_SHOWDLGMSG, 0, 0);
 }
 
-LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*wParam*/, LPARAM /*lParam*/)
+LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wParam, LPARAM /*lParam*/)
 {
 	if (uMsg == COMMITMONITOR_SHOWDLGMSG)
 	{
@@ -165,6 +167,29 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM /*w
 		m_SystemTray.hIcon = NULL;
 		TRACE(_T("Taskbar created!\n"));
 		ShowTrayIcon(bNew);
+	}
+	else if (uMsg == (UINT)snarlGlobalMsg)
+	{
+		if (wParam == Snarl::SNARL_LAUNCHED)
+		{
+			Snarl::SnarlInterface snarlIface;
+			if ((snarlIface.GetVersionEx() != Snarl::M_FAILED)&&(Snarl::SnarlInterface::GetSnarlWindow() != NULL))
+			{
+				wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
+				if (CAppUtils::ExtractBinResource(_T("PNG"), IDB_COMMITMONITOR, imgPath))
+				{
+					// register with Snarl
+					snarlIface.RegisterApp(_T("CommitMonitor"), imgPath.c_str(), imgPath.c_str(), *this);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWPROJECTS);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWCOMMITS);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_FAILEDCONNECT);
+				}
+			}
+		}
+		if (wParam == Snarl::SNARL_SHOW_APP_UI)
+		{
+			SendMessage(*this, COMMITMONITOR_SHOWDLGMSG, 0, 0);
+		}
 	}
 	return 0L;
 }
@@ -237,10 +262,10 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 				}
 				else
 				{
-					wstring iconPath = CAppUtils::GetAppDirectory() + _T("\\CommitMonitor.png");
+					wstring iconPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
 					if (!PathFileExists(iconPath.c_str()))
 						iconPath = _T("");
-					snarlIface.ShowMessage(pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
+					snarlIface.ShowMessageEx(pData->sAlertType.c_str(), pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
 				}
                 ShowTrayIcon(true);
 			}
@@ -831,6 +856,7 @@ DWORD CHiddenWindow::RunThread()
 						popupData data;
 						data.sText = sPopupText;
 						data.sTitle = wstring(sTitle);
+						data.sAlertType = ALERTTYPE_NEWCOMMITS;
 						// check if there still are unread items
 						bool bUnread = false;
 						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
@@ -923,6 +949,7 @@ DWORD CHiddenWindow::RunThread()
 							popupData data;
 							data.sText = svn.GetLastErrorMsg();
 							data.sTitle = wstring(sTitle);
+							data.sAlertType = ALERTTYPE_FAILEDCONNECT;
 							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 						}
 					}
@@ -955,6 +982,7 @@ DWORD CHiddenWindow::RunThread()
 							popupData data;
 							data.sText = svn.GetLastErrorMsg();
 							data.sTitle = wstring(sTitle);
+							data.sAlertType = ALERTTYPE_FAILEDCONNECT;
 							::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 						}
 					}
@@ -1126,6 +1154,7 @@ DWORD CHiddenWindow::RunThread()
 								popupData data;
 								data.sText = popupText;
 								data.sTitle = wstring(popupTitle);
+								data.sAlertType = ALERTTYPE_NEWPROJECTS;
 								::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 								bNewEntries = false;
 							}

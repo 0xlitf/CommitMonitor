@@ -23,6 +23,7 @@
 
 #include <shlwapi.h>
 #include <shlobj.h>
+#include <fstream>
 
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "version.lib")
@@ -454,4 +455,47 @@ wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
 	} 
 
 	return sVersion;
+}
+
+bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath)
+{
+	HGLOBAL hResourceLoaded;		// handle to loaded resource 
+	HRSRC hRes;						// handle/ptr. to res. info. 
+	char *lpResLock;				// pointer to resource data 
+	DWORD dwSizeRes;
+	wstring strAppLocation; 
+
+	strAppLocation = CAppUtils::GetAppDirectory();
+
+	// find location of the resource and get handle to it
+	hRes = FindResource(NULL, MAKEINTRESOURCE(nResourceId), strCustomResName.c_str());
+	if (hRes == NULL)
+		return false;
+
+	// loads the specified resource into global memory. 
+	hResourceLoaded = LoadResource(NULL, hRes); 
+	if (hResourceLoaded == NULL)
+		return false;
+
+	// get a pointer to the loaded resource!
+	lpResLock = (char*)LockResource(hResourceLoaded); 
+	if (lpResLock == NULL)
+		return false;
+
+	// determine the size of the resource, so we know how much to write out to file!  
+	dwSizeRes = SizeofResource(NULL, hRes);
+
+	try
+	{
+		std::ofstream outputFile(strOutputPath.c_str(), std::ios::binary);
+
+		outputFile.write((const char*)lpResLock, dwSizeRes);
+		outputFile.close();
+	}
+	catch (exception e)
+	{
+		return false;
+	}
+
+	return true;
 }

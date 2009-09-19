@@ -57,6 +57,13 @@ IDI_REPOURLINACTIVE     ICON                    "repourl_inactive.ico"
 //
 
 IDB_CANCELNORMAL        BITMAP                  "cancel-normal.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_COMMITMONITOR       PNG                     "CommitMonitor.png"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 

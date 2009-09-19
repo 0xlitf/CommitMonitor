@@ -44,5 +44,6 @@ public:
 	static bool						IsWow64();
 	static wstring					GetTSVNPath();
 	static wstring					GetVersionStringFromExe(LPCTSTR path);
+	static bool						ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
 
 };

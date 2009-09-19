@@ -46,6 +46,8 @@
 #define IDI_REPOURLFAIL                 159
 #define IDI_REPOURLINACTIVE             160
 #define IDD_PASSWORD                    161
+#define IDB_PNG1                        162
+#define IDB_COMMITMONITOR               162
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -143,7 +145,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        162
+#define _APS_NEXT_RESOURCE_VALUE        163
 #define _APS_NEXT_COMMAND_VALUE         32816
 #define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           110

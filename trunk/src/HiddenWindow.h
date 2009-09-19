@@ -33,10 +33,15 @@
 #define TIMER_ELAPSE	60000
 #define TIMER_ANIMATE	400
 
+#define ALERTTYPE_NEWCOMMITS L"new commits"
+#define ALERTTYPE_FAILEDCONNECT L"connection error"
+#define ALERTTYPE_NEWPROJECTS L"new projects"
+
 typedef struct
 {
 	wstring				sTitle;
 	wstring				sText;
+	wstring				sAlertType;
 } popupData;
 
 class CHiddenWindow : public CWindow
@@ -71,6 +76,7 @@ private:
 private:
 	UINT				COMMITMONITOR_SHOWDLGMSG;
 	UINT				WM_TASKBARCREATED;
+	LONG32				snarlGlobalMsg;
 
 	int					m_nIcon;
 	NOTIFYICONDATA		m_SystemTray;

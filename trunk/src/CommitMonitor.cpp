@@ -26,6 +26,7 @@
 #include "CmdLineParser.h"
 #include "DiffViewer.h"
 #include "AppUtils.h"
+#include "SnarlInterface.h"
 
 #include "apr_general.h"
 #include "svn_ra.h"
@@ -82,7 +83,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	};
 	InitCommonControlsEx(&used);
 
-
+	Snarl::SnarlInterface snarlIface;
 	CCmdLineParser parser(lpCmdLine);
 	if (parser.HasKey(_T("patchfile")))
 	{
@@ -133,13 +134,25 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			}		
 		}
 
-
 		CHiddenWindow hiddenWindow(hInst);
 
 		hAccelTable = LoadAccelerators(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
 
 		if (hiddenWindow.RegisterAndCreateWindow())
 		{
+			if ((snarlIface.GetVersionEx() != Snarl::M_FAILED)&&(Snarl::SnarlInterface::GetSnarlWindow() != NULL))
+			{
+				wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
+				if (CAppUtils::ExtractBinResource(_T("PNG"), IDB_COMMITMONITOR, imgPath))
+				{
+					// register with Snarl
+					snarlIface.RegisterApp(_T("CommitMonitor"), imgPath.c_str(), imgPath.c_str(), hiddenWindow);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWPROJECTS);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWCOMMITS);
+					snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_FAILEDCONNECT);
+				}
+			}
+
 			if (parser.HasKey(_T("task")))
 			{
 				hiddenWindow.SetTask(true);
@@ -168,6 +181,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	::OleUninitialize();
 	sasl_done();
 	apr_terminate();
+
+	if ((snarlIface.GetVersionEx() != Snarl::M_FAILED)&&(Snarl::SnarlInterface::GetSnarlWindow() != NULL))
+	{
+		// unregister with Snarl
+		snarlIface.UnregisterApp();
+	}
+
 	return (int) msg.wParam;
 }
 

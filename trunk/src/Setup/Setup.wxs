@@ -42,7 +42,6 @@
     <DirectoryRef Id="INSTALLDIR">
       <Component Id='MainEXE' Guid='325E1EEF-97EE-4b0e-8FCB-7A0CADE42934'>
         <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes' />
-        <File Id='CommitMonitor.PNG' Name='CommitMonitor.png' DiskId='1' Source='../Resources/CommitMonitor.png' Vital='yes' />
         <RegistryValue Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Value='[INSTALLDIR]' Type="string" />
       </Component>
       <Component Id="C__sasl" Guid="44E0376D-ACFF-422f-A372-0AB08A1F7EE1" >
