@@ -73,14 +73,10 @@
 				<include name="src\ne_207.c" />
 				<include name="src\ne_xml.c" />
 				<include name="src\ne_xmlreq.c" />
-				<include name="src\ne_socks.c" />
-				<include name="src\ne_oldacl.c" />
+				<include name="src\ne_acl.c" />
 				<include name="src\ne_props.c" />
 				<include name="src\ne_locks.c" />
 				<include name="src\ne_openssl.c" />
-				<include name="src\ne_ntlm.c" />
-				<include name="src\ne_acl3744.c" />
-				<include name="src\ne_pkcs11.c" />
 			</sources>
 			<includedirs>
 				<include name="." />
@@ -92,8 +88,6 @@
 			<defines>
 				<define name="_CRT_NONSTDC_NO_DEPRECATE" />
 				<define name="_CRT_SECURE_NO_DEPRECATE" />
-				<define name="TCP_NODELAY" value="1" />
-				<define name="HAVE_NTLM" />
 				<define name="HAVE_CONFIG_H" />
 				<define name="NE_HAVE_SSL" />
 				<define name="HAVE_OPENSSL" />
