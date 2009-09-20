@@ -681,10 +681,11 @@ DWORD CHiddenWindow::RunThread()
 						map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
 						map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
 						bool bIgnore = false;
+						bool bEntryExists = false;
 						if (writeIt != pWrite->end())
 						{
 							map<svn_revnum_t,SVNLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
-							bool bEntryExists = existIt != writeIt->second.logentries.end();
+							bEntryExists = existIt != writeIt->second.logentries.end();
 							bool readState = false;
 							if (bEntryExists)
 								readState = existIt->second.read;
@@ -725,7 +726,7 @@ DWORD CHiddenWindow::RunThread()
 						if (!m_bRun)
 							continue;
 						// popup info text
-						if (!bIgnore)
+						if ((!bIgnore)&&(!bEntryExists))
 						{
 							if (!sPopupText.empty())
 								sPopupText += _T(", ");
