@@ -265,7 +265,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 					wstring iconPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
 					if (!PathFileExists(iconPath.c_str()))
 						iconPath = _T("");
-					snarlIface.ShowMessageEx(pData->sAlertType.c_str(), pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
+					snarlIface.ShowNotification(pData->sAlertType.c_str(), pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
 				}
                 ShowTrayIcon(true);
 			}
