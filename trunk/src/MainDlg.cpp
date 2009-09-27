@@ -189,6 +189,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
 
 			CreateToolbar();
+			AddToolTip(IDC_FILTERSTRING, _T("Enter a filter string\nPrepend the string with an '-' to negate the filter."));
+
 			m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
 			m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
 			m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
@@ -1635,6 +1637,11 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		WCHAR * buffer = new WCHAR[len+1];
 		GetDlgItemText(*this, IDC_FILTERSTRING, buffer, len+1);
 		wstring filterstring = wstring(buffer, len);
+		bool bNegateFilter = filterstring[0] == '-';
+		if (bNegateFilter)
+		{
+			filterstring = filterstring.substr(1);
+		}
 		wstring filterstringlower = filterstring;
 		std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
 
@@ -1644,7 +1651,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 		{
 			// only add entries that match the filter string
 			bool addEntry = true;
-			bool bUseRegex = filterstring[0] == '\\';
+			bool bUseRegex = (filterstring[0] == '\\')&&(filterstring.size() > 1);
 
 			if (bUseRegex)
 			{
@@ -1668,6 +1675,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 				{
 					bUseRegex = false;
 				}
+				if (bNegateFilter)
+					addEntry = !addEntry;
 			}
 			if (!bUseRegex)
 			{
@@ -1690,6 +1699,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 						addEntry = s.find(buf) != wstring::npos;
 					}
 				}
+				if (bNegateFilter)
+					addEntry = !addEntry;
 			}
 
 			if (!addEntry)
