@@ -535,11 +535,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CommitMonitor.png"
+				RelativePath=".\Resources\CommitMonitor.png"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\CommitMonitor.png"
+				RelativePath=".\CommitMonitor.png"
 				>
 			</File>
 			<File
@@ -619,11 +619,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File
@@ -714,6 +714,10 @@
 			</File>
 			<File
 				RelativePath="..\ext\scintilla\src\CellBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\CharacterSet.h"
 				>
 			</File>
 			<File
@@ -1023,6 +1027,30 @@
 				>
 			</File>
 			<File
+				RelativePath="..\ext\scintilla\src\PerLine.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\PerLine.h"
+				>
+			</File>
+			<File
 				RelativePath="..\ext\scintilla\win32\PlatformRes.h"
 				>
 			</File>
@@ -1191,6 +1219,30 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Selection.cxx"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ext\scintilla\src\Selection.h"
+				>
 			</File>
 			<File
 				RelativePath="..\ext\scintilla\src\SplitVector.h"
