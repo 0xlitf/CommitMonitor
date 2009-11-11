@@ -388,7 +388,7 @@ void CDiffViewer::SetTitle(LPCTSTR title)
 	int len = _tcslen(title);
 	TCHAR * pBuf = new TCHAR[len+40];
 	_stprintf_s(pBuf, len+40, _T("%s - CMDiff"), title);
-	SetWindowTitle(wstring(pBuf));
+	SetWindowTitle(std::wstring(pBuf));
 	delete [] pBuf;
 }
 

@@ -60,5 +60,5 @@ private:
     CFindBar            m_FindBar;
 	bool				m_bShowFindBar;
 	bool				m_bMatchCase;
-	wstring				m_findtext;
+	std::wstring		m_findtext;
 };
