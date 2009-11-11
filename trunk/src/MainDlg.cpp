@@ -89,7 +89,7 @@ bool CMainDlg::CreateToolbar()
 
 	SendMessage(m_hwndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);
 
-#define MAINDLG_TOOLBARBUTTONCOUNT	10
+#define MAINDLG_TOOLBARBUTTONCOUNT	11
 	TBBUTTON tbb[MAINDLG_TOOLBARBUTTONCOUNT];
 	// create an image list containing the icons for the toolbar
 	m_hToolbarImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, MAINDLG_TOOLBARBUTTONCOUNT, 4);
@@ -156,6 +156,14 @@ bool CMainDlg::CreateToolbar()
 	tbb[index].fsStyle = BTNS_SEP; 
 	tbb[index].dwData = 0; 
 	tbb[index++].iString = 0; 
+
+	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_MARKASREAD));
+	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
+	tbb[index].idCommand = ID_POPUP_MARKALLASREAD; 
+	tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
+	tbb[index].fsStyle = BTNS_BUTTON; 
+	tbb[index].dwData = 0; 
+	tbb[index++].iString = (INT_PTR)_T("Mark all as read"); 
 
 	hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_OPTIONS));
 	tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 

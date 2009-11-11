@@ -50,6 +50,7 @@ IDI_REPOURL             ICON                    "repourl.ico"
 IDI_REPOURLNEW          ICON                    "repourl_new.ico"
 IDI_REPOURLFAIL         ICON                    "repourlfail.ico"
 IDI_REPOURLINACTIVE     ICON                    "repourl_inactive.ico"
+IDI_MARKASREAD          ICON                    "mark-all-as-read.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

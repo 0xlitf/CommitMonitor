@@ -535,11 +535,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\CommitMonitor.png"
+				RelativePath=".\CommitMonitor.png"
 				>
 			</File>
 			<File
-				RelativePath=".\CommitMonitor.png"
+				RelativePath=".\Resources\CommitMonitor.png"
 				>
 			</File>
 			<File
@@ -595,6 +595,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mark-all-as-read.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\mark-all-as-read.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Resources\Notification.wav"
 				>
 			</File>
@@ -619,11 +627,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File
