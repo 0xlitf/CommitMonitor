@@ -89,8 +89,8 @@ HWND CDialog::Create(HINSTANCE hInstance, int resID, HWND hWndParent)
 {
 	m_bPseudoModal = true;
 	hResource = hInstance;
-    m_hwnd = CreateDialogParam(hInstance, MAKEINTRESOURCE(resID), hWndParent, &CDialog::stDlgFunc, (LPARAM)this);
-    return m_hwnd;
+	m_hwnd = CreateDialogParam(hInstance, MAKEINTRESOURCE(resID), hWndParent, &CDialog::stDlgFunc, (LPARAM)this);
+	return m_hwnd;
 }
 
 void CDialog::InitDialog(HWND hwndDlg, UINT iconID)
@@ -226,6 +226,35 @@ INT_PTR CALLBACK CDialog::stDlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
 						::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
 					}
 					lRes = TRUE;
+				}
+			}
+			break;
+		case WM_NCHITTEST:
+			{
+				if (pWnd->m_Dwm.IsDwmCompositionEnabled())
+				{
+					POINTS pts = MAKEPOINTS(lParam);
+					POINT pt;
+					pt.x = pts.x;
+					pt.y = pts.y;
+					RECT rc;
+					GetClientRect(hwndDlg, &rc);
+					MapWindowPoints(hwndDlg, NULL, (LPPOINT)&rc, 2);
+
+					if (pWnd->m_margins.cxLeftWidth < 0)
+					{
+
+						lRes = PtInRect(&rc, pt) ? HTCAPTION : FALSE;
+					}
+					else
+					{
+						RECT m = rc;
+						m.left += pWnd->m_margins.cxLeftWidth;
+						m.top += pWnd->m_margins.cyTopHeight;
+						m.right -= pWnd->m_margins.cxRightWidth;
+						m.bottom -= pWnd->m_margins.cyBottomHeight;
+						lRes = (PtInRect(&rc, pt) && !PtInRect(&m, pt)) ? HTCAPTION : FALSE;
+					}
 				}
 			}
 			break;
