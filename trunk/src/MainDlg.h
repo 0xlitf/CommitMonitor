@@ -21,6 +21,7 @@
 #include "basedialog.h"
 #include "ListCtrl.h"
 #include "UrlInfo.h"
+#include "AeroControls.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
 #define REPOBROWSER_CTRL_MIN_HEIGHT 40
@@ -116,4 +117,6 @@ private:
 	bool					m_bBlockListCtrlUI;
 	bool					m_bNewerVersionAvailable;
 	bool					m_refreshNeeded;
+
+	AeroControlBase			m_aerocontrols;
 };

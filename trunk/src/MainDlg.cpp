@@ -343,6 +343,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				m_ySliderPos = rect.bottom+m_topmarg;
 			}
 			RefreshURLTree(true);
+
+			ExtendFrameIntoClientArea(0, 0, 0, IDC_URLTREE);
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_EXIT));
+
 			if (m_bNewerVersionAvailable)
 			{
 				CUpdateDlg dlg(*this);
@@ -2162,6 +2168,7 @@ void CMainDlg::DoResize(int width, int height)
 	::GetClientRect(hLabel, &label);
 	::GetClientRect(hFilterLabel, &filterlabel);
 	::GetClientRect(m_hFilterControl, &filterbox);
+	::InvalidateRect(*this, NULL, TRUE);
 	HDWP hdwp = BeginDeferWindowPos(9);
 	hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
 	hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
