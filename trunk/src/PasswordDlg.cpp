@@ -43,7 +43,7 @@ LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_INITDIALOG:
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
-			::EnableWindow(GetDlgItem(*this, IDOK), false);
+			DialogEnableWindow(IDOK, false);
 		}
 		return TRUE;
 	case WM_COMMAND:
@@ -60,7 +60,7 @@ LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 			wstring pw2 = wstring(pwBuf);
 			delete [] pwBuf;
 
-			::EnableWindow(GetDlgItem(*this, IDOK), pw1.compare(pw2) == 0);
+			DialogEnableWindow(IDOK, pw1.compare(pw2) == 0);
 		}
 		else
 			return DoCommand(LOWORD(wParam));

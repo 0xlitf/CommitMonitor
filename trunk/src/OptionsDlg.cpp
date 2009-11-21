@@ -81,7 +81,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			wstring tsvninstalled = CAppUtils::GetTSVNPath();
 			wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
 			if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
-				::EnableWindow(GetDlgItem(*this, IDC_USETSVN), FALSE);
+				DialogEnableWindow(IDC_USETSVN, FALSE);
 			SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
 		}
 		return TRUE;
