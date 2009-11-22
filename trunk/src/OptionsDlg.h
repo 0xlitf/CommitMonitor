@@ -19,6 +19,7 @@
 #pragma once
 #include "basedialog.h"
 #include "UrlInfo.h"
+#include "AeroControls.h"
 
 /**
  * options dialog.
@@ -39,4 +40,5 @@ private:
 	HWND					m_hParent;
 	HWND					m_hHiddenWnd;
 	CUrlInfos *				m_pURLInfos;
+	AeroControlBase			m_aerocontrols;
 };

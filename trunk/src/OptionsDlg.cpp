@@ -83,6 +83,10 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
 				DialogEnableWindow(IDC_USETSVN, FALSE);
 			SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
+
+			ExtendFrameIntoClientArea(0, 0, 0, IDC_AEROLABEL);
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
 		}
 		return TRUE;
 	case WM_COMMAND:

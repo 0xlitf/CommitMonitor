@@ -19,6 +19,7 @@
 #pragma once
 #include "basedialog.h"
 #include "hyperlink.h"
+#include "AeroControls.h"
 
 /**
  * about dialog.
@@ -36,4 +37,5 @@ protected:
 private:
 	HWND					m_hParent;
 	CHyperLink				m_link;
+	AeroControlBase			m_aerocontrols;
 };

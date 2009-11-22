@@ -80,6 +80,9 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(*this, IDC_WEBDIFF, info.webviewer.c_str());
 			SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_SETCHECK, info.noexecuteignored ? BST_CHECKED : BST_UNCHECKED, NULL);
 
+			ExtendFrameIntoClientArea(0, 0, 0, IDC_URLGROUP);
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
 		}
 		return TRUE;
 	case WM_COMMAND:

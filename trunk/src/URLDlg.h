@@ -18,8 +18,8 @@
 //
 #pragma once
 #include "basedialog.h"
-
 #include "UrlInfo.h"
+#include "AeroControls.h"
 
 /**
  * url dialog.
@@ -45,4 +45,5 @@ protected:
 
 private:
 	CUrlInfo				info;
+	AeroControlBase			m_aerocontrols;
 };

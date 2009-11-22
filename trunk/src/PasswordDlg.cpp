@@ -44,6 +44,11 @@ LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
 			DialogEnableWindow(IDOK, false);
+
+			ExtendFrameIntoClientArea(0, IDC_PW1, 0, IDC_PW2);
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
 		}
 		return TRUE;
 	case WM_COMMAND:
