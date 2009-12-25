@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
+				Optimization="2"
 				AdditionalIncludeDirectories="..\ext\apr\include;..\ext\Subversion\Subversion\include;&quot;..\ext\apr-util\include&quot;;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;&quot;..\ext\cyrus-sasl\include&quot;;..\ext\snarl;..\ext\BlowFish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER"
 				RuntimeLibrary="0"
@@ -381,11 +381,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\CommitMonitor.png"
+				RelativePath=".\CommitMonitor.png"
 				>
 			</File>
 			<File
-				RelativePath=".\CommitMonitor.png"
+				RelativePath=".\Resources\CommitMonitor.png"
 				>
 			</File>
 			<File
@@ -441,11 +441,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\mark-all-as-read.ico"
+				RelativePath=".\mark-all-as-read.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\mark-all-as-read.ico"
+				RelativePath=".\Resources\mark-all-as-read.ico"
 				>
 			</File>
 			<File
@@ -473,11 +473,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\repourl_inactive.ico"
+				RelativePath=".\Resources\repourl_inactive.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\repourl_inactive.ico"
+				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File
