@@ -247,6 +247,8 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 		}
 		break;
 	case COMMITMONITOR_GETALL:
+		if (lParam)
+			m_UrlToWorkOn = wstring((wchar_t*)lParam);
 		DoTimer(true);
 		break;
 	case COMMITMONITOR_POPUP:
@@ -462,7 +464,13 @@ void CHiddenWindow::DoTimer(bool bForce)
 		map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetWriteData();
 		for (map<wstring,CUrlInfo>::iterator it = pInfos->begin(); it != pInfos->end(); ++it)
 		{
-			it->second.lastchecked = 0;
+			if (m_UrlToWorkOn.size())
+			{
+				if (it->second.url.compare(m_UrlToWorkOn) == 0)
+					it->second.lastchecked = 0;
+			}
+			else
+				it->second.lastchecked = 0;
 		}
 		m_UrlInfos.ReleaseWriteData();
 		m_UrlInfos.Save();
@@ -614,8 +622,14 @@ DWORD CHiddenWindow::RunThread()
 	{
 		int mit = max(it->second.minutesinterval, it->second.minminutesinterval);
 		SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
-		if ((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))
+		if (m_UrlToWorkOn.size())
 		{
+			if (it->second.url.compare(m_UrlToWorkOn))
+				continue;
+		}
+		if (((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))||(m_UrlToWorkOn.size()))
+		{
+			m_UrlToWorkOn.clear();
 			if ((it->second.errNr == SVN_ERR_RA_NOT_AUTHORIZED)&&(!it->second.error.empty()))
 				continue;	// don't check if the last error was 'not authorized'
 			TRACE(_T("checking %s for updates\n"), it->first.c_str());

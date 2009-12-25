@@ -79,6 +79,7 @@ private:
 	void					RemoveSelectedListItems();
 	void					MarkAllAsRead(HTREEITEM hItem, bool includingChildren);
 	void					RefreshAll(HTREEITEM hItem);
+	void					CheckNow(HTREEITEM hItem);
 	void					SetRemoveButtonState();
 	bool					ShowDiff(bool bUseTSVN);
 	void					SaveWndPosition();

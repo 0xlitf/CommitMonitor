@@ -100,6 +100,8 @@ private:
 	bool				m_bIsTask;
 	bool				m_bNewerVersionAvailable;
 
+	wstring				m_UrlToWorkOn;
+
 	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
 	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
 };
