@@ -443,7 +443,7 @@ void CHiddenWindow::DoTimer(bool bForce)
 	if (m_ThreadRunning)
 	{
 		if (m_hMainDlg)
-			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T("Repositories are currently checked, please wait..."));
+			SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T("Repositories are currently being checked, please wait..."));
 		return;
 	}
 	// go through all url infos and check if
