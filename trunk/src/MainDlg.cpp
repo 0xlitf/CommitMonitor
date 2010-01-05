@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -197,7 +197,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			InitDialog(hwndDlg, IDI_COMMITMONITOR);
 
 			CreateToolbar();
-			AddToolTip(IDC_FILTERSTRING, _T("Enter a filter string\nPrepend the string with an '-' to negate the filter."));
+			AddToolTip(IDC_FILTERSTRING, _T("Enter a filter string\nPrepend the string with an '-' to negate the filter.\nPrepend the string with an '\\' to filter with a regex."));
 
 			m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
 			m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
