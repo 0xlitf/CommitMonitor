@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
 	, m_hMainDlg(NULL)
 	, m_nIcon(0)
 	, regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE)
+	, m_regLastSelectedProject(_T("Software\\CommitMonitor\\LastSelectedProject"))
 	, m_bIsTask(false)
 	, m_bNewerVersionAvailable(false)
 {
@@ -151,9 +152,11 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
         m_bMainDlgShown = true;
 		m_bMainDlgRemovedItems = false;
 		CMainDlg dlg(*this);
+		dlg.SetLastSelectedProject(m_regLastSelectedProject);
 		dlg.SetUrlInfos(&m_UrlInfos);
 		dlg.SetUpdateAvailable(m_bNewerVersionAvailable);
 		dlg.DoModal(hInst, IDD_MAINDLG, NULL, IDC_COMMITMONITOR);
+		m_regLastSelectedProject = dlg.GetLastSelectedProject();
 		m_bNewerVersionAvailable = false;
 		ShowTrayIcon(false);
 		m_hMainDlg = NULL;

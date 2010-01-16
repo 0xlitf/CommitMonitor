@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@ public:
 
 	void					SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
 	void					SetUpdateAvailable(bool bUpdate) {m_bNewerVersionAvailable = bUpdate;}
+	void					SetLastSelectedProject(const wstring& proj) { m_lastSelectedProject = proj; }
+	wstring					GetLastSelectedProject() { return m_lastSelectedProject; }
 
 protected:
 	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -114,6 +116,7 @@ private:
 	HFONT					m_boldFont;
 
 	CUrlInfos *				m_pURLInfos;
+	wstring					m_lastSelectedProject;
 
 	bool					m_bBlockListCtrlUI;
 	bool					m_bNewerVersionAvailable;

@@ -1432,6 +1432,8 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 			}
 		}
 		HTREEITEM hItem = TreeView_InsertItem(m_hTreeControl, &tv);
+		if (m_lastSelectedProject.compare(it->second.name) == 0)
+			tvToSel = hItem;
 		if ((unread)&&(tvToSel == 0))
 			tvToSel = hItem;
 		TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
@@ -1599,6 +1601,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 	if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 	{
 		const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+
+		m_lastSelectedProject = info->name;
 
 		if ((!info->error.empty())&&(!info->parentpath))
 		{
