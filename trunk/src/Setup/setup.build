@@ -23,6 +23,8 @@
 	<target name="setup" depends="versioninfo">
 		<property name="verstring" value="${environment::get-variable('MajorVersion')}.${environment::get-variable('MinorVersion')}.${environment::get-variable('MicroVersion')}.${environment::get-variable('WCREV')}" />
 		<property name="msifilename" value="CommitMonitor-${verstring}" />
+    <!-- copy the exe to CommitMonitor_portable.exe -->
+    <copy file="..\..\bin\${configuration}\CommitMonitor.exe" tofile="..\..\bin\${configuration}\CommitMonitor-${verstring}_portable.exe" overwrite="true" />
 		<!-- sign all binaries -->
 		<if test="${file::exists('..\..\signinfo.txt')}">
 			<foreach item="File" property="filename">
@@ -70,5 +72,12 @@
 				<arg value="..\..\bin\${msifilename}.msi" />
 			</exec>
 		</if>
-	</target>
+
+    <zip zipfile="..\..\bin\CommitMonitor-${verstring}.zip" ziplevel="9">
+      <fileset basedir="..\..\bin\${configuration}">
+        <include name="CommitMonitor-${verstring}_portable.exe" />
+      </fileset>
+    </zip>
+
+  </target>
 </project>

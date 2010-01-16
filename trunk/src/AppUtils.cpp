@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -24,6 +24,8 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <fstream>
+#include <cctype>
+#include <algorithm>
 
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "version.lib")
@@ -153,7 +155,15 @@ string CAppUtils::PathEscape(const string& path)
 
 wstring CAppUtils::GetDataDir()
 {
-	if (CAppUtils::GetAppName().compare(_T("CommitMonitorLocal.exe"))==0)
+	bool bPortable = false;
+
+	wstring appname = CAppUtils::GetAppName();
+	std::transform(appname.begin(), appname.end(), appname.begin(), std::tolower);
+	if ((appname.find(_T("portable")) != wstring::npos) ||
+		(appname.find(_T("local")) != wstring::npos))
+		bPortable = true;
+
+	if (bPortable)
 	{
 		return CAppUtils::GetAppDirectory();
 	}
