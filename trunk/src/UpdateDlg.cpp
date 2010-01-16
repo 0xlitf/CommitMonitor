@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2008 - Stefan Kueng
+// Copyright (C) 2008, 2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ LRESULT CUpdateDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			// initialize the controls
 			m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBURL, _T("http://tools.tortoisesvn.net/CommitMonitor"));
 
-			ExtendFrameIntoClientArea(-1, -1, -1, -1);
+			ExtendFrameIntoClientArea((UINT)-1, (UINT)-1, (UINT)-1, (UINT)-1);
 			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
 			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL2));
 			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
