@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,18 @@ void CURLDlg::SetInfo(const CUrlInfo * pURLInfo /* = NULL */)
 	if (pURLInfo == NULL)
 		return;
 	info = *pURLInfo;
+}
+
+void CURLDlg::ClearForTemplate()
+{
+	info.name.clear();
+	info.logentries.clear();
+	info.error.clear();
+	info.errNr = 0;
+	info.lastchecked = 0;
+	info.lastcheckedrev = 0;
+	info.lastcheckedrobots = 0;
+
 }
 
 LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)

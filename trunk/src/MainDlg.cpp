@@ -724,6 +724,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					m_bBlockListCtrlUI = false;
 					switch (cmd)
 					{
+					case ID_POPUP_ADDPROJECTWITHTEMPLATE:
 					case ID_MAIN_EDIT:
 					case ID_MAIN_REMOVE:
 						{
@@ -1120,6 +1121,7 @@ LRESULT CMainDlg::DoCommand(int id)
 			}
 		}
 		break;
+	case ID_POPUP_ADDPROJECTWITHTEMPLATE:
 	case ID_MAIN_EDIT:
 		{
 			CURLDlg dlg;
@@ -1134,13 +1136,16 @@ LRESULT CMainDlg::DoCommand(int id)
 				if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 				{
 					dlg.SetInfo(&pRead->find(*(wstring*)itemex.lParam)->second);
+					if (id == ID_POPUP_ADDPROJECTWITHTEMPLATE)
+						dlg.ClearForTemplate();
 					m_pURLInfos->ReleaseReadOnlyData();
 					dlg.DoModal(hResource, IDD_URLCONFIG, *this);
 					CUrlInfo * inf = dlg.GetInfo();
 					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 					if ((inf)&&inf->url.size())
 					{
-						pWrite->erase(*(wstring*)itemex.lParam);
+						if (id == ID_MAIN_EDIT)
+							pWrite->erase(*(wstring*)itemex.lParam);
 						(*pWrite)[inf->url] = *inf;
 					}
 					m_pURLInfos->Save();
@@ -1148,7 +1153,7 @@ LRESULT CMainDlg::DoCommand(int id)
 					RefreshURLTree(false);
 				}
 				else
-					m_pURLInfos->ReleaseWriteData();
+					m_pURLInfos->ReleaseReadOnlyData();
 			}
 		}
 		break;

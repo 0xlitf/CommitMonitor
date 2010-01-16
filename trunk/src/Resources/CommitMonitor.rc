@@ -316,7 +316,8 @@ BEGIN
     BEGIN
         MENUITEM "&Check now",                  ID_POPUP_CHECKNOW
         MENUITEM "&Active",                     ID_POPUP_ACTIVE
-        MENUITEM "&Edit",                       ID_MAIN_EDIT
+        MENUITEM "&Edit project",               ID_MAIN_EDIT
+        MENUITEM "&Add project from this",      ID_POPUP_ADDPROJECTWITHTEMPLATE
         MENUITEM "&Remove",                     ID_MAIN_REMOVE
         MENUITEM "Mark &node as read",          ID_POPUP_MARKNODEASREAD
         MENUITEM "&Mark all as read",           ID_POPUP_MARKALLASREAD
