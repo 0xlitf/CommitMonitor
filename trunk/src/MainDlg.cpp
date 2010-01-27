@@ -1341,7 +1341,9 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 						progDlg.SetLine(1, dispbuf);
 						progDlg.SetShowProgressBar(false);
 						progDlg.ShowModeless(*this);
-						if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, wstring(), false, diffFileName, wstring()))
+
+						CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
+						if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, wstring()))
 						{
 							progDlg.Stop();
 							if (svn.Err->apr_err != SVN_ERR_CANCELLED)
