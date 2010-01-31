@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,9 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			AddToolTip(IDC_USETSVN, _T("If TortoiseSVN is installed, use it for showing the differences of commits"));
 			AddToolTip(IDC_CHECKNEWER, _T("Automatically check for newer versions of CommitMonitor"));
 			AddToolTip(IDC_NOTIFYCONNECTERROR, _T("When a repository can not be checked due to connection problems,\nchange/animate the icon as if new commits were available."));
+			AddToolTip(IDC_IGNOREEOL, _T("Ignores end-of-line changes"));
+			AddToolTip(IDC_IGNORESPACES, _T("Ignores changes in whitespaces in the middle of lines"));
+			AddToolTip(IDC_IGNOREALLSPACES, _T("Ignores all whitespace changes"));
 
 			// initialize the controls
 			bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
@@ -83,6 +86,14 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
 				DialogEnableWindow(IDC_USETSVN, FALSE);
 			SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
+
+			CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
+			bool ignoreeol = wstring(diffParams).find(_T("--ignore-eol-style")) != wstring::npos;
+			bool ignorewhitespaces = wstring(diffParams).find(_T("-b")) != wstring::npos;
+			bool ignoreallwhitespaces = wstring(diffParams).find(_T("-w")) != wstring::npos;
+			SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_SETCHECK, ignoreeol ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, ignorewhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
+			SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, ignoreallwhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
 
 			ExtendFrameIntoClientArea(0, 0, 0, IDC_AEROLABEL);
 			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
@@ -166,10 +177,30 @@ LRESULT COptionsDlg::DoCommand(int id)
 			DWORD nLogs = _ttol(divi);
 			numlogs = nLogs;
 			delete [] divi;
+
+			CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
+			bool ignoreeol = !!SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_GETCHECK, 0, NULL);
+			bool ignorewhitespaces = !!SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_GETCHECK, 0, NULL);
+			bool ignoreallwhitespaces = !!SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_GETCHECK, 0, NULL);
+			diffParams = SVN::GetOptionsString(ignoreeol, ignorewhitespaces, ignoreallwhitespaces);
 		}
 		// fall through
 	case IDCANCEL:
 		EndDialog(*this, id);
+		break;
+	case IDC_IGNOREALLSPACES:
+		{
+			bool ignoreallwhitespaces = !!SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_GETCHECK, 0, NULL);
+			if (ignoreallwhitespaces)
+				SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, BST_UNCHECKED, NULL);
+		}
+		break;
+	case IDC_IGNORESPACES:
+		{
+			bool ignorewhitespaces = !!SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_GETCHECK, 0, NULL);
+			if (ignorewhitespaces)
+				SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, BST_UNCHECKED, NULL);
+		}
 		break;
 	case IDC_EXPORT:
 		{
@@ -270,4 +301,3 @@ LRESULT COptionsDlg::DoCommand(int id)
 	}
 	return 1;
 }
-

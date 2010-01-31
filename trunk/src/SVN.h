@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2007, 2009-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -290,6 +290,7 @@ public:
 		bool ignorecontenttype,  const wstring& options, bool bAppend, 
 		const wstring& outputfile, const wstring& errorfile);
 
+	static wstring GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces);
 
 	wstring CanonicalizeURL(const wstring& url);
 	wstring GetLastErrorMsg();
@@ -364,5 +365,3 @@ private:
 											void *baton, apr_pool_t *pool);
 
 };
-
-

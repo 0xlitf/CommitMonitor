@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -539,6 +539,18 @@ svn_error_t* SVN::logReceiver(void* baton,
 	return error;
 }
 
+wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces)
+{
+	wstring opts;
+	if (bIgnoreEOL)
+		opts += _T("--ignore-eol-style ");
+	if (bIgnoreAllSpaces)
+		opts += _T("-w");
+	else if (bIgnoreSpaces)
+		opts += _T("-b");
+	return opts;
+}
+
 bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
 			   svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
 			   bool ignorecontenttype,  const wstring& options, bool bAppend, 
@@ -709,4 +721,3 @@ void SVN::progress_func(apr_off_t progress, apr_off_t total, void *baton, apr_po
 	}
 	return;
 }
-
