@@ -1136,21 +1136,27 @@ LRESULT CMainDlg::DoCommand(int id)
 				if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
 				{
 					dlg.SetInfo(&pRead->find(*(wstring*)itemex.lParam)->second);
+					wstring origurl = dlg.GetInfo()->url;
 					if (id == ID_POPUP_ADDPROJECTWITHTEMPLATE)
 						dlg.ClearForTemplate();
 					m_pURLInfos->ReleaseReadOnlyData();
-					dlg.DoModal(hResource, IDD_URLCONFIG, *this);
-					CUrlInfo * inf = dlg.GetInfo();
-					map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-					if ((inf)&&inf->url.size())
+					if (dlg.DoModal(hResource, IDD_URLCONFIG, *this) == IDOK)
 					{
-						if (id == ID_MAIN_EDIT)
-							pWrite->erase(*(wstring*)itemex.lParam);
-						(*pWrite)[inf->url] = *inf;
+						CUrlInfo * inf = dlg.GetInfo();
+						if ((inf)&&inf->name.size())
+						{
+							map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+							if ((inf) && (inf->url.size()) && ((origurl.compare(inf->url)) || (id == ID_MAIN_EDIT)))
+							{
+								if (id == ID_MAIN_EDIT)
+									pWrite->erase(*(wstring*)itemex.lParam);
+								(*pWrite)[inf->url] = *inf;
+							}
+							m_pURLInfos->Save();
+							m_pURLInfos->ReleaseWriteData();
+							RefreshURLTree(false);
+						}
 					}
-					m_pURLInfos->Save();
-					m_pURLInfos->ReleaseWriteData();
-					RefreshURLTree(false);
 				}
 				else
 					m_pURLInfos->ReleaseReadOnlyData();
