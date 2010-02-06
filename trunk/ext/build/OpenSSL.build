@@ -14,10 +14,11 @@
 		<exec program="perl" workingdir="..\..\common\openssl">
 			<arg value="Configure" />
 			<arg value="VC-WIN32" />
+			<arg value="no-asm" />
 		</exec>
 		<exec program="cmd" workingdir="..\..\common\openssl">
 			<arg value="/c" />
-			<arg value="ms\do_masm" />
+			<arg value="ms\do_ms" />
 		</exec>
 		<loadfile file="..\..\common\openssl\ms\nt.mak" property="makefile">
 			<filterchain>
