@@ -20,6 +20,7 @@
 #include "Resource.h"
 #include <algorithm>
 #include "URLDlg.h"
+#include "StringUtils.h"
 
 #include "SVN.h"
 #include <cctype>
@@ -120,6 +121,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			WCHAR * buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
 			info.url = svn.CanonicalizeURL(wstring(buffer, len));
+			CStringUtils::trim(info.url);
 			delete [] buffer;
 
 			wstring tempurl = info.url.substr(0, 7);
@@ -135,6 +137,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_PROJECTNAME, buffer, len+1);
 			info.name = wstring(buffer, len);
+			CStringUtils::trim(info.name);
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_CHECKTIME));
 			buffer = new WCHAR[len+1];
@@ -149,6 +152,7 @@ LRESULT CURLDlg::DoCommand(int id)
 			GetDlgItemText(*this, IDC_USERNAME, buffer, len+1);
 			info.username = wstring(buffer, len);
 			delete [] buffer;
+			CStringUtils::trim(info.username);
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_PASSWORD));
 			buffer = new WCHAR[len+1];
@@ -182,18 +186,21 @@ LRESULT CURLDlg::DoCommand(int id)
 			GetDlgItemText(*this, IDC_IGNOREUSERS, buffer, len+1);
 			info.ignoreUsers = wstring(buffer, len);
 			delete [] buffer;
+			CStringUtils::trim(info.ignoreUsers);
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_SCRIPT));
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_SCRIPT, buffer, len+1);
 			info.callcommand = wstring(buffer, len);
 			delete [] buffer;
+			CStringUtils::trim(info.callcommand);
 
 			len = GetWindowTextLength(GetDlgItem(*this, IDC_WEBDIFF));
 			buffer = new WCHAR[len+1];
 			GetDlgItemText(*this, IDC_WEBDIFF, buffer, len+1);
 			info.webviewer = wstring(buffer, len);
 			delete [] buffer;
+			CStringUtils::trim(info.webviewer);
 
 			info.noexecuteignored = !!SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_GETCHECK, 0, NULL);
 
