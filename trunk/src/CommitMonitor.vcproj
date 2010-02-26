@@ -373,10 +373,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\cancel-pressed.bmp"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\CommitMonitor.ico"
 				>
 			</File>
@@ -385,19 +381,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CommitMonitor.png"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\CommitMonitor.rc"
 				>
 			</File>
 			<File
 				RelativePath=".\Resources\CommitMonitor.rc2"
-				>
-			</File>
-			<File
-				RelativePath=".\Resources\CommitMonitorRed.ico"
 				>
 			</File>
 			<File
@@ -437,27 +425,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resources\icon4.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\mark-all-as-read.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\mark-all-as-read.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\Resources\Notification.wav"
-				>
-			</File>
-			<File
-				RelativePath=".\Resources\NotifyNew.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\Resources\NotifyNormal.ico"
 				>
 			</File>
 			<File
@@ -470,10 +442,6 @@
 			</File>
 			<File
 				RelativePath=".\Resources\repourl.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\repourl_inactive.ico"
 				>
 			</File>
 			<File

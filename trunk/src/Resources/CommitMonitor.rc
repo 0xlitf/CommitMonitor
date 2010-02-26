@@ -330,6 +330,24 @@ BEGIN
     END
 END
 
+IDR_TREEPOPUPTSVN MENU 
+BEGIN
+    POPUP "Popup"
+    BEGIN
+        MENUITEM "&Check now",                  ID_POPUP_CHECKNOW
+        MENUITEM "&Active",                     ID_POPUP_ACTIVE
+        MENUITEM "&Edit project",               ID_MAIN_EDIT
+        MENUITEM "&Add project from this",      ID_POPUP_ADDPROJECTWITHTEMPLATE
+        MENUITEM "&Remove",                     ID_MAIN_REMOVE
+        MENUITEM "Mark &node as read",          ID_POPUP_MARKNODEASREAD
+        MENUITEM "&Mark all as read",           ID_POPUP_MARKALLASREAD
+        MENUITEM "Re&fresh all",                ID_POPUP_REFRESHALL
+        MENUITEM SEPARATOR
+        MENUITEM "Repository bro&wser",         ID_POPUP_REPOBROWSER
+        MENUITEM "Show &log",                   ID_POPUP_SHOWLOG
+    END
+END
+
 IDR_LISTPOPUP MENU 
 BEGIN
     POPUP "Popup"
@@ -426,7 +444,8 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "\r\0"
+    "\r\n"
+    "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -441,7 +460,8 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

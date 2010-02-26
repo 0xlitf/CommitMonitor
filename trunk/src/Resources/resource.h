@@ -50,6 +50,7 @@
 #define IDB_COMMITMONITOR               162
 #define IDI_ICON6                       163
 #define IDI_MARKASREAD                  163
+#define IDR_TREEPOPUPTSVN               164
 #define IDC_MONITOREDURLS               1000
 #define IDC_ADDURL                      1001
 #define IDC_EDIT                        1002
@@ -153,6 +154,9 @@
 #define ID_MAIN_COPY                    32819
 #define ID_POPUP_COPYTOCLIPBOARD        32821
 #define ID_POPUP_COPYTOCLIPBOARD32822   32822
+#define ID_POPUP_REPOSITORYB            32823
+#define ID_POPUP_SHOWLOG                32824
+#define ID_POPUP_REPOBROWSER            32825
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -160,8 +164,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        164
-#define _APS_NEXT_COMMAND_VALUE         32823
+#define _APS_NEXT_RESOURCE_VALUE        165
+#define _APS_NEXT_COMMAND_VALUE         32826
 #define _APS_NEXT_CONTROL_VALUE         1057
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

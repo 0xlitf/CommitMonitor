@@ -696,7 +696,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					TreeView_SelectItem(m_hTreeControl, hittest.hItem);
 					m_bBlockListCtrlUI = false;
 
-					HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
+					HMENU hMenu = NULL;
+					wstring tsvninstalled = CAppUtils::GetTSVNPath();
+					if (tsvninstalled.empty())
+						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
+					else
+						hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUPTSVN));
 					hMenu = ::GetSubMenu(hMenu, 0);
 					TVITEMEX itemex = {0};
 					itemex.hItem = hittest.hItem;
@@ -727,6 +732,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					case ID_POPUP_ADDPROJECTWITHTEMPLATE:
 					case ID_MAIN_EDIT:
 					case ID_MAIN_REMOVE:
+					case ID_POPUP_REPOBROWSER:
+					case ID_POPUP_SHOWLOG:
 						{
 							HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
 							m_bBlockListCtrlUI = true;
@@ -1288,6 +1295,50 @@ LRESULT CMainDlg::DoCommand(int id)
 					}
 				}
 				CAppUtils::WriteAsciiStringToClipboard(sClipboardData, *this);
+			}
+		}
+		break;
+	case ID_POPUP_REPOBROWSER:
+		{
+			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+			TVITEMEX itemex = {0};
+			itemex.hItem = hSelectedItem;
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(m_hTreeControl, &itemex);
+			wstring url = *(wstring*)itemex.lParam;
+
+			wstring cmd;
+			wstring tsvninstalled = CAppUtils::GetTSVNPath();
+			if (!tsvninstalled.empty())
+			{
+				// yes, we have TSVN installed
+				cmd = wstring(tsvninstalled);
+				cmd += _T(" /command:repobrowser /path:\"");
+				cmd += url;
+				cmd += _T("\"");
+				CAppUtils::LaunchApplication(cmd);
+			}
+		}
+		break;
+	case ID_POPUP_SHOWLOG:
+		{
+			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+			TVITEMEX itemex = {0};
+			itemex.hItem = hSelectedItem;
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(m_hTreeControl, &itemex);
+			wstring url = *(wstring*)itemex.lParam;
+
+			wstring cmd;
+			wstring tsvninstalled = CAppUtils::GetTSVNPath();
+			if (!tsvninstalled.empty())
+			{
+				// yes, we have TSVN installed
+				cmd = wstring(tsvninstalled);
+				cmd += _T(" /command:log /path:\"");
+				cmd += url;
+				cmd += _T("\"");
+				CAppUtils::LaunchApplication(cmd);
 			}
 		}
 		break;
