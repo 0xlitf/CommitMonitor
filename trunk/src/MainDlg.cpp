@@ -909,6 +909,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					case ID_MAIN_SHOWDIFFTSVN:
 					case ID_MAIN_SHOWDIFF:
 					case ID_MAIN_REMOVE:
+					case ID_MAIN_COPY:
 						{
 							::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
 						}
@@ -1228,6 +1229,65 @@ LRESULT CMainDlg::DoCommand(int id)
 			if (hItem)
 			{
 				MarkAllAsRead(hItem, true);
+			}
+		}
+		break;
+	case ID_MAIN_COPY:
+		{
+			HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+			// get the url this entry refers to
+			TVITEMEX itemex = {0};
+			itemex.hItem = hSelectedItem;
+			itemex.mask = TVIF_PARAM;
+			TreeView_GetItem(m_hTreeControl, &itemex);
+			if (itemex.lParam != 0)
+			{
+				wstring sClipboardData;
+				TCHAR tempBuf[1024];
+				LVITEM item = {0};
+				int nItemCount = ListView_GetItemCount(m_hListControl);
+				for (int i=0; i<nItemCount; ++i)
+				{
+					item.mask = LVIF_PARAM|LVIF_STATE;
+					item.stateMask = LVIS_SELECTED;
+					item.iItem = i;
+					ListView_GetItem(m_hListControl, &item);
+					if (item.state & LVIS_SELECTED)
+					{
+						SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+						if (pLogEntry)
+						{
+							// get the info to put on the clipboard
+							_stprintf_s(tempBuf, 1024, _T("Revision: %ld\nAuthor: %s\nDate: %s\nMessage:\n"), 
+								pLogEntry->revision, 
+								pLogEntry->author.c_str(), 
+								CAppUtils::ConvertDate(pLogEntry->date).c_str());
+							sClipboardData += tempBuf;
+							sClipboardData += pLogEntry->message;
+							sClipboardData += _T("\n-------------------------------\n");
+							// now add all changed paths, one path per line
+							for (map<std::wstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+							{
+								// action
+								sClipboardData += it->second.action;
+								sClipboardData += _T(" : ");
+								sClipboardData += it->first;
+								sClipboardData += _T("  ");
+								if (!it->second.copyfrom_path.empty())
+								{
+									sClipboardData += _T("(copied from: ");
+									sClipboardData += it->second.copyfrom_path;
+									sClipboardData += _T(", revision ");
+									_stprintf_s(tempBuf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
+									sClipboardData += wstring(tempBuf);
+								}
+								else
+									sClipboardData += _T("\n\n");
+							}
+						}
+					}
+				}
+				CAppUtils::WriteAsciiStringToClipboard(sClipboardData, *this);
 			}
 		}
 		break;

@@ -19,6 +19,7 @@
 #include "StdAfx.h"
 #include "AppUtils.h"
 #include "Registry.h"
+#include "ClipboardHelper.h"
 
 
 #include <shlwapi.h>
@@ -508,4 +509,30 @@ bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourc
 	}
 
 	return true;
+}
+
+bool CAppUtils::WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd)
+{
+	CClipboardHelper clipboardHelper;
+	if (clipboardHelper.Open(hOwningWnd))
+	{
+		EmptyClipboard();
+		HGLOBAL hClipboardData = CClipboardHelper::GlobalAlloc((sClipdata.size()+1)*sizeof(WCHAR));
+		if (hClipboardData)
+		{
+			WCHAR* pchData = (WCHAR*)GlobalLock(hClipboardData);
+			if (pchData)
+			{
+				_tcscpy_s(pchData, sClipdata.size()+1, (LPCWSTR)sClipdata.c_str());
+				GlobalUnlock(hClipboardData);
+				if (SetClipboardData(CF_UNICODETEXT, hClipboardData))
+				{
+					// no need to also set CF_TEXT : the OS does this
+					// automatically.
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
