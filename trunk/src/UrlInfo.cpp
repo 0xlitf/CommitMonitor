@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
 	, lastcheckedrev(0)
 	, minutesinterval(90)
 	, minminutesinterval(0)
+	, fetchdiffs(false)
 	, disallowdiffs(false)
 	, parentpath(false)
 	, monitored(true)
@@ -74,6 +75,8 @@ bool CUrlInfo::Save(FILE * hFile)
 	if (!CSerializeUtils::SaveNumber(hFile, minutesinterval))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, minminutesinterval))
+		return false;
+	if (!CSerializeUtils::SaveNumber(hFile, fetchdiffs))
 		return false;
 	if (!CSerializeUtils::SaveNumber(hFile, disallowdiffs))
 		return false;
@@ -174,10 +177,11 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 			return false;
 		minminutesinterval = (int)value;
 	}
-	if (version < 4)
+	if ((version < 4)||(version >= 12))
 	{
 		if (!CSerializeUtils::LoadNumber(buf, value))
 			return false;
+		fetchdiffs = !!value;
 	}
 	if (version > 1)
 	{
@@ -622,4 +626,3 @@ void CUrlInfos::ReleaseWriteData()
 {
 	guard.ReleaseWriterLock();
 }
-

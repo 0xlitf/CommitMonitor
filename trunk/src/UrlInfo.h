@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		11
+#define URLINFO_VERSION		12
 #define URLINFOS_VERSION	1
 
 #define URLINFO_MAXENTRIES 1000
@@ -46,6 +46,7 @@ public:
 
 	int							minutesinterval;
 	int							minminutesinterval;
+	bool						fetchdiffs;
 	bool						disallowdiffs;
 	bool						monitored;
 	wstring						ignoreUsers;
@@ -93,4 +94,3 @@ private:
 	map<wstring,CUrlInfo>		infos;
 	CReaderWriterLock			guard;
 };
-
