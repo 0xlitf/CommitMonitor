@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2007, 2009-2010 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -321,7 +321,7 @@ void CDialog::ExtendFrameIntoClientArea(UINT leftControl, UINT topControl, UINT 
 	MapWindowPoints(*this, NULL, (LPPOINT)&rc2, 2);
 
 	RECT rccontrol;
-	if (leftControl)
+	if (leftControl && leftControl != -1)
 	{
 		HWND hw = GetDlgItem(*this, leftControl);
 		if (hw == NULL)
@@ -333,7 +333,7 @@ void CDialog::ExtendFrameIntoClientArea(UINT leftControl, UINT topControl, UINT 
 	else
 		m_margins.cxLeftWidth = 0;
 
-	if (topControl)
+	if (topControl && topControl != -1)
 	{
 		HWND hw = GetDlgItem(*this, topControl);
 		if (hw == NULL)
@@ -345,7 +345,7 @@ void CDialog::ExtendFrameIntoClientArea(UINT leftControl, UINT topControl, UINT 
 	else
 		m_margins.cyTopHeight = 0;
 
-	if (rightControl)
+	if (rightControl && rightControl != -1)
 	{
 		HWND hw = GetDlgItem(*this, rightControl);
 		if (hw == NULL)
@@ -357,7 +357,7 @@ void CDialog::ExtendFrameIntoClientArea(UINT leftControl, UINT topControl, UINT 
 	else
 		m_margins.cxRightWidth = 0;
 
-	if (botomControl)
+	if (botomControl && botomControl != -1)
 	{
 		HWND hw = GetDlgItem(*this, botomControl);
 		if (hw == NULL)
@@ -384,4 +384,3 @@ void CDialog::ExtendFrameIntoClientArea(UINT leftControl, UINT topControl, UINT 
 		m_Dwm.DwmExtendFrameIntoClientArea(*this, &m_margins);
 	}
 }
-
