@@ -27,12 +27,12 @@
 #pragma comment(lib, "shell32.lib")
 
 /// the timer IDs
-#define IDT_MONITOR		101
-#define IDT_ANIMATE		102
+#define IDT_MONITOR     101
+#define IDT_ANIMATE     102
 
 /// timer elapse time, set to 1 minute
-#define TIMER_ELAPSE	60000
-#define TIMER_ANIMATE	400
+#define TIMER_ELAPSE    60000
+#define TIMER_ANIMATE   400
 
 #define ALERTTYPE_NEWCOMMITS L"new commits"
 #define ALERTTYPE_FAILEDCONNECT L"connection error"
@@ -40,70 +40,70 @@
 
 typedef struct
 {
-	wstring				sTitle;
-	wstring				sText;
-	wstring				sAlertType;
+    wstring             sTitle;
+    wstring             sText;
+    wstring             sAlertType;
 } popupData;
 
 class CHiddenWindow : public CWindow
 {
 public:
-	CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx = NULL); 
-	~CHiddenWindow(void);
+    CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx = NULL);
+    ~CHiddenWindow(void);
 
-	/**
-	 * Registers the window class and creates the window.
-	 */
-	bool				RegisterAndCreateWindow();
+    /**
+     * Registers the window class and creates the window.
+     */
+    bool                RegisterAndCreateWindow();
 
-	INT_PTR				ShowDialog();
+    INT_PTR             ShowDialog();
 
-	bool				StopThread(DWORD wait);
-	void				RemoveTrayIcon();
+    bool                StopThread(DWORD wait);
+    void                RemoveTrayIcon();
 
-	DWORD				RunThread();
+    DWORD               RunThread();
 
-	void				SetTask(bool b) {m_bIsTask = b;}
+    void                SetTask(bool b) {m_bIsTask = b;}
 protected:
-	/// the message handler for this window
-	LRESULT CALLBACK	WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT				HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    /// the message handler for this window
+    LRESULT CALLBACK    WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT             HandleCustomMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-	void				DoTimer(bool bForce);
-	void				DoAnimate();
-	void				ShowTrayIcon(bool newCommits);
+    void                DoTimer(bool bForce);
+    void                DoAnimate();
+    void                ShowTrayIcon(bool newCommits);
 
 private:
-	UINT				COMMITMONITOR_SHOWDLGMSG;
-	UINT				WM_TASKBARCREATED;
-	LONG32				snarlGlobalMsg;
+    UINT                COMMITMONITOR_SHOWDLGMSG;
+    UINT                WM_TASKBARCREATED;
+    LONG32              snarlGlobalMsg;
 
-	int					m_nIcon;
-	NOTIFYICONDATA		m_SystemTray;
-	HICON				m_hIconNormal;
-	HICON				m_hIconNew0;
-	HICON				m_hIconNew1;
-	HICON				m_hIconNew2;
-	HICON				m_hIconNew3;
+    int                 m_nIcon;
+    NOTIFYICONDATA      m_SystemTray;
+    HICON               m_hIconNormal;
+    HICON               m_hIconNew0;
+    HICON               m_hIconNew1;
+    HICON               m_hIconNew2;
+    HICON               m_hIconNew3;
 
-	CUrlInfos			m_UrlInfos;
-	DWORD				m_ThreadRunning;
-	bool				m_bRun;
-	HANDLE				m_hMonitorThread;
+    CUrlInfos           m_UrlInfos;
+    DWORD               m_ThreadRunning;
+    bool                m_bRun;
+    HANDLE              m_hMonitorThread;
 
-	bool				m_bMainDlgShown;
-	bool				m_bMainDlgRemovedItems;
-	HWND				m_hMainDlg;
+    bool                m_bMainDlgShown;
+    bool                m_bMainDlgRemovedItems;
+    HWND                m_hMainDlg;
 
-	CRegStdDWORD		regShowTaskbarIcon;
+    CRegStdDWORD        regShowTaskbarIcon;
 
-	bool				m_bIsTask;
-	bool				m_bNewerVersionAvailable;
+    bool                m_bIsTask;
+    bool                m_bNewerVersionAvailable;
 
-	wstring				m_UrlToWorkOn;
-	CRegStdString		m_regLastSelectedProject;
+    wstring             m_UrlToWorkOn;
+    CRegStdString       m_regLastSelectedProject;
 
-	typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
-	static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
+    typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
+    static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
 };

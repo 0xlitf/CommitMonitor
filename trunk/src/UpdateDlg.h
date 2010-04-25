@@ -27,15 +27,15 @@
 class CUpdateDlg : public CDialog
 {
 public:
-	CUpdateDlg(HWND hParent);
-	~CUpdateDlg(void);
+    CUpdateDlg(HWND hParent);
+    ~CUpdateDlg(void);
 
 protected:
-	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT					DoCommand(int id);
+    LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT                 DoCommand(int id);
 
 private:
-	HWND					m_hParent;
-	CHyperLink				m_link;
-	AeroControlBase			m_aerocontrols;
+    HWND                    m_hParent;
+    CHyperLink              m_link;
+    AeroControlBase         m_aerocontrols;
 };

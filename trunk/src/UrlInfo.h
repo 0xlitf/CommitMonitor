@@ -24,73 +24,73 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION		12
-#define URLINFOS_VERSION	1
+#define URLINFO_VERSION     12
+#define URLINFOS_VERSION    1
 
 #define URLINFO_MAXENTRIES 1000
 
 class CUrlInfo
 {
 public:
-	CUrlInfo(void);
-	~CUrlInfo(void);
+    CUrlInfo(void);
+    ~CUrlInfo(void);
 
-	wstring						username;
-	wstring						password;
+    wstring                     username;
+    wstring                     password;
 
-	wstring						url;
-	wstring						name;
-	__time64_t					lastchecked;
-	svn_revnum_t				lastcheckedrev;
-	__time64_t					lastcheckedrobots;
+    wstring                     url;
+    wstring                     name;
+    __time64_t                  lastchecked;
+    svn_revnum_t                lastcheckedrev;
+    __time64_t                  lastcheckedrobots;
 
-	int							minutesinterval;
-	int							minminutesinterval;
-	bool						fetchdiffs;
-	bool						disallowdiffs;
-	bool						monitored;
-	wstring						ignoreUsers;
+    int                         minutesinterval;
+    int                         minminutesinterval;
+    bool                        fetchdiffs;
+    bool                        disallowdiffs;
+    bool                        monitored;
+    wstring                     ignoreUsers;
 
-	map<svn_revnum_t,SVNLogEntry> logentries;
-	int							maxentries;
+    map<svn_revnum_t,SVNLogEntry> logentries;
+    int                         maxentries;
 
-	bool						parentpath;
-	wstring						error;
-	apr_status_t				errNr;
-	wstring						callcommand;
-	bool						noexecuteignored;
-	wstring						webviewer;
+    bool                        parentpath;
+    wstring                     error;
+    apr_status_t                errNr;
+    wstring                     callcommand;
+    bool                        noexecuteignored;
+    wstring                     webviewer;
 
-	bool						Save(FILE * hFile);
-	bool						Load(const unsigned char *& buf);
+    bool                        Save(FILE * hFile);
+    bool                        Load(const unsigned char *& buf);
 };
 
 class CUrlInfos
 {
 public:
-	CUrlInfos(void);
-	~CUrlInfos(void);
+    CUrlInfos(void);
+    ~CUrlInfos(void);
 
-	void						Save();
-	bool						Load();
-	bool						Save(LPCWSTR filename);
-	bool						Load(LPCWSTR filename);
-	bool						IsEmpty();
-	bool						Export(LPCWSTR filename, LPCWSTR password);
-	bool						CheckPassword(LPCWSTR filename, LPCWSTR password);
-	bool						Import(LPCWSTR filename, LPCWSTR password);
+    void                        Save();
+    bool                        Load();
+    bool                        Save(LPCWSTR filename);
+    bool                        Load(LPCWSTR filename);
+    bool                        IsEmpty();
+    bool                        Export(LPCWSTR filename, LPCWSTR password);
+    bool                        CheckPassword(LPCWSTR filename, LPCWSTR password);
+    bool                        Import(LPCWSTR filename, LPCWSTR password);
 
-	const map<wstring,CUrlInfo> *	GetReadOnlyData();
-	map<wstring,CUrlInfo> *		GetWriteData();
-	void						ReleaseReadOnlyData();
-	void						ReleaseWriteData();
+    const map<wstring,CUrlInfo> *   GetReadOnlyData();
+    map<wstring,CUrlInfo> *     GetWriteData();
+    void                        ReleaseReadOnlyData();
+    void                        ReleaseWriteData();
 
 protected:
-	bool						Save(FILE * hFile);
-	bool						Load(const unsigned char *& buf);
-	string						CalcMD5(LPCWSTR s);
+    bool                        Save(FILE * hFile);
+    bool                        Load(const unsigned char *& buf);
+    string                      CalcMD5(LPCWSTR s);
 
 private:
-	map<wstring,CUrlInfo>		infos;
-	CReaderWriterLock			guard;
+    map<wstring,CUrlInfo>       infos;
+    CReaderWriterLock           guard;
 };

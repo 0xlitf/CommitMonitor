@@ -26,18 +26,18 @@
 class SVNPool
 {
 public:
-	SVNPool();
-	explicit SVNPool(apr_pool_t* parentPool);
-	~SVNPool();
+    SVNPool();
+    explicit SVNPool(apr_pool_t* parentPool);
+    ~SVNPool();
 private:
-	// Not implemented - we don't want any copying of these objects
-	SVNPool(const SVNPool& rhs);
-	SVNPool& operator=(SVNPool& rhs);
+    // Not implemented - we don't want any copying of these objects
+    SVNPool(const SVNPool& rhs);
+    SVNPool& operator=(SVNPool& rhs);
 
 public:
-	operator apr_pool_t*();
+    operator apr_pool_t*();
 
 private:
-	apr_pool_t* m_pool;
+    apr_pool_t* m_pool;
 };
 

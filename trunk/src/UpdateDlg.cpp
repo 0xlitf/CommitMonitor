@@ -28,7 +28,7 @@ using namespace std;
 
 CUpdateDlg::CUpdateDlg(HWND hParent)
 {
-	m_hParent = hParent;
+    m_hParent = hParent;
 }
 
 CUpdateDlg::~CUpdateDlg(void)
@@ -37,39 +37,39 @@ CUpdateDlg::~CUpdateDlg(void)
 
 LRESULT CUpdateDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
-	switch (uMsg)
-	{
-	case WM_INITDIALOG:
-		{
-			InitDialog(hwndDlg, IDI_COMMITMONITOR);
-			// initialize the controls
-			m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBURL, _T("http://tools.tortoisesvn.net/CommitMonitor"));
+    UNREFERENCED_PARAMETER(lParam);
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+        {
+            InitDialog(hwndDlg, IDI_COMMITMONITOR);
+            // initialize the controls
+            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBURL, _T("http://tools.tortoisesvn.net/CommitMonitor"));
 
-			ExtendFrameIntoClientArea((UINT)-1, (UINT)-1, (UINT)-1, (UINT)-1);
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL2));
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_WEBURL));
-		}
-		return TRUE;
-	case WM_COMMAND:
-		return DoCommand(LOWORD(wParam));
-	default:
-		return FALSE;
-	}
+            ExtendFrameIntoClientArea((UINT)-1, (UINT)-1, (UINT)-1, (UINT)-1);
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL2));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_WEBURL));
+        }
+        return TRUE;
+    case WM_COMMAND:
+        return DoCommand(LOWORD(wParam));
+    default:
+        return FALSE;
+    }
 }
 
 LRESULT CUpdateDlg::DoCommand(int id)
 {
-	switch (id)
-	{
-	case IDOK:
-		// fall through
-	case IDCANCEL:
-		EndDialog(*this, id);
-		break;
-	}
-	return 1;
+    switch (id)
+    {
+    case IDOK:
+        // fall through
+    case IDCANCEL:
+        EndDialog(*this, id);
+        break;
+    }
+    return 1;
 }
 

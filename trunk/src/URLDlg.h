@@ -27,24 +27,24 @@
 class CURLDlg : public CDialog
 {
 public:
-	CURLDlg(void);
-	~CURLDlg(void);
+    CURLDlg(void);
+    ~CURLDlg(void);
 
-	void					SetInfo(const CUrlInfo * pURLInfo = NULL);
-	CUrlInfo *				GetInfo() {return &info;}
-	void					ClearForTemplate();
+    void                    SetInfo(const CUrlInfo * pURLInfo = NULL);
+    CUrlInfo *              GetInfo() {return &info;}
+    void                    ClearForTemplate();
 
 protected:
-	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT					DoCommand(int id);
+    LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT                 DoCommand(int id);
 
-	bool					OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
-	bool					OnMouseMove(UINT nFlags, POINT point);
-	bool					OnLButtonDown(UINT nFlags, POINT point);
-	bool					OnLButtonUp(UINT nFlags, POINT point);
-	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+    bool                    OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
+    bool                    OnMouseMove(UINT nFlags, POINT point);
+    bool                    OnLButtonDown(UINT nFlags, POINT point);
+    bool                    OnLButtonUp(UINT nFlags, POINT point);
+    void                    DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
 
 private:
-	CUrlInfo				info;
-	AeroControlBase			m_aerocontrols;
+    CUrlInfo                info;
+    AeroControlBase         m_aerocontrols;
 };

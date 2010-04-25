@@ -27,24 +27,24 @@ using namespace std;
 class CAppUtils
 {
 public:
-	CAppUtils(void);
-	~CAppUtils(void);
+    CAppUtils(void);
+    ~CAppUtils(void);
 
-	static wstring					GetDataDir();
-	static wstring					GetAppDataDir();
-	static wstring					GetAppDirectory(HMODULE hMod = NULL);
-	static wstring					GetAppName(HMODULE hMod = NULL);
-	static wstring					ConvertDate(apr_time_t time);
-	static void						SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
-	static vector<wstring>			tokenize_str(const wstring& str, const wstring& delims);
-	static bool						LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
-	static wstring					GetTempFilePath();
-	static wstring					ConvertName(const wstring& name);
-	static string					PathEscape(const string& path);
-	static bool						IsWow64();
-	static wstring					GetTSVNPath();
-	static wstring					GetVersionStringFromExe(LPCTSTR path);
-	static bool						ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
-	static bool						WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd);
+    static wstring                  GetDataDir();
+    static wstring                  GetAppDataDir();
+    static wstring                  GetAppDirectory(HMODULE hMod = NULL);
+    static wstring                  GetAppName(HMODULE hMod = NULL);
+    static wstring                  ConvertDate(apr_time_t time);
+    static void                     SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
+    static vector<wstring>          tokenize_str(const wstring& str, const wstring& delims);
+    static bool                     LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
+    static wstring                  GetTempFilePath();
+    static wstring                  ConvertName(const wstring& name);
+    static string                   PathEscape(const string& path);
+    static bool                     IsWow64();
+    static wstring                  GetTSVNPath();
+    static wstring                  GetVersionStringFromExe(LPCTSTR path);
+    static bool                     ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
+    static bool                     WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd);
 
 };

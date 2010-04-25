@@ -25,15 +25,15 @@ typedef std::basic_string<TCHAR> tstring;
 class CUnicodeUtils
 {
 public:
-	CUnicodeUtils(void);
-	~CUnicodeUtils(void);
+    CUnicodeUtils(void);
+    ~CUnicodeUtils(void);
 #ifdef UNICODE
-	static std::string StdGetUTF8(const std::wstring& wide);
-	static std::wstring StdGetUnicode(const std::string& multibyte);
-	static std::string StdGetANSI(const std::wstring& wide);
+    static std::string StdGetUTF8(const std::wstring& wide);
+    static std::wstring StdGetUnicode(const std::string& multibyte);
+    static std::string StdGetANSI(const std::wstring& wide);
 #else
-	static std::string StdGetUTF8(std::string str) {return str;}
-	static std::string StdGetUnicode(std::string multibyte) {return multibyte;}
+    static std::string StdGetUTF8(std::string str) {return str;}
+    static std::string StdGetUnicode(std::string multibyte) {return multibyte;}
 #endif
 };
 
@@ -43,11 +43,11 @@ std::wstring MultibyteToWide(const std::string& multibyte);
 std::wstring UTF8ToWide(const std::string& multibyte);
 
 #ifdef UNICODE
-	tstring UTF8ToString(const std::string& string); 
-	std::string StringToUTF8(const tstring& string); 
+    tstring UTF8ToString(const std::string& string);
+    std::string StringToUTF8(const tstring& string);
 #else
-	tstring UTF8ToString(const std::string& string); 
-	std::string StringToUTF8(const tstring& string);
+    tstring UTF8ToString(const std::string& string);
+    std::string StringToUTF8(const tstring& string);
 #endif
 
 int LoadStringEx(HINSTANCE hInstance, UINT uID, LPTSTR lpBuffer, int nBufferMax, WORD wLanguage);

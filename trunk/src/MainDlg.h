@@ -26,13 +26,13 @@
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
 #define REPOBROWSER_CTRL_MIN_HEIGHT 40
 
-#define DRAGMODE_NONE			0
-#define DRAGMODE_HORIZONTAL		1
-#define DRAGMODE_VERTICAL		2
+#define DRAGMODE_NONE           0
+#define DRAGMODE_HORIZONTAL     1
+#define DRAGMODE_VERTICAL       2
 
-#define TIMER_REFRESH			101
-#define TIMER_LABEL				102
-#define TIMER_FILTER			103
+#define TIMER_REFRESH           101
+#define TIMER_LABEL             102
+#define TIMER_FILTER            103
 
 
 #define FILTER_ELAPSE 500
@@ -45,82 +45,82 @@ using namespace std;
 class CMainDlg : public CDialog
 {
 public:
-	CMainDlg(HWND hParent);
-	~CMainDlg(void);
+    CMainDlg(HWND hParent);
+    ~CMainDlg(void);
 
-	void					SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
-	void					SetUpdateAvailable(bool bUpdate) {m_bNewerVersionAvailable = bUpdate;}
-	void					SetLastSelectedProject(const wstring& proj) { m_lastSelectedProject = proj; }
-	wstring					GetLastSelectedProject() { return m_lastSelectedProject; }
+    void                    SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
+    void                    SetUpdateAvailable(bool bUpdate) {m_bNewerVersionAvailable = bUpdate;}
+    void                    SetLastSelectedProject(const wstring& proj) { m_lastSelectedProject = proj; }
+    wstring                 GetLastSelectedProject() { return m_lastSelectedProject; }
 
 protected:
-	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT					DoCommand(int id);
+    LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT                 DoCommand(int id);
 
 private:
-	bool					OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
-	bool					OnMouseMove(UINT nFlags, POINT point);
-	bool					OnLButtonDown(UINT nFlags, POINT point);
-	bool					OnLButtonUp(UINT nFlags, POINT point);
-	void					DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
-	void					PositionChildWindows(POINT point, bool bHorz, bool bShowBar);
-	void					DoResize(int width, int height);
-	bool					CreateToolbar();
+    bool                    OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
+    bool                    OnMouseMove(UINT nFlags, POINT point);
+    bool                    OnLButtonDown(UINT nFlags, POINT point);
+    bool                    OnLButtonUp(UINT nFlags, POINT point);
+    void                    DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height);
+    void                    PositionChildWindows(POINT point, bool bHorz, bool bShowBar);
+    void                    DoResize(int width, int height);
+    bool                    CreateToolbar();
 
-	void					RefreshURLTree(bool bSelectUnread);
-	HTREEITEM				FindParentTreeNode(const wstring& url);
-	HTREEITEM				FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
-	bool					SelectNextWithUnread(HTREEITEM hItem = TVI_ROOT);
-	void					OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
-	void					OnSelectListItem(LPNMLISTVIEW lpNMListView);
-	LRESULT					OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
-	LRESULT					OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw);
-	void					OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
-	void					OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
-	void					TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
-	void					RemoveSelectedListItems();
-	void					MarkAllAsRead(HTREEITEM hItem, bool includingChildren);
-	void					RefreshAll(HTREEITEM hItem);
-	void					CheckNow(HTREEITEM hItem);
-	void					SetRemoveButtonState();
-	bool					ShowDiff(bool bUseTSVN);
-	void					SaveWndPosition();
+    void                    RefreshURLTree(bool bSelectUnread);
+    HTREEITEM               FindParentTreeNode(const wstring& url);
+    HTREEITEM               FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
+    bool                    SelectNextWithUnread(HTREEITEM hItem = TVI_ROOT);
+    void                    OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
+    void                    OnSelectListItem(LPNMLISTVIEW lpNMListView);
+    LRESULT                 OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw);
+    LRESULT                 OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw);
+    void                    OnKeyDownListItem(LPNMLVKEYDOWN pnkd);
+    void                    OnDblClickListItem(LPNMITEMACTIVATE lpnmitem);
+    void                    TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem);
+    void                    RemoveSelectedListItems();
+    void                    MarkAllAsRead(HTREEITEM hItem, bool includingChildren);
+    void                    RefreshAll(HTREEITEM hItem);
+    void                    CheckNow(HTREEITEM hItem);
+    void                    SetRemoveButtonState();
+    bool                    ShowDiff(bool bUseTSVN);
+    void                    SaveWndPosition();
 
-	/// window procedure of the sub classed tree view control
-	static LRESULT CALLBACK	TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
-	WNDPROC					m_oldTreeWndProc;	///< pointer to the original window proc of the tree view control
-	static LRESULT CALLBACK	FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
-	WNDPROC					m_oldFilterWndProc;	///< pointer to the original window proc of the filter control
+    /// window procedure of the sub classed tree view control
+    static LRESULT CALLBACK TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+    WNDPROC                 m_oldTreeWndProc;   ///< pointer to the original window proc of the tree view control
+    static LRESULT CALLBACK FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
+    WNDPROC                 m_oldFilterWndProc; ///< pointer to the original window proc of the filter control
 
 private:
-	HWND					m_hTreeControl;
-	HWND					m_hListControl;
-	HWND					m_hLogMsgControl;
-	HWND					m_hFilterControl;
-	HFONT					m_font;
+    HWND                    m_hTreeControl;
+    HWND                    m_hListControl;
+    HWND                    m_hLogMsgControl;
+    HWND                    m_hFilterControl;
+    HFONT                   m_font;
 
-	CListCtrl				m_ListCtrl;
+    CListCtrl               m_ListCtrl;
 
-	HWND					m_hParent;
-	HWND					m_hwndToolbar;
-	HIMAGELIST				m_hToolbarImages;
-	HIMAGELIST				m_hImgList;
+    HWND                    m_hParent;
+    HWND                    m_hwndToolbar;
+    HIMAGELIST              m_hToolbarImages;
+    HIMAGELIST              m_hImgList;
 
-	int						m_nDragMode;
-	LONG					m_oldx, m_oldy;
-	LONG					m_topmarg;
-	LONG					m_xSliderPos;
-	LONG					m_ySliderPos;
-	LONG					m_bottommarg;
+    int                     m_nDragMode;
+    LONG                    m_oldx, m_oldy;
+    LONG                    m_topmarg;
+    LONG                    m_xSliderPos;
+    LONG                    m_ySliderPos;
+    LONG                    m_bottommarg;
 
-	HFONT					m_boldFont;
+    HFONT                   m_boldFont;
 
-	CUrlInfos *				m_pURLInfos;
-	wstring					m_lastSelectedProject;
+    CUrlInfos *             m_pURLInfos;
+    wstring                 m_lastSelectedProject;
 
-	bool					m_bBlockListCtrlUI;
-	bool					m_bNewerVersionAvailable;
-	bool					m_refreshNeeded;
+    bool                    m_bBlockListCtrlUI;
+    bool                    m_bNewerVersionAvailable;
+    bool                    m_refreshNeeded;
 
-	AeroControlBase			m_aerocontrols;
+    AeroControlBase         m_aerocontrols;
 };

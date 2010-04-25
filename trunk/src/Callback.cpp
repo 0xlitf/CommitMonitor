@@ -34,7 +34,7 @@ static char THIS_FILE[]=__FILE__;
 
 CCallback::CCallback()
 {
-	m_cRef = 0;
+    m_cRef = 0;
 }
 
 CCallback::~CCallback()
@@ -43,11 +43,11 @@ CCallback::~CCallback()
 
 STDMETHODIMP CCallback::Authenticate( HWND * phwnd, LPWSTR * pszUsername, LPWSTR * pszPassword)
 {
-	*phwnd = NULL;
-	*pszUsername = (LPWSTR)CoTaskMemAlloc((m_username.size()+1)*2);
-	_tcscpy_s(*pszUsername, m_username.size()+1, m_username.c_str());
-	*pszPassword = (LPWSTR)CoTaskMemAlloc((m_password.size()+1)*2);
-	_tcscpy_s(*pszPassword, m_password.size()+1, m_password.c_str());
-	return S_OK;
+    *phwnd = NULL;
+    *pszUsername = (LPWSTR)CoTaskMemAlloc((m_username.size()+1)*2);
+    _tcscpy_s(*pszUsername, m_username.size()+1, m_username.c_str());
+    *pszPassword = (LPWSTR)CoTaskMemAlloc((m_password.size()+1)*2);
+    _tcscpy_s(*pszPassword, m_password.size()+1, m_password.c_str());
+    return S_OK;
 }
 

@@ -2,18 +2,18 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <?include Includes.wxi?>
   <Product
-	UpgradeCode="B49D2664-0941-465d-A704-CAC63D1D0789"
-	Name="$(var.ProductName) $(var.VersionNumberUserVisible)"
-	Id='*'
-	Language='1033'
-	Codepage='1252'
-	Version="$(var.VersionNumberInternal)"
-	Manufacturer='Stefans Tools'>
+  UpgradeCode="B49D2664-0941-465d-A704-CAC63D1D0789"
+  Name="$(var.ProductName) $(var.VersionNumberUserVisible)"
+  Id='*'
+  Language='1033'
+  Codepage='1252'
+  Version="$(var.VersionNumberInternal)"
+  Manufacturer='Stefans Tools'>
 
     <Package Id='*' Keywords='Installer'
-		  Description="Subversion Commit Monitor"
-		  Comments='http://tools.tortoisesvn.net' Manufacturer='Stefans Tools'
-		  InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+      Description="Subversion Commit Monitor"
+      Comments='http://tools.tortoisesvn.net' Manufacturer='Stefans Tools'
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
     <Upgrade Id="B49D2664-0941-465d-A704-CAC63D1D0789" >
       <!-- flag is set if the install will trigger an upgrade of an existing install -->
@@ -64,7 +64,7 @@
     </DirectoryRef>
 
     <Feature Id='Complete' Title='CommitMonitor' Description='The complete package.'
-		  Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
       <Feature Id='MainEXE' Title='Program' Description='The main executable.' Level='1'>
         <ComponentRef Id='MainEXE' />
         <ComponentRef Id='StartMenuShortCut' />

@@ -28,7 +28,7 @@ using namespace std;
 
 CPasswordDlg::CPasswordDlg(HWND hParent)
 {
-	m_hParent = hParent;
+    m_hParent = hParent;
 }
 
 CPasswordDlg::~CPasswordDlg(void)
@@ -37,62 +37,62 @@ CPasswordDlg::~CPasswordDlg(void)
 
 LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
-	switch (uMsg)
-	{
-	case WM_INITDIALOG:
-		{
-			InitDialog(hwndDlg, IDI_COMMITMONITOR);
-			DialogEnableWindow(IDOK, false);
+    UNREFERENCED_PARAMETER(lParam);
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+        {
+            InitDialog(hwndDlg, IDI_COMMITMONITOR);
+            DialogEnableWindow(IDOK, false);
 
-			ExtendFrameIntoClientArea(0, IDC_PW1, 0, IDC_PW2);
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
-			m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
-		}
-		return TRUE;
-	case WM_COMMAND:
-		if (HIWORD(wParam) == EN_CHANGE)
-		{
-			int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
-			TCHAR * pwBuf = new TCHAR[len+1];
-			::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
-			wstring pw1 = wstring(pwBuf);
-			delete [] pwBuf;
-			len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW2));
-			pwBuf = new TCHAR[len+1];
-			::GetDlgItemText(*this, IDC_PW2, pwBuf, len+1);
-			wstring pw2 = wstring(pwBuf);
-			delete [] pwBuf;
+            ExtendFrameIntoClientArea(0, IDC_PW1, 0, IDC_PW2);
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
+        }
+        return TRUE;
+    case WM_COMMAND:
+        if (HIWORD(wParam) == EN_CHANGE)
+        {
+            int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
+            TCHAR * pwBuf = new TCHAR[len+1];
+            ::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
+            wstring pw1 = wstring(pwBuf);
+            delete [] pwBuf;
+            len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW2));
+            pwBuf = new TCHAR[len+1];
+            ::GetDlgItemText(*this, IDC_PW2, pwBuf, len+1);
+            wstring pw2 = wstring(pwBuf);
+            delete [] pwBuf;
 
-			DialogEnableWindow(IDOK, pw1.compare(pw2) == 0);
-		}
-		else
-			return DoCommand(LOWORD(wParam));
-	default:
-		return FALSE;
-	}
+            DialogEnableWindow(IDOK, pw1.compare(pw2) == 0);
+        }
+        else
+            return DoCommand(LOWORD(wParam));
+    default:
+        return FALSE;
+    }
 }
 
 LRESULT CPasswordDlg::DoCommand(int id)
 {
-	switch (id)
-	{
-	case IDOK:
-		{
-			int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
-			TCHAR * pwBuf = new TCHAR[len+1];
-			::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
-			password = wstring(pwBuf);
-			delete [] pwBuf;
-			EndDialog(*this, id);
-		}
-		break;
-	case IDCANCEL:
-		password.clear();
-		EndDialog(*this, id);
-		break;
-	}
-	return 1;
+    switch (id)
+    {
+    case IDOK:
+        {
+            int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
+            TCHAR * pwBuf = new TCHAR[len+1];
+            ::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
+            password = wstring(pwBuf);
+            delete [] pwBuf;
+            EndDialog(*this, id);
+        }
+        break;
+    case IDCANCEL:
+        password.clear();
+        EndDialog(*this, id);
+        break;
+    }
+    return 1;
 }
 

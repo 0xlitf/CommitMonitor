@@ -49,26 +49,26 @@
 #pragma comment(lib, "shlwapi.lib")
 
 #ifndef WIN64
-#	pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#	ifdef _DEBUG
-#		pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.VC80.CRT' version='8.0.50608.0' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
-#	endif
+#   pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#   ifdef _DEBUG
+#       pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.VC80.CRT' version='8.0.50608.0' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
+#   endif
 #else
-#	pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"") 
+#   pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
 
-#define COMMITMONITOR_POPUP				(WM_APP+1)
-#define COMMITMONITOR_CHANGEDINFO		(WM_APP+2)
-#define COMMITMONITOR_TASKBARCALLBACK	(WM_APP+3)
-#define COMMITMONITOR_REMOVEDURL		(WM_APP+4)
-#define COMMITMONITOR_SAVEINFO			(WM_APP+5)
+#define COMMITMONITOR_POPUP             (WM_APP+1)
+#define COMMITMONITOR_CHANGEDINFO       (WM_APP+2)
+#define COMMITMONITOR_TASKBARCALLBACK   (WM_APP+3)
+#define COMMITMONITOR_REMOVEDURL        (WM_APP+4)
+#define COMMITMONITOR_SAVEINFO          (WM_APP+5)
 #define COMMITMONITOR_FINDMSGPREV       (WM_APP+6)
 #define COMMITMONITOR_FINDMSGNEXT       (WM_APP+7)
 #define COMMITMONITOR_FINDEXIT          (WM_APP+8)
-#define COMMITMONITOR_FINDRESET			(WM_APP+9)
-#define COMMITMONITOR_SETWINDOWHANDLE	(WM_APP+10)
-#define COMMITMONITOR_INFOTEXT			(WM_APP+11)
-#define COMMITMONITOR_GETALL			(WM_APP+12)
+#define COMMITMONITOR_FINDRESET         (WM_APP+9)
+#define COMMITMONITOR_SETWINDOWHANDLE   (WM_APP+10)
+#define COMMITMONITOR_INFOTEXT          (WM_APP+11)
+#define COMMITMONITOR_GETALL            (WM_APP+12)
 #define COMMITMONITOR_POPUPCLICK        (WM_APP+13)
-#define COMMITMONITOR_LISTCTRLDBLCLICK	(WM_APP+14)
+#define COMMITMONITOR_LISTCTRLDBLCLICK  (WM_APP+14)

@@ -27,21 +27,21 @@ using namespace std;
 class CListCtrl
 {
 public:
-	CListCtrl();
-	bool SubClassListCtrl(HWND hWnd);
+    CListCtrl();
+    bool SubClassListCtrl(HWND hWnd);
 
-	void SetInfoText(LPCTSTR sText, bool bPermanent = false);
-	bool InfoTextShown() {return !m_sInfoText.empty();}
+    void SetInfoText(LPCTSTR sText, bool bPermanent = false);
+    bool InfoTextShown() {return !m_sInfoText.empty();}
 
 
-	/// static message handler to put in WNDCLASSEX structure
-	static LRESULT CALLBACK stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    /// static message handler to put in WNDCLASSEX structure
+    static LRESULT CALLBACK stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	operator HWND() {return m_hwnd;}
+    operator HWND() {return m_hwnd;}
 protected:
-	HWND		m_hwnd;
-	WNDPROC		m_pfnOrigCtlProc;
-	wstring		m_sInfoText;
-	bool		m_bInfoTextPermanent;
+    HWND        m_hwnd;
+    WNDPROC     m_pfnOrigCtlProc;
+    wstring     m_sInfoText;
+    bool        m_bInfoTextPermanent;
 };
 

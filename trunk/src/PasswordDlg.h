@@ -27,15 +27,15 @@
 class CPasswordDlg : public CDialog
 {
 public:
-	CPasswordDlg(HWND hParent);
-	~CPasswordDlg(void);
+    CPasswordDlg(HWND hParent);
+    ~CPasswordDlg(void);
 
-	std::wstring			password;
+    std::wstring            password;
 protected:
-	LRESULT CALLBACK		DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT					DoCommand(int id);
+    LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    LRESULT                 DoCommand(int id);
 
 private:
-	HWND					m_hParent;
-	AeroControlBase			m_aerocontrols;
+    HWND                    m_hParent;
+    AeroControlBase         m_aerocontrols;
 };
