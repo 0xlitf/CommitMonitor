@@ -20,10 +20,8 @@
 // Neutral resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
-#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -70,13 +68,11 @@ IDB_COMMITMONITOR       PNG                     "CommitMonitor.png"
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -222,7 +218,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -285,7 +281,7 @@ END
 // Menu
 //
 
-IDC_COMMITMONITOR MENU 
+IDC_COMMITMONITOR MENU
 BEGIN
     POPUP "POPUP"
     BEGIN
@@ -298,7 +294,7 @@ BEGIN
     END
 END
 
-IDR_MAINDLG MENU 
+IDR_MAINDLG MENU
 BEGIN
     POPUP "Main"
     BEGIN
@@ -317,7 +313,7 @@ BEGIN
     END
 END
 
-IDR_TREEPOPUP MENU 
+IDR_TREEPOPUP MENU
 BEGIN
     POPUP "Popup"
     BEGIN
@@ -332,7 +328,7 @@ BEGIN
     END
 END
 
-IDR_TREEPOPUPTSVN MENU 
+IDR_TREEPOPUPTSVN MENU
 BEGIN
     POPUP "Popup"
     BEGIN
@@ -350,7 +346,7 @@ BEGIN
     END
 END
 
-IDR_LISTPOPUP MENU 
+IDR_LISTPOPUP MENU
 BEGIN
     POPUP "Popup"
     BEGIN
@@ -362,7 +358,7 @@ BEGIN
     END
 END
 
-IDR_LISTPOPUPTSVN MENU 
+IDR_LISTPOPUPTSVN MENU
 BEGIN
     POPUP "Popup"
     BEGIN
@@ -381,16 +377,24 @@ END
 // Accelerator
 //
 
-IDC_COMMITMONITOR ACCELERATORS 
+IDC_COMMITMONITOR ACCELERATORS
 BEGIN
     VK_F5,          ID_MAIN_CHECKREPOSITORIESNOW, VIRTKEY, NOINVERT
+    "C",            ID_MAIN_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_RETURN,      ID_MAIN_EDIT,           VIRTKEY, ALT, NOINVERT
     "C",            ID_POPUP_MARKALLASREAD, VIRTKEY, SHIFT, CONTROL, NOINVERT
     VK_ESCAPE,      IDM_EXIT,               VIRTKEY, NOINVERT
-    "C",            ID_MAIN_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_MAIN_ADDPROJECT,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_MAIN_CHECKREPOSITORIESNOW, VIRTKEY, ALT, NOINVERT
+    "D",            ID_MAIN_EDIT,           VIRTKEY, ALT, NOINVERT
+    "R",            ID_MAIN_REMOVE,         VIRTKEY, ALT, NOINVERT
+    "S",            ID_MAIN_SHOWDIFF,       VIRTKEY, ALT, NOINVERT
+    "M",            ID_POPUP_MARKALLASREAD, VIRTKEY, ALT, NOINVERT
+    "B",            ID_MISC_ABOUT,          VIRTKEY, ALT, NOINVERT
+    "O",            ID_MISC_OPTIONS,        VIRTKEY, ALT, NOINVERT
 END
 
-IDC_CMVIEWER ACCELERATORS 
+IDC_CMVIEWER ACCELERATORS
 BEGIN
     VK_F3,          IDM_FINDNEXT,           VIRTKEY, NOINVERT
     VK_F3,          IDM_FINDPREV,           VIRTKEY, SHIFT, NOINVERT
@@ -404,13 +408,13 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "CommitMonitor"
     IDC_COMMITMONITOR       "COMMITMONITOR"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -418,10 +422,8 @@ END
 // German (Switzerland) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DES)
-#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

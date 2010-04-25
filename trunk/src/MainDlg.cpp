@@ -102,7 +102,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Check Now"); 
+    tbb[index++].iString = (INT_PTR)_T("&Check Now"); 
 
     hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ADD));
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
@@ -110,7 +110,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Add Project"); 
+    tbb[index++].iString = (INT_PTR)_T("&Add Project"); 
 
     tbb[index].iBitmap = 0; 
     tbb[index].idCommand = 0; 
@@ -125,7 +125,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Edit"); 
+    tbb[index++].iString = (INT_PTR)_T("E&dit"); 
 
     hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REMOVE));
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
@@ -133,7 +133,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Remove"); 
+    tbb[index++].iString = (INT_PTR)_T("&Remove"); 
 
     tbb[index].iBitmap = 0; 
     tbb[index].idCommand = 0; 
@@ -148,7 +148,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Show Diff"); 
+    tbb[index++].iString = (INT_PTR)_T("&Show Diff"); 
 
     tbb[index].iBitmap = 0; 
     tbb[index].idCommand = 0; 
@@ -163,7 +163,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Mark all as read"); 
+    tbb[index++].iString = (INT_PTR)_T("&Mark all as read"); 
 
     hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_OPTIONS));
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
@@ -171,7 +171,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("Options"); 
+    tbb[index++].iString = (INT_PTR)_T("&Options"); 
 
     hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ABOUT));
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
@@ -179,7 +179,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
     tbb[index].fsStyle = BTNS_BUTTON; 
     tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("About"); 
+    tbb[index++].iString = (INT_PTR)_T("A&bout"); 
 
     SendMessage(m_hwndToolbar, TB_SETIMAGELIST, 0, (LPARAM)m_hToolbarImages);
     SendMessage(m_hwndToolbar, TB_ADDBUTTONS, (WPARAM)index, (LPARAM) (LPTBBUTTON) &tbb); 
