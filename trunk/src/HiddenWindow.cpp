@@ -801,7 +801,7 @@ DWORD CHiddenWindow::RunThread()
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
-                                in.reserve(fs.rdbuf()->in_avail());
+                                in.reserve((unsigned int)fs.rdbuf()->in_avail());
                                 char c;
                                 while (fs.get(c))
                                 {
@@ -816,7 +816,7 @@ DWORD CHiddenWindow::RunThread()
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
-                                in.reserve(fs.rdbuf()->in_avail());
+                                in.reserve((unsigned int)fs.rdbuf()->in_avail());
                                 char c;
                                 while (fs.get(c))
                                 {
@@ -832,7 +832,7 @@ DWORD CHiddenWindow::RunThread()
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
-                                in.reserve(fs.rdbuf()->in_avail());
+                                in.reserve((unsigned int)fs.rdbuf()->in_avail());
                                 char c;
                                 while (fs.get(c))
                                 {
@@ -1073,7 +1073,7 @@ DWORD CHiddenWindow::RunThread()
                         string in;
                         if (!fs.bad())
                         {
-                            in.reserve(fs.rdbuf()->in_avail());
+                            in.reserve((unsigned int)fs.rdbuf()->in_avail());
                             char c;
                             while (fs.get(c))
                             {
