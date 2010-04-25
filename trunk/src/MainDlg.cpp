@@ -1153,6 +1153,8 @@ LRESULT CMainDlg::DoCommand(int id)
 						CUrlInfo * inf = dlg.GetInfo();
 						if ((inf)&&inf->name.size())
 						{
+                            inf->errNr = 0;
+                            inf->error.clear();
 							map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
 							if ((inf) && (inf->url.size()) && ((origurl.compare(inf->url)) || (id == ID_MAIN_EDIT)))
 							{
