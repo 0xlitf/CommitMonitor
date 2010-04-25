@@ -18,8 +18,8 @@ $!
 $! Specify one of the following build options for P1.
 $!
 $!      ALL       Just build "everything".
-$!      CONFIG    Just build the "[.CRYPTO.<ARCH>]OPENSSLCONF.H" file.
-$!      BUILDINF  Just build the "[.CRYPTO.<ARCH>]BUILDINF.H" file.
+$!      CONFIG    Just build the "[.xxx.CRYPTO]OPENSSLCONF.H" file.
+$!      BUILDINF  Just build the "[.xxx.CRYPTO]BUILDINF.H" file.
 $!      SOFTLINKS Just fix the Unix soft links.
 $!      BUILDALL  Same as ALL, except CONFIG, BUILDINF and SOFTILNKS aren't done.
 $!      CRYPTO    Just build the "[.xxx.EXE.CRYPTO]LIBCRYPTO.OLB" library.
@@ -38,7 +38,7 @@ $!
 $! Speficy DEBUG or NODEBUG as P3 to compile with or without debugging
 $! information.
 $!
-$! Specify which compiler at P4 to try to compile under.
+$! Specify which compiler as P4 to try to compile under.
 $!
 $!	  VAXC	 For VAX C.
 $!	  DECC	 For DEC C.
@@ -163,32 +163,32 @@ $! Time To EXIT.
 $!
 $ GOTO TIDY
 $!
-$! Rebuild The "[.CRYPTO.''ARCH']OPENSSLCONF.H" file.
+$! Rebuild The [.xxx.CRYPTO]OPENSSLCONF.H" file.
 $!
 $ CONFIG:
 $!
-$! Tell The User We Are Creating The [.CRYPTO.<ARCH>]OPENSSLCONF.H File.
+$! Tell The User We Are Creating The [.xxx.CRYPTO]OPENSSLCONF.H File.
 $!
-$ WRITE SYS$OUTPUT "Creating [.CRYPTO.''ARCH']OPENSSLCONF.H Include File."
+$ WRITE SYS$OUTPUT "Creating [.''ARCH'.CRYPTO]OPENSSLCONF.H Include File."
 $!
 $! First, make sure the directory exists.
 $!
-$ IF F$PARSE("SYS$DISK:[.CRYPTO.''ARCH']") .EQS. "" THEN -
-     CREATE/DIRECTORY SYS$DISK:[.CRYPTO.'ARCH']
+$ IF F$PARSE("SYS$DISK:[.''ARCH'.CRYPTO]") .EQS. "" THEN -
+     CREATE/DIRECTORY SYS$DISK:[.'ARCH'.CRYPTO]
 $!
-$! Create The [.CRYPTO.<ARCH>]OPENSSLCONF.H File.
+$! Create The [.xxx.CRYPTO]OPENSSLCONF.H File.
 $! Make sure it has the right format.
 $!
-$ OSCH_NAME = "SYS$DISK:[.CRYPTO.''ARCH']OPENSSLCONF.H"
+$ OSCH_NAME = "SYS$DISK:[.''ARCH'.CRYPTO]OPENSSLCONF.H"
 $ CREATE /FDL=SYS$INPUT: 'OSCH_NAME'
 RECORD
         FORMAT stream_lf
 $ OPEN /APPEND H_FILE 'OSCH_NAME'
 $!
-$! Write The [.CRYPTO.<ARCH>]OPENSSLCONF.H File.
+$! Write The [.xxx.CRYPTO]OPENSSLCONF.H File.
 $!
 $ WRITE H_FILE "/* This file was automatically built using makevms.com */"
-$ WRITE H_FILE "/* and [.CRYPTO.''ARCH']OPENSSLCONF.H_IN */"
+$ WRITE H_FILE "/* and [.''ARCH'.CRYPTO]OPENSSLCONF.H_IN */"
 $!
 $! Write a few macros that indicate how this system was built.
 $!
@@ -268,7 +268,7 @@ $ ENDIF
 $ IF ARCH .NES. "VAX"
 $ THEN
 $!
-$!  Write the Alpha specific data
+$!  Write the non-VAX specific data
 $!
 $   WRITE H_FILE "#if defined(HEADER_RC4_H)"
 $   WRITE H_FILE "#undef RC4_INT"
@@ -347,33 +347,29 @@ $!  End
 $!
 $ ENDIF
 $!
-$! There are many places where this is needed.
-$!
-$!!! WRITE H_FILE "#define _XOPEN_SOURCE_EXTENDED"
-$!
-$! Close the [.CRYPTO.<ARCH>]OPENSSLCONF.H file
+$! Close the [.xxx.CRYPTO]OPENSSLCONF.H file
 $!
 $ CLOSE H_FILE
 $!
-$! Purge The [.CRYPTO.<ARCH>]OPENSSLCONF.H file
+$! Purge The [.xxx.CRYPTO]OPENSSLCONF.H file
 $!
-$ PURGE SYS$DISK:[.CRYPTO.'ARCH']OPENSSLCONF.H
+$ PURGE SYS$DISK:[.'ARCH'.CRYPTO]OPENSSLCONF.H
 $!
 $! That's All, Time To RETURN.
 $!
 $ RETURN
 $!
-$! Rebuild The "[.CRYPTO.<ARCH>]BUILDINF.H" file.
+$! Rebuild The "[.xxx.CRYPTO]BUILDINF.H" file.
 $!
 $ BUILDINF:
 $!
-$! Tell The User We Are Creating The [.CRYPTO.<ARCH>]BUILDINF.H File.
+$! Tell The User We Are Creating The [.xxx.CRYPTO]BUILDINF.H File.
 $!
-$ WRITE SYS$OUTPUT "Creating [.CRYPTO.''ARCH']BUILDINF.H Include File."
+$ WRITE SYS$OUTPUT "Creating [.''ARCH'.CRYPTO]BUILDINF.H Include File."
 $!
-$! Create The [.CRYPTO.<ARCH>]BUILDINF.H File.
+$! Create The [.xxx.CRYPTO]BUILDINF.H File.
 $!
-$ BIH_NAME = "SYS$DISK:[.CRYPTO.''ARCH']BUILDINF.H"
+$ BIH_NAME = "SYS$DISK:[.''ARCH'.CRYPTO]BUILDINF.H"
 $ CREATE /FDL=SYS$INPUT: 'BIH_NAME'
 RECORD
         FORMAT stream_lf
@@ -384,19 +380,19 @@ $! Get The Current Date & Time.
 $!
 $ TIME = F$TIME()
 $!
-$! Write The [.CRYPTO.<ARCH>]BUILDINF.H File.
+$! Write The [.xxx.CRYPTO]BUILDINF.H File.
 $!
 $ WRITE H_FILE "#define CFLAGS """" /* Not filled in for now */"
 $ WRITE H_FILE "#define PLATFORM ""VMS ''ARCH' ''VMS_VER'"""
 $ WRITE H_FILE "#define DATE ""''TIME'"" "
 $!
-$! Close The [.CRYPTO.<ARCH>]BUILDINF.H File.
+$! Close The [.xxx.CRYPTO]BUILDINF.H File.
 $!
 $ CLOSE H_FILE
 $!
-$! Purge The [.CRYPTO.<ARCH>]BUILDINF.H File.
+$! Purge The [.xxx.CRYPTO]BUILDINF.H File.
 $!
-$ PURGE SYS$DISK:[.CRYPTO.'ARCH']BUILDINF.H
+$ PURGE SYS$DISK:[.'ARCH'.CRYPTO]BUILDINF.H
 $!
 $! That's All, Time To RETURN.
 $!
@@ -461,7 +457,7 @@ $!
 $! Copy All The ".H" Files From The [.CRYPTO] Directory Tree.
 $!
 $ SDIRS := ,-
-   'ARCH',-
+   _'ARCH',-
    OBJECTS,-
    MD2,MD4,MD5,SHA,MDC2,HMAC,RIPEMD,WHRLPOOL,-
    DES,AES,RC2,RC4,RC5,IDEA,BF,CAST,CAMELLIA,SEED,MODES,-
@@ -470,7 +466,7 @@ $ SDIRS := ,-
    EVP,ASN1,PEM,X509,X509V3,CONF,TXT_DB,PKCS7,PKCS12,COMP,OCSP,UI,KRB5,-
    STORE,CMS,PQUEUE,TS,JPAKE
 $ EXHEADER_ := crypto.h,opensslv.h,ebcdic.h,symhacks.h,ossl_typ.h
-$ EXHEADER_'ARCH' := opensslconf.h
+$ EXHEADER__'ARCH' := opensslconf.h
 $ EXHEADER_OBJECTS := objects.h,obj_mac.h
 $ EXHEADER_MD2 := md2.h
 $ EXHEADER_MD4 := md4.h
@@ -536,7 +532,12 @@ $ IF D .EQS. ""
 $ THEN
 $   COPY [.CRYPTO]'tmp' SYS$DISK:[.INCLUDE.OPENSSL] !/LOG
 $ ELSE
-$   COPY [.CRYPTO.'D']'tmp' SYS$DISK:[.INCLUDE.OPENSSL] !/LOG
+$   IF D .EQS. "_''ARCH'"
+$   THEN
+$     COPY [.'ARCH'.CRYPTO]'tmp' SYS$DISK:[.INCLUDE.OPENSSL] !/LOG
+$   ELSE
+$     COPY [.CRYPTO.'D']'tmp' SYS$DISK:[.INCLUDE.OPENSSL] !/LOG
+$   ENDIF
 $ ENDIF
 $ GOTO LOOP_SDIRS
 $ LOOP_SDIRS_END:
@@ -757,13 +758,13 @@ $!
 $     WRITE SYS$OUTPUT ""
 $     WRITE SYS$OUTPUT "USAGE:   @MAKEVMS.COM [Target] [not-used option] [Debug option] <Compiler>"
 $     WRITE SYS$OUTPUT ""
-$     WRITE SYS$OUTPUT "Example: @MAKEVMS.COM ALL NORSAREF NODEBUG "
+$     WRITE SYS$OUTPUT "Example: @MAKEVMS.COM ALL """" NODEBUG "
 $     WRITE SYS$OUTPUT ""
 $     WRITE SYS$OUTPUT "The Target ",P1," Is Invalid.  The Valid Target Options Are:"
 $     WRITE SYS$OUTPUT ""
 $     WRITE SYS$OUTPUT "    ALL      :  Just Build Everything."
-$     WRITE SYS$OUTPUT "    CONFIG   :  Just build the [.CRYPTO.''ARCH']OPENSSLCONF.H file."
-$     WRITE SYS$OUTPUT "    BUILDINF :  Just build the [.CRYPTO.''ARCH']BUILDINF.H file."
+$     WRITE SYS$OUTPUT "    CONFIG   :  Just build the [.xxx.CRYPTO]OPENSSLCONF.H file."
+$     WRITE SYS$OUTPUT "    BUILDINF :  Just build the [.xxx.CRYPTO]BUILDINF.H file."
 $     WRITE SYS$OUTPUT "    SOFTLINKS:  Just Fix The Unix soft links."
 $     WRITE SYS$OUTPUT "    BUILDALL :  Same as ALL, except CONFIG, BUILDINF and SOFTILNKS aren't done."
 $     WRITE SYS$OUTPUT "    CRYPTO   :  To Build Just The [.xxx.EXE.CRYPTO]LIBCRYPTO.OLB Library."

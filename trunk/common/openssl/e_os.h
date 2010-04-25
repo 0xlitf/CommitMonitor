@@ -150,7 +150,9 @@ extern "C" {
 #define clear_socket_error()	WSASetLastError(0)
 #define readsocket(s,b,n)	recv((s),(b),(n),0)
 #define writesocket(s,b,n)	send((s),(b),(n),0)
+#if _MSC_VER < 1600
 #define EADDRINUSE		WSAEADDRINUSE
+#endif
 #elif defined(__DJGPP__)
 #define WATT32
 #define get_last_socket_error()	errno
@@ -744,4 +746,3 @@ struct servent *getservbyname(const char *name, const char *proto);
 #endif
 
 #endif
-

@@ -527,6 +527,7 @@ int RAND_poll(void)
 							RAND_add(&hentry,
 								hentry.dwSize, 5);
 						while (heap_next(&hentry)
+						&& (!good || (GetTickCount()-starttime)<MAXDELAY)
 							&& --entrycnt > 0);
 						}
 						}
@@ -749,7 +750,7 @@ static void readscreen(void)
   int		y;		/* y-coordinate of screen lines to grab */
   int		n = 16;		/* number of screen lines to grab at a time */
 
-  if (GetVersion() >= 0x80000000 || !OPENSSL_isservice())
+  if (GetVersion() < 0x80000000 && OPENSSL_isservice()>0)
     return;
 
   /* Create a screen DC and a memory DC compatible to screen DC */

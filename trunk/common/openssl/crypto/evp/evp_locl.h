@@ -115,7 +115,7 @@ static int cname##_cfb##cbits##_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, 
 	if (inl<chunk) chunk=inl;\
 	while(inl && inl>=chunk)\
 	    {\
-	    cprefix##_cfb##cbits##_encrypt(in, out, (long)(cbits==1?chunk*8:chunk), &((kstruct *)ctx->cipher_data)->ksched, ctx->iv, &ctx->num, ctx->encrypt);\
+            cprefix##_cfb##cbits##_encrypt(in, out, (long)((cbits==1) && !(ctx->flags & EVP_CIPH_FLAG_LENGTH_BITS) ?inl*8:inl), &((kstruct *)ctx->cipher_data)->ksched, ctx->iv, &ctx->num, ctx->encrypt);\
 	    inl-=chunk;\
 	    in +=chunk;\
 	    out+=chunk;\
@@ -167,10 +167,10 @@ BLOCK_CIPHER_def1(cname, ofb##cbits, ofb, OFB, kstruct, nid, 1, \
 		  get_asn1, ctrl)
 
 #define BLOCK_CIPHER_def_ecb(cname, kstruct, nid, block_size, key_len, \
-			     iv_len, flags, init_key, cleanup, set_asn1, \
+			     flags, init_key, cleanup, set_asn1, \
 			     get_asn1, ctrl) \
 BLOCK_CIPHER_def1(cname, ecb, ecb, ECB, kstruct, nid, block_size, key_len, \
-		  iv_len, flags, init_key, cleanup, set_asn1, get_asn1, ctrl)
+		  0, flags, init_key, cleanup, set_asn1, get_asn1, ctrl)
 
 #define BLOCK_CIPHER_defs(cname, kstruct, \
 			  nid, block_size, key_len, iv_len, cbits, flags, \
@@ -181,7 +181,7 @@ BLOCK_CIPHER_def_cfb(cname, kstruct, nid, key_len, iv_len, cbits, \
 		     flags, init_key, cleanup, set_asn1, get_asn1, ctrl) \
 BLOCK_CIPHER_def_ofb(cname, kstruct, nid, key_len, iv_len, cbits, \
 		     flags, init_key, cleanup, set_asn1, get_asn1, ctrl) \
-BLOCK_CIPHER_def_ecb(cname, kstruct, nid, block_size, key_len, iv_len, flags, \
+BLOCK_CIPHER_def_ecb(cname, kstruct, nid, block_size, key_len, flags, \
 		     init_key, cleanup, set_asn1, get_asn1, ctrl)
 
 
