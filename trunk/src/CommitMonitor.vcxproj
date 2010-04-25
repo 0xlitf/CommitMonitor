@@ -1,0 +1,506 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{920638BE-13B0-4A76-B132-B3E3A56DCB42}</ProjectGuid>
+    <RootNamespace>CommitMonitor</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\obj\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\obj\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ResourceOutputFileName>$(IntDir)%(Filename).res</ResourceOutputFileName>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\debug_win32\libapr.lib;..\ext\apr-util\debug_win32\libaprutil.lib;..\ext\apr-util\xml\expat\lib\debug_win32\xml.lib;..\ext\neon\debug_win32\libneon.lib;..\ext\Subversion\debug_win32\libsvn_client.lib;..\ext\Subversion\debug_win32\libsvn_delta.lib;..\ext\Subversion\debug_win32\libsvn_diff.lib;..\ext\Subversion\debug_win32\libsvn_ra.lib;..\ext\Subversion\debug_win32\libsvn_ra_neon.lib;..\ext\Subversion\debug_win32\libsvn_ra_serf.lib;..\ext\Subversion\debug_win32\libsvn_ra_svn.lib;..\ext\Subversion\debug_win32\libsvn_repos.lib;..\ext\Subversion\debug_win32\libsvn_subr.lib;..\ext\Subversion\debug_win32\libsvn_wc.lib;..\ext\cyrus-sasl\debug_win32\libsasls.lib;..\ext\serf\debug_win32\libserf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>winspool.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\release_win32\libapr.lib;..\ext\apr-util\release_win32\libaprutil.lib;..\ext\apr-util\xml\expat\lib\release_win32\xml.lib;..\ext\neon\release_win32\libneon.lib;..\ext\Subversion\release_win32\libsvn_client.lib;..\ext\Subversion\release_win32\libsvn_delta.lib;..\ext\Subversion\release_win32\libsvn_diff.lib;..\ext\Subversion\release_win32\libsvn_ra.lib;..\ext\Subversion\release_win32\libsvn_ra_neon.lib;..\ext\Subversion\release_win32\libsvn_ra_serf.lib;..\ext\Subversion\release_win32\libsvn_ra_svn.lib;..\ext\Subversion\release_win32\libsvn_repos.lib;..\ext\Subversion\release_win32\libsvn_subr.lib;..\ext\Subversion\release_win32\libsvn_wc.lib;..\ext\cyrus-sasl\release_win32\libsasls.lib;..\ext\serf\release_win32\libserf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>winspool.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="Callback.cpp" />
+    <ClCompile Include="CommitMonitor.cpp" />
+    <ClCompile Include="DiffViewer.cpp" />
+    <ClCompile Include="FindBar.cpp" />
+    <ClCompile Include="HiddenWindow.cpp" />
+    <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="OptionsDlg.cpp" />
+    <ClCompile Include="PasswordDlg.cpp" />
+    <ClCompile Include="ProgressDlg.cpp" />
+    <ClCompile Include="SerializeUtils.cpp" />
+    <ClCompile Include="StatusBarMsgWnd.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SVN.cpp" />
+    <ClCompile Include="SVNPool.cpp" />
+    <ClCompile Include="UpdateDlg.cpp" />
+    <ClCompile Include="URLDlg.cpp" />
+    <ClCompile Include="UrlInfo.cpp" />
+    <ClCompile Include="..\ext\scintilla\src\AutoComplete.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CallTip.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CellBuffer.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CharClassify.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ContractionState.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Decoration.cxx">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Document.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\DocumentAccessor.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Editor.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ExternalLexer.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Indicator.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\KeyMap.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\KeyWords.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\LexOthers.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\LineMarker.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PerLine.cxx">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\win32\PlatWin.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PositionCache.cxx">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PropSet.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\RESearch.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\RunStyles.cxx">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ScintillaBase.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\win32\ScintillaWin.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Selection.cxx">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Style.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\StyleContext.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\UniConversion.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ViewStyle.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\WindowAccessor.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\XPM.cxx">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="AeroControls.cpp" />
+    <ClCompile Include="AeroGlass.cpp" />
+    <ClCompile Include="AppUtils.cpp" />
+    <ClCompile Include="BaseDialog.cpp" />
+    <ClCompile Include="BaseWindow.cpp" />
+    <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="CmdLineParser.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="DirFileEnum.cpp" />
+    <ClCompile Include="hyperlink.cpp" />
+    <ClCompile Include="ListCtrl.cpp" />
+    <ClCompile Include="MappedInFile.cpp" />
+    <ClCompile Include="ReaderWriterLock.cpp" />
+    <ClCompile Include="Registry.cpp" />
+    <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="UnicodeUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="Callback.h" />
+    <ClInclude Include="CommitMonitor.h" />
+    <ClInclude Include="DiffViewer.h" />
+    <ClInclude Include="FindBar.h" />
+    <ClInclude Include="HiddenWindow.h" />
+    <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="OptionsDlg.h" />
+    <ClInclude Include="PasswordDlg.h" />
+    <ClInclude Include="ProgressDlg.h" />
+    <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="SerializeUtils.h" />
+    <ClInclude Include="StatusBarMsgWnd.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SVN.h" />
+    <ClInclude Include="SVNPool.h" />
+    <ClInclude Include="UpdateDlg.h" />
+    <ClInclude Include="URLDlg.h" />
+    <ClInclude Include="UrlInfo.h" />
+    <ClInclude Include="..\ext\scintilla\src\AutoComplete.h" />
+    <ClInclude Include="..\ext\scintilla\src\CallTip.h" />
+    <ClInclude Include="..\ext\scintilla\src\CellBuffer.h" />
+    <ClInclude Include="..\ext\scintilla\src\CharacterSet.h" />
+    <ClInclude Include="..\ext\scintilla\src\CharClassify.h" />
+    <ClInclude Include="..\ext\scintilla\src\ContractionState.h" />
+    <ClInclude Include="..\ext\scintilla\src\Decoration.h" />
+    <ClInclude Include="..\ext\scintilla\src\Document.h" />
+    <ClInclude Include="..\ext\scintilla\src\DocumentAccessor.h" />
+    <ClInclude Include="..\ext\scintilla\src\Editor.h" />
+    <ClInclude Include="..\ext\scintilla\src\ExternalLexer.h" />
+    <ClInclude Include="..\ext\scintilla\src\Indicator.h" />
+    <ClInclude Include="..\ext\scintilla\src\KeyMap.h" />
+    <ClInclude Include="..\ext\scintilla\src\LineMarker.h" />
+    <ClInclude Include="..\ext\scintilla\src\Partitioning.h" />
+    <ClInclude Include="..\ext\scintilla\src\PerLine.h" />
+    <ClInclude Include="..\ext\scintilla\win32\PlatformRes.h" />
+    <ClInclude Include="..\ext\scintilla\src\PositionCache.h" />
+    <ClInclude Include="..\ext\scintilla\src\RESearch.h" />
+    <ClInclude Include="..\ext\scintilla\src\RunStyles.h" />
+    <ClInclude Include="..\ext\scintilla\src\ScintillaBase.h" />
+    <ClInclude Include="..\ext\scintilla\src\Selection.h" />
+    <ClInclude Include="..\ext\scintilla\src\SplitVector.h" />
+    <ClInclude Include="..\ext\scintilla\src\Style.h" />
+    <ClInclude Include="..\ext\scintilla\src\StyleContext.h" />
+    <ClInclude Include="..\ext\scintilla\src\SVector.h" />
+    <ClInclude Include="..\ext\scintilla\src\UniConversion.h" />
+    <ClInclude Include="..\ext\scintilla\src\ViewStyle.h" />
+    <ClInclude Include="..\ext\scintilla\src\XPM.h" />
+    <ClInclude Include="AeroControls.h" />
+    <ClInclude Include="AeroGlass.h" />
+    <ClInclude Include="AppUtils.h" />
+    <ClInclude Include="BaseDialog.h" />
+    <ClInclude Include="BaseWindow.h" />
+    <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
+    <ClInclude Include="ClipboardHelper.h" />
+    <ClInclude Include="CmdLineParser.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="DirFileEnum.h" />
+    <ClInclude Include="hyperlink.h" />
+    <ClInclude Include="ListCtrl.h" />
+    <ClInclude Include="MappedInFile.h" />
+    <ClInclude Include="memdc.h" />
+    <ClInclude Include="ReaderWriterLock.h" />
+    <ClInclude Include="Registry.h" />
+    <ClInclude Include="SimpleIni.h" />
+    <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
+    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="UnicodeUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\about.ico" />
+    <None Include="Resources\add.ico" />
+    <None Include="Resources\cancel-normal.bmp" />
+    <None Include="Resources\CommitMonitor.ico" />
+    <None Include="Resources\CommitMonitor.png" />
+    <None Include="Resources\CommitMonitor.rc2" />
+    <None Include="Resources\CommitMonitorRed0.ico" />
+    <None Include="Resources\CommitMonitorRed1.ico" />
+    <None Include="Resources\CommitMonitorRed2.ico" />
+    <None Include="Resources\CommitMonitorRed3.ico" />
+    <None Include="Resources\diff.ico" />
+    <None Include="Resources\edit.ico" />
+    <None Include="Resources\folder.ico" />
+    <None Include="Resources\folder_open.ico" />
+    <None Include="Resources\getall.ico" />
+    <None Include="Resources\mark-all-as-read.ico" />
+    <None Include="Resources\Notification.wav" />
+    <None Include="Resources\options.ico" />
+    <None Include="Resources\remove.ico" />
+    <None Include="Resources\repourl.ico" />
+    <None Include="Resources\repourl_inactive.ico" />
+    <None Include="Resources\repourl_new.ico" />
+    <None Include="Resources\repourlfail.ico" />
+    <None Include="Setup\Includes.wxi" />
+    <None Include="Setup\Setup.wxs" />
+    <None Include="Setup\VersionNumberInclude.in.wxi" />
+    <None Include="Setup\WixUI_Custom.wxs" />
+    <None Include="..\default.build" />
+    <None Include="Setup\setup.build" />
+    <None Include="..\version.build.in" />
+    <None Include="..\ext\build\apr.build" />
+    <None Include="..\ext\build\aprutil.build" />
+    <None Include="..\ext\build\default.build" />
+    <None Include="..\ext\build\neon.build" />
+    <None Include="..\ext\build\OpenSSL.build" />
+    <None Include="..\ext\build\sasl.build" />
+    <None Include="..\ext\build\serf.build" />
+    <None Include="..\ext\build\subversion.build" />
+    <None Include="..\ext\build\zlib.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\CommitMonitor.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
