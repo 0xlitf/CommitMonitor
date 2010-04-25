@@ -1784,7 +1784,9 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         WCHAR * buffer = new WCHAR[len+1];
         GetDlgItemText(*this, IDC_FILTERSTRING, buffer, len+1);
         wstring filterstring = wstring(buffer, len);
-        bool bNegateFilter = filterstring[0] == '-';
+        bool bNegateFilter = false;
+        if (len)
+            bNegateFilter = filterstring[0] == '-';
         if (bNegateFilter)
         {
             filterstring = filterstring.substr(1);
@@ -1798,7 +1800,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         {
             // only add entries that match the filter string
             bool addEntry = true;
-            bool bUseRegex = (filterstring[0] == '\\')&&(filterstring.size() > 1);
+            bool bUseRegex = (filterstring.size() > 1)&&(filterstring[0] == '\\');
 
             if (bUseRegex)
             {

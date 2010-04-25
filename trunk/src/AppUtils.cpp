@@ -133,7 +133,7 @@ string CAppUtils::PathEscape(const string& path)
         }
     }
     string ret;
-    for (i=0; ret2[i]; ++i)
+    for (i=0; i < ret2.size(); ++i)
     {
         c = (unsigned char)ret2[i];
         if (uri_autoescape_chars[c])
