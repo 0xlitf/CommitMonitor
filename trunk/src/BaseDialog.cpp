@@ -55,8 +55,9 @@ INT_PTR CDialog::DoModal(HINSTANCE hInstance, int resID, HWND hWndParent, UINT i
         {
             if (!PreTranslateMessage(&msg))
             {
-                if (!IsDialogMessage(m_hwnd, &msg) &&
-                    !TranslateAccelerator(m_hwnd, hAccelTable, &msg))
+                if (!TranslateAccelerator(m_hwnd, hAccelTable, &msg) &&
+                    !IsDialogMessage(m_hwnd, &msg)
+                    )
                 {
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
