@@ -917,77 +917,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     case ID_MAIN_SHOWDIFF:
                     case ID_MAIN_REMOVE:
                     case ID_MAIN_COPY:
+                    case ID_POPUP_OPENWEBVIEWER:
                         {
                             ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
                         }
                         break;
-                    case ID_POPUP_OPENWEBVIEWER:
-                        {
-                            TVITEMEX itemex = {0};
-                            itemex.hItem = TreeView_GetSelection(m_hTreeControl);
-                            itemex.mask = TVIF_PARAM;
-                            TreeView_GetItem(m_hTreeControl, &itemex);
-                            const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                            if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
-                            {
-                                const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
-                                if ((info)&&(!info->webviewer.empty()))
-                                {
-                                    // replace "%revision" with the new HEAD revision
-                                    wstring tag(_T("%revision"));
-                                    wstring commandline = info->webviewer;
-                                    wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                                    if (it_begin != commandline.end())
-                                    {
-                                        // find the revision
-                                        LVITEM item = {0};
-                                        int nItemCount = ListView_GetItemCount(m_hListControl);
-                                        for (int i=0; i<nItemCount; ++i)
-                                        {
-                                            item.mask = LVIF_PARAM|LVIF_STATE;
-                                            item.stateMask = LVIS_SELECTED;
-                                            item.iItem = i;
-                                            ListView_GetItem(m_hListControl, &item);
-                                            if (item.state & LVIS_SELECTED)
-                                            {
-                                                SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
-                                                if (pLogEntry)
-                                                {
-                                                    // prepare the revision
-                                                    TCHAR revBuf[40] = {0};
-                                                    _stprintf_s(revBuf, 40, _T("%ld"), pLogEntry->revision);
-                                                    wstring srev = revBuf;
-                                                    wstring::iterator it_end= it_begin + tag.size();
-                                                    commandline.replace(it_begin, it_end, srev);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    // replace "%url" with the repository url
-                                    tag = _T("%url");
-                                    it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                                    if (it_begin != commandline.end())
-                                    {
-                                        wstring::iterator it_end= it_begin + tag.size();
-                                        commandline.replace(it_begin, it_end, info->url);
-                                    }
-                                    // replace "%project" with the project name
-                                    tag = _T("%project");
-                                    it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                                    if (it_begin != commandline.end())
-                                    {
-                                        wstring::iterator it_end= it_begin + tag.size();
-                                        commandline.replace(it_begin, it_end, info->name);
-                                    }
-                                    if (!commandline.empty())
-                                    {
-                                        ShellExecute(*this, _T("open"), commandline.c_str(), NULL, NULL, SW_SHOWNORMAL);
-                                    }
-                                }
-                            }
-                            m_pURLInfos->ReleaseReadOnlyData();
-                        }
                     }
                 }
             }
@@ -1127,6 +1061,74 @@ LRESULT CMainDlg::DoCommand(int id)
             {
                 RemoveSelectedListItems();
             }
+        }
+        break;
+    case ID_POPUP_OPENWEBVIEWER:
+        {
+            TVITEMEX itemex = {0};
+            itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+            itemex.mask = TVIF_PARAM;
+            TreeView_GetItem(m_hTreeControl, &itemex);
+            const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+            if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+            {
+                const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+                if ((info)&&(!info->webviewer.empty()))
+                {
+                    // replace "%revision" with the new HEAD revision
+                    wstring tag(_T("%revision"));
+                    wstring commandline = info->webviewer;
+                    wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+                    if (it_begin != commandline.end())
+                    {
+                        // find the revision
+                        LVITEM item = {0};
+                        int nItemCount = ListView_GetItemCount(m_hListControl);
+                        for (int i=0; i<nItemCount; ++i)
+                        {
+                            item.mask = LVIF_PARAM|LVIF_STATE;
+                            item.stateMask = LVIS_SELECTED;
+                            item.iItem = i;
+                            ListView_GetItem(m_hListControl, &item);
+                            if (item.state & LVIS_SELECTED)
+                            {
+                                SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                                if (pLogEntry)
+                                {
+                                    // prepare the revision
+                                    TCHAR revBuf[40] = {0};
+                                    _stprintf_s(revBuf, 40, _T("%ld"), pLogEntry->revision);
+                                    wstring srev = revBuf;
+                                    wstring::iterator it_end= it_begin + tag.size();
+                                    commandline.replace(it_begin, it_end, srev);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // replace "%url" with the repository url
+                    tag = _T("%url");
+                    it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+                    if (it_begin != commandline.end())
+                    {
+                        wstring::iterator it_end= it_begin + tag.size();
+                        commandline.replace(it_begin, it_end, info->url);
+                    }
+                    // replace "%project" with the project name
+                    tag = _T("%project");
+                    it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+                    if (it_begin != commandline.end())
+                    {
+                        wstring::iterator it_end= it_begin + tag.size();
+                        commandline.replace(it_begin, it_end, info->name);
+                    }
+                    if (!commandline.empty())
+                    {
+                        ShellExecute(*this, _T("open"), commandline.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                    }
+                }
+            }
+            m_pURLInfos->ReleaseReadOnlyData();
         }
         break;
     case ID_POPUP_ADDPROJECTWITHTEMPLATE:
@@ -2120,7 +2122,30 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
 void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
 {
-    ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
+    bool bUseWebViewer = false;
+    if (DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE)))
+    {
+        // enable the "Open WebViewer" entry if there is one specified
+        // get the url this entry refers to
+        TVITEMEX itemex = {0};
+        itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+        itemex.mask = TVIF_PARAM;
+        TreeView_GetItem(m_hTreeControl, &itemex);
+        const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+        if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+        {
+            const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+            if ((info)&&(!info->webviewer.empty()))
+            {
+                bUseWebViewer = true;
+            }
+        }
+        m_pURLInfos->ReleaseReadOnlyData();
+    }
+    if (bUseWebViewer)
+        ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_POPUP_OPENWEBVIEWER, 0), 0);
+    else
+        ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
