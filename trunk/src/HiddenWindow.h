@@ -29,6 +29,7 @@
 /// the timer IDs
 #define IDT_MONITOR     101
 #define IDT_ANIMATE     102
+#define IDT_POPUP       103
 
 /// timer elapse time, set to 1 minute
 #define TIMER_ELAPSE    60000
@@ -40,6 +41,7 @@
 
 typedef struct
 {
+    wstring             sProject;
     wstring             sTitle;
     wstring             sText;
     wstring             sAlertType;
@@ -103,6 +105,8 @@ private:
 
     wstring             m_UrlToWorkOn;
     CRegStdString       m_regLastSelectedProject;
+
+    std::vector<popupData>  m_popupData;
 
     typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
     static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;

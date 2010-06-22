@@ -225,6 +225,31 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
             case IDT_ANIMATE:
                 DoAnimate();
                 break;
+            case IDT_POPUP:
+                {
+                    CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
+                    if (m_popupData.size() == 1)
+                    {
+                        popup->Show(m_popupData[0].sTitle.c_str(), m_popupData[0].sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                    }
+                    else
+                    {
+                        // only show one popup for all the notifications
+                        TCHAR sTitle[1024] = {0};
+                        _stprintf_s(sTitle, 1024, _T("%d projects have updates"), m_popupData.size());
+                        std::wstring sText;
+                        for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
+                        {
+                            if (sText.size())
+                                sText += _T(", ");
+                            sText += it->sProject;
+                        }
+                        popup->Show(sTitle, sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                    }
+                    m_popupData.clear();
+                    KillTimer(hwnd, IDT_POPUP);
+                }
+                break;
             }
         }
         break;
@@ -262,8 +287,8 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 Snarl::SnarlInterface snarlIface;
                 if ((snarlIface.GetVersionEx() == Snarl::M_FAILED)||(Snarl::SnarlInterface::GetSnarlWindow() == NULL))
                 {
-                    CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
-                    popup->Show(pData->sTitle.c_str(), pData->sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                    m_popupData.push_back(*pData);
+                    SetTimer(hwnd, IDT_POPUP, 5000, NULL);
                 }
                 else
                 {
@@ -889,17 +914,21 @@ DWORD CHiddenWindow::RunThread()
                     // prepare notification strings
                     if ((bNewEntries)||(!hadError && !it->second.error.empty()))
                     {
+                        popupData data;
                         TCHAR sTitle[1024] = {0};
                         if (!it->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                         {
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             sPopupText = it->second.error;
                         }
-                        else if (nNewCommits == 1)
-                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
-                        else
-                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
-                        popupData data;
+                        else 
+                        {
+                            data.sProject = it->second.name;
+                            if (nNewCommits == 1)
+                                _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
+                            else
+                                _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
+                        }
                         data.sText = sPopupText;
                         data.sTitle = wstring(sTitle);
                         data.sAlertType = ALERTTYPE_NEWCOMMITS;
