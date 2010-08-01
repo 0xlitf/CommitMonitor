@@ -310,6 +310,18 @@ bool CUrlInfos::Load()
 
 void CUrlInfos::Save()
 {
+    bool bExit = false;
+    const map<wstring,CUrlInfo> * pInfos = GetReadOnlyData();
+    if (pInfos->size() == 0)
+    {
+        // empty project list: don't save it!
+        // See issue #267 for why: http://code.google.com/p/commitmonitor/issues/detail?id=267
+        bExit = true;
+    }
+    ReleaseReadOnlyData();
+    if (bExit)
+        return;
+
     wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
     wstring urlfilenew = CAppUtils::GetDataDir() + _T("\\urls_new");
     if (Save(urlfilenew.c_str()))
