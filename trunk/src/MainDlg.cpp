@@ -1757,6 +1757,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
 
         m_bBlockListCtrlUI = true;
+        int selMark = ListView_GetSelectionMark(m_hListControl);
         DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
         ListView_DeleteAllItems(m_hListControl);
 
@@ -1887,6 +1888,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             if (iLastUnread >= 0)
                 iLastUnread++;
         }
+        ListView_SetSelectionMark(m_hListControl, selMark);
         m_bBlockListCtrlUI = false;
         ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
