@@ -1,77 +1,77 @@
 <?xml version="1.0"?>
 <project name="setup" default="setup">
 
-	<target name="versioninfo">
-		<nant target="versioninfo">
-			<buildfiles>
-				<include name="..\..\versioninfo.build" />
-			</buildfiles>
-		</nant>
-		<loadfile file="VersionNumberInclude.in.wxi" property="versionwixfile">
-			<filterchain>
-				<replacetokens begintoken="$" endtoken="$">
-					<token key="MajorVersion" value="${environment::get-variable('MajorVersion')}" />
-					<token key="MinorVersion" value="${environment::get-variable('MinorVersion')}" />
-					<token key="MicroVersion" value="${environment::get-variable('Microversion')}" />
-					<token key="WCREV" value="${environment::get-variable('WCREV')}" />
-				</replacetokens>
-			</filterchain>
-		</loadfile>
-		<echo file="VersionNumberInclude.wxi" message="${versionwixfile}" />
-	</target>
+  <target name="versioninfo">
+    <nant target="versioninfo">
+      <buildfiles>
+        <include name="..\..\versioninfo.build" />
+      </buildfiles>
+    </nant>
+    <loadfile file="VersionNumberInclude.in.wxi" property="versionwixfile">
+      <filterchain>
+        <replacetokens begintoken="$" endtoken="$">
+          <token key="MajorVersion" value="${environment::get-variable('MajorVersion')}" />
+          <token key="MinorVersion" value="${environment::get-variable('MinorVersion')}" />
+          <token key="MicroVersion" value="${environment::get-variable('Microversion')}" />
+          <token key="WCREV" value="${environment::get-variable('WCREV')}" />
+        </replacetokens>
+      </filterchain>
+    </loadfile>
+    <echo file="VersionNumberInclude.wxi" message="${versionwixfile}" />
+  </target>
 
-	<target name="setup" depends="versioninfo">
-		<property name="verstring" value="${environment::get-variable('MajorVersion')}.${environment::get-variable('MinorVersion')}.${environment::get-variable('MicroVersion')}.${environment::get-variable('WCREV')}" />
-		<property name="msifilename" value="CommitMonitor-${verstring}" />
+  <target name="setup" depends="versioninfo">
+    <property name="verstring" value="${environment::get-variable('MajorVersion')}.${environment::get-variable('MinorVersion')}.${environment::get-variable('MicroVersion')}.${environment::get-variable('WCREV')}" />
+    <property name="msifilename" value="CommitMonitor-${verstring}" />
     <!-- copy the exe to CommitMonitor_portable.exe -->
     <copy file="..\..\bin\${configuration}\CommitMonitor.exe" tofile="..\..\bin\${configuration}\CommitMonitor-${verstring}_portable.exe" overwrite="true" />
-		<!-- sign all binaries -->
-		<if test="${file::exists('..\..\signinfo.txt')}">
-			<foreach item="File" property="filename">
-				<in>
-					<items>
-						<include name="..\..\bin\${configuration}\*.dll" />
-						<include name="..\..\bin\${configuration}\*.exe" />
-					</items>
-				</in>
-				<do>
-					<exec program="signtool">
-						<arg value="sign" />
-						<arg value="${signinfo}" />
-						<arg value="${filename}" />
-					</exec>
-				</do>
-			</foreach>
-		</if>
+    <!-- sign all binaries -->
+    <if test="${file::exists('..\..\signinfo.txt')}">
+      <foreach item="File" property="filename">
+        <in>
+          <items>
+            <include name="..\..\bin\${configuration}\*.dll" />
+            <include name="..\..\bin\${configuration}\*.exe" />
+          </items>
+        </in>
+        <do>
+          <exec program="signtool">
+            <arg value="sign" />
+            <arg value="${signinfo}" />
+            <arg value="${filename}" />
+          </exec>
+        </do>
+      </foreach>
+    </if>
 
-		<exec program="candle">
-			<arg value="-nologo" />
-			<arg value="-out" />
-			<arg value="..\..\bin\" />
-			<arg value="Setup.wxs" />
-		</exec>
-		<exec program="light">
-			<arg value="-nologo" />
-			<arg value="-ext" />
-			<arg value="WixUIExtension" />
-			<arg value="-cultures:en-us" />
-			<arg value="-out" />
-			<arg value="..\..\bin\${msifilename}.msi" />
-			<arg value="..\..\bin\Setup.wixobj" />
-		</exec>
-		<delete>
-			<fileset>
-				<include name="..\..\bin\*.wixobj" />
-				<include name="..\..\bin\*.wixpdb" />
-			</fileset>
-		</delete>
-		<if test="${file::exists('..\..\signinfo.txt')}">
-			<exec program="signtool">
-				<arg value="sign" />
-				<arg value="${signinfo}" />
-				<arg value="..\..\bin\${msifilename}.msi" />
-			</exec>
-		</if>
+    <exec program="candle">
+      <arg value="-nologo" />
+      <arg value="-out" />
+      <arg value="..\..\bin\" />
+      <arg value="Setup.wxs" />
+    </exec>
+    <exec program="light">
+      <arg value="-nologo" />
+      <arg value="-ext" />
+      <arg value="WixUIExtension" />
+      <arg value="-cultures:en-us" />
+      <arg value="-out" />
+      <arg value="..\..\bin\${msifilename}.msi" />
+      <arg value="..\..\bin\Setup.wixobj" />
+    </exec>
+    <delete>
+      <fileset>
+        <include name="..\..\bin\*.wixobj" />
+        <include name="..\..\bin\*.wixpdb" />
+      </fileset>
+    </delete>
+    <if test="${file::exists('..\..\signinfo.txt')}">
+      <exec program="signtool">
+        <arg value="sign" />
+        <arg value="${signinfo}" />
+        <arg value="..\..\bin\${msifilename}.msi" />
+      </exec>
+    </if>
 
     <zip zipfile="..\..\bin\CommitMonitor-${verstring}.zip" ziplevel="9">
       <fileset basedir="..\..\bin\${configuration}">
