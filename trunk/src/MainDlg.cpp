@@ -976,6 +976,7 @@ LRESULT CMainDlg::DoCommand(int id)
             }
         }
         // intentional fall-through
+    case IDM_EXIT:
     case IDCANCEL:
         {
             SaveWndPosition();
