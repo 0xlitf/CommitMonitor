@@ -1246,6 +1246,11 @@ LRESULT CMainDlg::DoCommand(int id)
         break;
     case ID_MAIN_COPY:
         {
+            if (GetFocus() == m_hLogMsgControl)
+            {
+                ::SendMessage(m_hLogMsgControl, WM_COPY, 0, 0);
+                break;
+            }
             HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
             // get the url this entry refers to
             TVITEMEX itemex = {0};
