@@ -1804,56 +1804,61 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         {
             // only add entries that match the filter string
             bool addEntry = true;
+            bool useFilter = filterstringlower.size() != 0;
             bool bUseRegex = (filterstring.size() > 1)&&(filterstring[0] == '\\');
 
-            if (bUseRegex)
+            if (useFilter)
             {
-                try
+                if (bUseRegex)
                 {
-                    const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+                    try
+                    {
+                        const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
 
-                    addEntry = tr1::regex_search(it->second.author, regCheck);
+                        addEntry = tr1::regex_search(it->second.author, regCheck);
+                        if (!addEntry)
+                        {
+                            addEntry = tr1::regex_search(it->second.message, regCheck);
+                            if (!addEntry)
+                            {
+                                _stprintf_s(buf, 1024, _T("%ld"), it->first);
+                                wstring s = wstring(buf);
+                                addEntry = tr1::regex_search(s, regCheck);
+                            }
+                        }
+                    }
+                    catch (exception) 
+                    {
+                        bUseRegex = false;
+                    }
+                    if (bNegateFilter)
+                        addEntry = !addEntry;
+                }
+                if (!bUseRegex)
+                {
+                    // search plain text
+                    // note: \Q...\E doesn't seem to work with tr1 - it still
+                    // throws an exception if the regex in between is not a valid regex :(
+
+                    wstring s = it->second.author;
+                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                    addEntry = s.find(filterstringlower) != wstring::npos;
+
                     if (!addEntry)
                     {
-                        addEntry = tr1::regex_search(it->second.message, regCheck);
+                        s = it->second.message;
+                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                        addEntry = s.find(filterstringlower) != wstring::npos;
                         if (!addEntry)
                         {
                             _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                            wstring s = wstring(buf);
-                            addEntry = tr1::regex_search(s, regCheck);
+                            s = buf;
+                            addEntry = s.find(filterstringlower) != wstring::npos;
                         }
                     }
+                    if (bNegateFilter)
+                        addEntry = !addEntry;
                 }
-                catch (exception) 
-                {
-                    bUseRegex = false;
-                }
-                if (bNegateFilter)
-                    addEntry = !addEntry;
-            }
-            if (!bUseRegex)
-            {
-                // search plain text
-                // note: \Q...\E doesn't seem to work with tr1 - it still
-                // throws an exception if the regex in between is not a valid regex :(
-
-                wstring s = it->second.author;
-                std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                addEntry = s.find(filterstringlower) != wstring::npos;
-
-                if (!addEntry)
-                {
-                    s = it->second.message;
-                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                    addEntry = s.find(filterstringlower) != wstring::npos;
-                    if (!addEntry)
-                    {
-                        _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                        addEntry = s.find(buf) != wstring::npos;
-                    }
-                }
-                if (bNegateFilter)
-                    addEntry = !addEntry;
             }
 
             if (!addEntry)
