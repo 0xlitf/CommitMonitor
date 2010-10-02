@@ -740,7 +740,22 @@ DWORD CHiddenWindow::RunThread()
                                 wstring author1 = logit->second.author;
                                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
 
-                                wstring s1 = writeIt->second.ignoreUsers;
+                                wstring s1 = writeIt->second.includeUsers;
+                                std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                                CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+                                vector<wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                                bool bInclude = false;
+                                for (vector<wstring>::iterator it = includeVector.begin(); it != includeVector.end(); ++it)
+                                {
+                                    if (author1.compare(*it) == 0)
+                                    {
+                                        bInclude = true;
+                                        break;
+                                    }
+                                }
+                                bIgnore = !bInclude;
+
+                                s1 = writeIt->second.ignoreUsers;
                                 std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                                 CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                                 vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));

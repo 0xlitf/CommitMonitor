@@ -24,7 +24,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION     12
+#define URLINFO_VERSION     13
 #define URLINFOS_VERSION    1
 
 #define URLINFO_MAXENTRIES 1000
@@ -50,6 +50,7 @@ public:
     bool                        disallowdiffs;
     bool                        monitored;
     wstring                     ignoreUsers;
+    wstring                     includeUsers;
 
     map<svn_revnum_t,SVNLogEntry> logentries;
     int                         maxentries;

@@ -98,6 +98,7 @@
 #define IDC_SCRIPT                      1037
 #define IDC_WEBDIFF                     1038
 #define IDC_NUMLOGLABEL                 1039
+#define IDC_INCLUDEUSERS                1039
 #define IDC_NUMLOGS                     1040
 #define IDC_CHECK2                      1041
 #define IDC_NOTIFYCONNECTERROR          1041

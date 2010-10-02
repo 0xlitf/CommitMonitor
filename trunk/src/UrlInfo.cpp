@@ -84,6 +84,8 @@ bool CUrlInfo::Save(FILE * hFile)
         return false;
     if (!CSerializeUtils::SaveString(hFile, ignoreUsers))
         return false;
+    if (!CSerializeUtils::SaveString(hFile, includeUsers))
+        return false;
     if (!CSerializeUtils::SaveNumber(hFile, parentpath))
         return false;
     if (!CSerializeUtils::SaveString(hFile, error))
@@ -209,6 +211,12 @@ bool CUrlInfo::Load(const unsigned char *& buf)
             if (value)
                 ignoreUsers = username;
         }
+    }
+
+    if (version >= 13)
+    {
+        if (!CSerializeUtils::LoadString(buf, includeUsers))
+            return false;
     }
 
     if (!CSerializeUtils::LoadNumber(buf, value))
