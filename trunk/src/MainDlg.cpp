@@ -1246,6 +1246,7 @@ LRESULT CMainDlg::DoCommand(int id)
         break;
     case ID_MAIN_COPY:
         {
+            HWND hFocus = GetFocus();
             if (GetFocus() == m_hLogMsgControl)
             {
                 ::SendMessage(m_hLogMsgControl, WM_COPY, 0, 0);
@@ -1468,7 +1469,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                         progDlg.SetLine(1, dispbuf);
                         progDlg.SetShowProgressBar(false);
                         progDlg.ShowModeless(*this);
-
+                        progDlg.SetLine(1, dispbuf);
+                        progDlg.SetProgress(3, 100);    // set some dummy progress
                         CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
                         if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, wstring()))
                         {
