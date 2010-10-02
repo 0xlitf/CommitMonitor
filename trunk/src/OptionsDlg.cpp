@@ -65,6 +65,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             bool bUseTSVN = !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
             bool bIndicateConnectErrors = !!CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
             bool bLeftMenu = !!CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
+            bool bLastUnread = !!CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
             bool bWebViewer = !!CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
             CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
             CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
@@ -82,6 +83,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
+            SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_SETCHECK, bLastUnread ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_SETCHECK, bWebViewer ? BST_CHECKED : BST_UNCHECKED, NULL);
             wstring tsvninstalled = CAppUtils::GetTSVNPath();
             wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
@@ -124,6 +126,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
             CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
             CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
+            CRegStdDWORD regLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
             CRegStdDWORD regWebViewer = CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
 
             bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
@@ -134,6 +137,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             bool bUpdateCheck = !!SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_GETCHECK, 0, NULL);
             bool bIndicateConnectErrors = !!SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_GETCHECK, 0, NULL);
             bool bLeftMenu = !!SendDlgItemMessage(*this, IDC_LEFTMENU, BM_GETCHECK, 0, NULL);
+            bool bLastUnread = !!SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_GETCHECK, 0, NULL);
             bool bWebViewer = !!SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_GETCHECK, 0, NULL);
             regShowTaskbarIcon = bShowTaskbarIcon;
             regAnimateIcon = bAnimateIcon;
@@ -142,6 +146,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             updatecheck = bUpdateCheck;
             regIndicateErrors = bIndicateConnectErrors;
             regLeftMenu = bLeftMenu;
+            regLastUnread = bLastUnread;
             regWebViewer = bWebViewer;
             ::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
             if (bStartWithWindows)

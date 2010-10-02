@@ -372,7 +372,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                         {
                             // show the main dialog
                             ShowDialog();
-                            break;
+                            return TRUE;
                         }
                     }
                     POINT pt;

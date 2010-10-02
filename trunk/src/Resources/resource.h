@@ -118,6 +118,8 @@
 #define IDC_DIFFOPTIONS                 1056
 #define IDC_                            1057
 #define IDC_WEBVIEWER                   1057
+#define IDC_CHECK4                      1058
+#define IDC_SHOWLASTUNREAD              1058
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -169,7 +171,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        165
 #define _APS_NEXT_COMMAND_VALUE         32836
-#define _APS_NEXT_CONTROL_VALUE         1058
+#define _APS_NEXT_CONTROL_VALUE         1059
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

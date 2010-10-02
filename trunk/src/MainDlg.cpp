@@ -1514,6 +1514,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
 
     HTREEITEM tvToSel = 0;
 
+    bool bShowLastUnread = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
     // now add a tree item for every entry in m_URLInfos
     const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
     for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
@@ -1568,7 +1569,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
             }
         }
         HTREEITEM hItem = TreeView_InsertItem(m_hTreeControl, &tv);
-        if (m_lastSelectedProject.compare(it->second.name) == 0)
+        if ((!bShowLastUnread)&&(m_lastSelectedProject.compare(it->second.name) == 0))
             tvToSel = hItem;
         if ((unread)&&(tvToSel == 0))
             tvToSel = hItem;

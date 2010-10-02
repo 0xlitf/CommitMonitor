@@ -169,7 +169,9 @@ BEGIN
     EDITTEXT        IDC_NUMLOGS,243,169,40,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Notify for connection errors",IDC_NOTIFYCONNECTERROR,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,185,105,10
-    CONTROL         "Left click on tray icon shows menu",IDC_LEFTMENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,204,125,10
+    CONTROL         "Left click on tray icon shows menu",IDC_LEFTMENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,196,125,10
+    CONTROL         "Show the project with the last unread message when the main window is shown",IDC_SHOWLASTUNREAD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,208,271,10
     PUSHBUTTON      "&Export projects...",IDC_EXPORT,7,220,85,14
     PUSHBUTTON      "&Import projects...",IDC_IMPORT,103,220,85,14
     LTEXT           "",IDC_AEROLABEL,7,234,8,8
