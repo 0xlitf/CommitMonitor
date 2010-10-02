@@ -130,6 +130,12 @@
     </exec>
   </target>
 
+  <target name="binaries" depends="Subversion,CommitMonitor">
+    <description>
+      Builds all binaries
+    </description>
+  </target>
+  
   <target name="setup" depends="Subversion,CommitMonitor">
     <description>
       Uses WiX to create an msi installer file.
