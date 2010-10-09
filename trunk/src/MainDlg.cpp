@@ -1253,7 +1253,6 @@ LRESULT CMainDlg::DoCommand(int id)
         break;
     case ID_MAIN_COPY:
         {
-            HWND hFocus = GetFocus();
             if (GetFocus() == m_hLogMsgControl)
             {
                 ::SendMessage(m_hLogMsgControl, WM_COPY, 0, 0);
