@@ -26,10 +26,13 @@
 #include "UpdateDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
+#include <uxtheme.h>
 #include <algorithm>
 #include <assert.h>
 #include <cctype>
 #include <regex>
+
+#pragma comment(lib, "uxtheme.lib")
 
 #define FILTERBOXHEIGHT 20
 #define FILTERLABELWIDTH 50
@@ -204,6 +207,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
             m_hFilterControl = ::GetDlgItem(*this, IDC_FILTERSTRING);
             ::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
+
+            SetWindowTheme(m_hListControl, L"Explorer", NULL);
+            SetWindowTheme(m_hTreeControl, L"Explorer", NULL);
+
             assert(m_pURLInfos);
             m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 6, 6);
             if (m_hImgList)
