@@ -227,27 +227,35 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 break;
             case IDT_POPUP:
                 {
-                    CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
-                    if (m_popupData.size() == 1)
+                    if (CAppUtils::IsFullscreenWindowActive())
                     {
-                        popup->Show(m_popupData[0].sTitle.c_str(), m_popupData[0].sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                        // restart the timer and wait until no fullscreen app is active
+                        SetTimer(hwnd, IDT_POPUP, 5000, NULL);
                     }
                     else
                     {
-                        // only show one popup for all the notifications
-                        TCHAR sTitle[1024] = {0};
-                        _stprintf_s(sTitle, 1024, _T("%d projects have updates"), m_popupData.size());
-                        std::wstring sText;
-                        for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
+                        CStatusBarMsgWnd * popup = new CStatusBarMsgWnd(hResource);
+                        if (m_popupData.size() == 1)
                         {
-                            if (sText.size())
-                                sText += _T(", ");
-                            sText += it->sProject;
+                            popup->Show(m_popupData[0].sTitle.c_str(), m_popupData[0].sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
                         }
-                        popup->Show(sTitle, sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                        else
+                        {
+                            // only show one popup for all the notifications
+                            TCHAR sTitle[1024] = {0};
+                            _stprintf_s(sTitle, 1024, _T("%d projects have updates"), m_popupData.size());
+                            std::wstring sText;
+                            for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
+                            {
+                                if (sText.size())
+                                    sText += _T(", ");
+                                sText += it->sProject;
+                            }
+                            popup->Show(sTitle, sText.c_str(), IDI_COMMITMONITOR, *this, COMMITMONITOR_POPUPCLICK);
+                        }
+                        m_popupData.clear();
+                        KillTimer(hwnd, IDT_POPUP);
                     }
-                    m_popupData.clear();
-                    KillTimer(hwnd, IDT_POPUP);
                 }
                 break;
             }

@@ -46,5 +46,5 @@ public:
     static wstring                  GetVersionStringFromExe(LPCTSTR path);
     static bool                     ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
     static bool                     WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd);
-
+    static bool                     IsFullscreenWindowActive();
 };
