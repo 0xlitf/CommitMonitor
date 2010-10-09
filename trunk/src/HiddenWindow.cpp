@@ -145,8 +145,13 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
             // bring the dialog to front
             if (m_hMainDlg == NULL)
                 m_hMainDlg = FindWindow(NULL, _T("Commit Monitor"));
-            SetWindowPos(m_hMainDlg, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
-            SetForegroundWindow(m_hMainDlg);
+            if (IsWindowVisible(m_hMainDlg))
+                SendMessage(m_hMainDlg, WM_CLOSE, 0, 0);
+            else
+            {
+                SetWindowPos(m_hMainDlg, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+                SetForegroundWindow(m_hMainDlg);
+            }
             return TRUE;
         }
         m_bMainDlgShown = true;
