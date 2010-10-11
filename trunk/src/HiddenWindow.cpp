@@ -369,8 +369,20 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 break;
             case WM_LBUTTONDBLCLK:
                 {
+                    if (CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE) != 0)
+                    {
+                        // show the main dialog
+                        ShowDialog();
+                    }
+                }
+                break;
+            case WM_LBUTTONDOWN:
+            case WM_RBUTTONDOWN:
+                if (CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE) == 0)
+                {
                     // show the main dialog
                     ShowDialog();
+                    return TRUE;
                 }
                 break;
             case WM_LBUTTONUP:
@@ -383,8 +395,6 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     {
                         if (CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE) == 0)
                         {
-                            // show the main dialog
-                            ShowDialog();
                             return TRUE;
                         }
                     }
