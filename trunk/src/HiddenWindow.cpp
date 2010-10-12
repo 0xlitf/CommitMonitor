@@ -377,7 +377,6 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 }
                 break;
             case WM_LBUTTONDOWN:
-            case WM_RBUTTONDOWN:
                 if (CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE) == 0)
                 {
                     // show the main dialog
