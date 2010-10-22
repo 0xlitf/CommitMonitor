@@ -34,9 +34,9 @@
  * as extern.  (Technically, we don't even have to do that.) */
 #ifdef WIN32
 # ifdef LIBSASL_EXPORTS
-#  define LIBSASL_API  
+#  define LIBSASL_API  __declspec(dllexport)
 # else /* LIBSASL_EXPORTS */
-#  define LIBSASL_API  
+#  define LIBSASL_API  __declspec(dllimport)
 # endif /* LIBSASL_EXPORTS */
 #else /* WIN32 */
 # define LIBSASL_API extern
@@ -46,9 +46,9 @@
  * is different, as we can't assign an initial value to an extern variable */ 
 #ifdef WIN32
 # ifdef LIBSASL_EXPORTS
-#  define LIBSASL_VAR  
+#  define LIBSASL_VAR  __declspec(dllexport)
 # else /* LIBSASL_EXPORTS */
-#  define LIBSASL_VAR  
+#  define LIBSASL_VAR  __declspec(dllimport)
 # endif /* LIBSASL_EXPORTS */
 #else /* WIN32 */
 # define LIBSASL_VAR
@@ -185,4 +185,3 @@ LIBSASL_API int prop_setvals(struct propctx *ctx, const char *name,
 #endif
 
 #endif /* PROP_H */
-

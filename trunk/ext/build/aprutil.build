@@ -31,17 +31,6 @@
 
   <target name="xml">
     <mkdir dir="xml\expat\lib\${configuration}_${platform}" />
-    <copy file="xml\expat\lib\winconfig.h" tofile="xml\expat\lib\config.h" overwrite="true" />
-    <loadfile file="xml\expat\lib\expat.h.in" property="expatheader">
-      <filterchain>
-        <replacetokens begintoken="@" endtoken="@">
-          <token key="EXPAT_MAJOR_VERSION" value="1" />
-          <token key="EXPAT_MINOR_VERSION" value="95" />
-          <token key="EXPAT_EDIT" value="2" />
-        </replacetokens>
-      </filterchain>
-    </loadfile>
-    <echo file="xml\expat\lib\expat.h" message="${expatheader}" />
     <cl outputdir="xml\expat\lib\${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Ob1" if="${configuration == 'release'}" />
@@ -75,9 +64,11 @@
         <define name="_WIN32" />
         <define name="_WIN32_WINNT" value="0x0501" />
         <define name="WIN64" if="${platform == 'x64'}" />
-        <define name='VERSION=\"expat_1.95.2\"' />
+        <define name='VERSION=\"expat_1.95.7\"' />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="COMPILED_FROM_DSP" />
+        <define name="XML_STATIC" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
@@ -166,6 +157,7 @@
         <define name="_WINDLL" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="XML_STATIC" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" />
