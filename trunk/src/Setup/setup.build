@@ -54,6 +54,8 @@
       <arg value="-nologo" />
       <arg value="-ext" />
       <arg value="WixUIExtension" />
+      <arg value="-ext" />
+      <arg value="WixUtilExtension" />
       <arg value="-cultures:en-us" />
       <arg value="-out" />
       <arg value="..\..\bin\${msifilename}.msi" />
