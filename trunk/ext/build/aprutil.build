@@ -29,60 +29,7 @@
     </delete>
   </target>
 
-  <target name="xml">
-    <mkdir dir="xml\expat\lib\${configuration}_${platform}" />
-    <cl outputdir="xml\expat\lib\${configuration}_${platform}">
-      <arg value="/O2" if="${configuration == 'release'}" />
-      <arg value="/Ob1" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
-      <arg value="/GF" if="${configuration == 'release'}" />
-      <arg value="/FD" />
-      <arg value="/EHsc" />
-      <arg value="/MT" if="${configuration == 'release'}" />
-      <arg value="/MTd" if="${configuration != 'release'}" />
-      <arg value="/Gy" />
-      <arg value="/W3" />
-      <arg value="/nologo" />
-      <arg value="/c" />
-      <arg value="/Zi" />
-      <arg value="/errorReport:prompt" />
-      <sources>
-        <include name="xml\expat\lib\xmlparse.c" />
-        <include name="xml\expat\lib\xmlrole.c" />
-        <include name="xml\expat\lib\xmltok.c" />
-      </sources>
-      <includedirs>
-        <include name="include" />
-        <include name="include\private" />
-        <include name="xml\expat\lib" />
-      </includedirs>
-      <defines>
-        <define name="APU_DECLARE_STATIC" />
-        <define name="APR_DECLARE_STATIC" />
-        <define name="WIN32" />
-        <define name="_WINDOWS" />
-        <define name="_WIN32" />
-        <define name="_WIN32_WINNT" value="0x0501" />
-        <define name="WIN64" if="${platform == 'x64'}" />
-        <define name='VERSION=\"expat_1.95.7\"' />
-        <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
-        <define name="COMPILED_FROM_DSP" />
-        <define name="XML_STATIC" />
-      </defines>
-    </cl>
-    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
-    <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
-    <lib
-      output="xml\expat\lib\${configuration}_${platform}\xml.lib"
-      options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
-      <sources>
-        <include name="xml\expat\lib\${configuration}_${platform}\*.obj" />
-      </sources>
-    </lib>
-  </target>
-
-  <target name="build" depends="xml">
+  <target name="build" depends="clean">
     <mkdir dir="${configuration}_${platform}" />
     <copy file="..\build\apu.hw" tofile="include\apu.h" overwrite="true" />
     <copy file="include\apu_want.hw" tofile="include\apu_want.h" overwrite="true" />
@@ -139,6 +86,9 @@
         <include name="strmatch\*.c" />
         <include name="uri\apr_uri.c" />
         <include name="xml\apr_xml.c" />
+        <include name="xml\expat\lib\xmlparse.c" />
+        <include name="xml\expat\lib\xmlrole.c" />
+        <include name="xml\expat\lib\xmltok.c" />
       </sources>
       <includedirs>
         <include name="include" />
@@ -157,6 +107,7 @@
         <define name="_WINDLL" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="COMPILED_FROM_DSP" />
         <define name="XML_STATIC" />
       </defines>
     </cl>
