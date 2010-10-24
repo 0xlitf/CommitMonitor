@@ -114,6 +114,7 @@
         <define name="NOGDI" />
         <define name="NONLS" />
         <define name="NOCRYPT" />
+        <define name="XML_STATIC" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
