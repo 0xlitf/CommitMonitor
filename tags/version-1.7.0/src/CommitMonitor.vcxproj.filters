@@ -1,0 +1,556 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Scintilla">
+      <UniqueIdentifier>{841de671-410a-4f7b-9a86-f1990cbe9fe3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WiX">
+      <UniqueIdentifier>{20a91f2e-fd11-4d87-808b-dff18bc5d303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build Scripts">
+      <UniqueIdentifier>{4dab3fe9-19bb-4413-82ea-485f1874a0bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build Scripts\ext">
+      <UniqueIdentifier>{7502ccc0-f601-4ba6-bef9-c34a6fb48d1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{766eaf8f-6f8b-4b49-b050-bdf4ced096af}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Callback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommitMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DiffViewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FindBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HiddenWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PasswordDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SerializeUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusBarMsgWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVN.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SVNPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="URLDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UrlInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\AutoComplete.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CallTip.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CellBuffer.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\CharClassify.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ContractionState.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Decoration.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Document.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\DocumentAccessor.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Editor.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ExternalLexer.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Indicator.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\KeyMap.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\KeyWords.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\LexOthers.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\LineMarker.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PerLine.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\win32\PlatWin.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PositionCache.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\PropSet.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\RESearch.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\RunStyles.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ScintillaBase.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\win32\ScintillaWin.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Selection.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\Style.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\StyleContext.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\UniConversion.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\ViewStyle.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\WindowAccessor.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\src\XPM.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="AeroControls.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AeroGlass.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AppUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseDialog.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseWindow.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdLineParser.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DirFileEnum.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="hyperlink.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ListCtrl.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="MappedInFile.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ReaderWriterLock.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Registry.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="UnicodeUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Callback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommitMonitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DiffViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FindBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HiddenWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PasswordDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializeUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusBarMsgWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVNPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="URLDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UrlInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\AutoComplete.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\CallTip.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\CellBuffer.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\CharacterSet.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\CharClassify.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\ContractionState.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Decoration.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Document.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\DocumentAccessor.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Editor.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\ExternalLexer.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Indicator.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\KeyMap.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\LineMarker.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Partitioning.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\PerLine.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\win32\PlatformRes.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\PositionCache.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\RESearch.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\RunStyles.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\ScintillaBase.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Selection.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\SplitVector.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\Style.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\StyleContext.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\SVector.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\UniConversion.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\ViewStyle.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\scintilla\src\XPM.h">
+      <Filter>Scintilla</Filter>
+    </ClInclude>
+    <ClInclude Include="AeroControls.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AeroGlass.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AppUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseDialog.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseWindow.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\BlowFish\Blowfish.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ClipboardHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdLineParser.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DirFileEnum.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="hyperlink.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ListCtrl.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MappedInFile.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="memdc.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ReaderWriterLock.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Registry.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleIni.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\snarl\SnarlInterface.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="UnicodeUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\about.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\add.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\cancel-normal.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitor.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitor.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitor.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitorRed0.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitorRed1.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitorRed2.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\CommitMonitorRed3.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\diff.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\edit.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\folder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\folder_open.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\getall.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\mark-all-as-read.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Notification.wav">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\options.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\remove.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\repourl.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\repourl_inactive.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\repourl_new.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\repourlfail.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Setup\Includes.wxi">
+      <Filter>WiX</Filter>
+    </None>
+    <None Include="Setup\Setup.wxs">
+      <Filter>WiX</Filter>
+    </None>
+    <None Include="Setup\VersionNumberInclude.in.wxi">
+      <Filter>WiX</Filter>
+    </None>
+    <None Include="Setup\WixUI_Custom.wxs">
+      <Filter>WiX</Filter>
+    </None>
+    <None Include="..\default.build">
+      <Filter>Build Scripts</Filter>
+    </None>
+    <None Include="Setup\setup.build">
+      <Filter>Build Scripts</Filter>
+    </None>
+    <None Include="..\version.build.in">
+      <Filter>Build Scripts</Filter>
+    </None>
+    <None Include="..\ext\build\apr.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\aprutil.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\default.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\neon.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\OpenSSL.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\sasl.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\serf.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\subversion.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+    <None Include="..\ext\build\zlib.build">
+      <Filter>Build Scripts\ext</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\CommitMonitor.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
