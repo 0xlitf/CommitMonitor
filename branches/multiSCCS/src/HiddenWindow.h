@@ -66,6 +66,8 @@ public:
     DWORD               RunThread();
 
     void                SetTask(bool b) {m_bIsTask = b;}
+
+    void                ShowPopup(wstring& title, wstring& text, const wchar_t *alertType);
 protected:
     /// the message handler for this window
     LRESULT CALLBACK    WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -111,3 +113,5 @@ private:
     typedef BOOL(__stdcall *PFNCHANGEWINDOWMESSAGEFILTER)(UINT message, DWORD dwFlag);
     static PFNCHANGEWINDOWMESSAGEFILTER m_pChangeWindowMessageFilter;
 };
+
+extern CHiddenWindow *hiddenWindowPointer;

@@ -49,6 +49,12 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             AddToolTip(IDC_TASKBAR_ALWAYSON, _T("If disabled, the taskbar icon is only shown if new commits are available.\nThe CommitMonitor can be shown by 'starting' it again."));
             AddToolTip(IDC_DIFFVIEWER, _T("Path to a viewer for unified diff files."));
             AddToolTip(IDC_DIFFVIEWERLABEL, _T("Path to a viewer for unified diff files."));
+            AddToolTip(IDC_ACCUEXELOCATION, _T("Path to accurev executable."));
+            AddToolTip(IDC_ACCUEXELOCATIONLABEL, _T("Path to accurev executable."));
+            AddToolTip(IDC_ACCUDIFFCMD, _T("Path to a viewer for accurev diffs."));
+            AddToolTip(IDC_ACCUDIFFCMDLABEL, _T("Path to a viewer for accurev diffs."));
+
+
             AddToolTip(IDC_ANIMATEICON, _T("Animates the system tray icon as long as there are unread commits"));
             AddToolTip(IDC_USETSVN, _T("If TortoiseSVN is installed, use it for showing the differences of commits"));
             AddToolTip(IDC_CHECKNEWER, _T("Automatically check for newer versions of CommitMonitor"));
@@ -67,8 +73,10 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             bool bLeftMenu = !!CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
             bool bWebViewer = !!CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
             CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+            CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+            CRegStdString accurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
             CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
-            CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+            CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
             CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
             TCHAR numBuf[30] = {0};
             _stprintf_s(numBuf, 30, _T("%ld"), DWORD(numlogs));
@@ -77,9 +85,17 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_USETSVN, BM_SETCHECK, bUseTSVN ? BST_CHECKED : BST_UNCHECKED, NULL);
             SetDlgItemText(*this, IDC_DIFFVIEWER, wstring(diffViewer).c_str());
+
+            SetDlgItemText(*this, IDC_ACCUEXELOCATION, wstring(accurevExe).c_str());
+            SetDlgItemText(*this, IDC_ACCUDIFFCMD, wstring(accurevDiffCmd).c_str());
+
             SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, wstring(notifySound).c_str());
             SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
+            
+            // No update check for Accurev version!
+            ShowWindow(GetDlgItem(*this, IDC_CHECKNEWER), SW_HIDE);
+
             SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_SETCHECK, bWebViewer ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -120,7 +136,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             CRegStdDWORD regAnimateIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
             CRegStdDWORD regPlaySound = CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
             CRegStdDWORD regUseTSVN = CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-            CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE);
+            CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
             CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
             CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
             CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
@@ -165,6 +181,31 @@ LRESULT COptionsDlg::DoCommand(int id)
                 diffViewer = dv;
             else
                 diffViewer.removeValue();
+
+            // RA Sewell
+            len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUEXELOCATION));
+            divi = new TCHAR[len+1];
+            ::GetDlgItemText(*this, IDC_ACCUEXELOCATION, divi, len+1);
+            dv = wstring(divi);
+            delete [] divi;
+            CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+            if (!dv.empty())
+                accurevExe = dv;
+            else
+                accurevExe.removeValue();
+
+            len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUDIFFCMD));
+            divi = new TCHAR[len+1];
+            ::GetDlgItemText(*this, IDC_ACCUDIFFCMD, divi, len+1);
+            dv = wstring(divi);
+            delete [] divi;
+            CRegStdString accurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
+            if (!dv.empty())
+                accurevDiffCmd = dv;
+            else
+                accurevDiffCmd.removeValue();
+
+
 
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH));
             divi = new TCHAR[len+1];

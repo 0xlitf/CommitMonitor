@@ -44,13 +44,13 @@
       </foreach>
     </if>
 
-    <exec program="candle">
+    <exec program="C:\Program Files\Windows Installer XML v3\bin\candle">
       <arg value="-nologo" />
       <arg value="-out" />
       <arg value="..\..\bin\" />
       <arg value="Setup.wxs" />
     </exec>
-    <exec program="light">
+    <exec program="C:\Program Files\Windows Installer XML v3\bin\light">
       <arg value="-nologo" />
       <arg value="-ext" />
       <arg value="WixUIExtension" />
