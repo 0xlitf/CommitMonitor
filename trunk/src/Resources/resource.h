@@ -62,6 +62,7 @@
 #define IDC_CREATEDIFFS                 1008
 #define IDC_PROJECTNAME                 1009
 #define IDC_LOGINFO                     1010
+#define IDC_ACCUREVREPO                 1010
 #define IDC_USERNAME                    1011
 #define IDC_PASSWORD                    1012
 #define IDC_SHOWDIFF                    1013
@@ -74,6 +75,7 @@
 #define IDC_DIFFVIEWER                  1017
 #define IDC_EXIT                        1018
 #define IDC_FINDTEXT                    1019
+#define IDC_DIFFVIEWER3                 1019
 #define IDC_FINDPREV                    1020
 #define IDC_MATCHCASECHECK              1021
 #define IDC_FINDEXIT                    1022
@@ -120,6 +122,14 @@
 #define IDC_WEBVIEWER                   1057
 #define IDC_CHECK4                      1058
 #define IDC_SHOWLASTUNREAD              1058
+#define IDC_REPOLABEL                   1059
+#define IDC_URLTOMONITORLABEL           1060
+#define IDC_ACCUEXELOCATION             1061
+#define IDC_ACCUEXELOCATIONLABEL        1062
+#define IDC_ACCUDIFFCMD                 1063
+#define IDC_ACCUDIFFCMDLABEL            1064
+#define IDC_SCCSCOMBO                   1065
+#define IDC_EDIT2                       1069
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -171,7 +181,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        165
 #define _APS_NEXT_COMMAND_VALUE         32836
-#define _APS_NEXT_CONTROL_VALUE         1059
+#define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

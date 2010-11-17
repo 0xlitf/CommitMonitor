@@ -35,8 +35,9 @@ public:
     void                    ClearForTemplate();
 
 protected:
+    void                    SetSCCS(CUrlInfo::SCCS_TYPE sccs);
     LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    LRESULT                 DoCommand(int id);
+    LRESULT                 DoCommand(int id, int cmd);
 
     bool                    OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);
     bool                    OnMouseMove(UINT nFlags, POINT point);
@@ -47,4 +48,5 @@ protected:
 private:
     CUrlInfo                info;
     AeroControlBase         m_aerocontrols;
+    wstring                 sSCCS[CUrlInfo::SCCS_LEN];
 };

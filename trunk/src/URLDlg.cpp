@@ -29,6 +29,8 @@ using namespace std;
 
 CURLDlg::CURLDlg(void)
 {
+  sSCCS[0] = _T("SVN");
+  sSCCS[1] = _T("Accurev");
 }
 
 CURLDlg::~CURLDlg(void)
@@ -54,6 +56,31 @@ void CURLDlg::ClearForTemplate()
 
 }
 
+void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs) {
+    // SCCS specific initialization
+
+    SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 0);
+
+    switch (sccs) {
+      default:
+      case CUrlInfo::SCCS_SVN:
+        AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
+        SetDlgItemText(*this, IDC_REPOLABEL, _T(""));
+        SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("URL to monitor"));
+        SetDlgItemText(*this, IDC_URLGROUP, _T("SVN repository settings"));                
+        ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_HIDE);
+        break;
+
+      case CUrlInfo::SCCS_ACCUREV:
+        AddToolTip(IDC_URLTOMONITOR, _T("Accurev stream name"));
+        SetDlgItemText(*this, IDC_REPOLABEL, _T("Accurev repository"));
+        SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("Accurev stream"));
+        SetDlgItemText(*this, IDC_URLGROUP, _T("Accurev repository settings"));                
+        ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_SHOW);
+        break;
+    }  
+}
+
 LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
@@ -63,12 +90,20 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             InitDialog(hwndDlg, IDI_COMMITMONITOR);
 
+             // Default SCCS to SVN if it is not set
+            if (info.sccs < 0 || info.sccs >= CUrlInfo::SCCS_LEN) {
+              info.sccs = CUrlInfo::SCCS_SVN;
+            }
+
+            // SCCS Generic initialization
             AddToolTip(IDC_CREATEDIFFS, _T("Fetches the diff for each revision automatically\nPlease do NOT enable this for repositories which are not on your LAN!"));
             AddToolTip(IDC_PROJECTNAME, _T("Enter here a name for the project"));
             AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
+            AddToolTip(IDC_SCCSCOMBO, _T("Source code control system to use"));
+            AddToolTip(IDC_ACCUREVREPO, _T("Accurev repository name"));
             AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
             AddToolTip(IDC_SCRIPT, _T("enter here a command which gets called after new revisions were detected.\n\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name\n\nExample command line:\nTortoiseProc.exe /command:update /rev:%revision /path:\"path\\to\\working\\copy\""));
-            AddToolTip(IDC_WEBDIFF, _T("URL to a web viewer\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name"));
+            AddToolTip(IDC_WEBDIFF, _T("URL to a web viewer\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name"));            
             AddToolTip(IDC_IGNOREUSERS, _T("Newline separated list of usernames to ignore"));
             AddToolTip(IDC_INCLUDEUSERS, _T("Newline separated list of users to monitor"));
 
@@ -82,6 +117,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 AddToolTip(IDC_CHECKTIME, _T("Interval for repository update checks"));
 
             // initialize the controls
+            SetDlgItemText(*this, IDC_ACCUREVREPO, info.accurevRepo.c_str());
             SetDlgItemText(*this, IDC_URLTOMONITOR, info.url.c_str());
             WCHAR buf[20];
             _stprintf_s(buf, 20, _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
@@ -103,10 +139,22 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             ExtendFrameIntoClientArea(0, 0, 0, IDC_URLGROUP);
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
+
+            // SCCS specific initialization
+
+            // Fill combobox
+            //for (int i=CUrlInfo::SCCS_LEN - 1;i>=0;i--) {
+            for (int i=0;i<CUrlInfo::SCCS_LEN;i++) {
+              SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO),CB_ADDSTRING,
+                          0,
+                          /*reinterpret_cast<LPARAM>((LPCTSTR)ComboBoxItems[0])*/
+                          (LPARAM)sSCCS[i].c_str());
+            }                        
+            SetSCCS(info.sccs);                                    
         }
         return TRUE;
     case WM_COMMAND:
-        return DoCommand(LOWORD(wParam));
+        return DoCommand(LOWORD(wParam), HIWORD(wParam));
     case WM_NOTIFY:
         {
         }
@@ -117,28 +165,54 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
-LRESULT CURLDlg::DoCommand(int id)
+LRESULT CURLDlg::DoCommand(int id, int cmd)
 {
     switch (id)
     {
     case IDOK:
         {
-            SVN svn;
-            int len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
-            WCHAR * buffer = new WCHAR[len+1];
-            GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
-            info.url = svn.CanonicalizeURL(wstring(buffer, len));
-            CStringUtils::trim(info.url);
-            delete [] buffer;
+          SVN svn;
+          int len;
+          WCHAR * buffer;
+          wstring tempurl;
 
-            wstring tempurl = info.url.substr(0, 7);
-            std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
+          info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
 
-            if (tempurl.compare(_T("file://")) == 0)
-            {
-                ::MessageBox(*this, _T("file:/// urls are not supported!"), _T("CommitMonitor"), MB_ICONERROR);
-                return 1;
-            }
+          switch (info.sccs) {
+            default:
+            case CUrlInfo::SCCS_SVN:
+              len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
+              buffer = new WCHAR[len+1];
+              GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
+              info.url = svn.CanonicalizeURL(wstring(buffer, len));              
+              CStringUtils::trim(info.url);
+              delete [] buffer;
+
+              tempurl = info.url.substr(0, 7);
+              std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
+
+              if (tempurl.compare(_T("file://")) == 0)
+              {
+                  ::MessageBox(*this, _T("file:/// urls are not supported!"), _T("CommitMonitor"), MB_ICONERROR);
+                  return 1;
+              }
+              break;
+
+            case CUrlInfo::SCCS_ACCUREV:
+              len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
+              buffer = new WCHAR[len+1];
+              GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
+              info.url = wstring(buffer, len);
+              CStringUtils::trim(info.url);
+
+              len = GetWindowTextLength(GetDlgItem(*this, IDC_ACCUREVREPO));
+              buffer = new WCHAR[len+1];
+              GetDlgItemText(*this, IDC_ACCUREVREPO, buffer, len+1);
+              info.accurevRepo = wstring(buffer, len);
+              delete [] buffer;
+              CStringUtils::trim(info.accurevRepo);
+              break;
+            }  
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
             buffer = new WCHAR[len+1];
@@ -226,6 +300,20 @@ LRESULT CURLDlg::DoCommand(int id)
     case IDCANCEL:
         EndDialog(*this, id);
         break;
+
+    case IDC_SCCSCOMBO:
+        switch(cmd) // Find out what message it was
+        {          
+          case CBN_SELCHANGE: // This means that list item has changed            
+              info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
+              SetSCCS(info.sccs);
+              break;
+        }
+        break;
+
     }
+
+
+
     return 1;
 }

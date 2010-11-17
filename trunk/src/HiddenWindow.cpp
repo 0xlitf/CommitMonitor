@@ -25,7 +25,9 @@
 #include "HiddenWindow.h"
 #include "resource.h"
 #include "MainDlg.h"
+#include "SCCS.h"
 #include "SVN.h"
+#include "ACCUREV.h"
 #include "Callback.h"
 #include "AppUtils.h"
 #include "StatusBarMsgWnd.h"
@@ -42,6 +44,7 @@ using namespace std;
 
 
 extern HINSTANCE hInst;
+CHiddenWindow *hiddenWindowPointer = NULL;
 
 DWORD WINAPI MonitorThread(LPVOID lpParam);
 
@@ -67,6 +70,8 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
     m_hIconNew3 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW3));
     m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_COMMITMONITOR));
     ZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
+
+    hiddenWindowPointer = this;
 }
 
 CHiddenWindow::~CHiddenWindow(void)
@@ -688,15 +693,30 @@ DWORD CHiddenWindow::RunThread()
                 continue;   // don't check if the last error was 'not authorized'
             TRACE(_T("checking %s for updates\n"), it->first.c_str());
             // get the highest revision of the repository
-            SVN svn;
-            svn.SetAuthInfo(it->second.username, it->second.password);
+            SCCS *pSCCS;
+            SVN svnAccess;
+            ACCUREV accurevAccess;
+
+            switch (it->second.sccs) {
+              default:
+              case CUrlInfo::SCCS_SVN:
+                pSCCS = (SCCS *)&svnAccess;
+                break;
+
+              case CUrlInfo::SCCS_ACCUREV:
+                pSCCS = (SCCS *)&accurevAccess;
+                break;
+            } 
+
+
+            pSCCS->SetAuthInfo(it->second.username, it->second.password);
             if (m_hMainDlg)
             {
                 _stprintf_s(infotextbuf, 1024, _T("checking %s ..."), it->first.c_str());
                 SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
             }
-            svn_revnum_t headrev = svn.GetHEADRevision(it->first);
-            if ((svn.Err)&&(svn.Err->apr_err == SVN_ERR_RA_NOT_AUTHORIZED))
+            svn_revnum_t headrev = pSCCS->GetHEADRevision(it->second.accurevRepo, it->first);
+            if ((pSCCS->Err)&&(pSCCS->Err->apr_err == SVN_ERR_RA_NOT_AUTHORIZED))
             {
                 // only block the object for a short time
                 map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
@@ -704,8 +724,8 @@ DWORD CHiddenWindow::RunThread()
                 if (writeIt != pWrite->end())
                 {
                     writeIt->second.lastchecked = currenttime;
-                    writeIt->second.error = svn.GetLastErrorMsg();
-                    writeIt->second.errNr = svn.Err->apr_err;
+                    writeIt->second.error = pSCCS->GetLastErrorMsg();
+                    writeIt->second.errNr = pSCCS->Err->apr_err;
                 }
                 m_UrlInfos.ReleaseWriteData();
                 continue;
@@ -722,7 +742,7 @@ DWORD CHiddenWindow::RunThread()
                 }
                 int nNewCommits = 0;        // commits without ignored ones
                 int nTotalNewCommits = 0;   // all commits, including ignored ones
-                if (svn.GetLog(it->first, headrev, it->second.lastcheckedrev + 1))
+                if (pSCCS->GetLog(it->second.accurevRepo, it->first, headrev, it->second.lastcheckedrev + 1))
                 {
                     TRACE(_T("log fetched for %s\n"), it->first.c_str());
                     if (!m_bRun)
@@ -743,7 +763,7 @@ DWORD CHiddenWindow::RunThread()
 
                     wstring sPopupText;
                     bool hadError = !it->second.error.empty();
-                    for (map<svn_revnum_t,SVNLogEntry>::iterator logit = svn.m_logs.begin(); logit != svn.m_logs.end(); ++logit)
+                    for (map<svn_revnum_t,SVNLogEntry>::iterator logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
                     {
                         // again, only block for a short time
                         map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
@@ -835,7 +855,7 @@ DWORD CHiddenWindow::RunThread()
                                     _stprintf_s(infotextbuf, 1024, _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
                                     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
                                 }
-                                if (!svn.Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
+                                if (!pSCCS->Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
                                 {
                                     TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
                                     DeleteFile(diffFileName.c_str());
@@ -853,7 +873,7 @@ DWORD CHiddenWindow::RunThread()
                         sRobotsURL += _T("/svnrobots.txt");
                         wstring sRootRobotsURL;
                         wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
-                        const SVNInfoData * data = svn.GetFirstFileInfo(it->first, headrev, headrev);
+                        const SVNInfoData * data = pSCCS->GetFirstFileInfo(it->first, headrev, headrev);
                         if (data)
                         {
                             sRootRobotsURL = data->reposRoot;
@@ -880,7 +900,7 @@ DWORD CHiddenWindow::RunThread()
                                 }
                             }
                         }
-                        else if ((!sRootRobotsURL.empty())&&(svn.Cat(sRootRobotsURL, sFile)))
+                        else if ((!sRootRobotsURL.empty())&&(pSCCS->Cat(sRootRobotsURL, sFile)))
                         {
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
@@ -896,7 +916,7 @@ DWORD CHiddenWindow::RunThread()
                                 fs.close();
                             }
                         }
-                        else if (svn.Cat(sRobotsURL, sFile))
+                        else if (pSCCS->Cat(sRobotsURL, sFile))
                         {
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
@@ -969,9 +989,9 @@ DWORD CHiddenWindow::RunThread()
                         {
                             data.sProject = it->second.name;
                             if (nNewCommits == 1)
-                                _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
-                            else
-                                _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
+                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
+                        else
+                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
                         }
                         data.sText = sPopupText;
                         data.sTitle = wstring(sTitle);
@@ -1002,9 +1022,9 @@ DWORD CHiddenWindow::RunThread()
                     if (writeIt != pWrite->end())
                     {
                         writeIt->second.lastchecked = currenttime;
-                        writeIt->second.error = svn.GetLastErrorMsg();
-                        if (svn.Err)
-                            writeIt->second.errNr = svn.Err->apr_err;
+                        writeIt->second.error = pSCCS->GetLastErrorMsg();
+                        if (pSCCS->Err)
+                            writeIt->second.errNr = pSCCS->Err->apr_err;
                     }
                     m_UrlInfos.ReleaseWriteData();
                 }
@@ -1056,9 +1076,9 @@ DWORD CHiddenWindow::RunThread()
                 {
                     writeIt->second.lastchecked = currenttime;
                     bool hadError = !writeIt->second.error.empty();
-                    writeIt->second.error = svn.GetLastErrorMsg();
-                    if (svn.Err)
-                        writeIt->second.errNr = svn.Err->apr_err;
+                    writeIt->second.error = pSCCS->GetLastErrorMsg();
+                    if (pSCCS->Err)
+                        writeIt->second.errNr = pSCCS->Err->apr_err;
                     TCHAR sTitle[1024] = {0};
                     if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                     {
@@ -1066,7 +1086,7 @@ DWORD CHiddenWindow::RunThread()
                         {
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
-                            data.sText = svn.GetLastErrorMsg();
+                            data.sText = pSCCS->GetLastErrorMsg();
                             data.sTitle = wstring(sTitle);
                             data.sAlertType = ALERTTYPE_FAILEDCONNECT;
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
@@ -1089,9 +1109,9 @@ DWORD CHiddenWindow::RunThread()
                 {
                     writeIt->second.lastchecked = currenttime;
                     bool hadError = !writeIt->second.error.empty();
-                    writeIt->second.error = svn.GetLastErrorMsg();
-                    if (svn.Err)
-                        writeIt->second.errNr = svn.Err->apr_err;
+                    writeIt->second.error = pSCCS->GetLastErrorMsg();
+                    if (pSCCS->Err)
+                        writeIt->second.errNr = pSCCS->Err->apr_err;
                     TCHAR sTitle[1024] = {0};
                     if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                     {
@@ -1099,7 +1119,7 @@ DWORD CHiddenWindow::RunThread()
                         {
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
-                            data.sText = svn.GetLastErrorMsg();
+                            data.sText = pSCCS->GetLastErrorMsg();
                             data.sTitle = wstring(sTitle);
                             data.sAlertType = ALERTTYPE_FAILEDCONNECT;
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
@@ -1111,7 +1131,7 @@ DWORD CHiddenWindow::RunThread()
                 // check whether the url points to an SVNParentPath: it points
                 // to a repository, but we got an error for some reason when
                 // trying to find the HEAD revision
-                if (svn.Err && (it->second.logentries.size() == 0)&&(it->second.lastcheckedrev == 0)&&((svn.Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(svn.Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)))
+                if (pSCCS->Err && (it->second.logentries.size() == 0)&&(it->second.lastcheckedrev == 0)&&((pSCCS->Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)))
                 {
                     // if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
                     // instead of pointing to an actual repository.
@@ -1194,7 +1214,7 @@ DWORD CHiddenWindow::RunThread()
                                 // what[2] contains the name
                                 wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
                                 url = it->first + _T("/") + url;
-                                url = svn.CanonicalizeURL(url);
+                                url = pSCCS->CanonicalizeURL(url);
 
                                 map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
                                 map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
@@ -1237,7 +1257,7 @@ DWORD CHiddenWindow::RunThread()
                                 // what[2] contains the name
                                 wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
                                 url = it->first + _T("/") + url;
-                                url = svn.CanonicalizeURL(url);
+                                url = pSCCS->CanonicalizeURL(url);
 
                                 map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
                                 map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
@@ -1425,4 +1445,13 @@ bool CHiddenWindow::StopThread(DWORD wait)
     }
 
     return bRet;
+}
+
+void CHiddenWindow::ShowPopup(wstring& title, wstring& text, const wchar_t *alertType) 
+{
+    popupData data;
+    data.sText = text;
+    data.sTitle = title;
+    data.sAlertType = alertType;
+    ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
 }

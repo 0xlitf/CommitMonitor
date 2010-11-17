@@ -37,7 +37,7 @@ public:
     static wstring                  ConvertDate(apr_time_t time);
     static void                     SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
     static vector<wstring>          tokenize_str(const wstring& str, const wstring& delims);
-    static bool                     LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false);
+    static bool                     LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false, bool bWaitForExit = false, bool bHideWindow = false);
     static wstring                  GetTempFilePath();
     static wstring                  ConvertName(const wstring& name);
     static string                   PathEscape(const string& path);
@@ -47,4 +47,5 @@ public:
     static bool                     ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
     static bool                     WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd);
     static bool                     IsFullscreenWindowActive();
+    static void                     CreateUUIDString(wstring& sUuid);
 };

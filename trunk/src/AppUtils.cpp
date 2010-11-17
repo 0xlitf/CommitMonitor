@@ -20,7 +20,7 @@
 #include "AppUtils.h"
 #include "Registry.h"
 #include "ClipboardHelper.h"
-
+#include "UnicodeUtils.h"
 
 #include <shlwapi.h>
 #include <shlobj.h>
@@ -291,7 +291,7 @@ vector<wstring> CAppUtils::tokenize_str(const wstring& str, const wstring& delim
     return tokens;
 }
 
-bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup)
+bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup, bool bWaitForExit, bool bHideWindow)
 {
     STARTUPINFO startup;
     PROCESS_INFORMATION process;
@@ -301,6 +301,12 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
 
     TCHAR * cmdbuf = new TCHAR[sCommandLine.length()+1];
     _tcscpy_s(cmdbuf, sCommandLine.length()+1, sCommandLine.c_str());
+
+    if (bHideWindow) {
+      // Make sure the command window starts hidden
+      startup.dwFlags = STARTF_USESHOWWINDOW;
+      startup.wShowWindow = SW_HIDE;
+    }
 
     if (CreateProcess(NULL, cmdbuf, NULL, NULL, FALSE, 0, 0, 0, &startup, &process)==0)
     {
@@ -325,6 +331,12 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
     if (bWaitForStartup)
     {
         WaitForInputIdle(process.hProcess, 10000);
+    }
+
+    // Total hack - just waits for up to 30 seconds!
+    if (bWaitForExit)
+    {
+        WaitForSingleObject(process.hProcess, (30000));
     }
 
     CloseHandle(process.hThread);
@@ -551,4 +563,17 @@ bool CAppUtils::IsFullscreenWindowActive()
     GetMonitorInfo(hm,&mi); 
 
     return !!EqualRect(&rcWindow, &mi.rcMonitor); 
-} 
+}
+
+void CAppUtils::CreateUUIDString(wstring& sUuid) {
+    UUID Uuid;
+    CoCreateGuid(&Uuid);
+    RPC_WSTR pUIDStr;
+    // Convert Unique ID to String
+    UuidToString( &Uuid, &pUIDStr );
+
+    sUuid = wstring((WCHAR *)pUIDStr);
+
+    // Free allocated string memory
+    RpcStringFree( &pUIDStr );
+}

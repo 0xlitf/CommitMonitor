@@ -20,11 +20,12 @@
 #include <string>
 #include <vector>
 
+#include "SCCS.h"
 #include "SVN.h"
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION     13
+#define URLINFO_VERSION     14
 #define URLINFOS_VERSION    1
 
 #define URLINFO_MAXENTRIES 1000
@@ -35,9 +36,17 @@ public:
     CUrlInfo(void);
     ~CUrlInfo(void);
 
+    typedef enum SCCS_TYPE_ {
+      SCCS_SVN = 0,
+      SCCS_ACCUREV,
+      SCCS_LEN
+    } SCCS_TYPE;
+
     wstring                     username;
     wstring                     password;
 
+    SCCS_TYPE                   sccs;
+    wstring                     accurevRepo;
     wstring                     url;
     wstring                     name;
     __time64_t                  lastchecked;

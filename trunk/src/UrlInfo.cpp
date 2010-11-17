@@ -36,6 +36,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
     , monitored(true)
     , errNr(0)
     , maxentries(URLINFO_MAXENTRIES)
+    , sccs(SCCS_SVN)
 {
 }
 
@@ -99,6 +100,12 @@ bool CUrlInfo::Save(FILE * hFile)
     if (!CSerializeUtils::SaveString(hFile, webviewer))
         return false;
     if (!CSerializeUtils::SaveNumber(hFile, maxentries))
+        return false;
+
+    // RA Sewell: Version 100
+    if (!CSerializeUtils::SaveNumber(hFile, sccs))
+        return false;
+    if (!CSerializeUtils::SaveString(hFile, accurevRepo))
         return false;
 
     // prevent caching more than URLINFO_MAXENTRIES revisions - this is a commit monitor, not a full featured
@@ -256,6 +263,21 @@ bool CUrlInfo::Load(const unsigned char *& buf)
     }
     else
         maxentries = URLINFO_MAXENTRIES;
+
+    if (version >= 100)
+    {
+        if (!CSerializeUtils::LoadNumber(buf, value))
+            return false;
+        sccs = (SCCS_TYPE)value;
+
+        if (!CSerializeUtils::LoadString(buf, accurevRepo))
+            return false;
+    }
+    else
+    {
+        sccs = SCCS_SVN;
+    }
+
 
     logentries.clear();
     if (!CSerializeUtils::LoadNumber(buf, value))

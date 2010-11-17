@@ -202,6 +202,19 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CreateToolbar();
             AddToolTip(IDC_FILTERSTRING, _T("Enter a filter string\nPrepend the string with an '-' to negate the filter.\nPrepend the string with an '\\' to filter with a regex."));
 
+            // RA Sewell
+            // Set defaults for the registry values is nothing exists
+            CRegStdString regAccurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+            wstring sAccurevExe(regAccurevExe);
+            if (sAccurevExe.size() == 0) {
+              regAccurevExe = _T("C:\\Program Files\\AccuRev\\bin\\accurev.EXE");              // Writes value to registry
+            }
+            CRegStdString regAccurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
+            wstring sAccurevDiffCmd(regAccurevDiffCmd);
+            if (sAccurevDiffCmd.size() == 0) {
+              regAccurevDiffCmd = _T("\"C:\\Program Files\\WinMerge\\WinMergeU.exe\" /e /u /r /dl \"%OLD\" /dr \"%NEW\" \"%1\" \"%2\"");
+            }
+
             m_hTreeControl = ::GetDlgItem(*this, IDC_URLTREE);
             m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
             m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
@@ -1386,6 +1399,14 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     if (selCount <= 0)
         return FALSE;	//nothing selected, nothing to show
 
+    // Get temp directory and current directory
+    WCHAR cTempPath[32767];
+    GetEnvironmentVariable(_T("TEMP"), cTempPath, 32767);
+    wstring origTempPath = wstring(cTempPath);
+
+    GetCurrentDirectory(32767, cTempPath);
+    wstring origCurDir = wstring(cTempPath);
+
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     // get the url this entry refers to
     TVITEMEX itemex = {0};
@@ -1393,6 +1414,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
     const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+    const CUrlInfo * pUrlInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+
     if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
     {
         LVITEM item = {0};
@@ -1406,93 +1429,220 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
             if (item.state & LVIS_SELECTED)
             {
                 SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
-                // find the diff name
-                const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
-                // in case the project name has 'path' chars in it, we have to remove those first
-                _stprintf_s(buf, 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
-                wstring diffFileName = CAppUtils::GetDataDir();
-                diffFileName += _T("\\");
-                diffFileName += wstring(buf);
-                // construct a title for the diff viewer
-                _stprintf_s(buf, 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
-                wstring title = wstring(buf);
-                // start the diff viewer
-                wstring cmd;
-                wstring tsvninstalled = CAppUtils::GetTSVNPath();
-                wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
-                if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
-                {
-                    // yes, we have TSVN installed
-                    // call TortoiseProc to do the diff for us
-                    cmd = wstring(tsvninstalled);
-                    cmd += _T(" /command:diff /path:\"");
-                    cmd += pInfo->url;
-                    cmd += _T("\" /startrev:");
+                
+                // Switch how the diff is done in SVN / Accurev
+                switch(pUrlInfo->sccs) {
+                  default:
+                  case CUrlInfo::SCCS_SVN:
+                    {
+                      // find the diff name
+                      const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+                      // in case the project name has 'path' chars in it, we have to remove those first
+                      _stprintf_s(buf, 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
+                      wstring diffFileName = CAppUtils::GetDataDir();
+                      diffFileName += _T("\\");
+                      diffFileName += wstring(buf);
+                      // construct a title for the diff viewer
+                      _stprintf_s(buf, 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
+                      wstring title = wstring(buf);
+                      // start the diff viewer
+                      wstring cmd;
+                      wstring tsvninstalled = CAppUtils::GetTSVNPath();
+                      wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+                      if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
+                      {
+                          // yes, we have TSVN installed
+                          // call TortoiseProc to do the diff for us
+                          cmd = wstring(tsvninstalled);
+                          cmd += _T(" /command:diff /path:\"");
+                          cmd += pInfo->url;
+                          cmd += _T("\" /startrev:");
 
-                    TCHAR numBuf[100] = {0};
-                    _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
-                    cmd += numBuf;
-                    cmd += _T(" /endrev:"); 
-                    _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
-                    cmd += numBuf;
-                    CAppUtils::LaunchApplication(cmd);
-                }
-                else
-                {
-                    TCHAR apppath[4096];
-                    GetModuleFileName(NULL, apppath, 4096);
-                    CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
-                    if (wstring(diffViewer).empty())
-                    {
-                        cmd = apppath;
-                        cmd += _T(" /patchfile:\"");
+                          TCHAR numBuf[100] = {0};
+                          _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
+                          cmd += numBuf;
+                          cmd += _T(" /endrev:"); 
+                          _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+                          cmd += numBuf;
+                          CAppUtils::LaunchApplication(cmd);
+                      }
+                      else
+                      {
+                          TCHAR apppath[4096];
+                          GetModuleFileName(NULL, apppath, 4096);
+                          CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
+                          if (wstring(diffViewer).empty())
+                          {
+                              cmd = apppath;
+                              cmd += _T(" /patchfile:\"");
+                          }
+                          else
+                          {
+                              cmd = (wstring)diffViewer;
+                              cmd += _T(" \"");
+                          }
+                          cmd += diffFileName;
+                          cmd += _T("\"");
+                          if (wstring(diffViewer).empty())
+                          {
+                              cmd += _T(" /title:\"");
+                              cmd += title;
+                              cmd += _T("\"");
+                          }
+                          // Check if the diff file exists. If it doesn't, we have to fetch
+                          // the diff first
+                          if (!PathFileExists(diffFileName.c_str()))
+                          {
+                              // fetch the diff
+                              SVN svn;
+                              svn.SetAuthInfo(pInfo->username, pInfo->password);
+                              CProgressDlg progDlg;
+                              svn.SetAndClearProgressInfo(&progDlg);
+                              progDlg.SetTitle(_T("Fetching Diff"));
+                              TCHAR dispbuf[MAX_PATH] = {0};
+                              _stprintf_s(dispbuf, MAX_PATH, _T("fetching diff of revision %ld"), pLogEntry->revision);
+                              progDlg.SetLine(1, dispbuf);
+                              progDlg.SetShowProgressBar(false);
+                              progDlg.ShowModeless(*this);
+                              progDlg.SetLine(1, dispbuf);
+                              progDlg.SetProgress(3, 100);    // set some dummy progress
+                              CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
+                              if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, wstring()))
+                              {
+                                  progDlg.Stop();
+                                  if (svn.Err->apr_err != SVN_ERR_CANCELLED)
+                                      ::MessageBox(*this, svn.GetLastErrorMsg().c_str(), _T("CommitMonitor"), MB_ICONERROR);
+                                  DeleteFile(diffFileName.c_str());
+                              }
+                              else
+                              {
+                                  TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
+                                  progDlg.Stop();
+                              }
+                          }
+                          if (PathFileExists(diffFileName.c_str()))
+                              CAppUtils::LaunchApplication(cmd);
+                      }
                     }
-                    else
+                    break;
+
+
+                  case CUrlInfo::SCCS_ACCUREV:
                     {
-                        cmd = (wstring)diffViewer;
-                        cmd += _T(" \"");
-                    }
-                    cmd += diffFileName;
-                    cmd += _T("\"");
-                    if (wstring(diffViewer).empty())
-                    {
-                        cmd += _T(" /title:\"");
-                        cmd += title;
-                        cmd += _T("\"");
-                    }
-                    // Check if the diff file exists. If it doesn't, we have to fetch
-                    // the diff first
-                    if (!PathFileExists(diffFileName.c_str()))
-                    {
-                        // fetch the diff
-                        SVN svn;
-                        svn.SetAuthInfo(pInfo->username, pInfo->password);
-                        CProgressDlg progDlg;
-                        svn.SetAndClearProgressInfo(&progDlg);
-                        progDlg.SetTitle(_T("Fetching Diff"));
-                        TCHAR dispbuf[MAX_PATH] = {0};
-                        _stprintf_s(dispbuf, MAX_PATH, _T("fetching diff of revision %ld"), pLogEntry->revision);
-                        progDlg.SetLine(1, dispbuf);
-                        progDlg.SetShowProgressBar(false);
-                        progDlg.ShowModeless(*this);
-                        progDlg.SetLine(1, dispbuf);
-                        progDlg.SetProgress(3, 100);    // set some dummy progress
-                        CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
-                        if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, wstring()))
-                        {
-                            progDlg.Stop();
-                            if (svn.Err->apr_err != SVN_ERR_CANCELLED)
-                                ::MessageBox(*this, svn.GetLastErrorMsg().c_str(), _T("CommitMonitor"), MB_ICONERROR);
-                            DeleteFile(diffFileName.c_str());
+                      /* Accurev 'diff' cannot be used as it mutex locks itself to only allow diffing of one
+                       * file at a time... how typical. Therefore we 'pop' (get copies) of the correct versions
+                       * of each file and then diff the directories :) 
+                       * TODO: Somehow hold onto and delete the temporary dirs when commit monitor is closed */
+                      CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+
+                      wchar_t transactionNo[64];
+                      _itow(pLogEntry->revision, transactionNo, 10);
+
+                      wstring uuid;
+                      CAppUtils::CreateUUIDString(uuid);
+                      
+                      wstring newTempPath = wstring(origTempPath);
+                      newTempPath.append(_T("\\"));
+                      newTempPath.append(uuid);
+                      wstring sLatestRev(transactionNo);
+                      wstring sBasisRev = _T("BASIS");
+                      wstring latestDir(newTempPath + _T("\\") + sLatestRev);
+                      wstring basisDir(newTempPath + _T("\\") + sBasisRev);
+                      CreateDirectory(newTempPath.c_str(), NULL);
+                      CreateDirectory(latestDir.c_str(), NULL);
+                      CreateDirectory(basisDir.c_str(), NULL);
+
+                      // For each file that should be diffed
+                      for (map<std::wstring,SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+                      {
+                        // Parse the file and file revision from the stored URL
+                        wstring rawPath = it->first;
+                        
+                        int lastBracket = rawPath.rfind(L" (");
+                        rawPath.erase(lastBracket, wstring::npos);
+                        int lastForwardSlash = rawPath.rfind(L"/");
+                        wstring sLatestAccuRevision(rawPath);
+                        sLatestAccuRevision.erase(0, lastForwardSlash+1);
+                        int iAccuRevision = _wtoi(sLatestAccuRevision.c_str());
+                        wchar_t basisRevisionNo[64];
+                        _itow(iAccuRevision-1, basisRevisionNo, 10);
+                        wstring sBasisAccuRevision(basisRevisionNo);
+
+                        wstring finalPath(rawPath);
+                        int lastSpace = rawPath.rfind(L" ");
+                        finalPath.erase(lastSpace, wstring::npos);
+
+                        // Can't diff unless there is a version to diff against :)
+                        if (iAccuRevision >= 1) {
+
+                          // Check out the latest file
+                          // Build the accurev command line
+                          for (int i=0; i<2; i++) {
+                            wstring accurevPopCmd;
+                            wstring rev;
+                            wstring dir;
+                            
+                            switch (i) {
+                              default:
+                              case 0:
+                                rev = sLatestAccuRevision;
+                                dir = latestDir;
+                                break;
+                              case 1:
+                                rev = sBasisAccuRevision;
+                                dir = basisDir;
+                                break;
+                            }
+
+                            /* If this is the basis version, and there is none, since the file was added, then break 
+                             * so we only check out the new version. This will then be shown in the directory compare :) */
+                            if ((i == 1) && (iAccuRevision == 1)) break;
+
+                            accurevPopCmd.append(_T("\""));
+                            accurevPopCmd.append(wstring(accurevExe));
+                            accurevPopCmd.append(_T("\" pop -O -R -v "));
+                            accurevPopCmd.append(pUrlInfo->url);
+                            accurevPopCmd.append(_T("/"));
+                            accurevPopCmd.append(rev);
+                            accurevPopCmd.append(_T(" -L \""));
+                            accurevPopCmd.append(dir);
+                            accurevPopCmd.append(_T("\" \""));
+                            accurevPopCmd.append(finalPath);
+                            accurevPopCmd.append(_T("\""));   
+
+                            // Run accurev to perform the pop command
+                            CAppUtils::LaunchApplication(accurevPopCmd, true, true, true);
+                          }
+
                         }
-                        else
-                        {
-                            TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
-                            progDlg.Stop();
-                        }
+                      }
+
+                      CRegStdString diffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
+                      wstring finalDiffCmd;
+
+                      // Build the final diff command
+                      finalDiffCmd.append(wstring(diffCmd));
+
+                      // Find and replace "%OLD"
+                      int pos = finalDiffCmd.find(_T("%OLD"));
+                      finalDiffCmd.replace(pos, 4, sBasisRev, 0, sBasisRev.size());
+
+                      // Find and replace "%NEW"
+                      pos = finalDiffCmd.find(_T("%NEW"));
+                      finalDiffCmd.replace(pos, 4, sLatestRev, 0, sLatestRev.size());                          
+
+                      // Find and replace "%1"
+                      pos = finalDiffCmd.find(_T("%1"));
+                      finalDiffCmd.replace(pos, 2, basisDir, 0, basisDir.size());
+
+                      // Find and replace "%2"
+                      pos = finalDiffCmd.find(_T("%2"));
+                      finalDiffCmd.replace(pos, 2, latestDir, 0, latestDir.size()); 
+
+                      // Run accurev to perform the diff command
+                      CAppUtils::LaunchApplication(finalDiffCmd, true, false, false);
                     }
-                    if (PathFileExists(diffFileName.c_str()))
-                        CAppUtils::LaunchApplication(cmd);
+                    break;
                 }
             }
         }
@@ -1823,56 +1973,56 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
             if (useFilter)
             {
-                if (bUseRegex)
+            if (bUseRegex)
+            {
+                try
                 {
-                    try
-                    {
-                        const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+                    const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
 
-                        addEntry = tr1::regex_search(it->second.author, regCheck);
-                        if (!addEntry)
-                        {
-                            addEntry = tr1::regex_search(it->second.message, regCheck);
-                            if (!addEntry)
-                            {
-                                _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                                wstring s = wstring(buf);
-                                addEntry = tr1::regex_search(s, regCheck);
-                            }
-                        }
-                    }
-                    catch (exception) 
-                    {
-                        bUseRegex = false;
-                    }
-                    if (bNegateFilter)
-                        addEntry = !addEntry;
-                }
-                if (!bUseRegex)
-                {
-                    // search plain text
-                    // note: \Q...\E doesn't seem to work with tr1 - it still
-                    // throws an exception if the regex in between is not a valid regex :(
-
-                    wstring s = it->second.author;
-                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                    addEntry = s.find(filterstringlower) != wstring::npos;
-
+                    addEntry = tr1::regex_search(it->second.author, regCheck);
                     if (!addEntry)
                     {
-                        s = it->second.message;
-                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                        addEntry = s.find(filterstringlower) != wstring::npos;
+                        addEntry = tr1::regex_search(it->second.message, regCheck);
                         if (!addEntry)
                         {
                             _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                            s = buf;
-                            addEntry = s.find(filterstringlower) != wstring::npos;
+                            wstring s = wstring(buf);
+                            addEntry = tr1::regex_search(s, regCheck);
                         }
                     }
-                    if (bNegateFilter)
-                        addEntry = !addEntry;
                 }
+                catch (exception) 
+                {
+                    bUseRegex = false;
+                }
+                if (bNegateFilter)
+                    addEntry = !addEntry;
+            }
+            if (!bUseRegex)
+            {
+                // search plain text
+                // note: \Q...\E doesn't seem to work with tr1 - it still
+                // throws an exception if the regex in between is not a valid regex :(
+
+                wstring s = it->second.author;
+                std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                addEntry = s.find(filterstringlower) != wstring::npos;
+
+                if (!addEntry)
+                {
+                    s = it->second.message;
+                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                    addEntry = s.find(filterstringlower) != wstring::npos;
+                    if (!addEntry)
+                    {
+                        _stprintf_s(buf, 1024, _T("%ld"), it->first);
+                            s = buf;
+                            addEntry = s.find(filterstringlower) != wstring::npos;
+                    }
+                }
+                if (bNegateFilter)
+                    addEntry = !addEntry;
+            }
             }
 
             if (!addEntry)
@@ -2167,7 +2317,7 @@ void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
     if (bUseWebViewer)
         ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_POPUP_OPENWEBVIEWER, 0), 0);
     else
-        ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
+    ::SendMessage(*this, WM_COMMAND, MAKELONG(ID_MAIN_SHOWDIFFCHOOSE, 0), 0);
 }
 
 LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)

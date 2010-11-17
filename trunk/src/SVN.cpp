@@ -29,6 +29,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define UNUSED(x) x
+
+
 SVN::SVN(void)
 {
     parentpool = svn_pool_create(NULL);
@@ -432,8 +435,10 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
     return NULL;
 }
 
-svn_revnum_t SVN::GetHEADRevision(const wstring& url)
+svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
 {
+    UNUSED(repo);
+
     svn_error_clear(Err);
     m_bCanceled = false;
     svn_ra_session_t *ra_session = NULL;
@@ -455,8 +460,10 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& url)
     return rev;
 }
 
-bool SVN::GetLog(const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
+bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
+    UNUSED(repo);
+
     svn_error_clear(Err);
     m_bCanceled = false;
     SVNPool localpool(pool);

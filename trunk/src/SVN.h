@@ -20,6 +20,8 @@
 #include <vector>
 #include <map>
 
+#include "SCCS.h"
+/*
 #include "apr_general.h"
 #include "svn_pools.h"
 #include "svn_client.h"
@@ -37,224 +39,14 @@
 #include "Registry.h"
 #include "SerializeUtils.h"
 #include "ProgressDlg.h"
+*/
 
 #include <string>
 
 using namespace std;
 
-class SVNInfoData
-{
-public:
-    SVNInfoData(){}
 
-    std::wstring        url;
-    svn_revnum_t        rev;
-    svn_node_kind_t     kind;
-    std::wstring        reposRoot;
-    std::wstring        reposUUID;
-    svn_revnum_t        lastchangedrev;
-    __time64_t          lastchangedtime;
-    std::wstring        author;
-
-    std::wstring        lock_path;
-    std::wstring        lock_token;
-    std::wstring        lock_owner;
-    std::wstring        lock_comment;
-    bool                lock_davcomment;
-    __time64_t          lock_createtime;
-    __time64_t          lock_expirationtime;
-
-    bool                hasWCInfo;
-    svn_wc_schedule_t   schedule;
-    std::wstring        copyfromurl;
-    svn_revnum_t        copyfromrev;
-    __time64_t          texttime;
-    __time64_t          proptime;
-    std::wstring        checksum;
-    std::wstring        conflict_old;
-    std::wstring        conflict_new;
-    std::wstring        conflict_wrk;
-    std::wstring        prejfile;
-};
-
-class SVNLogChangedPaths
-{
-public:
-    SVNLogChangedPaths()
-        : action(0)
-    {
-
-    }
-
-    wchar_t             action;
-    svn_revnum_t        copyfrom_revision;
-    std::wstring        copyfrom_path;
-
-    bool Save(FILE * hFile) const
-    {
-        if (!CSerializeUtils::SaveNumber(hFile, action))
-            return false;
-        if (!CSerializeUtils::SaveNumber(hFile, copyfrom_revision))
-            return false;
-        if (!CSerializeUtils::SaveString(hFile, copyfrom_path))
-            return false;
-        return true;
-    }
-    bool Load(FILE * hFile)
-    {
-        unsigned __int64 value;
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        action = (wchar_t)value;
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        copyfrom_revision = (svn_revnum_t)value;
-        if (!CSerializeUtils::LoadString(hFile, copyfrom_path))
-            return false;
-        return true;
-    }
-    bool Load(const unsigned char *& buf)
-    {
-        unsigned __int64 value;
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        action = (wchar_t)value;
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        copyfrom_revision = (svn_revnum_t)value;
-        if (!CSerializeUtils::LoadString(buf, copyfrom_path))
-            return false;
-        return true;
-    }
-};
-
-class SVNLogEntry
-{
-public:
-    SVNLogEntry()
-        : read(false)
-        , revision(0)
-        , date(0)
-    {
-
-    }
-
-    bool                read;
-    svn_revnum_t        revision;
-    std::wstring        author;
-    apr_time_t          date;
-    std::wstring        message;
-    map<std::wstring, SVNLogChangedPaths>   m_changedPaths;
-
-    bool Save(FILE * hFile) const
-    {
-        if (!CSerializeUtils::SaveNumber(hFile, read))
-            return false;
-        if (!CSerializeUtils::SaveNumber(hFile, revision))
-            return false;
-        if (!CSerializeUtils::SaveString(hFile, author))
-            return false;
-        if (!CSerializeUtils::SaveNumber(hFile, date))
-            return false;
-        if (!CSerializeUtils::SaveString(hFile, message))
-            return false;
-
-        if (!CSerializeUtils::SaveNumber(hFile, CSerializeUtils::SerializeType_Map))
-            return false;
-        if (!CSerializeUtils::SaveNumber(hFile, m_changedPaths.size()))
-            return false;
-        for (map<std::wstring,SVNLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
-        {
-            if (!CSerializeUtils::SaveString(hFile, it->first))
-                return false;
-            if (!it->second.Save(hFile))
-                return false;
-        }
-        return true;
-    }
-    bool Load(FILE * hFile)
-    {
-        unsigned __int64 value = 0;
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        read = !!value;
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        revision = (svn_revnum_t)value;
-        if (!CSerializeUtils::LoadString(hFile, author))
-            return false;
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        date = value;
-        if (!CSerializeUtils::LoadString(hFile, message))
-            return false;
-
-        m_changedPaths.clear();
-        if (!CSerializeUtils::LoadNumber(hFile, value))
-            return false;
-        if (CSerializeUtils::SerializeType_Map == value)
-        {
-            if (CSerializeUtils::LoadNumber(hFile, value))
-            {
-                for (unsigned __int64 i=0; i<value; ++i)
-                {
-                    wstring key;
-                    SVNLogChangedPaths cpaths;
-                    if (!CSerializeUtils::LoadString(hFile, key))
-                        return false;
-                    if (!cpaths.Load(hFile))
-                        return false;
-                    m_changedPaths[key] = cpaths;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool Load(const unsigned char *& buf)
-    {
-        unsigned __int64 value = 0;
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        read = !!value;
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        revision = (svn_revnum_t)value;
-        if (!CSerializeUtils::LoadString(buf, author))
-            return false;
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        date = value;
-        if (!CSerializeUtils::LoadString(buf, message))
-            return false;
-
-        m_changedPaths.clear();
-        if (!CSerializeUtils::LoadNumber(buf, value))
-            return false;
-        if (CSerializeUtils::SerializeType_Map == value)
-        {
-            if (CSerializeUtils::LoadNumber(buf, value))
-            {
-                for (unsigned __int64 i=0; i<value; ++i)
-                {
-                    wstring key;
-                    SVNLogChangedPaths cpaths;
-                    if (!CSerializeUtils::LoadString(buf, key))
-                        return false;
-                    if (!cpaths.Load(buf))
-                        return false;
-                    m_changedPaths[key] = cpaths;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-};
-
-class SVN
+class SVN : public SCCS
 {
 public:
     SVN(void);
@@ -280,10 +72,10 @@ public:
      */
     const SVNInfoData * GetNextFileInfo();
 
-    svn_revnum_t GetHEADRevision(const std::wstring& url);
+    svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
 
-    bool GetLog(const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
-    map<svn_revnum_t,SVNLogEntry> m_logs;       ///< contains the gathered log information
+    bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
+    //map<svn_revnum_t,SVNLogEntry> m_logs;       ///< contains the gathered log information
 
     bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
@@ -303,7 +95,7 @@ public:
      * progressbar is always "empty".
      */
     void SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar = false);
-
+/*
     struct SVNProgress
     {
         apr_off_t progress;         ///< operation progress
@@ -315,6 +107,7 @@ public:
 
     bool                        m_bCanceled;
     svn_error_t *               Err;            ///< Global error object struct
+*/
 private:
     apr_pool_t *                parentpool;     ///< the main memory pool
     apr_pool_t *                pool;           ///< 'root' memory pool
