@@ -1,1 +1,0 @@
-UPX (http://upx.sourceforge.net/) is under the GPL as well.
