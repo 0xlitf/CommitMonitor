@@ -29,8 +29,8 @@ using namespace std;
 
 CURLDlg::CURLDlg(void)
 {
-  sSCCS[0] = _T("SVN");
-  sSCCS[1] = _T("Accurev");
+    sSCCS[0] = _T("SVN");
+    sSCCS[1] = _T("Accurev");
 }
 
 CURLDlg::~CURLDlg(void)
@@ -56,27 +56,28 @@ void CURLDlg::ClearForTemplate()
 
 }
 
-void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs) {
+void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs) 
+{
     // SCCS specific initialization
-
-    SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 0);
-
-    switch (sccs) {
-      default:
-      case CUrlInfo::SCCS_SVN:
+    switch (sccs) 
+    {
+    default:
+    case CUrlInfo::SCCS_SVN:
         AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
         SetDlgItemText(*this, IDC_REPOLABEL, _T(""));
         SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("URL to monitor"));
         SetDlgItemText(*this, IDC_URLGROUP, _T("SVN repository settings"));                
         ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_HIDE);
+        SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 0);
         break;
 
-      case CUrlInfo::SCCS_ACCUREV:
+    case CUrlInfo::SCCS_ACCUREV:
         AddToolTip(IDC_URLTOMONITOR, _T("Accurev stream name"));
         SetDlgItemText(*this, IDC_REPOLABEL, _T("Accurev repository"));
         SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("Accurev stream"));
         SetDlgItemText(*this, IDC_URLGROUP, _T("Accurev repository settings"));                
         ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_SHOW);
+        SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 1);
         break;
     }  
 }
@@ -90,9 +91,10 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             InitDialog(hwndDlg, IDI_COMMITMONITOR);
 
-             // Default SCCS to SVN if it is not set
-            if (info.sccs < 0 || info.sccs >= CUrlInfo::SCCS_LEN) {
-              info.sccs = CUrlInfo::SCCS_SVN;
+            // Default SCCS to SVN if it is not set
+            if (info.sccs < 0 || info.sccs >= CUrlInfo::SCCS_LEN) 
+            {
+                info.sccs = CUrlInfo::SCCS_SVN;
             }
 
             // SCCS Generic initialization
@@ -143,12 +145,10 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // SCCS specific initialization
 
             // Fill combobox
-            //for (int i=CUrlInfo::SCCS_LEN - 1;i>=0;i--) {
-            for (int i=0;i<CUrlInfo::SCCS_LEN;i++) {
-              SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO),CB_ADDSTRING,
-                          0,
-                          /*reinterpret_cast<LPARAM>((LPCTSTR)ComboBoxItems[0])*/
-                          (LPARAM)sSCCS[i].c_str());
+            for (int i=0;i<CUrlInfo::SCCS_LEN;i++) 
+            {
+                SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_ADDSTRING,
+                    0, (LPARAM)sSCCS[i].c_str());
             }                        
             SetSCCS(info.sccs);                                    
         }
@@ -171,47 +171,48 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
     {
     case IDOK:
         {
-          SVN svn;
-          int len;
-          WCHAR * buffer;
-          wstring tempurl;
+            SVN svn;
+            int len;
+            WCHAR * buffer;
+            wstring tempurl;
 
-          info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
+            info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
 
-          switch (info.sccs) {
+            switch (info.sccs) 
+            {
             default:
             case CUrlInfo::SCCS_SVN:
-              len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
-              buffer = new WCHAR[len+1];
-              GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
-              info.url = svn.CanonicalizeURL(wstring(buffer, len));              
-              CStringUtils::trim(info.url);
-              delete [] buffer;
+                len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
+                buffer = new WCHAR[len+1];
+                GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
+                info.url = svn.CanonicalizeURL(wstring(buffer, len));              
+                CStringUtils::trim(info.url);
+                delete [] buffer;
 
-              tempurl = info.url.substr(0, 7);
-              std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
+                tempurl = info.url.substr(0, 7);
+                std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
 
-              if (tempurl.compare(_T("file://")) == 0)
-              {
-                  ::MessageBox(*this, _T("file:/// urls are not supported!"), _T("CommitMonitor"), MB_ICONERROR);
-                  return 1;
-              }
-              break;
+                if (tempurl.compare(_T("file://")) == 0)
+                {
+                    ::MessageBox(*this, _T("file:/// urls are not supported!"), _T("CommitMonitor"), MB_ICONERROR);
+                    return 1;
+                }
+                break;
 
             case CUrlInfo::SCCS_ACCUREV:
-              len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
-              buffer = new WCHAR[len+1];
-              GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
-              info.url = wstring(buffer, len);
-              CStringUtils::trim(info.url);
+                len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
+                buffer = new WCHAR[len+1];
+                GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
+                info.url = wstring(buffer, len);
+                CStringUtils::trim(info.url);
 
-              len = GetWindowTextLength(GetDlgItem(*this, IDC_ACCUREVREPO));
-              buffer = new WCHAR[len+1];
-              GetDlgItemText(*this, IDC_ACCUREVREPO, buffer, len+1);
-              info.accurevRepo = wstring(buffer, len);
-              delete [] buffer;
-              CStringUtils::trim(info.accurevRepo);
-              break;
+                len = GetWindowTextLength(GetDlgItem(*this, IDC_ACCUREVREPO));
+                buffer = new WCHAR[len+1];
+                GetDlgItemText(*this, IDC_ACCUREVREPO, buffer, len+1);
+                info.accurevRepo = wstring(buffer, len);
+                delete [] buffer;
+                CStringUtils::trim(info.accurevRepo);
+                break;
             }  
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
@@ -304,16 +305,14 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
     case IDC_SCCSCOMBO:
         switch(cmd) // Find out what message it was
         {          
-          case CBN_SELCHANGE: // This means that list item has changed            
-              info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
-              SetSCCS(info.sccs);
-              break;
+        case CBN_SELCHANGE: // This means that list item has changed            
+            info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
+            SetSCCS(info.sccs);
+            break;
         }
         break;
 
     }
-
-
 
     return 1;
 }
