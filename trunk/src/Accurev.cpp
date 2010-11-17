@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in accurev repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2010 - Stefan Kueng
 // Copyright (C) 2010 - Richard Sewell
 
 // This program is free software; you can redistribute it and/or
