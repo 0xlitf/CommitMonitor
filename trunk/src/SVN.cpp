@@ -29,8 +29,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define UNUSED(x) x
-
 
 SVN::SVN(void)
 {
@@ -161,9 +159,9 @@ svn_error_t* SVN::cancel(void *baton)
 }
 
 svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void * /*baton*/, 
-                                  const char * /*realm*/, apr_uint32_t /*failures*/, 
-                                  const svn_auth_ssl_server_cert_info_t * /*cert_info*/, 
-                                  svn_boolean_t /*may_save*/, apr_pool_t *pool)
+    const char * /*realm*/, apr_uint32_t /*failures*/, 
+    const svn_auth_ssl_server_cert_info_t * /*cert_info*/, 
+    svn_boolean_t /*may_save*/, apr_pool_t *pool)
 {
     *cred_p = (svn_auth_cred_ssl_server_trust_t*)apr_pcalloc (pool, sizeof (**cred_p));
     (*cred_p)->may_save = FALSE;
@@ -323,7 +321,7 @@ bool SVN::Cat(wstring sUrl, wstring sFile)
     svn_opt_revision_t pegrev, rev;
     pegrev.kind = svn_opt_revision_head;
     rev.kind = svn_opt_revision_head;
-    
+
     const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
     Err = svn_client_cat2(stream, urla, 
         &pegrev, &rev, m_pctx, localpool);
@@ -340,7 +338,7 @@ const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn
     SVNPool localpool(pool);
     m_arInfo.clear();
     m_pos = 0;
-    
+
     svn_opt_revision_t peg, rev;
     if (pegrev == -1)
         peg.kind = svn_opt_revision_head;
@@ -437,7 +435,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 
 svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
 {
-    UNUSED(repo);
+    UNREFERENCED_PARAMETER(repo);
 
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -462,7 +460,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
 
 bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
-    UNUSED(repo);
+    UNREFERENCED_PARAMETER(repo);
 
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -500,12 +498,12 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
 }
 
 svn_error_t* SVN::logReceiver(void* baton, 
-                              apr_hash_t* ch_paths, 
-                              svn_revnum_t rev, 
-                              const char* author, 
-                              const char* date, 
-                              const char* msg, 
-                              apr_pool_t* pool)
+    apr_hash_t* ch_paths, 
+    svn_revnum_t rev, 
+    const char* author, 
+    const char* date, 
+    const char* msg, 
+    apr_pool_t* pool)
 {
     svn_error_t * error = NULL;
     SVNLogEntry logEntry;
@@ -514,7 +512,7 @@ svn_error_t* SVN::logReceiver(void* baton,
     logEntry.revision = rev;
     if (date && date[0])
         error = svn_time_from_cstring (&logEntry.date, date, pool);
-    
+
     if (author)
         logEntry.author = CUnicodeUtils::StdGetUnicode(author);
 
@@ -559,9 +557,9 @@ wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreA
 }
 
 bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
-               svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
-               bool ignorecontenttype,  const wstring& options, bool bAppend, 
-               const wstring& outputfile, const wstring& errorfile)
+    svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
+    bool ignorecontenttype,  const wstring& options, bool bAppend, 
+    const wstring& outputfile, const wstring& errorfile)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
