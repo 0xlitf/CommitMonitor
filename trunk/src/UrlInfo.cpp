@@ -102,7 +102,7 @@ bool CUrlInfo::Save(FILE * hFile)
     if (!CSerializeUtils::SaveNumber(hFile, maxentries))
         return false;
 
-    // RA Sewell: Version 100
+    // RA Sewell: Version 14
     if (!CSerializeUtils::SaveNumber(hFile, sccs))
         return false;
     if (!CSerializeUtils::SaveString(hFile, accurevRepo))
@@ -264,7 +264,7 @@ bool CUrlInfo::Load(const unsigned char *& buf)
     else
         maxentries = URLINFO_MAXENTRIES;
 
-    if (version >= 100)
+    if (version >= 14)
     {
         if (!CSerializeUtils::LoadNumber(buf, value))
             return false;
