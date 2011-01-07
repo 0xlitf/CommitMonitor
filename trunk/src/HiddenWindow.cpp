@@ -44,6 +44,7 @@ using namespace std;
 
 
 extern HINSTANCE hInst;
+
 CHiddenWindow *hiddenWindowPointer = NULL;
 
 DWORD WINAPI MonitorThread(LPVOID lpParam);
@@ -170,7 +171,6 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
         m_bNewerVersionAvailable = false;
         ShowTrayIcon(false);
         m_hMainDlg = NULL;
-        m_UrlInfos.Save();
         m_bMainDlgShown = false;
         return TRUE;
     }
@@ -532,7 +532,6 @@ void CHiddenWindow::DoTimer(bool bForce)
                 it->second.lastchecked = 0;
         }
         m_UrlInfos.ReleaseWriteData();
-        m_UrlInfos.Save();
     }
 
     bool bAllRead = true;
@@ -654,6 +653,7 @@ DWORD CHiddenWindow::RunThread()
     __time64_t currenttime = NULL;
     _time64(&currenttime);
     bool bNewEntries = false;
+    bool bNeedsSaving = false;
 
     if (::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)!=S_OK)
     {
@@ -661,21 +661,15 @@ DWORD CHiddenWindow::RunThread()
         return 1;
     }
 
-    // load a copy of the url data
-    CUrlInfos urlinfoReadOnly;
-    wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+    // to avoid blocking access to the urls info for the whole time this thread is running,
+    // create a copy of it here. Copying the whole structure is relatively fast and therefore
+    // won't block anything for too long.
+    map<wstring,CUrlInfo> urlinfoReadOnly = *m_UrlInfos.GetReadOnlyData();
+    m_UrlInfos.ReleaseReadOnlyData();
 
-    if (!PathFileExists(urlfile.c_str()))
-    {
-        if (m_bIsTask)
-            ::PostQuitMessage(0);
-        SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
-        return 0;
-    }
     TCHAR infotextbuf[1024];
-    urlinfoReadOnly.Load(urlfile.c_str());
     TRACE(_T("monitor thread started\n"));
-    const map<wstring,CUrlInfo> * pUrlInfoReadOnly = urlinfoReadOnly.GetReadOnlyData();
+    const map<wstring,CUrlInfo> * pUrlInfoReadOnly = &urlinfoReadOnly;
     map<wstring,CUrlInfo>::const_iterator it = pUrlInfoReadOnly->begin();
     for (; (it != pUrlInfoReadOnly->end()) && m_bRun; ++it)
     {
@@ -726,6 +720,7 @@ DWORD CHiddenWindow::RunThread()
                     writeIt->second.lastchecked = currenttime;
                     writeIt->second.error = pSCCS->GetLastErrorMsg();
                     writeIt->second.errNr = pSCCS->Err->apr_err;
+                    // no need to save here just for this
                 }
                 m_UrlInfos.ReleaseWriteData();
                 continue;
@@ -755,6 +750,7 @@ DWORD CHiddenWindow::RunThread()
                     {
                         writeIt->second.lastcheckedrev = headrev;
                         writeIt->second.lastchecked = currenttime;
+                        // no need to save just for this
                     }
                     m_UrlInfos.ReleaseWriteData();
 
@@ -828,6 +824,7 @@ DWORD CHiddenWindow::RunThread()
                             }
                             writeIt->second.error.clear();
                         }
+                        bNeedsSaving = true;
                         m_UrlInfos.ReleaseWriteData();
                         if (!m_bRun)
                             continue;
@@ -969,6 +966,7 @@ DWORD CHiddenWindow::RunThread()
                             writeIt->second.lastcheckedrobots = currenttime;
                             writeIt->second.disallowdiffs = disallowdiffs;
                             writeIt->second.minminutesinterval = minutes;
+                            // no need to save just for this
                         }
                         m_UrlInfos.ReleaseWriteData();
                     }
@@ -1005,6 +1003,7 @@ DWORD CHiddenWindow::RunThread()
                                 break;
                             }
                         }
+                        // no need to save just for this
                         m_UrlInfos.ReleaseWriteData();
                         if (bUnread)
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
@@ -1022,6 +1021,7 @@ DWORD CHiddenWindow::RunThread()
                         writeIt->second.error = pSCCS->GetLastErrorMsg();
                         if (pSCCS->Err)
                             writeIt->second.errNr = pSCCS->Err->apr_err;
+                        // no need to save just for this
                     }
                     m_UrlInfos.ReleaseWriteData();
                 }
@@ -1089,6 +1089,7 @@ DWORD CHiddenWindow::RunThread()
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
                         }
                     }
+                    // no need to save just for this
                 }
                 m_UrlInfos.ReleaseWriteData();
                 if (m_hMainDlg)
@@ -1122,6 +1123,7 @@ DWORD CHiddenWindow::RunThread()
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
                         }
                     }
+                    // no need to save just for this
                 }
                 m_UrlInfos.ReleaseWriteData();
                 // if we already have log entries, then there's no need to
@@ -1235,10 +1237,13 @@ DWORD CHiddenWindow::RunThread()
                                     if (!popupText.empty())
                                         popupText += _T(", ");
                                     popupText += newinfo.name;
+                                    bNeedsSaving = true;
                                 }
                                 writeIt = pWrite->find(it->first);
                                 if (writeIt != pWrite->end())
+                                {
                                     writeIt->second.parentpath = true;
+                                }
                                 m_UrlInfos.ReleaseWriteData();
                             }
                             if (!regex_search(in.begin(), in.end(), titex2))
@@ -1278,10 +1283,13 @@ DWORD CHiddenWindow::RunThread()
                                     if (!popupText.empty())
                                         popupText += _T(", ");
                                     popupText += newinfo.name;
+                                    bNeedsSaving = true;
                                 }
                                 writeIt = pWrite->find(it->first);
                                 if (writeIt != pWrite->end())
+                                {
                                     writeIt->second.parentpath = true;
+                                }
                                 m_UrlInfos.ReleaseWriteData();
                             }
                             if (hasNewEntries)
@@ -1398,15 +1406,17 @@ DWORD CHiddenWindow::RunThread()
     }
 
     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
-    // save the changed entries
-    ::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
+    if (bNeedsSaving)
+    {
+        // save the changed entries
+        ::PostMessage(*this, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
+    }
     if (bNewEntries)
         ::PostMessage(*this, COMMITMONITOR_CHANGEDINFO, (WPARAM)true, (LPARAM)0);
 
     if ((!bNewEntries)&&(m_bIsTask))
         ::PostQuitMessage(0);
 
-    urlinfoReadOnly.ReleaseReadOnlyData();
     TRACE(_T("monitor thread ended\n"));
     m_bMainDlgRemovedItems = false;
     m_ThreadRunning = FALSE;
