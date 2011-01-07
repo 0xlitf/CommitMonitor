@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -267,7 +267,7 @@ LRESULT COptionsDlg::DoCommand(int id)
                     ofn.lStructSize = sizeof(OPENFILENAME);
                     ofn.hwndOwner = *this;
                     ofn.lpstrFile = szFile;
-                    ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+                    ofn.nMaxFile = _countof(szFile);
                     ofn.lpstrTitle = _T("Export monitored projects to...\0");
                     ofn.Flags = OFN_HIDEREADONLY|OFN_DONTADDTORECENT|OFN_EXPLORER|OFN_ENABLESIZING|OFN_OVERWRITEPROMPT;
                     ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
@@ -296,7 +296,7 @@ LRESULT COptionsDlg::DoCommand(int id)
                     ofn.lStructSize = sizeof(OPENFILENAME);
                     ofn.hwndOwner = *this;
                     ofn.lpstrFile = szFile;
-                    ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+                    ofn.nMaxFile = _countof(szFile);
                     ofn.lpstrTitle = _T("Import monitored projects from...\0");
                     ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
                     ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
@@ -318,7 +318,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             ofn.lStructSize = sizeof(OPENFILENAME);
             ofn.hwndOwner = *this;
             ofn.lpstrFile = szFile;
-            ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+            ofn.nMaxFile = _countof(szFile);
             ofn.lpstrTitle = _T("Select Diff Viewer...\0");
             ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
             ofn.lpstrFilter = _T("Programs\0*.exe;*.com\0All files\0*.*\0\0");
@@ -338,7 +338,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             ofn.lStructSize = sizeof(OPENFILENAME);
             ofn.hwndOwner = *this;
             ofn.lpstrFile = szFile;
-            ofn.nMaxFile = sizeof(szFile)/sizeof(TCHAR);
+            ofn.nMaxFile = _countof(szFile);
             ofn.lpstrTitle = _T("Select Notification Sound...\0");
             ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
             ofn.lpstrFilter = _T("Sound Files\0*.wav;*.mp3\0All files\0*.*\0\0");
