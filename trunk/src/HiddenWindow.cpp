@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -348,7 +348,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     const map<wstring, CUrlInfo> * pRead = m_UrlInfos.GetReadOnlyData();
                     for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
                     {
-                        for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
                         {
                             if (!logit->second.read)
                                 nNewCommits++;
@@ -446,7 +446,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                             for (map<wstring, CUrlInfo>::iterator it = pWrite->begin(); it != pWrite->end(); ++it)
                             {
                                 CUrlInfo * pInfo = &it->second;
-                                for (map<svn_revnum_t,SVNLogEntry>::iterator logit = pInfo->logentries.begin(); logit != pInfo->logentries.end(); ++logit)
+                                for (map<svn_revnum_t,SCCSLogEntry>::iterator logit = pInfo->logentries.begin(); logit != pInfo->logentries.end(); ++logit)
                                 {
                                     logit->second.read = true;
                                 }
@@ -545,7 +545,7 @@ void CHiddenWindow::DoTimer(bool bForce)
             bHasErrors = true;
 
         // go through the log entries and find unread items
-        for (map<svn_revnum_t,SVNLogEntry>::const_iterator rit = it->second.logentries.begin(); rit != it->second.logentries.end(); ++rit)
+        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator rit = it->second.logentries.begin(); rit != it->second.logentries.end(); ++rit)
         {
             if (!rit->second.read)
             {
@@ -763,7 +763,7 @@ DWORD CHiddenWindow::RunThread()
 
                     wstring sPopupText;
                     bool hadError = !it->second.error.empty();
-                    for (map<svn_revnum_t,SVNLogEntry>::iterator logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
+                    for (map<svn_revnum_t,SCCSLogEntry>::iterator logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
                     {
                         // again, only block for a short time
                         map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
@@ -772,7 +772,7 @@ DWORD CHiddenWindow::RunThread()
                         bool bEntryExists = false;
                         if (writeIt != pWrite->end())
                         {
-                            map<svn_revnum_t,SVNLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
+                            map<svn_revnum_t,SCCSLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
                             bEntryExists = existIt != writeIt->second.logentries.end();
                             bool readState = false;
                             if (bEntryExists)
@@ -873,12 +873,9 @@ DWORD CHiddenWindow::RunThread()
                         sRobotsURL += _T("/svnrobots.txt");
                         wstring sRootRobotsURL;
                         wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
-                        const SVNInfoData * data = pSCCS->GetFirstFileInfo(it->first, headrev, headrev);
-                        if (data)
-                        {
-                            sRootRobotsURL = data->reposRoot;
+                        sRootRobotsURL = pSCCS->GetRootUrl(it->first);
+                        if (!sRootRobotsURL.empty())
                             sRootRobotsURL += _T("/svnrobots.txt");
-                        }
                         wstring sFile = CAppUtils::GetTempFilePath();
                         string in;
                         CCallback * callback = new CCallback;
@@ -900,7 +897,7 @@ DWORD CHiddenWindow::RunThread()
                                 }
                             }
                         }
-                        else if ((!sRootRobotsURL.empty())&&(pSCCS->Cat(sRootRobotsURL, sFile)))
+                        else if ((!sRootRobotsURL.empty())&&(pSCCS->GetFile(sRootRobotsURL, sFile)))
                         {
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
@@ -916,7 +913,7 @@ DWORD CHiddenWindow::RunThread()
                                 fs.close();
                             }
                         }
-                        else if (pSCCS->Cat(sRobotsURL, sFile))
+                        else if (pSCCS->GetFile(sRobotsURL, sFile))
                         {
                             ifstream fs(sFile.c_str());
                             if (!fs.bad())
@@ -1000,7 +997,7 @@ DWORD CHiddenWindow::RunThread()
                         bool bUnread = false;
                         map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
                         map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
-                        for (map<svn_revnum_t,SVNLogEntry>::const_iterator lit = writeIt->second.logentries.begin(); lit != writeIt->second.logentries.end(); ++lit)
+                        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator lit = writeIt->second.logentries.begin(); lit != writeIt->second.logentries.end(); ++lit)
                         {
                             if (!lit->second.read)
                             {

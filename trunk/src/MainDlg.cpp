@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -506,7 +506,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     WCHAR * str = new WCHAR[it->second.name.size()+10];
                     // find out if there are some unread entries
                     int unread = 0;
-                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
                     {
                         if (!logit->second.read)
                             unread++;
@@ -882,7 +882,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                     ListView_GetItem(m_hListControl, &item);
                                     if (item.state & LVIS_SELECTED)
                                     {
-                                        SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                                        SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                                         if (pLogEntry)
                                         {
                                             // set the entry as unread
@@ -897,7 +897,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                     const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
                                                     // count the number of unread messages
                                                     int unread = 0;
-                                                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
+                                                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
                                                     {
                                                         if (!it->second.read)
                                                             unread++;
@@ -1046,7 +1046,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             }
 
                             int unread = 0;
-                            for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                            for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
                             {
                                 if (!logit->second.read)
                                     unread++;
@@ -1113,7 +1113,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             ListView_GetItem(m_hListControl, &item);
                             if (item.state & LVIS_SELECTED)
                             {
-                                SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                                 if (pLogEntry)
                                 {
                                     // prepare the revision
@@ -1291,7 +1291,7 @@ LRESULT CMainDlg::DoCommand(int id)
                     ListView_GetItem(m_hListControl, &item);
                     if (item.state & LVIS_SELECTED)
                     {
-                        SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                        SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                         if (pLogEntry)
                         {
                             // get the info to put on the clipboard
@@ -1303,7 +1303,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             sClipboardData += pLogEntry->message;
                             sClipboardData += _T("\n-------------------------------\n");
                             // now add all changed paths, one path per line
-                            for (map<std::wstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+                            for (map<std::wstring, SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
                             {
                                 // action
                                 sClipboardData += it->second.action;
@@ -1428,7 +1428,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
             ListView_GetItem(m_hListControl, &item);
             if (item.state & LVIS_SELECTED)
             {
-                SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                 
                 // Switch how the diff is done in SVN / Accurev
                 switch(pUrlInfo->sccs) {
@@ -1553,7 +1553,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       CreateDirectory(basisDir.c_str(), NULL);
 
                       // For each file that should be diffed
-                      for (map<std::wstring,SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+                      for (map<std::wstring,SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
                       {
                         // Parse the file and file revision from the stored URL
                         wstring rawPath = it->first;
@@ -1682,7 +1682,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
         WCHAR * str = new WCHAR[it->second.name.size()+10];
         // find out if there are some unread entries
         int unread = 0;
-        for (map<svn_revnum_t,SVNLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
         {
             if (!logit->second.read)
                 unread++;
@@ -1964,7 +1964,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
         delete [] buffer;
 
-        for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
+        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
         {
             // only add entries that match the filter string
             bool addEntry = true;
@@ -2084,7 +2084,7 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
     {
         CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
 
-        for (map<svn_revnum_t,SVNLogEntry>::iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
+        for (map<svn_revnum_t,SCCSLogEntry>::iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
         {
             if (!it->second.read)
                 bChanged = true;
@@ -2162,7 +2162,7 @@ void CMainDlg::RefreshAll(HTREEITEM hItem)
         CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
 
         svn_revnum_t lowestRev = 0;
-        map<svn_revnum_t,SVNLogEntry>::iterator it = info->logentries.begin();
+        map<svn_revnum_t,SCCSLogEntry>::iterator it = info->logentries.begin();
         if (it != info->logentries.end())
         {
             lowestRev = it->second.revision;
@@ -2193,7 +2193,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
         item.mask = LVIF_PARAM;
         item.iItem = lpNMListView->iItem;
         ListView_GetItem(m_hListControl, &item);
-        SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+        SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
         if (pLogEntry)
         {
             HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
@@ -2219,7 +2219,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
                     // count the number of unread messages
                     int unread = 0;
-                    for (map<svn_revnum_t,SVNLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
+                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
                     {
                         if (!it->second.read)
                             unread++;
@@ -2259,7 +2259,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             msg += pLogEntry->message.c_str();
             msg += _T("\n\n-------------------------------\n");
             // now add all changed paths, one path per line
-            for (map<std::wstring, SVNLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+            for (map<std::wstring, SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
             {
                 // action
                 msg += it->second.action;
@@ -2334,7 +2334,7 @@ LRESULT CMainDlg::OnCustomDrawListItem(LPNMLVCUSTOMDRAW lpNMCustomDraw)
         break;
     case CDDS_ITEMPREPAINT:
         {
-            SVNLogEntry * pLogEntry = (SVNLogEntry*)lpNMCustomDraw->nmcd.lItemlParam;
+            SCCSLogEntry * pLogEntry = (SCCSLogEntry*)lpNMCustomDraw->nmcd.lItemlParam;
 
             if (!pLogEntry->read)
             {
@@ -2391,7 +2391,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
                     item.iItem = i;
                     if (ListView_GetItem(m_hListControl, &item))
                     {
-                        SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                        SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                         if ((pLogEntry)&&(!pLogEntry->read))
                         {
                             // we have the next unread
@@ -2467,7 +2467,7 @@ void CMainDlg::RemoveSelectedListItems()
             ListView_GetItem(m_hListControl, &item);
             if (item.state & LVIS_SELECTED)
             {
-                SVNLogEntry * pLogEntry = (SVNLogEntry*)item.lParam;
+                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                 // find the diff name
                 _stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
                 wstring diffFileName = CAppUtils::GetDataDir();

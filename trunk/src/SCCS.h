@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2010 - Stefan Kueng
+// Copyright (C) 2010-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,10 +42,10 @@
 
 using namespace std;
 
-class SVNInfoData
+class SCCSInfoData
 {
 public:
-    SVNInfoData(){}
+    SCCSInfoData(){}
 
     std::wstring        url;
     svn_revnum_t        rev;
@@ -77,10 +77,10 @@ public:
     std::wstring        prejfile;
 };
 
-class SVNLogChangedPaths
+class SCCSLogChangedPaths
 {
 public:
-    SVNLogChangedPaths()
+    SCCSLogChangedPaths()
         : action(0)
     {
 
@@ -128,10 +128,10 @@ public:
     }
 };
 
-class SVNLogEntry
+class SCCSLogEntry
 {
 public:
-    SVNLogEntry()
+    SCCSLogEntry()
         : read(false)
         , revision(0)
         , date(0)
@@ -144,7 +144,7 @@ public:
     std::wstring        author;
     apr_time_t          date;
     std::wstring        message;
-    map<std::wstring, SVNLogChangedPaths>   m_changedPaths;
+    map<std::wstring, SCCSLogChangedPaths>   m_changedPaths;
 
     bool Save(FILE * hFile) const
     {
@@ -163,7 +163,7 @@ public:
             return false;
         if (!CSerializeUtils::SaveNumber(hFile, m_changedPaths.size()))
             return false;
-        for (map<std::wstring,SVNLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
+        for (map<std::wstring,SCCSLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
         {
             if (!CSerializeUtils::SaveString(hFile, it->first))
                 return false;
@@ -199,7 +199,7 @@ public:
                 for (unsigned __int64 i=0; i<value; ++i)
                 {
                     wstring key;
-                    SVNLogChangedPaths cpaths;
+                    SCCSLogChangedPaths cpaths;
                     if (!CSerializeUtils::LoadString(hFile, key))
                         return false;
                     if (!cpaths.Load(hFile))
@@ -239,7 +239,7 @@ public:
                 for (unsigned __int64 i=0; i<value; ++i)
                 {
                     wstring key;
-                    SVNLogChangedPaths cpaths;
+                    SCCSLogChangedPaths cpaths;
                     if (!CSerializeUtils::LoadString(buf, key))
                         return false;
                     if (!cpaths.Load(buf))
@@ -262,7 +262,7 @@ public:
 
     virtual void SetAuthInfo(const std::wstring& username, const std::wstring& password) = 0;
 
-    virtual bool Cat(std::wstring sUrl, std::wstring sFile) = 0;
+    virtual bool GetFile(std::wstring sUrl, std::wstring sFile) = 0;
 
     /**
      * returns the info for the \a path.
@@ -272,13 +272,8 @@ public:
      * \param recurse if TRUE, then GetNextFileInfo() returns the info also
      * for all children of \a path.
      */
-    virtual const SVNInfoData * GetFirstFileInfo(std::wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false) = 0;
+    virtual wstring GetRootUrl(const std::wstring& path) = 0;
     virtual size_t GetFileCount() = 0;
-    /**
-     * Returns the info of the next file in the file list. If no more files are in the list then NULL is returned.
-     * See GetFirstFileInfo() for details.
-     */
-    virtual const SVNInfoData * GetNextFileInfo() = 0;
 
     virtual svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url) = 0;
 
@@ -290,7 +285,7 @@ public:
         bool ignorecontenttype,  const wstring& options, bool bAppend,
         const wstring& outputfile, const wstring& errorfile) = 0;
 
-    virtual wstring CanonicalizeURL(const wstring& url) = 0;
+    virtual wstring CanonicalizeURL(const wstring& url) { return url; }
     virtual wstring GetLastErrorMsg() = 0;
 
     /**
@@ -313,5 +308,5 @@ public:
 
     bool                        m_bCanceled;
     svn_error_t *               Err;            ///< Global error object struct
-    map<svn_revnum_t,SVNLogEntry> m_logs;       ///< contains the gathered log information
+    map<svn_revnum_t,SCCSLogEntry> m_logs;       ///< contains the gathered log information
 };

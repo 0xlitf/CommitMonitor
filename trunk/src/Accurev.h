@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2010 - Stefan Kueng
+// Copyright (C) 2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,28 +35,15 @@ public:
 
     void SetAuthInfo(const std::wstring& username, const std::wstring& password);
 
-    bool Cat(std::wstring sUrl, std::wstring sFile);
+    bool GetFile(std::wstring sUrl, std::wstring sFile);
 
-    /**
-     * returns the info for the \a path.
-     * \param path a path or an url
-     * \param pegrev the peg revision to use
-     * \param revision the revision to get the info for
-     * \param recurse if TRUE, then GetNextFileInfo() returns the info also
-     * for all children of \a path.
-     */
-    const SVNInfoData * GetFirstFileInfo(std::wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false);
+    wstring GetRootUrl(const std::wstring& path);
     size_t GetFileCount() {return (size_t)0;}
-    /**
-     * Returns the info of the next file in the file list. If no more files are in the list then NULL is returned.
-     * See GetFirstFileInfo() for details.
-     */
-    const SVNInfoData * GetNextFileInfo();
 
     svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
 
     bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
-    //map<svn_revnum_t,SVNLogEntry> m_logs;       ///< contains the gathered log information
+    //map<svn_revnum_t,SCCSLogEntry> m_logs;       ///< contains the gathered log information
 
     bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
@@ -93,7 +80,7 @@ public:
 private:
 
   bool logParser(const wstring& repo, const wstring& url, const wstring& rawLog);
-  bool issueParser(const wstring& rawLog, SVNLogEntry& logEntry);
+  bool issueParser(const wstring& rawLog, SCCSLogEntry& logEntry);
 
   // Accurev command line calls
   bool AccuLogin(const wstring& username, const wstring& password);
@@ -110,6 +97,6 @@ private:
   svn_error_t errInt;
   const wchar_t *pErrorString;
   
-  vector<SVNInfoData>         m_arInfo;       ///< contains all gathered info structs.
+  vector<SCCSInfoData>         m_arInfo;       ///< contains all gathered info structs.
   unsigned int                m_pos;          ///< the current position of the vector.
 };

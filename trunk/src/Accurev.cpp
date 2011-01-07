@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in accurev repositories
 
-// Copyright (C) 2010 - Stefan Kueng
+// Copyright (C) 2011 - Stefan Kueng
 // Copyright (C) 2010 - Richard Sewell
 
 // This program is free software; you can redistribute it and/or
@@ -76,26 +76,16 @@ void ACCUREV::SetAuthInfo(const wstring& username, const wstring& password)
   }
 }
 
-bool ACCUREV::Cat(wstring sUrl, wstring sFile)
+bool ACCUREV::GetFile(wstring sUrl, wstring sFile)
 {
     ClearErrors();
     return (Err == NULL);
 }
 
-const SVNInfoData * ACCUREV::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
-{
-    UNUSED(pegrev);
-    UNUSED(revision);
-    UNUSED(recurse);
-
-    ClearErrors();
-    return NULL;
-}
-
-const SVNInfoData * ACCUREV::GetNextFileInfo()
+wstring ACCUREV::GetRootUrl(const std::wstring& /*path*/)
 {
     ClearErrors();
-    return NULL;
+    return L"";
 }
 
 
@@ -294,7 +284,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
 bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& rawLog) {
     bool retVal = false;
 
-    SVNLogEntry logEntry;
+    SCCSLogEntry logEntry;
     wstring dateTemp;
     wstring wDateTime;
     wstring wVirtualVersion, wRealVersion, wPath;
@@ -418,7 +408,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
         wPath.append(wRealVersion);
         wPath.append(L")");
 
-        SVNLogChangedPaths changedPaths;
+        SCCSLogChangedPaths changedPaths;
         changedPaths.action = L'M';
 
         logEntry.m_changedPaths[wPath.c_str()] = changedPaths;
@@ -477,7 +467,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
     return retVal;
 }
 
-bool ACCUREV::issueParser(const wstring& rawLog, SVNLogEntry& logEntry) {
+bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
   bool retVal = false;
 
 

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009-2010 - Stefan Kueng
+// Copyright (C) 2007, 2009-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,7 +54,7 @@ public:
 
     void SetAuthInfo(const std::wstring& username, const std::wstring& password);
 
-    bool Cat(std::wstring sUrl, std::wstring sFile);
+    bool GetFile(std::wstring sUrl, std::wstring sFile);
 
     /**
      * returns the info for the \a path.
@@ -64,13 +64,8 @@ public:
      * \param recurse if TRUE, then GetNextFileInfo() returns the info also
      * for all children of \a path.
      */
-    const SVNInfoData * GetFirstFileInfo(std::wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse = false);
+    wstring GetRootUrl(const std::wstring& path);
     size_t GetFileCount() {return m_arInfo.size();}
-    /**
-     * Returns the info of the next file in the file list. If no more files are in the list then NULL is returned.
-     * See GetFirstFileInfo() for details.
-     */
-    const SVNInfoData * GetNextFileInfo();
 
     svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
 
@@ -95,26 +90,14 @@ public:
      * progressbar is always "empty".
      */
     void SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar = false);
-/*
-    struct SVNProgress
-    {
-        apr_off_t progress;         ///< operation progress
-        apr_off_t total;            ///< operation progress
-        apr_off_t overall_total;    ///< total bytes transferred, use SetAndClearProgressInfo() to reset this
-        apr_off_t BytesPerSecond;   ///< Speed in bytes per second
-        wstring   SpeedString;      ///< String for speed. Either "xxx Bytes/s" or "xxx kBytes/s"
-    };
 
-    bool                        m_bCanceled;
-    svn_error_t *               Err;            ///< Global error object struct
-*/
 private:
     apr_pool_t *                parentpool;     ///< the main memory pool
     apr_pool_t *                pool;           ///< 'root' memory pool
     svn_client_ctx_t *          m_pctx;         ///< pointer to client context
     svn_auth_baton_t *          auth_baton;
 
-    vector<SVNInfoData>         m_arInfo;       ///< contains all gathered info structs.
+    vector<SCCSInfoData>         m_arInfo;       ///< contains all gathered info structs.
     unsigned int                m_pos;          ///< the current position of the vector.
 
     SVNProgress                 m_SVNProgressMSG;

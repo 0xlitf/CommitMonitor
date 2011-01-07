@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2011 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -296,7 +296,7 @@ void SVN::SetAuthInfo(const wstring& username, const wstring& password)
     }
 }
 
-bool SVN::Cat(wstring sUrl, wstring sFile)
+bool SVN::GetFile(wstring sUrl, wstring sFile)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -331,7 +331,7 @@ bool SVN::Cat(wstring sUrl, wstring sFile)
     return (Err == NULL);
 }
 
-const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn_revnum_t revision, bool recurse /* = false */)
+wstring SVN::GetRootUrl(const wstring& path)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -340,37 +340,18 @@ const SVNInfoData * SVN::GetFirstFileInfo(wstring path, svn_revnum_t pegrev, svn
     m_pos = 0;
 
     svn_opt_revision_t peg, rev;
-    if (pegrev == -1)
-        peg.kind = svn_opt_revision_head;
-    else
-    {
-        peg.kind = svn_opt_revision_number;
-        peg.value.number = pegrev;
-    }
-    if (revision == -1)
-        rev.kind = svn_opt_revision_head;
-    else
-    {
-        rev.kind = svn_opt_revision_number;
-        rev.value.number = revision;
-    }
+    peg.kind = svn_opt_revision_head;
+    rev.kind = svn_opt_revision_head;
 
     const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(path)).c_str(), localpool);
 
-    Err = svn_client_info(urla, &peg, &rev, infoReceiver, this, recurse, m_pctx, localpool);
+    Err = svn_client_info(urla, &peg, &rev, infoReceiver, this, false, m_pctx, localpool);
     if (Err != NULL)
         return NULL;
     if (m_arInfo.size() == 0)
         return NULL;
-    return &m_arInfo[0];
-}
 
-const SVNInfoData * SVN::GetNextFileInfo()
-{
-    m_pos++;
-    if (m_arInfo.size()>m_pos)
-        return &m_arInfo[m_pos];
-    return NULL;
+    return m_arInfo[0].reposRoot;
 }
 
 svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t* info, apr_pool_t * /*pool*/)
@@ -380,7 +361,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
 
     SVN * pThis = (SVN *)baton;
 
-    SVNInfoData data;
+    SCCSInfoData data;
     if (info->URL)
         data.url = CUnicodeUtils::StdGetUnicode(info->URL);
     data.rev = info->rev;
@@ -506,7 +487,7 @@ svn_error_t* SVN::logReceiver(void* baton,
     apr_pool_t* pool)
 {
     svn_error_t * error = NULL;
-    SVNLogEntry logEntry;
+    SCCSLogEntry logEntry;
     SVN * svn = (SVN *)baton;
 
     logEntry.revision = rev;
@@ -525,7 +506,7 @@ svn_error_t* SVN::logReceiver(void* baton,
         sorted_paths = svn_sort__hash(ch_paths, svn_sort_compare_items_as_paths, pool);
         for (int i = 0; i < sorted_paths->nelts; i++)
         {
-            SVNLogChangedPaths changedPaths;
+            SCCSLogChangedPaths changedPaths;
             svn_sort__item_t *item = &(APR_ARRAY_IDX (sorted_paths, i, svn_sort__item_t));
             const char *path = (const char *)item->key;
             svn_log_changed_path_t *log_item = (svn_log_changed_path_t *)apr_hash_get (ch_paths, item->key, item->klen);
