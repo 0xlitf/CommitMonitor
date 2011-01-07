@@ -43,7 +43,6 @@ public:
     svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
 
     bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
-    //map<svn_revnum_t,SCCSLogEntry> m_logs;       ///< contains the gathered log information
 
     bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
@@ -53,29 +52,7 @@ public:
     wstring CanonicalizeURL(const wstring& url);
     wstring GetLastErrorMsg();
 
-    /**
-     * Sets and clears the progress info which is shown during lengthy operations.
-     * \param pProgressDlg the CProgressDlg object to show the progress info on.
-     * \param bShowProgressBar set to true if the progress bar should be shown. Only makes
-     * sense if the total amount of the progress is known beforehand. Otherwise the
-     * progressbar is always "empty".
-     */
     void SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar = false);
-
-    /*
-    struct SVNProgress
-    {
-        apr_off_t progress;         ///< operation progress
-        apr_off_t total;            ///< operation progress
-        apr_off_t overall_total;    ///< total bytes transferred, use SetAndClearProgressInfo() to reset this
-        apr_off_t BytesPerSecond;   ///< Speed in bytes per second
-        wstring   SpeedString;      ///< String for speed. Either "xxx Bytes/s" or "xxx kBytes/s"
-    };
-
-    bool                        m_bCanceled;
-    svn_error_t *               Err;            ///< Global error object struct
-
-    */
 
 private:
 
@@ -96,7 +73,4 @@ private:
 private:
   svn_error_t errInt;
   const wchar_t *pErrorString;
-  
-  vector<SCCSInfoData>         m_arInfo;       ///< contains all gathered info structs.
-  unsigned int                m_pos;          ///< the current position of the vector.
 };
