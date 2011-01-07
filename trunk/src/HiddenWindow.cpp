@@ -358,18 +358,22 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     // update the tool tip data
                     m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
                     m_SystemTray.hWnd   = *this;
-                    m_SystemTray.uID    = 1;
-                    m_SystemTray.uFlags = NIF_TIP;
+                    m_SystemTray.uFlags = NIF_MESSAGE | NIF_TIP;
+                    m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
                     if (nNewCommits)
                     {
                         if (nNewCommits == 1)
-                            _stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commit"), nNewCommits);
+                            _stprintf_s(m_SystemTray.szTip, _countof(m_SystemTray.szTip), _T("CommitMonitor - %d new commit"), nNewCommits);
                         else
-                            _stprintf_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor - %d new commits"), nNewCommits);
+                            _stprintf_s(m_SystemTray.szTip, _countof(m_SystemTray.szTip), _T("CommitMonitor - %d new commits"), nNewCommits);
                     }
                     else
-                        _tcscpy_s(m_SystemTray.szTip, sizeof(m_SystemTray.szTip)/sizeof(TCHAR), _T("CommitMonitor"));
-                    Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray);
+                        _tcscpy_s(m_SystemTray.szTip, _countof(m_SystemTray.szTip), _T("CommitMonitor"));
+                    if (Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray) == FALSE)
+                    {
+                        Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
+                        Shell_NotifyIcon(NIM_ADD, &m_SystemTray);
+                    }
                 }
                 break;
             case WM_LBUTTONDBLCLK:
@@ -600,14 +604,20 @@ void CHiddenWindow::ShowTrayIcon(bool newCommits)
     }
     m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
     m_SystemTray.hWnd   = *this;
-    m_SystemTray.uID    = 1;
     if (bClearIcon)
         m_SystemTray.hIcon = NULL;
     else
         m_SystemTray.hIcon  = newCommits ? m_hIconNew1 : m_hIconNormal;
     m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
     m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
-    Shell_NotifyIcon(msg, &m_SystemTray);
+    if (Shell_NotifyIcon(msg, &m_SystemTray) == FALSE)
+    {
+        if (msg == NIM_MODIFY)
+        {
+            Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
+            Shell_NotifyIcon(NIM_ADD, &m_SystemTray);
+        }
+    }
     m_nIcon = 2;
     if ((newCommits)&&(m_SystemTray.hIcon)&&(DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE))))
         SetTimer(*this, IDT_ANIMATE, TIMER_ANIMATE, NULL);
@@ -619,7 +629,6 @@ void CHiddenWindow::DoAnimate()
 {
     m_SystemTray.cbSize = sizeof(NOTIFYICONDATA);
     m_SystemTray.hWnd   = *this;
-    m_SystemTray.uID    = 1;
     switch (m_nIcon)
     {
     case 0:
@@ -640,7 +649,11 @@ void CHiddenWindow::DoAnimate()
     }
     m_SystemTray.uFlags = NIF_MESSAGE | NIF_ICON;
     m_SystemTray.uCallbackMessage = COMMITMONITOR_TASKBARCALLBACK;
-    Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray);
+    if (Shell_NotifyIcon(NIM_MODIFY, &m_SystemTray) == FALSE)
+    {
+        Shell_NotifyIcon(NIM_DELETE, &m_SystemTray);
+        Shell_NotifyIcon(NIM_ADD, &m_SystemTray);
+    }
     m_nIcon++;
     if (m_nIcon >= 6)
         m_nIcon = 0;
