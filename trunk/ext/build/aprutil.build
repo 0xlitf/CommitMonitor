@@ -70,7 +70,8 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" />
+      <arg value="/MP" if="${configuration == 'release'}" />
+      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="buckets\*.c" />
         <include name="crypto\*.c" />
@@ -115,6 +116,7 @@
     <lib
       output="${configuration}_${platform}\libaprutil.lib"
       options='/NOLOGO /DEBUG /PDB:".\${configuration}_${platform}/libaprutil.pdb" /SUBSYSTEM:WINDOWS'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="xml\expat\lib\${configuration}_${platform}\*.obj" />

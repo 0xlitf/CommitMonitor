@@ -33,7 +33,8 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" />
+      <arg value="/MP" if="${configuration == 'release'}" />
+      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="context.c" />
         <include name="incoming.c" />
@@ -75,6 +76,7 @@
     <lib
       output="${configuration}_${platform}\libserf.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />

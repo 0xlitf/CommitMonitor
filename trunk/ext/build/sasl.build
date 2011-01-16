@@ -47,7 +47,8 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" />
+      <arg value="/MP" if="${configuration == 'release'}" />
+      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="lib\auxprop.c" />
         <include name="lib\canonusr.c" />
@@ -89,6 +90,7 @@
     <lib
       output="${configuration}_${platform}\libsasls.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
       </sources>

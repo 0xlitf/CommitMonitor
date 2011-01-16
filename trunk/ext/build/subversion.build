@@ -76,7 +76,8 @@
           <arg value="/c" />
           <arg value="/Zi" />
           <arg value="/errorReport:prompt" />
-          <arg value="/MP" />
+          <arg value="/MP" if="${configuration == 'release'}" />
+          <arg value="/GL" if="${configuration == 'release'}" />
           <sources>
             <include name="subversion\${fname}\**.c" />
             <exclude name="subversion\libsvn_subr\win32_crash**.c" />
@@ -122,6 +123,7 @@
         <lib
           output="${configuration}_${platform}\${fname}.lib"
           options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+          <arg value="/LTCG" if="${configuration == 'release'}" />
           <sources>
             <include name="${configuration}_${platform}\${fname}\**.obj" />
             <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" if="${fname == 'libsvn_subr'}"/>

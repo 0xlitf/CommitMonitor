@@ -51,7 +51,8 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" />
+      <arg value="/MP" if="${configuration == 'release'}" />
+      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="src\ne_207.c" />
         <include name="src\ne_acl3744.c" />
@@ -122,6 +123,7 @@
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
