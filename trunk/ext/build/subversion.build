@@ -65,9 +65,7 @@
         <mkdir dir="${configuration}_${platform}\${fname}" />
         <cl outputdir="${configuration}_${platform}\${fname}">
           <arg value="/O2" if="${configuration == 'release'}" />
-          <arg value="/Ob1" if="${configuration == 'release'}" />
           <arg value="/Od" if="${configuration != 'release'}" />
-          <arg value="/GF" if="${configuration == 'release'}" />
           <arg value="/FD" />
           <arg value="/EHsc" />
           <arg value="/MT" if="${configuration == 'release'}" />
@@ -78,6 +76,7 @@
           <arg value="/c" />
           <arg value="/Zi" />
           <arg value="/errorReport:prompt" />
+          <arg value="/MP" />
           <sources>
             <include name="subversion\${fname}\**.c" />
             <exclude name="subversion\libsvn_subr\win32_crash**.c" />

@@ -41,7 +41,6 @@
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration != 'release'}" />
-      <arg value="/GF" if="${configuration == 'release'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${configuration == 'release'}" />
@@ -52,6 +51,7 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/errorReport:prompt" />
+      <arg value="/MP" />
       <sources>
         <include name="src\ne_207.c" />
         <include name="src\ne_acl3744.c" />
