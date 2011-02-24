@@ -20,6 +20,7 @@ public:
 	int width;
 	int mask;
 	bool sensitive;
+	int cursor;
 	MarginStyle();
 };
 
@@ -92,6 +93,7 @@ public:
 	int fixedColumnWidth;
 	int zoomLevel;
 	WhiteSpaceVisibility viewWhitespace;
+	int whitespaceSize;
 	IndentView viewIndentationGuides;
 	bool viewEOL;
 	bool showMarkedLines;
@@ -105,7 +107,8 @@ public:
 	int caretStyle;
 	int caretWidth;
 	bool someStylesProtected;
-	bool extraFontFlag;
+	bool someStylesForceCase;
+	int extraFontFlag;
 	int extraAscent;
 	int extraDescent;
 	int marginStyleOffset;

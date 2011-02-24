@@ -57,10 +57,10 @@ public:
 };
 
 // Ordered range to make drawing simpler
-struct SelectionSegment {	
+struct SelectionSegment {
 	SelectionPosition start;
 	SelectionPosition end;
-	SelectionSegment() {
+	SelectionSegment() : start(), end() {
 	}
 	SelectionSegment(SelectionPosition a, SelectionPosition b) {
 		if (a < b) {
@@ -74,13 +74,19 @@ struct SelectionSegment {
 	bool Empty() const {
 		return start == end;
 	}
+	void Extend(SelectionPosition p) {
+		if (start > p)
+			start = p;
+		if (end < p)
+			end = p;
+	}
 };
 
 struct SelectionRange {
 	SelectionPosition caret;
 	SelectionPosition anchor;
 
-	SelectionRange() {
+	SelectionRange() : caret(), anchor() {
 	}
 	SelectionRange(SelectionPosition single) : caret(single), anchor(single) {
 	}
@@ -141,6 +147,11 @@ public:
 	int MainCaret() const;
 	int MainAnchor() const;
 	SelectionRange &Rectangular();
+	SelectionSegment Limits() const;
+	// This is for when you want to move the caret in response to a
+	// user direction command - for rectangular selections, use the range
+	// that covers all selected text otherwise return the main selection.
+	SelectionSegment LimitsForRectangularElseMain() const;
 	size_t Count() const;
 	size_t Main() const;
 	void SetMain(size_t r);
@@ -155,6 +166,7 @@ public:
 	void TrimSelection(SelectionRange range);
 	void SetSelection(SelectionRange range);
 	void AddSelection(SelectionRange range);
+	void AddSelectionWithoutTrim(SelectionRange range);
 	void TentativeSelection(SelectionRange range);
 	void CommitTentative();
 	int CharacterInSelection(int posCharacter) const;
