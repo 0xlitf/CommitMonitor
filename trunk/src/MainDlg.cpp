@@ -1342,8 +1342,9 @@ LRESULT CMainDlg::DoCommand(int id)
             if (!tsvninstalled.empty())
             {
                 // yes, we have TSVN installed
-                cmd = wstring(tsvninstalled);
-                cmd += _T(" /command:repobrowser /path:\"");
+                cmd = _T("\"");
+                cmd += wstring(tsvninstalled);
+                cmd += _T("\" /command:repobrowser /path:\"");
                 cmd += url;
                 cmd += _T("\"");
                 CAppUtils::LaunchApplication(cmd);
@@ -1364,8 +1365,9 @@ LRESULT CMainDlg::DoCommand(int id)
             if (!tsvninstalled.empty())
             {
                 // yes, we have TSVN installed
-                cmd = wstring(tsvninstalled);
-                cmd += _T(" /command:log /path:\"");
+                cmd = _T("\"");
+                cmd += wstring(tsvninstalled);
+                cmd += _T("\" /command:log /path:\"");
                 cmd += url;
                 cmd += _T("\"");
                 CAppUtils::LaunchApplication(cmd);
@@ -1453,8 +1455,9 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       {
                           // yes, we have TSVN installed
                           // call TortoiseProc to do the diff for us
-                          cmd = wstring(tsvninstalled);
-                          cmd += _T(" /command:diff /path:\"");
+                          cmd = _T("\"");
+                          cmd += wstring(tsvninstalled);
+                          cmd += _T("\" /command:diff /path:\"");
                           cmd += pInfo->url;
                           cmd += _T("\" /startrev:");
 
