@@ -99,7 +99,7 @@ bool CMainDlg::CreateToolbar()
     if (m_hToolbarImages == NULL)
         return false;
     int index = 0;
-    HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_GETALL));
+    HICON hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_GETALL), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MAIN_CHECKREPOSITORIESNOW; 
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -107,7 +107,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = (INT_PTR)_T("&Check Now"); 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ADD));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_ADD), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MAIN_ADDPROJECT; 
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -122,7 +122,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = 0; 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_EDIT));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_EDIT), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MAIN_EDIT; 
     tbb[index].fsState = BTNS_SHOWTEXT; 
@@ -130,7 +130,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = (INT_PTR)_T("E&dit"); 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REMOVE));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REMOVE), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MAIN_REMOVE; 
     tbb[index].fsState = BTNS_SHOWTEXT; 
@@ -145,7 +145,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = 0; 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_DIFF), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MAIN_SHOWDIFFCHOOSE; 
     tbb[index].fsState = BTNS_SHOWTEXT; 
@@ -160,7 +160,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = 0; 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_MARKASREAD));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_MARKASREAD), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_POPUP_MARKALLASREAD; 
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -168,7 +168,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = (INT_PTR)_T("&Mark all as read"); 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_OPTIONS));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_OPTIONS), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MISC_OPTIONS; 
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -176,7 +176,7 @@ bool CMainDlg::CreateToolbar()
     tbb[index].dwData = 0; 
     tbb[index++].iString = (INT_PTR)_T("&Options"); 
 
-    hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_ABOUT));
+    hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_ABOUT), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
     tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
     tbb[index].idCommand = ID_MISC_ABOUT; 
     tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
@@ -228,27 +228,27 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_hImgList = ImageList_Create(16, 16, ILC_COLOR32, 6, 6);
             if (m_hImgList)
             {
-                HICON hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDER));
+                HICON hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDER), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
-                hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDEROPEN));
+                hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_PARENTPATHFOLDEROPEN), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
-                hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURL));
+                hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REPOURL), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
-                hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLNEW));
+                hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REPOURLNEW), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
-                hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLFAIL));
+                hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REPOURLFAIL), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
-                hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_REPOURLINACTIVE));
+                hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REPOURLINACTIVE), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
                 ImageList_AddIcon(m_hImgList, hIcon);
                 DestroyIcon(hIcon);
 
