@@ -80,6 +80,7 @@
         <include name="mmap\unix\common.c" />
         <include name="passwd\*.c" />
         <include name="poll\unix\select.c" />
+        <include name="poll\unix\pollset.c" />
         <include name="shmem\win32\*.c" />
         <include name="strings\*.c" />
         <include name="tables\*.c" />
@@ -97,7 +98,8 @@
         <define name="WIN32" />
         <define name="_WINDOWS" />
         <define name="_WIN32" />
-        <define name="_WIN32_WINNT" value="0x0501" />
+        <define name="WINNT" />
+        <define name="_WIN32_WINNT" value="0x0501"/>
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="_WINDLL" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
