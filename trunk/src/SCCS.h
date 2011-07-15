@@ -20,6 +20,7 @@
 #include <vector>
 #include <map>
 
+#pragma warning(push)
 #include "apr_general.h"
 #include "svn_pools.h"
 #include "svn_client.h"
@@ -31,6 +32,8 @@
 #include "svn_subst.h"
 #include "svn_repos.h"
 #include "svn_time.h"
+#include "svn_props.h"
+#pragma warning(pop)
 
 #include "SVNPool.h"
 #include "UnicodeUtils.h"
@@ -68,20 +71,17 @@ public:
     svn_wc_schedule_t   schedule;
     std::wstring        copyfromurl;
     svn_revnum_t        copyfromrev;
-    __time64_t          texttime;
-    __time64_t          proptime;
-    std::wstring        checksum;
-    std::wstring        conflict_old;
-    std::wstring        conflict_new;
-    std::wstring        conflict_wrk;
-    std::wstring        prejfile;
 };
 
 class SCCSLogChangedPaths
 {
+#define SCCSLOGCHANGEDPATHSVERSION 1
 public:
     SCCSLogChangedPaths()
         : action(0)
+        , text_modified(svn_tristate_unknown)
+        , props_modified(svn_tristate_unknown)
+        , kind(svn_node_unknown)
     {
 
     }
@@ -89,41 +89,98 @@ public:
     wchar_t             action;
     svn_revnum_t        copyfrom_revision;
     std::wstring        copyfrom_path;
+    svn_tristate_t      text_modified;
+    svn_tristate_t      props_modified;
+    svn_node_kind_t     kind;
 
     bool Save(FILE * hFile) const
     {
+        if (!CSerializeUtils::SaveNumber(hFile, SCCSLOGCHANGEDPATHSVERSION))
+            return false;
         if (!CSerializeUtils::SaveNumber(hFile, action))
             return false;
         if (!CSerializeUtils::SaveNumber(hFile, copyfrom_revision))
             return false;
         if (!CSerializeUtils::SaveString(hFile, copyfrom_path))
             return false;
+        if (!CSerializeUtils::SaveNumber(hFile, text_modified))
+            return false;
+        if (!CSerializeUtils::SaveNumber(hFile, props_modified))
+            return false;
+        if (!CSerializeUtils::SaveNumber(hFile, kind))
+            return false;
         return true;
     }
     bool Load(FILE * hFile)
     {
+        unsigned __int64 version = 0;
         unsigned __int64 value;
         if (!CSerializeUtils::LoadNumber(hFile, value))
             return false;
+        if (value < 'A')
+        {
+            version = value;
+        }
         action = (wchar_t)value;
+        if (version > 0)
+        {
+            if (!CSerializeUtils::LoadNumber(hFile, value))
+                return false;
+            action = (wchar_t)value;
+        }
         if (!CSerializeUtils::LoadNumber(hFile, value))
             return false;
         copyfrom_revision = (svn_revnum_t)value;
         if (!CSerializeUtils::LoadString(hFile, copyfrom_path))
             return false;
+        if (version > 0)
+        {
+            if (!CSerializeUtils::LoadNumber(hFile, value))
+                return false;
+            text_modified = (svn_tristate_t)value;
+            if (!CSerializeUtils::LoadNumber(hFile, value))
+                return false;
+            props_modified = (svn_tristate_t)value;
+            if (!CSerializeUtils::LoadNumber(hFile, value))
+                return false;
+            kind = (svn_node_kind_t)value;
+        }
         return true;
     }
     bool Load(const unsigned char *& buf)
     {
+        unsigned __int64 version = 0;
         unsigned __int64 value;
         if (!CSerializeUtils::LoadNumber(buf, value))
             return false;
+        if (value < 'A')
+        {
+            version = value;
+        }
         action = (wchar_t)value;
+        if (version > 0)
+        {
+            if (!CSerializeUtils::LoadNumber(buf, value))
+                return false;
+            action = (wchar_t)value;
+        }
         if (!CSerializeUtils::LoadNumber(buf, value))
             return false;
         copyfrom_revision = (svn_revnum_t)value;
         if (!CSerializeUtils::LoadString(buf, copyfrom_path))
             return false;
+        if (version > 0)
+        {
+            if (!CSerializeUtils::LoadNumber(buf, value))
+                return false;
+            text_modified = (svn_tristate_t)value;
+            if (!CSerializeUtils::LoadNumber(buf, value))
+                return false;
+            props_modified = (svn_tristate_t)value;
+            if (!CSerializeUtils::LoadNumber(buf, value))
+                return false;
+            kind = (svn_node_kind_t)value;
+        }
         return true;
     }
 };

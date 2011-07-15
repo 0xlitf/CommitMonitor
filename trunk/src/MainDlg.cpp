@@ -1307,6 +1307,23 @@ LRESULT CMainDlg::DoCommand(int id)
                             {
                                 // action
                                 sClipboardData += it->second.action;
+                                bool mods = false;
+                                if ((it->second.text_modified == svn_tristate_true)||(it->second.props_modified == svn_tristate_true))
+                                {
+                                    mods = true;
+                                }
+                                if (mods)
+                                    sClipboardData += L"(";
+                                if (it->second.text_modified == svn_tristate_true)
+                                    sClipboardData += L"T";
+                                else if (mods)
+                                    sClipboardData += L" ";
+                                if (it->second.props_modified == svn_tristate_true)
+                                    sClipboardData += L"P";
+                                else if (mods)
+                                    sClipboardData += L" ";
+                                if (mods)
+                                    sClipboardData += L")";
                                 sClipboardData += _T(" : ");
                                 sClipboardData += it->first;
                                 sClipboardData += _T("  ");
@@ -1539,7 +1556,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
 
                       wchar_t transactionNo[64];
-                      _itow(pLogEntry->revision, transactionNo, 10);
+                      _itow_s(pLogEntry->revision, transactionNo, 10);
 
                       wstring uuid;
                       CAppUtils::CreateUUIDString(uuid);
@@ -1568,7 +1585,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                         sLatestAccuRevision.erase(0, lastForwardSlash+1);
                         int iAccuRevision = _wtoi(sLatestAccuRevision.c_str());
                         wchar_t basisRevisionNo[64];
-                        _itow(iAccuRevision-1, basisRevisionNo, 10);
+                        _itow_s(iAccuRevision-1, basisRevisionNo, 10);
                         wstring sBasisAccuRevision(basisRevisionNo);
 
                         wstring finalPath(rawPath);
@@ -2266,6 +2283,23 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             {
                 // action
                 msg += it->second.action;
+                bool mods = false;
+                if ((it->second.text_modified == svn_tristate_true)||(it->second.props_modified == svn_tristate_true))
+                {
+                    mods = true;
+                }
+                if (mods)
+                    msg += L"(";
+                if (it->second.text_modified == svn_tristate_true)
+                    msg += L"T";
+                else if (mods)
+                    msg += L" ";
+                if (it->second.props_modified == svn_tristate_true)
+                    msg += L"P";
+                else if (mods)
+                    msg += L" ";
+                if (mods)
+                    msg += L")";
                 msg += _T(" : ");
                 msg += it->first;
                 msg += _T("  ");

@@ -17,8 +17,10 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 #include "StdAfx.h"
+#pragma warning(push)
 #include "svn.h"
 #include "svn_sorts.h"
+#pragma warning(pop)
 
 #include "AppUtils.h"
 #include "version.h"
@@ -316,13 +318,13 @@ bool SVN::GetFile(wstring sUrl, wstring sFile)
         Err = svn_error_wrap_apr(status, NULL);
         return false;
     }
-    stream = svn_stream_from_aprfile(file, localpool);
+    stream = svn_stream_from_aprfile2(file, true, localpool);
 
     svn_opt_revision_t pegrev, rev;
     pegrev.kind = svn_opt_revision_head;
     rev.kind = svn_opt_revision_head;
 
-    const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
+    const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
     Err = svn_client_cat2(stream, urla, 
         &pegrev, &rev, m_pctx, localpool);
 
@@ -343,9 +345,9 @@ wstring SVN::GetRootUrl(const wstring& path)
     peg.kind = svn_opt_revision_head;
     rev.kind = svn_opt_revision_head;
 
-    const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(path)).c_str(), localpool);
+    const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(path)).c_str(), localpool);
 
-    Err = svn_client_info(urla, &peg, &rev, infoReceiver, this, false, m_pctx, localpool);
+    Err = svn_client_info3 (urla, &peg, &rev, svn_depth_empty, false, false, NULL, infoReceiver, this, m_pctx, localpool);
     if (Err != NULL)
         return NULL;
     if (m_arInfo.size() == 0)
@@ -354,7 +356,7 @@ wstring SVN::GetRootUrl(const wstring& path)
     return m_arInfo[0].reposRoot;
 }
 
-svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t* info, apr_pool_t * /*pool*/)
+svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_client_info2_t* info, apr_pool_t * /*pool*/)
 {
     if ((path == NULL)||(info == NULL))
         return NULL;
@@ -390,25 +392,13 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_info_t
         data.lock_expirationtime = info->lock->expiration_date/1000000L;
     }
 
-    data.hasWCInfo = !!info->has_wc_info;
-    if (info->has_wc_info)
+    data.hasWCInfo = info->wc_info != NULL;
+    if (data.hasWCInfo)
     {
-        data.schedule = info->schedule;
-        if (info->copyfrom_url)
-            data.copyfromurl = CUnicodeUtils::StdGetUnicode(info->copyfrom_url);
-        data.copyfromrev = info->copyfrom_rev;
-        data.texttime = info->text_time/1000000L;
-        data.proptime = info->prop_time/1000000L;
-        if (info->checksum)
-            data.checksum = CUnicodeUtils::StdGetUnicode(info->checksum);
-        if (info->conflict_new)
-            data.conflict_new = CUnicodeUtils::StdGetUnicode(info->conflict_new);
-        if (info->conflict_old)
-            data.conflict_old = CUnicodeUtils::StdGetUnicode(info->conflict_old);
-        if (info->conflict_wrk)
-            data.conflict_wrk = CUnicodeUtils::StdGetUnicode(info->conflict_wrk);
-        if (info->prejfile)
-            data.prejfile = CUnicodeUtils::StdGetUnicode(info->prejfile);
+        data.schedule = info->wc_info->schedule;
+        if (info->wc_info->copyfrom_url)
+            data.copyfromurl = CUnicodeUtils::StdGetUnicode(info->wc_info->copyfrom_url);
+        data.copyfromrev = info->wc_info->copyfrom_rev;
     }
     pThis->m_arInfo.push_back(data);
     return NULL;
@@ -425,7 +415,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
     svn_revnum_t rev = 0;
 
     // make sure the url is canonical.
-    const char * urla = svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
+    const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
 
     if (urla == NULL)
         return rev;
@@ -448,8 +438,10 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
     SVNPool localpool(pool);
 
     apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
-    (*((const char **) apr_array_push (targets))) = 
-        svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
+    //(*((const char **) apr_array_push (targets))) = 
+    //    svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
+    const char * target = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
+    (*((const char **) apr_array_push (targets))) = target;
 
     svn_opt_revision_t end;
     end.kind = svn_opt_revision_number;
@@ -465,62 +457,100 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
     CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
     if ((startrev <= 1)||(endrev <= 1))
         limit = DWORD(numlogs);
-    Err = svn_client_log3 (targets, 
+
+    svn_opt_revision_range_t revision_range = {start, end};
+
+    apr_array_header_t* revision_ranges
+        = apr_array_make (localpool, 1, sizeof(apr_array_header_t*));
+    *(svn_opt_revision_range_t**)apr_array_push (revision_ranges)
+        = &revision_range;
+
+    Err = svn_client_log5 (targets, 
         &start,
-        &start, 
-        &end, 
+        revision_ranges,
         limit,
         true,
         true,
-        logReceiver,	// log_message_receiver
+        false,
+        NULL,
+        logReceiver,
         (void *)this, m_pctx, localpool);
 
     return (Err == NULL);
 }
 
-svn_error_t* SVN::logReceiver(void* baton, 
-    apr_hash_t* ch_paths, 
-    svn_revnum_t rev, 
-    const char* author, 
-    const char* date, 
-    const char* msg, 
-    apr_pool_t* pool)
+svn_error_t* SVN::logReceiver(void *baton, svn_log_entry_t *log_entry, apr_pool_t *pool)
 {
     svn_error_t * error = NULL;
     SCCSLogEntry logEntry;
     SVN * svn = (SVN *)baton;
 
-    logEntry.revision = rev;
-    if (date && date[0])
-        error = svn_time_from_cstring (&logEntry.date, date, pool);
+    static const std::string svnLog (SVN_PROP_REVISION_LOG);
+    static const std::string svnDate (SVN_PROP_REVISION_DATE);
+    static const std::string svnAuthor (SVN_PROP_REVISION_AUTHOR);
 
-    if (author)
-        logEntry.author = CUnicodeUtils::StdGetUnicode(author);
+    logEntry.revision = log_entry->revision;
 
-    if (msg)
-        logEntry.message = CUnicodeUtils::StdGetUnicode(msg);
+    if (   (log_entry->revision != SVN_INVALID_REVNUM)
+        && (log_entry->revprops != NULL))
+    {
+        for ( apr_hash_index_t *index
+            = apr_hash_first (pool, log_entry->revprops)
+            ; index != NULL
+            ; index = apr_hash_next (index))
+        {
+            // extract next entry from hash
 
-    if (ch_paths)
+            const char* key = NULL;
+            ptrdiff_t keyLen;
+            const char** val = NULL;
+
+            apr_hash_this ( index
+                , reinterpret_cast<const void**>(&key)
+                , &keyLen
+                , reinterpret_cast<void**>(&val));
+
+            // decode / dispatch it
+
+            std::string name = key;
+            std::string value = *val;
+
+            if (name == svnLog)
+                logEntry.message = CUnicodeUtils::StdGetUnicode(value);
+            else if (name == svnAuthor)
+                logEntry.author = CUnicodeUtils::StdGetUnicode(value);
+            else if (name == svnDate)
+            {
+                if (value[0])
+                    svn_time_from_cstring (&logEntry.date, *val, pool);
+            }
+        }
+    }
+
+    if (log_entry->changed_paths2)
     {
         apr_array_header_t *sorted_paths;
-        sorted_paths = svn_sort__hash(ch_paths, svn_sort_compare_items_as_paths, pool);
+        sorted_paths = svn_sort__hash(log_entry->changed_paths2, svn_sort_compare_items_as_paths, pool);
         for (int i = 0; i < sorted_paths->nelts; i++)
         {
             SCCSLogChangedPaths changedPaths;
             svn_sort__item_t *item = &(APR_ARRAY_IDX (sorted_paths, i, svn_sort__item_t));
             const char *path = (const char *)item->key;
-            svn_log_changed_path_t *log_item = (svn_log_changed_path_t *)apr_hash_get (ch_paths, item->key, item->klen);
+            svn_log_changed_path2_t *log_changedpaths = (svn_log_changed_path2_t *)apr_hash_get (log_entry->changed_paths2, item->key, item->klen);
             wstring path_native = CUnicodeUtils::StdGetUnicode(path);
-            changedPaths.action = log_item->action;
-            if (log_item->copyfrom_path && SVN_IS_VALID_REVNUM (log_item->copyfrom_rev))
+            changedPaths.action = log_changedpaths->action;
+            if (log_changedpaths->copyfrom_path && SVN_IS_VALID_REVNUM (log_changedpaths->copyfrom_rev))
             {
-                changedPaths.copyfrom_path = CUnicodeUtils::StdGetUnicode(log_item->copyfrom_path);
-                changedPaths.copyfrom_revision = log_item->copyfrom_rev;
+                changedPaths.copyfrom_path = CUnicodeUtils::StdGetUnicode(log_changedpaths->copyfrom_path);
+                changedPaths.copyfrom_revision = log_changedpaths->copyfrom_rev;
             }
+            changedPaths.kind = log_changedpaths->node_kind;
+            changedPaths.text_modified = log_changedpaths->text_modified;
+            changedPaths.props_modified = log_changedpaths->props_modified;
             logEntry.m_changedPaths[path_native] = changedPaths;
         }
     }
-    svn->m_logs[rev] = logEntry;
+    svn->m_logs[log_entry->revision] = logEntry;
 
     return error;
 }
@@ -594,8 +624,8 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
     peg.value.number = pegrevision;
 
 
-    Err = svn_client_diff_peg4 (opts,
-        svn_path_canonicalize(CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url1)).c_str(), localpool),
+    Err = svn_client_diff_peg5 (opts,
+        svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url1)).c_str(), localpool),
         &peg,
         &rev1,
         &rev2,
@@ -603,7 +633,9 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
         svn_depth_infinity,
         ignoreancestry,
         nodiffdeleted,
+        true,   // show copies as adds
         ignorecontenttype,
+        false,  // use git diff format
         APR_LOCALE_CHARSET,
         outfile,
         errfile,
@@ -616,7 +648,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
     }
     if (del)
     {
-        svn_io_remove_file (CUnicodeUtils::StdGetUTF8(workingErrorFile).c_str(), localpool);
+        svn_io_remove_file2 (CUnicodeUtils::StdGetUTF8(workingErrorFile).c_str(), true, localpool);
     }
     return true;
 }
@@ -625,7 +657,7 @@ wstring SVN::CanonicalizeURL(const wstring& url)
 {
     m_bCanceled = false;
     SVNPool localpool(pool);
-    return CUnicodeUtils::StdGetUnicode(string(svn_path_canonicalize(CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
+    return CUnicodeUtils::StdGetUnicode(string(svn_uri_canonicalize (CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
 }
 
 void SVN::SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar/* = false*/)
