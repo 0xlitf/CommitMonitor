@@ -438,10 +438,8 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
     SVNPool localpool(pool);
 
     apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
-    //(*((const char **) apr_array_push (targets))) = 
-    //    svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
-    const char * target = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
-    (*((const char **) apr_array_push (targets))) = target;
+    (*((const char **) apr_array_push (targets))) = 
+        svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
 
     svn_opt_revision_t end;
     end.kind = svn_opt_revision_number;
