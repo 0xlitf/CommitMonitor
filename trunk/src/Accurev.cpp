@@ -591,8 +591,8 @@ bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long start
   // Perform accurev hist command
   wchar_t start[64];
   wchar_t end[64];
-  _itow(startrev, start, 10);
-  _itow(endrev, end, 10);
+  _itow_s(startrev, start, 10);
+  _itow_s(endrev, end, 10);
   // Non-xml version: wstring cmd = L"hist -p " + repo + L" -s " + url + L" -k promote -t \"" + start + L"-" + end + L"\"";
   wstring cmd = L"hist -p " + repo + L" -s " + url + L" -k promote -fx -t \"" + start + L"-" + end + L"\"";
   retVal = (ExecuteAccurev(cmd, 60, rawLog, stdErr) == 0);
@@ -620,7 +620,7 @@ bool ACCUREV::AccuIssueList(const wstring& repo, const wstring& url, long issueN
 
   // Perform accurev hist command
   wchar_t sIssueNo[64];
-  _itow(issueNo, sIssueNo, 10);
+  _itow_s(issueNo, sIssueNo, 10);
   wstring cmd = L"issuelist -s " + url + L" -fx -I " + sIssueNo;
   retVal = (ExecuteAccurev(cmd, 60, rawLog, stdErr) == 0);
 
