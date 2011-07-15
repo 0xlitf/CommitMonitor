@@ -2,7 +2,7 @@
 <project name="subversion" default="build" basedir="..\subversion">
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="rebuild" depends="clean,build" />
 
@@ -45,6 +45,26 @@
       <arg value="subversion\libsvn_fs_fs\rep-cache-db.sql" />
       <arg value="subversion\libsvn_fs_fs\rep-cache-db.h" />
     </exec>
+    <exec program="python.exe">
+      <arg value="build\transform_sql.py" />
+      <arg value="subversion\libsvn_wc\wc-metadata.sql" />
+      <arg value="subversion\libsvn_wc\wc-metadata.h" />
+    </exec>
+    <exec program="python.exe">
+      <arg value="build\transform_sql.py" />
+      <arg value="subversion\libsvn_wc\wc-checks.sql" />
+      <arg value="subversion\libsvn_wc\wc-checks.h" />
+    </exec>
+    <exec program="python.exe">
+      <arg value="build\transform_sql.py" />
+      <arg value="subversion\libsvn_wc\wc-queries.sql" />
+      <arg value="subversion\libsvn_wc\wc-queries.h" />
+    </exec>
+    <exec program="python.exe">
+      <arg value="build\transform_sql.py" />
+      <arg value="subversion\libsvn_subr\internal_statements.sql" />
+      <arg value="subversion\libsvn_subr\internal_statements.h" />
+    </exec>
 
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
     <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
@@ -52,7 +72,6 @@
       <in>
         <items>
           <include name="subversion\libsvn*" />
-          <exclude name="subversion\libsvn_ra_local" />
           <exclude name="subversion\libsvn_fs*" />
           <exclude name="subversion\libsvn_auth_gnome_keyring" />
           <exclude name="subversion\libsvn_auth_kwallet" />
@@ -71,13 +90,12 @@
           <arg value="/MT" if="${configuration == 'release'}" />
           <arg value="/MTd" if="${configuration != 'release'}" />
           <arg value="/Gy" />
-          <arg value="/W3" />
+          <arg value="/W0" />
           <arg value="/nologo" />
           <arg value="/c" />
           <arg value="/Zi" />
+          <arg value="/MP" />
           <arg value="/errorReport:prompt" />
-          <arg value="/MP" if="${configuration == 'release'}" />
-          <arg value="/GL" if="${configuration == 'release'}" />
           <sources>
             <include name="subversion\${fname}\**.c" />
             <exclude name="subversion\libsvn_subr\win32_crash**.c" />
@@ -99,14 +117,18 @@
           <defines>
             <define name="APR_DECLARE_STATIC" />
             <define name="APU_DECLARE_STATIC" />
-            <define name="SVN_NEON_0_25=1" />
-            <define name="SVN_NEON_0_26=1" />
             <define name="SVN_LIBSVN_CLIENT_LINKS_RA_NEON=1" />
             <define name="SVN_LIBSVN_CLIENT_LINKS_RA_SERF=1" />
-            <define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
-            <define name="SVN_HAVE_SASL=1" />
+            <define name="SVN_NEON_0_25=1" />
+            <define name="SVN_NEON_0_26=1" />
+            <define name="SVN_NEON_0_27=1" />
+            <define name="SVN_NEON_0_28=1" />
+            <define name="SVN_NEON_0_29=1" />
             <define name="SVN_HAVE_NEON" />
             <define name="SVN_HAVE_SERF" />
+            <define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
+            <define name="SVN_DEBUG" if="${configuration != 'release'}" />
+            <define name="SVN_HAVE_SASL=1" />
             <define name="APR_HAVE_IPV6" />
             <define name="alloca=_alloca" />
             <define name="snprintf=_snprintf" />

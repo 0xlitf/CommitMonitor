@@ -2,7 +2,7 @@
 <project name="SubversionLib" default="build">
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="clean">
     <description>
@@ -23,6 +23,8 @@
     <copy file="inffas32.asm" tofile="..\..\common\zlib\contrib\masmx86\inffas32.asm" overwrite="true" />
     <copy file="inffas32.asm" tofile="..\..\common\zlib\inffas32.asm" overwrite="true" />
     <nant target="build" buildfile="zlib.build" />
+    <nant target="build" buildfile="sqlite.build" />
+    <nant target="build" buildfile="gssapi.build" />
     <nant target="build" buildfile="sasl.build" />
     <nant target="build" buildfile="neon.build" />
     <nant target="build" buildfile="serf.build" />

@@ -46,13 +46,12 @@
       <arg value="/MT" if="${configuration == 'release'}" />
       <arg value="/MTd" if="${configuration != 'release'}" />
       <arg value="/Gy" />
-      <arg value="/W3" />
+      <arg value="/W0" />
       <arg value="/nologo" />
       <arg value="/c" />
       <arg value="/Zi" />
+      <arg value="/MP" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" if="${configuration == 'release'}" />
-      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="src\ne_207.c" />
         <include name="src\ne_acl3744.c" />
@@ -89,6 +88,7 @@
         <include name="..\apr-util\xml\expat\lib" />
         <include name="..\..\common\zlib" />
         <include name="..\..\common\openssl\inc32" />
+        <include name="..\gssapi" />
       </includedirs>
       <defines>
         <define name="_CRT_NONSTDC_NO_DEPRECATE" />
@@ -115,6 +115,8 @@
         <define name="NOGDI" />
         <define name="NONLS" />
         <define name="NOCRYPT" />
+        <define name="HAVE_GSSAPI" />
+        <define name="HAVE_GSSAPI_H" />
         <define name="XML_STATIC" />
       </defines>
     </cl>
@@ -123,12 +125,12 @@
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
-      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
         <include name="..\..\common\openssl\out32\libeay32.lib" />
         <include name="..\..\common\openssl\out32\ssleay32.lib" />
+        <include name="..\gssapi\${configuration}_${platform}\gssapiu.lib" />
       </sources>
     </lib>
   </target>

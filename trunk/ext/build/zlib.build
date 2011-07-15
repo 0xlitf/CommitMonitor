@@ -2,7 +2,7 @@
 <project name="zlib" default="build" basedir="..\..\common\zlib">
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="rebuild" depends="clean,build" />
 
@@ -41,9 +41,8 @@
       <arg value="/nologo" />
       <arg value="/c" />
       <arg value="/Zi" />
+      <arg value="/MP" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" if="${configuration == 'release'}" />
-      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="*.c" />
       </sources>
@@ -69,7 +68,6 @@
     <lib
       output="${configuration}_${platform}\zlibstat.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
-      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <exclude name="${configuration}_${platform}\example.obj" />

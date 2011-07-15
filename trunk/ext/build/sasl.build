@@ -2,7 +2,7 @@
 <project name="sasl" default="build" basedir="..\cyrus-sasl">
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="rebuild" depends="clean,build" />
 
@@ -42,13 +42,12 @@
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration != 'release')}" />
       <arg value="/Gy" />
-      <arg value="/W3" />
+      <arg value="/W0" />
       <arg value="/nologo" />
       <arg value="/c" />
       <arg value="/Zi" />
+      <arg value="/MP" />
       <arg value="/errorReport:prompt" />
-      <arg value="/MP" if="${configuration == 'release'}" />
-      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="lib\auxprop.c" />
         <include name="lib\canonusr.c" />
@@ -90,7 +89,6 @@
     <lib
       output="${configuration}_${platform}\libsasls.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
-      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
       </sources>
@@ -114,10 +112,11 @@
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration != 'release')}" />
       <arg value="/Gy" />
-      <arg value="/W3" />
+      <arg value="/W0" />
       <arg value="/nologo" />
       <arg value="/c" />
       <arg value="/Zi" />
+      <arg value="/MP" />
       <arg value="/errorReport:prompt" />
       <sources>
         <include name="lib\auxprop.c" />
@@ -191,10 +190,11 @@
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration != 'release')}" />
       <arg value="/Gy" />
-      <arg value="/W3" />
+      <arg value="/W0" />
       <arg value="/nologo" />
       <arg value="/c" />
       <arg value="/Zi" />
+      <arg value="/MP" />
       <arg value="/errorReport:prompt" />
       <sources>
         <include name="plugins\plugin_common.c" />
@@ -210,12 +210,15 @@
         <include name="plugins\login_init.c" />
         <include name="plugins\ntlm.c" />
         <include name="plugins\ntlm_init.c" />
+        <include name="plugins\gssapi.c" />
+        <include name="plugins\gssapiv2_init.c" />
       </sources>
       <includedirs>
         <include name="include" />
         <include name="plugins" />
         <include name="win32\include" />
         <include name="..\..\common\openssl\inc32" />
+        <include name="..\gssapi" />
       </includedirs>
       <defines>
         <define name="_CRT_NONSTDC_NO_DEPRECATE" />
@@ -232,6 +235,9 @@
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="HAVE_GSS_C_NT_HOSTBASED_SERVICE" />
+        <define name="SSIZE_T_DEFINED" />
+        <define name="HAVE_GSSAPI_H" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />

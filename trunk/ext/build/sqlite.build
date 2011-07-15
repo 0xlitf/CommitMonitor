@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="serf" default="build" basedir="..\serf">
+<project name="sqlite" default="build" basedir="..\sqlite">
 
   <!-- ====================================================================== -->
   <!-- Project targets														-->
@@ -11,6 +11,7 @@
       Cleans previous built files.
     </description>
 
+
     <delete>
       <fileset>
         <include name="${configuration}_${platform}\**" />
@@ -18,11 +19,13 @@
     </delete>
   </target>
 
-  <target name="build" >
+  <target name="build">
     <mkdir dir="${configuration}_${platform}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/GF" if="${configuration == 'release'}" />
+      <arg value="/Gs" if="${configuration == 'release'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${(configuration == 'release')}" />
@@ -35,28 +38,15 @@
       <arg value="/MP" />
       <arg value="/errorReport:prompt" />
       <sources>
-        <include name="context.c" />
-        <include name="incoming.c" />
-        <include name="outgoing.c" />
-        <include name="ssltunnel.c" />
-        <include name="buckets\*.c" />
-        <include name="auth\*.c" />
+        <include name="sqlite3.c" />
       </sources>
       <includedirs>
         <include name="." />
-        <include name="buckets" />
-        <include name="..\apr\include" />
-        <include name="..\apr-util\include" />
-        <include name="..\apr-util\xml\expat\lib" />
-        <include name="..\..\common\zlib" />
-        <include name="..\..\common\openssl\inc32" />
       </includedirs>
       <defines>
         <define name="_CRT_NONSTDC_NO_DEPRECATE" />
         <define name="_CRT_SECURE_NO_DEPRECATE" />
-        <define name="APR_DECLARE_STATIC" />
-        <define name="APU_DECLARE_STATIC" />
-        <define name="OPENSSL_STATIC" />
+        <define name="NO_TCL" />
         <define name="WIN32" />
         <define name="_WINDOWS" />
         <define name="_WIN32" />
@@ -64,26 +54,15 @@
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration != 'release'}"/>
-        <define name="WIN32_LEAN_AND_MEAN" />
-        <define name="NOUSER" />
-        <define name="NOGDI" />
-        <define name="NONLS" />
-        <define name="NOCRYPT" />
-        <define name="SERF_HAVE_SSPI" />
       </defines>
     </cl>
-    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
+    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
     <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
     <lib
-      output="${configuration}_${platform}\libserf.lib"
+      output="${configuration}_${platform}\sqlite.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
-        <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\..\common\openssl\out32\libeay32.lib" />
-        <include name="..\..\common\openssl\out32\ssleay32.lib" />
-        <include name="..\apr-util\${configuration}_${platform}\libaprutil_tsvn.lib" />
-        <include name="..\apr\${configuration}_${platform}\libapr_tsvn.lib" />
       </sources>
     </lib>
   </target>
