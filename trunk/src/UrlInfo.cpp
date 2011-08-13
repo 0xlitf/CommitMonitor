@@ -543,6 +543,8 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         iniFile.SetValue(it->first.c_str(), L"maxentries", numberBuf);
         swprintf_s(numberBuf, 1024, L"%ld", it->second.noexecuteignored);
         iniFile.SetValue(it->first.c_str(), L"noexecuteignored", numberBuf);
+        swprintf_s(numberBuf, 1024, L"%ld", it->second.monitored);
+        iniFile.SetValue(it->first.c_str(), L"monitored", numberBuf);
 
         if (it->second.password.size())
         {
@@ -600,6 +602,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         info.disallowdiffs = !!_wtol(iniFile.GetValue(*it, L"disallowdiffs", L""));
         info.maxentries = _wtol(iniFile.GetValue(*it, L"maxentries", L""));
         info.noexecuteignored = !!_wtol(iniFile.GetValue(*it, L"noexecuteignored", L""));
+        info.monitored = !!_wtol(iniFile.GetValue(*it, L"monitored", L"1"));
 
         wstring unencryptedPassword = wstring(iniFile.GetValue(*it, _T("password"), _T("")));
         if (unencryptedPassword.size())
@@ -635,6 +638,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             existingUrlInfo.disallowdiffs = info.disallowdiffs;
             existingUrlInfo.maxentries = info.maxentries;
             existingUrlInfo.noexecuteignored = info.noexecuteignored;
+            existingUrlInfo.monitored = info.monitored;
 
             infos[existingUrlInfo.url] = existingUrlInfo;
         }
