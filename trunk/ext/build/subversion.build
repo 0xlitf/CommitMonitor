@@ -25,6 +25,7 @@
       <filterchain>
         <replacestring from="#define SVN_LIBSVN_FS_LINKS_FS_FS" to="/* #define SVN_LIBSVN_FS_LINKS_FS_FS */" />
         <replacestring from="#define SVN_LIBSVN_CLIENT_LINKS_RA_LOCAL" to="/* #define SVN_LIBSVN_CLIENT_LINKS_RA_LOCAL */" />
+        <replacestring from='#define DEFAULT_HTTP_LIBRARY "serf"' to='#define DEFAULT_HTTP_LIBRARY "neon"' />
       </filterchain>
     </loadfile>
     <echo file="subversion\svn_private_config.h" message="${configfile}" />
