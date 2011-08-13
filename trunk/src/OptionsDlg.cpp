@@ -96,10 +96,6 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, wstring(notifySound).c_str());
             SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
-            
-            // No update check for Accurev version!
-            ShowWindow(GetDlgItem(*this, IDC_CHECKNEWER), SW_HIDE);
-
             SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_SETCHECK, bLastUnread ? BST_CHECKED : BST_UNCHECKED, NULL);
