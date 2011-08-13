@@ -305,8 +305,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 Snarl::SnarlInterface snarlIface;
                 if ((snarlIface.GetVersionEx() == Snarl::M_FAILED)||(Snarl::SnarlInterface::GetSnarlWindow() == NULL))
                 {
-                    m_popupData.push_back(*pData);
-                    SetTimer(hwnd, IDT_POPUP, 5000, NULL);
+                    if (CRegStdDWORD(L"Software\\CommitMonitor\\ShowPopups", TRUE))
+                    {
+                        m_popupData.push_back(*pData);
+                        SetTimer(hwnd, IDT_POPUP, 5000, NULL);
+                    }
                 }
                 else
                 {

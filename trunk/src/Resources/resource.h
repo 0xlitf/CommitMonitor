@@ -130,6 +130,7 @@
 #define IDC_ACCUDIFFCMDLABEL            1064
 #define IDC_SCCSCOMBO                   1065
 #define IDC_EDIT2                       1069
+#define IDC_SHOWPOPUPS                  1070
 #define ID_FILE_OPENCOMMITMONITOR       32771
 #define ID_MAIN_OPENCOMMITMONITOR       32772
 #define ID_POPUP_OPENCOMMITMONITOR      32773
@@ -181,7 +182,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        165
 #define _APS_NEXT_COMMAND_VALUE         32836
-#define _APS_NEXT_CONTROL_VALUE         1070
+#define _APS_NEXT_CONTROL_VALUE         1071
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

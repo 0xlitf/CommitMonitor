@@ -62,6 +62,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             AddToolTip(IDC_IGNOREEOL, _T("Ignores end-of-line changes"));
             AddToolTip(IDC_IGNORESPACES, _T("Ignores changes in whitespaces in the middle of lines"));
             AddToolTip(IDC_IGNOREALLSPACES, _T("Ignores all whitespace changes"));
+            AddToolTip(IDC_SHOWPOPUPS, L"Shows new commits with a popup window");
 
             // initialize the controls
             bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
@@ -73,6 +74,8 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             bool bLeftMenu = !!CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
             bool bLastUnread = !!CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
             bool bWebViewer = !!CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
+            bool bShowPopups = !!CRegStdDWORD(L"Software\\CommitMonitor\\ShowPopups", TRUE);
+
             CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
             CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
             CRegStdString accurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
@@ -101,6 +104,8 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_SETCHECK, bLastUnread ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_SETCHECK, bWebViewer ? BST_CHECKED : BST_UNCHECKED, NULL);
+            SendDlgItemMessage(*this, IDC_SHOWPOPUPS, BM_SETCHECK, bShowPopups ? BST_CHECKED : BST_UNCHECKED, NULL);
+
             wstring tsvninstalled = CAppUtils::GetTSVNPath();
             wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
             if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
@@ -144,6 +149,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
             CRegStdDWORD regLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
             CRegStdDWORD regWebViewer = CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
+            CRegStdDWORD regShowPopups = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowPopups"), TRUE);
 
             bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
             bool bStartWithWindows = !!SendDlgItemMessage(*this, IDC_AUTOSTART, BM_GETCHECK, 0, NULL);
@@ -155,6 +161,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             bool bLeftMenu = !!SendDlgItemMessage(*this, IDC_LEFTMENU, BM_GETCHECK, 0, NULL);
             bool bLastUnread = !!SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_GETCHECK, 0, NULL);
             bool bWebViewer = !!SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_GETCHECK, 0, NULL);
+            bool bShowPopups = !!SendDlgItemMessage(*this, IDC_SHOWPOPUPS, BM_GETCHECK, 0, NULL);
             regShowTaskbarIcon = bShowTaskbarIcon;
             regAnimateIcon = bAnimateIcon;
             regPlaySound = bPlaySound;
@@ -164,6 +171,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             regLeftMenu = bLeftMenu;
             regLastUnread = bLastUnread;
             regWebViewer = bWebViewer;
+            regShowPopups = bShowPopups;
             ::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
             if (bStartWithWindows)
             {
