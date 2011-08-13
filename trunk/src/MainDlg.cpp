@@ -1243,6 +1243,7 @@ LRESULT CMainDlg::DoCommand(int id)
             dlg.SetHiddenWnd(m_hParent);
             dlg.SetUrlInfos(m_pURLInfos);
             dlg.DoModal(hResource, IDD_OPTIONS, *this);
+            RefreshURLTree(false);
         }
         break;
     case ID_MISC_ABOUT:
