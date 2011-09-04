@@ -778,8 +778,8 @@ DWORD CHiddenWindow::RunThread()
                     for (map<svn_revnum_t,SCCSLogEntry>::iterator logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
                     {
                         // again, only block for a short time
-                        map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                        map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                        pWrite = m_UrlInfos.GetWriteData();
+                        writeIt = pWrite->find(it->first);
                         bool bIgnore = false;
                         bool bEntryExists = false;
                         if (writeIt != pWrite->end())
@@ -805,9 +805,9 @@ DWORD CHiddenWindow::RunThread()
                                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                                     vector<wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
                                     bool bInclude = false;
-                                    for (vector<wstring>::iterator it = includeVector.begin(); it != includeVector.end(); ++it)
+                                    for (vector<wstring>::iterator inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
                                     {
-                                        if (author1.compare(*it) == 0)
+                                        if (author1.compare(*inclIt) == 0)
                                         {
                                             bInclude = true;
                                             break;
@@ -820,9 +820,9 @@ DWORD CHiddenWindow::RunThread()
                                 std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                                 CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                                 vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-                                for (vector<wstring>::iterator it = ignoreVector.begin(); it != ignoreVector.end(); ++it)
+                                for (vector<wstring>::iterator ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
                                 {
-                                    if (author1.compare(*it) == 0)
+                                    if (author1.compare(*ignoreIt) == 0)
                                     {
                                         bIgnore = true;
                                         break;
@@ -975,8 +975,8 @@ DWORD CHiddenWindow::RunThread()
                             }
                         }
                         // again, only block for a short time
-                        map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                        map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                        pWrite = m_UrlInfos.GetWriteData();
+                        writeIt = pWrite->find(it->first);
                         if (writeIt != pWrite->end())
                         {
                             writeIt->second.lastcheckedrobots = currenttime;
@@ -1009,8 +1009,8 @@ DWORD CHiddenWindow::RunThread()
                         data.sAlertType = ALERTTYPE_NEWCOMMITS;
                         // check if there still are unread items
                         bool bUnread = false;
-                        map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                        map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                        pWrite = m_UrlInfos.GetWriteData();
+                        writeIt = pWrite->find(it->first);
                         for (map<svn_revnum_t,SCCSLogEntry>::const_iterator lit = writeIt->second.logentries.begin(); lit != writeIt->second.logentries.end(); ++lit)
                         {
                             if (!lit->second.read)
@@ -1231,8 +1231,8 @@ DWORD CHiddenWindow::RunThread()
                                 url = it->first + _T("/") + url;
                                 url = pSCCS->CanonicalizeURL(url);
 
-                                map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                                map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+                                pWrite = m_UrlInfos.GetWriteData();
+                                writeIt = pWrite->find(url);
                                 if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
                                 {
                                     // we found a new URL, add it to our list
@@ -1277,8 +1277,8 @@ DWORD CHiddenWindow::RunThread()
                                 url = it->first + _T("/") + url;
                                 url = pSCCS->CanonicalizeURL(url);
 
-                                map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                                map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(url);
+                                pWrite = m_UrlInfos.GetWriteData();
+                                writeIt = pWrite->find(url);
                                 if ((!m_bMainDlgRemovedItems)&&(writeIt == pWrite->end()))
                                 {
                                     // we found a new URL, add it to our list

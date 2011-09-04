@@ -26,6 +26,7 @@
 #include "UpdateDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
+#include "auto_buffer.h"
 #include <uxtheme.h>
 #include <algorithm>
 #include <assert.h>
@@ -755,7 +756,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     case ID_POPUP_REPOBROWSER:
                     case ID_POPUP_SHOWLOG:
                         {
-                            HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
                             m_bBlockListCtrlUI = true;
                             TreeView_SelectItem(m_hTreeControl, hittest.hItem);
                             m_bBlockListCtrlUI = false;
@@ -863,14 +863,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     {
                     case ID_POPUP_MARKASUNREAD:
                         {
-                            const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                            pRead = m_pURLInfos->GetReadOnlyData();
                             HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
                             // get the url this entry refers to
-                            TVITEMEX itemex = {0};
-                            itemex.hItem = hSelectedItem;
-                            itemex.mask = TVIF_PARAM;
-                            TreeView_GetItem(m_hTreeControl, &itemex);
-                            if (itemex.lParam != 0)
+                            TVITEMEX uritex = {0};
+                            uritex.hItem = hSelectedItem;
+                            uritex.mask = TVIF_PARAM;
+                            TreeView_GetItem(m_hTreeControl, &uritex);
+                            if (uritex.lParam != 0)
                             {
                                 LVITEM item = {0};
                                 int nItemCount = ListView_GetItemCount(m_hListControl);
@@ -892,9 +892,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                 // refresh the name of the tree item to indicate the new
                                                 // number of unread log messages
                                                 // e.g. instead of 'TortoiseSVN (2)', show now 'TortoiseSVN (3)'
-                                                if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+                                                if (pRead->find(*(wstring*)uritex.lParam) != pRead->end())
                                                 {
-                                                    const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+                                                    const CUrlInfo * uinfo = &pRead->find(*(wstring*)uritex.lParam)->second;
                                                     // count the number of unread messages
                                                     int unread = 0;
                                                     for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
@@ -906,24 +906,24 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                     if (unread)
                                                     {
                                                         _stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
-                                                        itemex.state = TVIS_BOLD;
-                                                        itemex.stateMask = TVIS_BOLD;
-                                                        itemex.iImage = 3;
-                                                        itemex.iSelectedImage = 3;
+                                                        uritex.state = TVIS_BOLD;
+                                                        uritex.stateMask = TVIS_BOLD;
+                                                        uritex.iImage = 3;
+                                                        uritex.iSelectedImage = 3;
                                                     }
                                                     else
                                                     {
                                                         _stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
-                                                        itemex.state = 0;
-                                                        itemex.stateMask = TVIS_BOLD;
-                                                        itemex.iImage = 2;
-                                                        itemex.iSelectedImage = 2;
+                                                        uritex.state = 0;
+                                                        uritex.stateMask = TVIS_BOLD;
+                                                        uritex.iImage = 2;
+                                                        uritex.iSelectedImage = 2;
                                                     }
 
-                                                    itemex.pszText = str;
-                                                    itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+                                                    uritex.pszText = str;
+                                                    uritex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                                                     m_refreshNeeded = true;
-                                                    TreeView_SetItem(m_hTreeControl, &itemex);
+                                                    TreeView_SetItem(m_hTreeControl, &uritex);
                                                 }
                                             }
                                         }
@@ -1413,14 +1413,14 @@ void CMainDlg::SetRemoveButtonState()
 
 bool CMainDlg::ShowDiff(bool bUseTSVN)
 {
-    TCHAR buf[4096];
+    auto_buffer<WCHAR> buf(4096);
     // find the revision we have to show the diff for
     int selCount = ListView_GetSelectedCount(m_hListControl);
     if (selCount <= 0)
         return FALSE;	//nothing selected, nothing to show
 
     // Get temp directory and current directory
-    WCHAR cTempPath[32767];
+    auto_buffer<WCHAR> cTempPath(32767);
     GetEnvironmentVariable(_T("TEMP"), cTempPath, 32767);
     wstring origTempPath = wstring(cTempPath);
 
@@ -1489,7 +1489,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       }
                       else
                       {
-                          TCHAR apppath[4096];
+                          auto_buffer<WCHAR> apppath(4096);
                           GetModuleFileName(NULL, apppath, 4096);
                           CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
                           if (wstring(diffViewer).empty())
@@ -1594,47 +1594,48 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                         finalPath.erase(lastSpace, wstring::npos);
 
                         // Can't diff unless there is a version to diff against :)
-                        if (iAccuRevision >= 1) {
+                        if (iAccuRevision >= 1)
+                        {
+                            // Check out the latest file
+                            // Build the accurev command line
+                            for (int j=0; j<2; j++)
+                            {
+                                wstring accurevPopCmd;
+                                wstring rev;
+                                wstring dir;
 
-                          // Check out the latest file
-                          // Build the accurev command line
-                          for (int i=0; i<2; i++) {
-                            wstring accurevPopCmd;
-                            wstring rev;
-                            wstring dir;
-                            
-                            switch (i) {
-                              default:
-                              case 0:
-                                rev = sLatestAccuRevision;
-                                dir = latestDir;
-                                break;
-                              case 1:
-                                rev = sBasisAccuRevision;
-                                dir = basisDir;
-                                break;
+                                switch (j)
+                                {
+                                default:
+                                case 0:
+                                    rev = sLatestAccuRevision;
+                                    dir = latestDir;
+                                    break;
+                                case 1:
+                                    rev = sBasisAccuRevision;
+                                    dir = basisDir;
+                                    break;
+                                }
+
+                                /* If this is the basis version, and there is none, since the file was added, then break 
+                                * so we only check out the new version. This will then be shown in the directory compare :) */
+                                if ((j == 1) && (iAccuRevision == 1)) break;
+
+                                accurevPopCmd.append(_T("\""));
+                                accurevPopCmd.append(wstring(accurevExe));
+                                accurevPopCmd.append(_T("\" pop -O -R -v "));
+                                accurevPopCmd.append(pUrlInfo->url);
+                                accurevPopCmd.append(_T("/"));
+                                accurevPopCmd.append(rev);
+                                accurevPopCmd.append(_T(" -L \""));
+                                accurevPopCmd.append(dir);
+                                accurevPopCmd.append(_T("\" \""));
+                                accurevPopCmd.append(finalPath);
+                                accurevPopCmd.append(_T("\""));   
+
+                                // Run accurev to perform the pop command
+                                CAppUtils::LaunchApplication(accurevPopCmd, true, true, true);
                             }
-
-                            /* If this is the basis version, and there is none, since the file was added, then break 
-                             * so we only check out the new version. This will then be shown in the directory compare :) */
-                            if ((i == 1) && (iAccuRevision == 1)) break;
-
-                            accurevPopCmd.append(_T("\""));
-                            accurevPopCmd.append(wstring(accurevExe));
-                            accurevPopCmd.append(_T("\" pop -O -R -v "));
-                            accurevPopCmd.append(pUrlInfo->url);
-                            accurevPopCmd.append(_T("/"));
-                            accurevPopCmd.append(rev);
-                            accurevPopCmd.append(_T(" -L \""));
-                            accurevPopCmd.append(dir);
-                            accurevPopCmd.append(_T("\" \""));
-                            accurevPopCmd.append(finalPath);
-                            accurevPopCmd.append(_T("\""));   
-
-                            // Run accurev to perform the pop command
-                            CAppUtils::LaunchApplication(accurevPopCmd, true, true, true);
-                          }
-
                         }
                       }
 
@@ -2449,7 +2450,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
                     if (!SelectNextWithUnread())
                     {
                         // also no unread items in other projects
-                        int selMark = ListView_GetSelectionMark(m_hListControl);
+                        selMark = ListView_GetSelectionMark(m_hListControl);
                         if (selMark < ListView_GetItemCount(m_hListControl))
                         {
                             ListView_SetItemState(m_hListControl, selMark, 0, LVIS_SELECTED);
