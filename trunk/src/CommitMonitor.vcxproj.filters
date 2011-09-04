@@ -479,6 +479,9 @@
     <ClInclude Include="..\ext\scintilla\lexlib\LexerModule.h">
       <Filter>Scintilla</Filter>
     </ClInclude>
+    <ClInclude Include="auto_buffer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\about.ico">
