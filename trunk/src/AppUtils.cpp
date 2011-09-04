@@ -357,8 +357,8 @@ wstring CAppUtils::GetTempFilePath()
     //different filenames.
     HANDLE hFile = CreateFile(tempfile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
     CloseHandle(hFile);
-    delete temppath;
-    delete tempF;
+    delete [] temppath;
+    delete [] tempF;
     return tempfile;
 }
 

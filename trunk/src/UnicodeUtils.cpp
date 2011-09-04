@@ -39,7 +39,7 @@ std::string CUnicodeUtils::StdGetUTF8(const std::wstring& wide)
     int ret = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), len, narrow, size-1, NULL, NULL);
     narrow[ret] = 0;
     std::string sRet = std::string(narrow);
-    delete narrow;
+    delete [] narrow;
     return sRet;
 }
 
@@ -53,7 +53,7 @@ std::string CUnicodeUtils::StdGetANSI(const std::wstring& wide)
     int ret = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), len, narrow, size-1, NULL, NULL);
     narrow[ret] = 0;
     std::string sRet = std::string(narrow);
-    delete narrow;
+    delete [] narrow;
     return sRet;
 }
 
@@ -67,7 +67,7 @@ std::wstring CUnicodeUtils::StdGetUnicode(const std::string& multibyte)
     int ret = MultiByteToWideChar(CP_UTF8, 0, multibyte.c_str(), len, wide, size - 1);
     wide[ret] = 0;
     std::wstring sRet = std::wstring(wide);
-    delete wide;
+    delete [] wide;
     return sRet;
 }
 #endif
