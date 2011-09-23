@@ -1202,19 +1202,21 @@ LRESULT CMainDlg::DoCommand(int id)
     case ID_MAIN_ADDPROJECT:
         {
             CURLDlg dlg;
-            dlg.DoModal(hResource, IDD_URLCONFIG, *this);
-            CUrlInfo * inf = dlg.GetInfo();
-            if ((inf)&&inf->url.size())
+            if (dlg.DoModal(hResource, IDD_URLCONFIG, *this)==IDOK)
             {
-                map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                CUrlInfo * inf = dlg.GetInfo();
                 if ((inf)&&inf->url.size())
                 {
-                    (*pWrite)[inf->url] = *inf;
+                    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                    if ((inf)&&inf->url.size())
+                    {
+                        (*pWrite)[inf->url] = *inf;
+                    }
+                    m_pURLInfos->ReleaseWriteData();
+                    m_pURLInfos->Save();
                 }
-                m_pURLInfos->ReleaseWriteData();
-                m_pURLInfos->Save();
+                RefreshURLTree(false);
             }
-            RefreshURLTree(false);
         }
         break;
     case ID_MAIN_SHOWDIFF:
