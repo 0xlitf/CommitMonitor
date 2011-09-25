@@ -43,19 +43,6 @@ SVN::SVN(void)
     if (Err == 0)
         Err = svn_config_get_config (&(m_pctx->config), NULL, parentpool);
 
-    if (Err == 0)
-    {
-        //set up the SVN_SSH param
-        wstring tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
-        if (!tsvn_ssh.empty())
-        {
-            svn_config_t * cfg = (svn_config_t *)apr_hash_get (m_pctx->config, SVN_CONFIG_CATEGORY_CONFIG,
-                APR_HASH_KEY_STRING);
-            svn_config_set(cfg, SVN_CONFIG_SECTION_TUNNELS, "ssh", CUnicodeUtils::StdGetUTF8(tsvn_ssh).c_str());
-        }
-    }
-    else
-        svn_error_clear(Err);
     Err = svn_ra_initialize(parentpool);
 
     // set up authentication
@@ -125,12 +112,20 @@ SVN::SVN(void)
     wstring tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
     if (tsvn_ssh.empty())
     {
-        // maybe the user has TortoiseSVN installed?
-        // if so, try to use TortoisePlink with the default params for SSH
-        tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE);
-        if (!tsvn_ssh.empty())
+        tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"), _T(""), false, HKEY_CURRENT_USER, KEY_WOW64_64KEY);
+        if (tsvn_ssh.empty())
         {
-            tsvn_ssh += _T("\\bin\\TortoisePlink.exe");
+            // maybe the user has TortoiseSVN installed?
+            // if so, try to use TortoisePlink with the default params for SSH
+            tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE);
+            if (tsvn_ssh.empty())
+            {
+                tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
+            }
+            if (!tsvn_ssh.empty())
+            {
+                tsvn_ssh += _T("\\bin\\TortoisePlink.exe");
+            }
         }
     }
     CAppUtils::SearchReplace(tsvn_ssh, _T("\\"), _T("/"));
