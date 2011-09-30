@@ -1329,10 +1329,9 @@ LRESULT CMainDlg::DoCommand(int id)
                                     sClipboardData += L")";
                                 sClipboardData += _T(" : ");
                                 sClipboardData += it->first;
-                                sClipboardData += _T("  ");
                                 if (!it->second.copyfrom_path.empty())
                                 {
-                                    sClipboardData += _T("(copied from: ");
+                                    sClipboardData += _T("  (copied from: ");
                                     sClipboardData += it->second.copyfrom_path;
                                     sClipboardData += _T(", revision ");
                                     _stprintf_s(tempBuf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
