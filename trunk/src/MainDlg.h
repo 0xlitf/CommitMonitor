@@ -56,6 +56,7 @@ public:
 protected:
     LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
     LRESULT                 DoCommand(int id);
+    virtual bool            PreTranslateMessage(MSG* pMsg);
 
 private:
     bool                    OnSetCursor(HWND hWnd, UINT nHitTest, UINT message);

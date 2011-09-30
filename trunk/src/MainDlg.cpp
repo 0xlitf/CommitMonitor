@@ -2305,10 +2305,9 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     msg += L")";
                 msg += _T(" : ");
                 msg += it->first;
-                msg += _T("  ");
                 if (!it->second.copyfrom_path.empty())
                 {
-                    msg += _T("(copied from: ");
+                    msg += _T("  (copied from: ");
                     msg += it->second.copyfrom_path;
                     msg += _T(", revision ");
                     _stprintf_s(buf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
@@ -2993,4 +2992,25 @@ LRESULT CALLBACK CMainDlg::FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, L
         ::SetWindowText(pThis->m_hFilterControl, _T(""));
     }
     return CallWindowProc(pThis->m_oldFilterWndProc, hWnd, uMessage, wParam, lParam);
+}
+
+bool CMainDlg::PreTranslateMessage( MSG* pMsg )
+{
+    if (pMsg->message == WM_KEYDOWN)
+    {
+        switch (pMsg->wParam)
+        {
+        case 'A':
+        case VK_INSERT:
+            {
+                if (pMsg->hwnd == m_hLogMsgControl)
+                {
+                    // select the whole text
+                    SendMessage(m_hLogMsgControl, EM_SETSEL, 0, (LPARAM)-1);
+                }
+            }
+            break;
+        }
+    }
+    return __super::PreTranslateMessage(pMsg);
 }
