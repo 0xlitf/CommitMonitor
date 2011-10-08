@@ -37,6 +37,7 @@
 
 #include <cctype>
 #include <regex>
+#include <set>
 using namespace std;
 
 // for Vista
@@ -743,6 +744,7 @@ DWORD CHiddenWindow::RunThread()
             }
             if (!m_bRun)
                 continue;
+            std::set<std::wstring> authors;
             if (headrev > it->second.lastcheckedrev)
             {
                 TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
@@ -797,7 +799,7 @@ DWORD CHiddenWindow::RunThread()
                             {
                                 wstring author1 = logit->second.author;
                                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
-
+                                authors.insert(author1);
                                 if (writeIt->second.includeUsers.size() > 0)
                                 {
                                     wstring s1 = writeIt->second.includeUsers;
@@ -1075,6 +1077,23 @@ DWORD CHiddenWindow::RunThread()
                             wstring::iterator it_end= it_begin + tag.size();
                             commandline.replace(it_begin, it_end, it->second.name);
                         }
+                        // replace "%usernames" with a list of usernames for all the commits,
+                        // separated by ";" (in case a username contains that char, you're out of luck, sorry)
+                        tag = _T("%usernames");
+                        it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+                        if (it_begin != commandline.end())
+                        {
+                            wstring::iterator it_end= it_begin + tag.size();
+                            std::wstring a;
+                            for (auto autit = authors.cbegin(); autit != authors.cend(); ++autit)
+                            {
+                                if (!a.empty())
+                                    a += L";";
+                                a += *autit;
+                            }
+                            commandline.replace(it_begin, it_end, a);
+                        }
+
                         CAppUtils::LaunchApplication(commandline);
                     }
                 }
