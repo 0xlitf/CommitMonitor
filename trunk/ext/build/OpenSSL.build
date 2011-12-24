@@ -15,6 +15,7 @@
       <arg value="Configure" />
       <arg value="VC-WIN32" />
       <arg value="no-asm" />
+      <arg value="no-gost" />
       <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
     </exec>
     <exec program="cmd" workingdir="..\..\common\openssl">
