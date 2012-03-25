@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -251,7 +251,7 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
 {
     wstring result;
     wstring::size_type pos = 0;
-    for ( ; ; )	// while (true)
+    for ( ; ; ) // while (true)
     {
         wstring::size_type next = str.find(toreplace, pos);
         result.append(str, pos, next-pos);
