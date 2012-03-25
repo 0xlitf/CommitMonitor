@@ -220,6 +220,19 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             GetDlgItemText(*this, IDC_PROJECTNAME, buffer, len+1);
             info.name = wstring(buffer, len);
             CStringUtils::trim(info.name);
+            if (info.name.size()==0)
+            {
+                EDITBALLOONTIP ebt = {0};
+                ebt.cbStruct = sizeof(EDITBALLOONTIP);
+                ebt.pszTitle = _T("Project name");
+                ebt.pszText = _T("You must provide a name for the project!");
+                ebt.ttiIcon = TTI_ERROR;
+                if (!::SendMessage(GetDlgItem(*this, IDC_PROJECTNAME), EM_SHOWBALLOONTIP, 0, (LPARAM)&ebt))
+                {
+                    ::MessageBox(*this, _T("You must provide a name for the project!"), _T("Project name"), MB_ICONERROR);
+                }
+                return 0;
+            }
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_CHECKTIME));
             buffer = new WCHAR[len+1];
