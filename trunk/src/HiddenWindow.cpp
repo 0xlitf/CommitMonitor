@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -1215,7 +1215,9 @@ DWORD CHiddenWindow::RunThread()
                             // we do this by checking for header titles looking like
                             // "<h2>Revision XX: /</h2> - if we find that, it's a html
                             // page from inside a repository
-                            const char * reTitle = "<\\s*h2\\s*>[^/]+/\\s*<\\s*/\\s*h2\\s*>";
+                            // some repositories show
+                            // "<h2>projectname - Revision XX: /trunk</h2>
+                            const char * reTitle = "<\\s*h2\\s*>[^/]+Revision\\s*\\d+:[^<]+<\\s*/\\s*h2\\s*>";
                             // xsl transformed pages don't have an easy way to determine
                             // the inside from outside of a repository.
                             // We therefore check for <index rev="0" to make sure it's either
