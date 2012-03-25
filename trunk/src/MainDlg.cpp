@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -678,6 +678,17 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 OnDblClickListItem((LPNMITEMACTIVATE)lParam);
             }
+            if ((lpnmhdr->code == TBN_GETINFOTIP)&&(lpnmhdr->hwndFrom == m_hwndToolbar))
+            {
+                LPNMTBGETINFOTIP lptbgit = (LPNMTBGETINFOTIP) lParam;
+                switch (lptbgit->iItem)
+                {
+                case ID_POPUP_MARKALLASREAD:
+                    lptbgit->pszText = L"Click to mark entries of the selected project as read\nShift-click to do this for all projects.";
+                    break;
+                }
+            }
+
             return FALSE;
         }
         break;
@@ -1259,8 +1270,24 @@ LRESULT CMainDlg::DoCommand(int id)
         break;
     case ID_POPUP_MARKALLASREAD:
         {
-            CURLDlg dlg;
-            HTREEITEM hItem = TreeView_GetSelection(m_hTreeControl);
+            bool bShift = (GetKeyState(VK_SHIFT)&0x8000)!=0;
+            HTREEITEM hItem = NULL;
+            if (bShift)
+            {
+                hItem = TreeView_GetRoot(m_hTreeControl);
+                if (hItem)
+                {
+                    MarkAllAsRead(hItem, true);
+                    HTREEITEM hNextSibling = TreeView_GetNextSibling(m_hTreeControl, hItem);
+                    while (hNextSibling)
+                    {
+                        MarkAllAsRead(hNextSibling, true);
+                        hNextSibling = TreeView_GetNextSibling(m_hTreeControl, hNextSibling);
+                    }
+                }
+            }
+            else
+                hItem = TreeView_GetSelection(m_hTreeControl);
             if (hItem)
             {
                 MarkAllAsRead(hItem, true);
