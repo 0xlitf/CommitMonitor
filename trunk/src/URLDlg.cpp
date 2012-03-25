@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -251,11 +251,11 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
                 EDITBALLOONTIP ebt = {0};
                 ebt.cbStruct = sizeof(EDITBALLOONTIP);
                 ebt.pszTitle = _T("Invalid value!");
-                ebt.pszText = _T("The value for the maximum number of log entries to keep\nmust be between 0 and 1000");
+                ebt.pszText = _T("The value for the maximum number of log entries to keep\nmust be between 0 and 100000");
                 ebt.ttiIcon = TTI_ERROR;
                 if (!::SendMessage(GetDlgItem(*this, IDC_MAXLOGENTRIES), EM_SHOWBALLOONTIP, 0, (LPARAM)&ebt))
                 {
-                    ::MessageBox(*this, _T("The value must be between 0 and 1000"), _T("Invalid Value!"), MB_ICONERROR);
+                    ::MessageBox(*this, _T("The value must be between 0 and 100000"), _T("Invalid Value!"), MB_ICONERROR);
                 }
                 return 0;
             }

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@
 #define URLINFO_VERSION     14
 #define URLINFOS_VERSION    1
 
-#define URLINFO_MAXENTRIES 1000
+#define URLINFO_MAXENTRIES 100000
 
 class CUrlInfo
 {
