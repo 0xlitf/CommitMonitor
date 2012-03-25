@@ -36,6 +36,7 @@
 #pragma comment(lib, "uxtheme.lib")
 
 #define FILTERBOXHEIGHT 20
+#define CHECKBOXHEIGHT  16
 #define FILTERLABELWIDTH 50
 
 CMainDlg::CMainDlg(HWND hParent) 
@@ -220,6 +221,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_hListControl = ::GetDlgItem(*this, IDC_MONITOREDURLS);
             m_hLogMsgControl = ::GetDlgItem(*this, IDC_LOGINFO);
             m_hFilterControl = ::GetDlgItem(*this, IDC_FILTERSTRING);
+            m_hCheckControl = ::GetDlgItem(*this, IDC_SHOWIGNORED);
             ::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 
             SetWindowTheme(m_hListControl, L"Explorer", NULL);
@@ -1018,6 +1020,9 @@ LRESULT CMainDlg::DoCommand(int id)
             EndDialog(*this, IDCANCEL);
             PostQuitMessage(IDOK);
         }
+        break;
+    case IDC_SHOWIGNORED:
+        TreeItemSelected(m_hTreeControl, TreeView_GetSelection(m_hTreeControl));
         break;
     case ID_MAIN_REMOVE:
         {
@@ -1947,10 +1952,9 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             // there was an error when we last tried to access this url.
             // Show a message box with the error.
             int len = info->error.length()+info->url.length()+1024;
-            TCHAR * pBuf = new TCHAR[len];
-            _stprintf_s(pBuf, len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s\n\nDoubleclick here to clear the error message."), info->url.c_str(), info->error.c_str());
-            m_ListCtrl.SetInfoText(pBuf);
-            delete [] pBuf;
+            std::unique_ptr<TCHAR[]> pBuf(new TCHAR[len]);
+            _stprintf_s(pBuf.get(), len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s\n\nDoubleclick here to clear the error message."), info->url.c_str(), info->error.c_str());
+            m_ListCtrl.SetInfoText(pBuf.get());
         }
         else
             // remove the info text if there's no error
@@ -1994,9 +1998,9 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         int iLastUnread = -1;
 
         int len = GetWindowTextLength(m_hFilterControl);
-        WCHAR * buffer = new WCHAR[len+1];
-        GetDlgItemText(*this, IDC_FILTERSTRING, buffer, len+1);
-        wstring filterstring = wstring(buffer, len);
+        std::unique_ptr<WCHAR[]> buffer(new WCHAR[len+1]);
+        GetDlgItemText(*this, IDC_FILTERSTRING, buffer.get(), len+1);
+        wstring filterstring = wstring(buffer.get(), len);
         bool bNegateFilter = false;
         if (len)
             bNegateFilter = filterstring[0] == '-';
@@ -2007,7 +2011,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         wstring filterstringlower = filterstring;
         std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
 
-        delete [] buffer;
+        bool bShowIgnored = !!SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL);
 
         for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
         {
@@ -2018,58 +2022,98 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
             if (useFilter)
             {
-            if (bUseRegex)
-            {
-                try
+                if (bUseRegex)
                 {
-                    const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+                    try
+                    {
+                        const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
 
-                    addEntry = tr1::regex_search(it->second.author, regCheck);
+                        addEntry = tr1::regex_search(it->second.author, regCheck);
+                        if (!addEntry)
+                        {
+                            addEntry = tr1::regex_search(it->second.message, regCheck);
+                            if (!addEntry)
+                            {
+                                _stprintf_s(buf, 1024, _T("%ld"), it->first);
+                                wstring s = wstring(buf);
+                                addEntry = tr1::regex_search(s, regCheck);
+                            }
+                        }
+                    }
+                    catch (exception) 
+                    {
+                        bUseRegex = false;
+                    }
+                    if (bNegateFilter)
+                        addEntry = !addEntry;
+                }
+                if (!bUseRegex)
+                {
+                    // search plain text
+                    // note: \Q...\E doesn't seem to work with tr1 - it still
+                    // throws an exception if the regex in between is not a valid regex :(
+
+                    wstring s = it->second.author;
+                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                    addEntry = s.find(filterstringlower) != wstring::npos;
+
                     if (!addEntry)
                     {
-                        addEntry = tr1::regex_search(it->second.message, regCheck);
+                        s = it->second.message;
+                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                        addEntry = s.find(filterstringlower) != wstring::npos;
                         if (!addEntry)
                         {
                             _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                            wstring s = wstring(buf);
-                            addEntry = tr1::regex_search(s, regCheck);
+                            s = buf;
+                            addEntry = s.find(filterstringlower) != wstring::npos;
+                        }
+                    }
+                    if (bNegateFilter)
+                        addEntry = !addEntry;
+                }
+            }
+
+            if ((!bShowIgnored)&&(addEntry))
+            {
+                wstring author1 = it->second.author;
+                std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
+
+                if (info->includeUsers.size() > 0)
+                {
+                    wstring s1 = info->includeUsers;
+                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                    CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+
+                    vector<wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                    bool bInclude = false;
+                    for (vector<wstring>::iterator inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
+                    {
+                        if (author1.compare(*inclIt) == 0)
+                        {
+                            bInclude = true;
+                            break;
+                        }
+                    }
+                    addEntry = bInclude;
+                }
+
+                if (addEntry)
+                {
+                    wstring s1 = info->ignoreUsers;
+                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                    CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+                    vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                    for (vector<wstring>::iterator ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
+                    {
+                        if (author1.compare(*ignoreIt) == 0)
+                        {
+                            addEntry = false;
+                            break;
                         }
                     }
                 }
-                catch (exception) 
-                {
-                    bUseRegex = false;
-                }
-                if (bNegateFilter)
-                    addEntry = !addEntry;
             }
-            if (!bUseRegex)
-            {
-                // search plain text
-                // note: \Q...\E doesn't seem to work with tr1 - it still
-                // throws an exception if the regex in between is not a valid regex :(
-
-                wstring s = it->second.author;
-                std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                addEntry = s.find(filterstringlower) != wstring::npos;
-
-                if (!addEntry)
-                {
-                    s = it->second.message;
-                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                    addEntry = s.find(filterstringlower) != wstring::npos;
-                    if (!addEntry)
-                    {
-                        _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                            s = buf;
-                            addEntry = s.find(filterstringlower) != wstring::npos;
-                    }
-                }
-                if (bNegateFilter)
-                    addEntry = !addEntry;
-            }
-            }
-
             if (!addEntry)
                 continue;
 
@@ -2582,13 +2626,14 @@ void CMainDlg::DoResize(int width, int height)
     ::GetClientRect(hFilterLabel, &filterlabel);
     ::GetClientRect(m_hFilterControl, &filterbox);
     ::InvalidateRect(*this, NULL, TRUE);
-    HDWP hdwp = BeginDeferWindowPos(9);
+    HDWP hdwp = BeginDeferWindowPos(10);
     hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
     hdwp = DeferWindowPos(hdwp, m_hFilterControl, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg+1, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT-1, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hCheckControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, CHECKBOXHEIGHT, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+FILTERBOXHEIGHT+4, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left-ex.right+ex.left-3, height-ex.bottom+ex.top, ex.right-ex.left, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hExit, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hLabel, *this, 2, height-label.bottom+label.top+2, width-ok.right-ex.right-8, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
@@ -2803,7 +2848,7 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
     GetClientRect(m_hTreeControl, &rect);
     m_xSliderPos = rect.right+4;
     GetClientRect(m_hListControl, &rect);
-    m_ySliderPos = rect.bottom+m_topmarg+FILTERBOXHEIGHT;
+    m_ySliderPos = rect.bottom+m_topmarg+FILTERBOXHEIGHT+CHECKBOXHEIGHT;
 
     m_nDragMode = DRAGMODE_NONE;
 
@@ -2877,7 +2922,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
     }
 
     //position the child controls
-    HDWP hdwp = BeginDeferWindowPos(5);
+    HDWP hdwp = BeginDeferWindowPos(6);
     if (hdwp)
     {
         if (bHorz)
@@ -2899,8 +2944,12 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
                 loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT, 
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
+            hdwp = DeferWindowPos(hdwp, m_hCheckControl, NULL, 
+                loglist.left, treelist.top+FILTERBOXHEIGHT, loglist.right-loglist.left, CHECKBOXHEIGHT,
+                SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+
             hdwp = DeferWindowPos(hdwp, m_hListControl, NULL, 
-                loglist.left, treelist.top+FILTERBOXHEIGHT, loglist.right-loglist.left, loglist.bottom-treelist.top-FILTERBOXHEIGHT,
+                loglist.left, treelist.top+FILTERBOXHEIGHT+CHECKBOXHEIGHT, loglist.right-loglist.left, loglist.bottom-treelist.top-FILTERBOXHEIGHT-CHECKBOXHEIGHT,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
             GetWindowRect(m_hLogMsgControl, &treelist);

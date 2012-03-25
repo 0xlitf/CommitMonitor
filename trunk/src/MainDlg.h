@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,7 @@ private:
     HWND                    m_hListControl;
     HWND                    m_hLogMsgControl;
     HWND                    m_hFilterControl;
+    HWND                    m_hCheckControl;
     HFONT                   m_font;
 
     CListCtrl               m_ListCtrl;
