@@ -1051,48 +1051,31 @@ DWORD CHiddenWindow::RunThread()
                         // replace "%revision" with the new HEAD revision
                         wstring tag(_T("%revision"));
                         wstring commandline = it->second.callcommand;
-                        wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                        if (it_begin != commandline.end())
-                        {
-                            // prepare the revision
-                            TCHAR revBuf[40] = {0};
-                            _stprintf_s(revBuf, 40, _T("%ld"), headrev);
-                            wstring srev = revBuf;
-                            wstring::iterator it_end= it_begin + tag.size();
-                            commandline.replace(it_begin, it_end, srev);
-                        }
+                        // prepare the revision
+                        TCHAR revBuf[40] = {0};
+                        _stprintf_s(revBuf, 40, _T("%ld"), headrev);
+                        wstring srev = revBuf;
+                        CAppUtils::SearchReplace(commandline, tag, srev);
+
                         // replace "%url" with the repository url
                         tag = _T("%url");
-                        it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                        if (it_begin != commandline.end())
-                        {
-                            wstring::iterator it_end= it_begin + tag.size();
-                            commandline.replace(it_begin, it_end, it->second.url);
-                        }
+                        CAppUtils::SearchReplace(commandline, tag, it->second.url);
+
                         // replace "%project" with the project name
                         tag = _T("%project");
-                        it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                        if (it_begin != commandline.end())
-                        {
-                            wstring::iterator it_end= it_begin + tag.size();
-                            commandline.replace(it_begin, it_end, it->second.name);
-                        }
+                        CAppUtils::SearchReplace(commandline, tag, it->second.name);
+
                         // replace "%usernames" with a list of usernames for all the commits,
                         // separated by ";" (in case a username contains that char, you're out of luck, sorry)
                         tag = _T("%usernames");
-                        it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
-                        if (it_begin != commandline.end())
+                        std::wstring a;
+                        for (auto autit = authors.cbegin(); autit != authors.cend(); ++autit)
                         {
-                            wstring::iterator it_end= it_begin + tag.size();
-                            std::wstring a;
-                            for (auto autit = authors.cbegin(); autit != authors.cend(); ++autit)
-                            {
-                                if (!a.empty())
-                                    a += L";";
-                                a += *autit;
-                            }
-                            commandline.replace(it_begin, it_end, a);
+                            if (!a.empty())
+                                a += L";";
+                            a += *autit;
                         }
+                        CAppUtils::SearchReplace(commandline, tag, a);
 
                         CAppUtils::LaunchApplication(commandline);
                     }
