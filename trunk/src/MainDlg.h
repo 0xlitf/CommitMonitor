@@ -85,6 +85,7 @@ private:
     void                    CheckNow(HTREEITEM hItem);
     void                    SetRemoveButtonState();
     bool                    ShowDiff(bool bUseTSVN);
+    void                    SortItems(int col);
     void                    SaveWndPosition();
 
     /// window procedure of the sub classed tree view control
@@ -92,7 +93,7 @@ private:
     WNDPROC                 m_oldTreeWndProc;   ///< pointer to the original window proc of the tree view control
     static LRESULT CALLBACK FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
     WNDPROC                 m_oldFilterWndProc; ///< pointer to the original window proc of the filter control
-
+    static int CALLBACK     CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 private:
     HWND                    m_hTreeControl;
     HWND                    m_hListControl;

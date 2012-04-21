@@ -682,6 +682,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 OnDblClickListItem((LPNMITEMACTIVATE)lParam);
             }
+            if ((lpnmhdr->code == HDN_ITEMCLICK)&&(lpnmhdr->hwndFrom == ListView_GetHeader(m_hListControl)))
+            {
+                NMHEADER * hdr = (NMHEADER*)lParam;
+                SortItems(hdr->iItem);
+            }
             if ((lpnmhdr->code == TBN_GETINFOTIP)&&(lpnmhdr->hwndFrom == m_hwndToolbar))
             {
                 LPNMTBGETINFOTIP lptbgit = (LPNMTBGETINFOTIP) lParam;
@@ -3100,3 +3105,68 @@ bool CMainDlg::PreTranslateMessage( MSG* pMsg )
     }
     return __super::PreTranslateMessage(pMsg);
 }
+
+void CMainDlg::SortItems( int col )
+{
+    HWND hHeader = ListView_GetHeader(m_hListControl);
+    HDITEM header = {0};
+    header.mask = HDI_FORMAT;
+    Header_GetItem(hHeader, col, &header);
+    bool SortUp = (header.fmt & HDF_SORTDOWN)!=0;
+    LPARAM paramsort = col;
+    if (SortUp)
+        paramsort |= 0x8000;
+    ListView_SortItems(m_hListControl, &CompareFunc, paramsort);
+    for (int i = 0; i < 4; ++i)
+    {
+        HDITEM h = {0};
+        h.mask = HDI_FORMAT;
+        Header_GetItem(hHeader, i, &h);
+        h.fmt &= ~HDF_SORTDOWN;
+        h.fmt &= ~HDF_SORTUP;
+        Header_SetItem(hHeader, i, &h);
+    }
+    if (SortUp)
+    {
+        header.fmt |= HDF_SORTUP;
+        header.fmt &= ~HDF_SORTDOWN;
+    }
+    else
+    {
+        header.fmt |= HDF_SORTDOWN;
+        header.fmt &= ~HDF_SORTUP;
+    }
+    Header_SetItem(hHeader, col, &header);
+}
+
+int CALLBACK CMainDlg::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
+{
+    SCCSLogEntry * pLogEntry1 = (SCCSLogEntry*)lParam1;
+    SCCSLogEntry * pLogEntry2 = (SCCSLogEntry*)lParam2;
+    int col = (int)(lParamSort & 0xFFF);
+    bool SortUp = (lParamSort & 0x8000)!=0;
+    int ret = 0;
+    switch (col)
+    {
+    case 0: // revision
+        ret = pLogEntry1->revision - pLogEntry2->revision;
+        break;
+    case 1: // date
+        if (pLogEntry1->date < pLogEntry2->date)
+            ret = -1;
+        else if (pLogEntry1->date > pLogEntry2->date)
+            ret = 1;
+        break;
+    case 2: // author
+        ret = pLogEntry1->author.compare(pLogEntry2->author);
+        break;
+    case 3: // log message
+        ret = pLogEntry1->message.compare(pLogEntry2->message);
+        break;
+    }
+    if (!SortUp)
+        ret = -ret;
+    return ret;
+
+}
+
