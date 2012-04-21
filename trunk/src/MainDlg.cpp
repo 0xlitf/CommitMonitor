@@ -2640,7 +2640,7 @@ void CMainDlg::DoResize(int width, int height)
     hdwp = DeferWindowPos(hdwp, m_hCheckControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, CHECKBOXHEIGHT, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+FILTERBOXHEIGHT+4, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-CHECKBOXHEIGHT-4, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left-ex.right+ex.left-3, height-ex.bottom+ex.top, ex.right-ex.left, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hExit, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hLabel, *this, 2, height-label.bottom+label.top+2, width-ok.right-ex.right-8, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
