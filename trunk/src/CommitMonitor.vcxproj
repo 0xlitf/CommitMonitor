@@ -96,41 +96,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\ext\scintilla\lexers\LexAVS.cxx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\ext\scintilla\lexers\LexCoffeeScript.cxx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\ext\scintilla\lexers\LexECL.cxx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\ext\scintilla\lexers\LexModula.cxx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\ext\scintilla\lexers\LexOthers.cxx">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\ext\scintilla\lexers\LexTCMD.cxx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\ext\scintilla\lexlib\Accessor.cxx">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -325,16 +295,16 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\ext\scintilla\win32\PlatWin.cxx">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\ext\scintilla\win32\ScintillaWin.cxx">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="Accurev.cpp" />
@@ -389,14 +359,20 @@
     <ClCompile Include="UnicodeUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ext\scintilla\include\ILexer.h" />
+    <ClInclude Include="..\ext\scintilla\include\Platform.h" />
+    <ClInclude Include="..\ext\scintilla\include\SciLexer.h" />
+    <ClInclude Include="..\ext\scintilla\include\Scintilla.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\Accessor.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\CharacterSet.h" />
+    <ClInclude Include="..\ext\scintilla\lexlib\LexAccessor.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\LexerBase.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\LexerModule.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\LexerNoExceptions.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\LexerSimple.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\OptionSet.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\PropSetSimple.h" />
+    <ClInclude Include="..\ext\scintilla\lexlib\SparseState.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\StyleContext.h" />
     <ClInclude Include="..\ext\scintilla\lexlib\WordList.h" />
     <ClInclude Include="..\ext\scintilla\src\AutoComplete.h" />
@@ -426,6 +402,7 @@
     <ClInclude Include="..\ext\scintilla\src\UniConversion.h" />
     <ClInclude Include="..\ext\scintilla\src\ViewStyle.h" />
     <ClInclude Include="..\ext\scintilla\src\XPM.h" />
+    <ClInclude Include="..\ext\scintilla\win32\PlatWin.h" />
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="Accurev.h" />
     <ClInclude Include="auto_buffer.h" />
@@ -470,8 +447,6 @@
     <ClInclude Include="UnicodeUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\ext\scintilla\src\LexGen.py" />
-    <None Include="..\ext\scintilla\src\SciTE.properties" />
     <None Include="Resources\about.ico" />
     <None Include="Resources\add.ico" />
     <None Include="Resources\cancel-normal.bmp" />

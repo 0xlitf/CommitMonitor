@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <project name="VersionInfo" default="versioninfo">
 
-	<target name="versioninfo">
+    <target name="versioninfo">
 
-		<exec program="SubWCRev.exe">
-			<arg value="." />
-			<arg value="version.build.in" />
-			<arg value="version.build" />
-			<arg value="-f" />
-		</exec>
-		
-		<nant target="setversioninfo">
-			<buildfiles>
-				<include name="version.build" />
-			</buildfiles>
-		</nant>
-	</target>
+        <exec program="SubWCRev.exe">
+            <arg value="." />
+            <arg value="version.build.in" />
+            <arg value="version.build" />
+            <arg value="-f" />
+        </exec>
+
+        <nant target="setversioninfo">
+            <buildfiles>
+                <include name="version.build" />
+            </buildfiles>
+        </nant>
+    </target>
 
 </project>
