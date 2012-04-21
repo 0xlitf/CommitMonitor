@@ -388,7 +388,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_SIZE:
         {
-            DoResize(LOWORD(lParam), HIWORD(lParam));
+            if (wParam != SIZE_MINIMIZED)
+                DoResize(LOWORD(lParam), HIWORD(lParam));
         }
         break;
     case WM_SYSCOMMAND:
@@ -403,7 +404,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 regMaximized = 0;
             }
-            SaveWndPosition();
+            if (!IsIconic(*this))
+                SaveWndPosition();
 
             return FALSE;
         }
@@ -1019,7 +1021,8 @@ LRESULT CMainDlg::DoCommand(int id)
     case IDM_EXIT:
     case IDCANCEL:
         {
-            SaveWndPosition();
+            if (!IsIconic(*this))
+                SaveWndPosition();
             EndDialog(*this, IDCANCEL);
         }
         break;
