@@ -17,6 +17,12 @@ endif
 AR = ar
 RANLIB = touch
 
+ifdef GTK3
+GTKVERSION=gtk+-3.0
+else
+GTKVERSION=gtk+-2.0
+endif
+
 # Environment variable windir always defined on Win32
 
 ifndef windir
@@ -27,17 +33,19 @@ endif
 
 ifdef windir
 DEL = del /q
+COMPLIB=..\bin\scintilla.a
 else
 DEL = rm -f
-endif
-
 COMPLIB=../bin/scintilla.a
+endif
 
 vpath %.h ../src ../include ../lexlib
 vpath %.cxx ../src ../lexlib ../lexers
 
 INCLUDEDIRS=-I ../include -I ../src -I ../lexlib
-#~ DEPRECATED=-DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DDISABLE_GDK_FONT
+ifdef CHECK_DEPRECATED
+DEPRECATED=-DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DDISABLE_GDK_FONT
+endif
 CXXBASEFLAGS=-Wall -Wno-missing-braces -Wno-char-subscripts -Wno-long-long -pedantic -DGTK -DSCI_LEXER $(INCLUDEDIRS) $(DEPRECATED)
 
 ifdef NOTHREADS
@@ -47,18 +55,20 @@ THREADFLAGS=
 endif
 
 ifdef DEBUG
-CXXFLAGS=-DDEBUG -g $(CXXBASEFLAGS) $(THREADFLAGS)
+CXXTFLAGS=-DDEBUG -g $(CXXFLAGS) $(CXXBASEFLAGS) $(THREADFLAGS)
 else
-CXXFLAGS=-DNDEBUG -Os $(CXXBASEFLAGS) $(THREADFLAGS)
+CXXTFLAGS=-DNDEBUG -Os $(CXXFLAGS) $(CXXBASEFLAGS) $(THREADFLAGS)
 endif
 
-CONFIGFLAGS:=$(shell pkg-config --cflags gtk+-2.0)
+CFLAGS:=$(CXXTFLAGS)
+
+CONFIGFLAGS:=$(shell pkg-config --cflags $(GTKVERSION))
 MARSHALLER=scintilla-marshal.o
 
 .cxx.o:
-	$(CC) $(CONFIGFLAGS) $(CXXFLAGS) -c $<
+	$(CC) $(CONFIGFLAGS) $(CXXTFLAGS) -c $<
 .c.o:
-	$(CCOMP) $(CONFIGFLAGS) $(CXXFLAGS) -w -c $<
+	$(CCOMP) $(CONFIGFLAGS) $(CFLAGS) -w -c $<
 
 LEXOBJS:=$(addsuffix .o,$(basename $(notdir $(wildcard ../lexers/Lex*.cxx))))
 
@@ -68,7 +78,7 @@ clean:
 	$(DEL) *.o $(COMPLIB)
 
 deps:
-	$(CC) -MM $(CONFIGFLAGS) $(CXXFLAGS) *.cxx ../src/*.cxx | sed -e 's/\/usr.* //' | grep [a-zA-Z] >deps.mak
+	$(CC) -MM $(CONFIGFLAGS) $(CXXTFLAGS) *.cxx ../src/*.cxx | sed -e 's/\/usr.* //' | grep [a-zA-Z] >deps.mak
 
 $(COMPLIB): Accessor.o CharacterSet.o LexerBase.o LexerModule.o LexerSimple.o StyleContext.o WordList.o \
 	CharClassify.o Decoration.o Document.o PerLine.o Catalogue.o CallTip.o \
