@@ -31,6 +31,7 @@
     </if>
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
+      <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration != 'release'}" />
       <arg value="/FD" />
       <arg value="/EHa-" />
@@ -43,6 +44,7 @@
       <arg value="/Zi" />
       <arg value="/MP" />
       <arg value="/errorReport:prompt" />
+      <arg value="/GL" />
       <sources>
         <include name="*.c" />
       </sources>
@@ -68,6 +70,7 @@
     <lib
       output="${configuration}_${platform}\zlibstat.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <exclude name="${configuration}_${platform}\example.obj" />

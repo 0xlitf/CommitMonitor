@@ -27,8 +27,8 @@ Now you're almost ready. Only a few more steps to do:
 Building packages
 
   Hint: before you can start building CommitMonitor, you need to call the vsvars32.bat
-  file which is located in %VS90COMNTOOLS%. 
-  
+  file which is located in %VS100COMNTOOLS%.
+
   > nant
   will show you some help about the targets you can use
 
@@ -40,8 +40,8 @@ Building packages
   .sln file in VS2008 and compile the CommitMonitor there.
   Don't forget to also build the debug versions of the libraries:
   > nant debug Subversion
-  
-  
+
+
   If you encounter any build errors, you can run nant again like this:
 
   > nant setup -l:buildlog.txt

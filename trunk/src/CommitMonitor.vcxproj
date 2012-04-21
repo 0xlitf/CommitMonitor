@@ -45,10 +45,6 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\lexers;..\ext\scintilla\lexlib;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -69,17 +65,10 @@
       <IgnoreSpecificDefaultLibraries>winspool.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\lexers;..\ext\scintilla\lexlib;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -94,7 +83,7 @@
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\release_win32\libapr.lib;..\ext\apr-util\release_win32\libaprutil.lib;..\ext\neon\release_win32\libneon.lib;..\ext\Subversion\release_win32\libsvn_client.lib;..\ext\Subversion\release_win32\libsvn_delta.lib;..\ext\Subversion\release_win32\libsvn_diff.lib;..\ext\Subversion\release_win32\libsvn_ra.lib;..\ext\Subversion\release_win32\libsvn_ra_neon.lib;..\ext\Subversion\release_win32\libsvn_ra_serf.lib;..\ext\Subversion\release_win32\libsvn_ra_svn.lib;..\ext\Subversion\release_win32\libsvn_repos.lib;..\ext\Subversion\release_win32\libsvn_subr.lib;..\ext\Subversion\release_win32\libsvn_wc.lib;..\ext\cyrus-sasl\release_win32\libsasls.lib;..\ext\serf\release_win32\libserf.lib;..\ext\sqlite\debug_win32\sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\release_win32\libapr.lib;..\ext\apr-util\release_win32\libaprutil.lib;..\ext\neon\release_win32\libneon.lib;..\ext\Subversion\release_win32\libsvn_client.lib;..\ext\Subversion\release_win32\libsvn_delta.lib;..\ext\Subversion\release_win32\libsvn_diff.lib;..\ext\Subversion\release_win32\libsvn_ra.lib;..\ext\Subversion\release_win32\libsvn_ra_neon.lib;..\ext\Subversion\release_win32\libsvn_ra_serf.lib;..\ext\Subversion\release_win32\libsvn_ra_svn.lib;..\ext\Subversion\release_win32\libsvn_repos.lib;..\ext\Subversion\release_win32\libsvn_subr.lib;..\ext\Subversion\release_win32\libsvn_wc.lib;..\ext\cyrus-sasl\release_win32\libsasls.lib;..\ext\serf\release_win32\libserf.lib;..\ext\sqlite\release_win32\sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>winspool.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

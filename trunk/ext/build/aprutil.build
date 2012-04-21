@@ -59,6 +59,7 @@
 
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
+      <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration != 'release'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
@@ -71,6 +72,7 @@
       <arg value="/Zi" />
       <arg value="/MP" />
       <arg value="/errorReport:prompt" />
+      <arg value="/GL" />
       <sources>
         <include name="buckets\*.c" />
         <include name="crypto\*.c" />
@@ -114,7 +116,7 @@
     <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libaprutil.lib"
-      options='/NOLOGO /DEBUG /PDB:".\${configuration}_${platform}/libaprutil.pdb" /SUBSYSTEM:WINDOWS'>
+      options='/NOLOGO /SUBSYSTEM:WINDOWS'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />

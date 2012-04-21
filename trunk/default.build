@@ -11,8 +11,6 @@
   <property name="buildtool" value="devenv.com" />
   <!-- build with VS2010, if there is a 10.0 in the VC path -->
   <property name="studioversion" value="2010" if="${string::contains (environment::get-variable('VCINSTALLDIR'), '10.0')}"/>
-  <property name="studioversion" value="2008" if="${string::contains (environment::get-variable('VCINSTALLDIR'), '9.0')}"/>
-  <property name="solutionname" value="CommitMonitor.sln" if="${studioversion == '2008'}"/>
   <property name="solutionname" value="CommitMonitor_VS10.sln" if="${studioversion == '2010'}"/>
   <!-- the signinfo.txt file has to contain one line with parameters for signtool.exe,
        for example:
@@ -23,7 +21,7 @@
   <include buildfile="default.build.user" />
 
   <!-- ====================================================================== -->
-  <!-- Configuration targets													-->
+  <!-- Configuration targets                                                  -->
   <!-- ====================================================================== -->
   <target name="debug">
     <description>
@@ -41,7 +39,7 @@
   </target>
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="clean" depends="VSNET">
     <description>
@@ -135,7 +133,7 @@
       Builds all binaries
     </description>
   </target>
-  
+
   <target name="setup" depends="Subversion,CommitMonitor">
     <description>
       Uses WiX to create an msi installer file.
@@ -160,7 +158,7 @@
 
 
   <!-- ====================================================================== -->
-  <!-- Help target															-->
+  <!-- Help target                                                            -->
   <!-- ====================================================================== -->
   <target name="help">
     <echo message="You must specify a target to tell us what you want to build!" />
@@ -188,5 +186,3 @@
     <echo />
   </target>
 </project>
-
-

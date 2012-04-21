@@ -40,6 +40,7 @@
     <echo file="config.h" message="${configfile}" unless="${file::exists('config.h')}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
+      <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration != 'release'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
@@ -52,6 +53,7 @@
       <arg value="/Zi" />
       <arg value="/MP" />
       <arg value="/errorReport:prompt" />
+      <arg value="/GL" />
       <sources>
         <include name="src\ne_207.c" />
         <include name="src\ne_acl3744.c" />
@@ -125,6 +127,7 @@
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
