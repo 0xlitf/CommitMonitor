@@ -2,7 +2,7 @@
 <project name="aprutil" default="build" basedir="..\apr-util">
 
   <!-- ====================================================================== -->
-  <!-- Configuration targets													-->
+  <!-- Configuration targets                                                  -->
   <!-- ====================================================================== -->
   <target name="debug">
     <description>
@@ -12,7 +12,7 @@
   </target>
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="rebuild" depends="clean,build" />
 
@@ -113,7 +113,7 @@
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" />
-    <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
+    <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libaprutil.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS'>

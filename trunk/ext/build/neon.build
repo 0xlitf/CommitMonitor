@@ -2,7 +2,7 @@
 <project name="neon" default="build" basedir="..\neon">
 
   <!-- ====================================================================== -->
-  <!-- Project targets														-->
+  <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
   <target name="rebuild" depends="clean,build" />
 
@@ -123,7 +123,7 @@
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
-    <property name="machineoption" value="/MACHINE:x64" if="${platform == 'x64'}" />
+    <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>

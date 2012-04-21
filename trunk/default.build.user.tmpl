@@ -14,18 +14,18 @@
 
 <project name="ToolPaths" default="env">
 
-	<target name="VSNET" description="Checks if the env variables for VS.NET2008 are set">
-		<if test="${not environment::variable-exists('VCINSTALLDIR')}">
-			<fail>You must first call "%VS90COMNTOOLS%\vsvars32.bat"</fail>
-		</if>
-	</target>
+    <target name="VSNET" description="Checks if the env variables for VS2010 are set">
+        <if test="${not environment::variable-exists('VCINSTALLDIR')}">
+            <fail>You must first call "%VS100COMNTOOLS%\vsvars32.bat"</fail>
+        </if>
+    </target>
 
-	<target name="env">
-		<setenv>
-			<variable name="PATH" value="D:\Development\wix\;%PATH%" />
-			<variable name="WIXUI" value="D:\Development\wix\" />
-			<!-- path to SubWCRev.exe -->
-			<variable name="PATH" value="C:\Programme\TortoiseSVN\bin\;%PATH%" />
-		</setenv>
-	</target>
+    <target name="env">
+        <setenv>
+            <variable name="PATH" value="D:\Development\wix\;%PATH%" />
+            <variable name="WIXUI" value="D:\Development\wix\" />
+            <!-- path to SubWCRev.exe -->
+            <variable name="PATH" value="C:\Programme\TortoiseSVN\bin\;%PATH%" />
+        </setenv>
+    </target>
 </project>

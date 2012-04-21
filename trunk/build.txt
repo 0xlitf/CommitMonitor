@@ -1,15 +1,15 @@
 First, you need to install the compiler package.
 
-- You need VS.NET2008
+- You need VS2010
   If you want to build the msi make sure the "Tools for Redistributing
   Applications" are installed.
   Also, you need the MFC feature pack which contains the tr1 c-runtime
-  extensions (or the SP1 for VS2008 which contains the feature pack).
+  extensions (or the SP1 for VS2010 which contains the feature pack).
 
 Next you need to install some utilities/programs:
-- Python 2.4(*)           : http://www.python.org/windows/
+- Python 2.7.3(*)         : http://www.python.org/windows/
 - Perl                    : http://www.activestate.com/Products/ActivePerl/
-- WiX 3(*)                : http://wix.sourceforge.net
+- WiX 3.5(*)              : http://wix.sourceforge.net
 - NAnt(*)                 : http://nant.sourceforge.net
 
 (*) Add the paths of the binaries to the PATH environment variable
@@ -37,7 +37,7 @@ Building packages
 
   > nant Subversion
   will build all the libraries required. After that you can open the
-  .sln file in VS2008 and compile the CommitMonitor there.
+  .sln file in VS2010 and compile the CommitMonitor there.
   Don't forget to also build the debug versions of the libraries:
   > nant debug Subversion
 
@@ -50,4 +50,4 @@ Building packages
   exactly the build failed.
 
 
-  After the script finished, the packages can be found in .\bin .
+  After the script finished, the packages can be found in .\bin.

@@ -243,6 +243,21 @@
     <ClCompile Include="..\ext\scintilla\win32\PlatWin.cxx">
       <Filter>Scintilla</Filter>
     </ClCompile>
+    <ClCompile Include="..\ext\scintilla\lexers\LexTCMD.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\lexers\LexModula.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\lexers\LexECL.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\lexers\LexCoffeeScript.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\scintilla\lexers\LexAVS.cxx">
+      <Filter>Scintilla</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h">
