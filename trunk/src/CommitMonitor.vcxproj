@@ -58,7 +58,6 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ResourceOutputFileName>$(IntDir)%(Filename).res</ResourceOutputFileName>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\debug_win32\libapr.lib;..\ext\apr-util\debug_win32\libaprutil.lib;..\ext\neon\debug_win32\libneon.lib;..\ext\Subversion\debug_win32\libsvn_client.lib;..\ext\Subversion\debug_win32\libsvn_delta.lib;..\ext\Subversion\debug_win32\libsvn_diff.lib;..\ext\Subversion\debug_win32\libsvn_ra.lib;..\ext\Subversion\debug_win32\libsvn_ra_neon.lib;..\ext\Subversion\debug_win32\libsvn_ra_serf.lib;..\ext\Subversion\debug_win32\libsvn_ra_svn.lib;..\ext\Subversion\debug_win32\libsvn_repos.lib;..\ext\Subversion\debug_win32\libsvn_subr.lib;..\ext\Subversion\debug_win32\libsvn_wc.lib;..\ext\cyrus-sasl\debug_win32\libsasls.lib;..\ext\serf\debug_win32\libserf.lib;..\ext\sqlite\debug_win32\sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -71,6 +70,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
+      <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\win32;..\ext\scintilla\src;..\ext\scintilla\lexers;..\ext\scintilla\lexlib;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -92,6 +92,7 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
