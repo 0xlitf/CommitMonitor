@@ -208,12 +208,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // Set defaults for the registry values is nothing exists
             CRegStdString regAccurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
             wstring sAccurevExe(regAccurevExe);
-            if (sAccurevExe.size() == 0) {
+            if (sAccurevExe.size() == 0)
+            {
               regAccurevExe = _T("C:\\Program Files\\AccuRev\\bin\\accurev.EXE");              // Writes value to registry
             }
             CRegStdString regAccurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
             wstring sAccurevDiffCmd(regAccurevDiffCmd);
-            if (sAccurevDiffCmd.size() == 0) {
+            if (sAccurevDiffCmd.size() == 0)
+            {
               regAccurevDiffCmd = _T("\"C:\\Program Files\\WinMerge\\WinMergeU.exe\" /e /u /r /dl \"%OLD\" /dr \"%NEW\" \"%1\" \"%2\"");
             }
 
