@@ -226,6 +226,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_hCheckControl = ::GetDlgItem(*this, IDC_SHOWIGNORED);
             ::SendMessage(m_hTreeControl, TVM_SETUNICODEFORMAT, 1, 0);
 
+            if (CRegStdDWORD(_T("Software\\CommitMonitor\\showignoredcheck"), FALSE))
+                ::SendMessageA(m_hCheckControl, BM_SETCHECK, BST_CHECKED, 0);
+            else
+                ::SendMessageA(m_hCheckControl, BM_SETCHECK, BST_UNCHECKED, 0);
+
             SetWindowTheme(m_hListControl, L"Explorer", NULL);
             SetWindowTheme(m_hTreeControl, L"Explorer", NULL);
 
@@ -3043,6 +3048,8 @@ void CMainDlg::SaveWndPosition()
         ::MapWindowPoints(NULL, *this, (LPPOINT)&rc, 2);
         regVertPos = rc.bottom;
     }
+    CRegStdDWORD regCheck(_T("Software\\CommitMonitor\\showignoredcheck"), FALSE);
+    regCheck = ::SendMessage(m_hCheckControl, BM_GETCHECK, 0, 0) == BST_CHECKED;
 }
 
 LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
