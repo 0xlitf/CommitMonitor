@@ -1486,7 +1486,8 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                 SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                 
                 // Switch how the diff is done in SVN / Accurev
-                switch(pUrlInfo->sccs) {
+                switch(pUrlInfo->sccs)
+                {
                   default:
                   case CUrlInfo::SCCS_SVN:
                     {
@@ -1507,11 +1508,16 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
                       {
                           // yes, we have TSVN installed
+                          // first find out if there's only one file changed and if there is,
+                          // then directly diff that url instead of the project url
+                          std::wstring diffurl = pInfo->url;
+                          if (pLogEntry->m_changedPaths.size()==1)
+                              diffurl += pLogEntry->m_changedPaths.cbegin()->first.c_str();
                           // call TortoiseProc to do the diff for us
                           cmd = _T("\"");
                           cmd += wstring(tsvninstalled);
                           cmd += _T("\" /command:diff /path:\"");
-                          cmd += pInfo->url;
+                          cmd += diffurl;
                           cmd += _T("\" /startrev:");
 
                           TCHAR numBuf[100] = {0};
