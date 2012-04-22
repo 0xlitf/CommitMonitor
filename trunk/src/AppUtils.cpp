@@ -577,3 +577,33 @@ void CAppUtils::CreateUUIDString(wstring& sUuid) {
     // Free allocated string memory
     RpcStringFree( &pUIDStr );
 }
+
+bool CAppUtils::IsWindowCovered( HWND hWnd )
+{
+    RECT wndRect = {0};
+    GetWindowRect(hWnd, &wndRect);
+
+    for (long i = wndRect.left; i < wndRect.right; i = i + (((wndRect.right-wndRect.left)/10)+1))
+    {
+        for (long j = wndRect.top; j < wndRect.bottom; j = j + (((wndRect.bottom-wndRect.top)/10)+1))
+        {
+            POINT pt;
+            pt.x = i;
+            pt.y = j;
+            HWND hPointWnd = WindowFromPoint(pt);
+            bool covered = true;
+            while (hPointWnd)
+            {
+                if (hPointWnd==hWnd)
+                {
+                    covered = false;
+                    break;
+                }
+                hPointWnd = GetParent(hPointWnd);
+            }
+            if (covered)
+                return true;
+        }
+    }
+    return false;
+}
