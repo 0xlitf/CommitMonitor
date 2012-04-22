@@ -152,7 +152,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
             // bring the dialog to front
             if (m_hMainDlg == NULL)
                 m_hMainDlg = FindWindow(NULL, _T("Commit Monitor"));
-            if (IsWindowVisible(m_hMainDlg))
+            if (IsWindowVisible(m_hMainDlg) && !CAppUtils::IsWindowCovered(m_hMainDlg))
                 SendMessage(m_hMainDlg, WM_CLOSE, 0, 0);
             else
             {
