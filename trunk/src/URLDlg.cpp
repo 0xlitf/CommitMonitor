@@ -56,17 +56,17 @@ void CURLDlg::ClearForTemplate()
 
 }
 
-void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs) 
+void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs)
 {
     // SCCS specific initialization
-    switch (sccs) 
+    switch (sccs)
     {
     default:
     case CUrlInfo::SCCS_SVN:
         AddToolTip(IDC_URLTOMONITOR, _T("URL to the repository, or the SVNParentPath URL"));
         SetDlgItemText(*this, IDC_REPOLABEL, _T(""));
         SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("URL to monitor"));
-        SetDlgItemText(*this, IDC_URLGROUP, _T("SVN repository settings"));                
+        SetDlgItemText(*this, IDC_URLGROUP, _T("SVN repository settings"));
         ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_HIDE);
         SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 0);
         break;
@@ -75,11 +75,11 @@ void CURLDlg::SetSCCS(CUrlInfo::SCCS_TYPE sccs)
         AddToolTip(IDC_URLTOMONITOR, _T("Accurev stream name"));
         SetDlgItemText(*this, IDC_REPOLABEL, _T("Accurev repository"));
         SetDlgItemText(*this, IDC_URLTOMONITORLABEL, _T("Accurev stream"));
-        SetDlgItemText(*this, IDC_URLGROUP, _T("Accurev repository settings"));                
+        SetDlgItemText(*this, IDC_URLGROUP, _T("Accurev repository settings"));
         ShowWindow(GetDlgItem(*this, IDC_ACCUREVREPO), SW_SHOW);
         SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_SETCURSEL, (WPARAM)sccs, 1);
         break;
-    }  
+    }
 }
 
 LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -92,7 +92,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             InitDialog(hwndDlg, IDI_COMMITMONITOR);
 
             // Default SCCS to SVN if it is not set
-            if (info.sccs < 0 || info.sccs >= CUrlInfo::SCCS_LEN) 
+            if (info.sccs < 0 || info.sccs >= CUrlInfo::SCCS_LEN)
             {
                 info.sccs = CUrlInfo::SCCS_SVN;
             }
@@ -105,7 +105,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             AddToolTip(IDC_ACCUREVREPO, _T("Accurev repository name"));
             AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
             AddToolTip(IDC_SCRIPT, _T("enter here a command which gets called after new revisions were detected.\n\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name\n%username gets replaced with a list of usernames\n\nExample command line:\nTortoiseProc.exe /command:update /rev:%revision /path:\"path\\to\\working\\copy\""));
-            AddToolTip(IDC_WEBDIFF, _T("URL to a web viewer\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name"));            
+            AddToolTip(IDC_WEBDIFF, _T("URL to a web viewer\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name"));
             AddToolTip(IDC_IGNOREUSERS, _T("Newline separated list of usernames to ignore"));
             AddToolTip(IDC_INCLUDEUSERS, _T("Newline separated list of users to monitor"));
 
@@ -145,12 +145,12 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // SCCS specific initialization
 
             // Fill combobox
-            for (int i=0;i<CUrlInfo::SCCS_LEN;i++) 
+            for (int i=0;i<CUrlInfo::SCCS_LEN;i++)
             {
                 SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_ADDSTRING,
                     0, (LPARAM)sSCCS[i].c_str());
-            }                        
-            SetSCCS(info.sccs);                                    
+            }
+            SetSCCS(info.sccs);
         }
         return TRUE;
     case WM_COMMAND:
@@ -178,14 +178,14 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
 
             info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
 
-            switch (info.sccs) 
+            switch (info.sccs)
             {
             default:
             case CUrlInfo::SCCS_SVN:
                 len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
                 buffer = new WCHAR[len+1];
                 GetDlgItemText(*this, IDC_URLTOMONITOR, buffer, len+1);
-                info.url = svn.CanonicalizeURL(wstring(buffer, len));              
+                info.url = svn.CanonicalizeURL(wstring(buffer, len));
                 CStringUtils::trim(info.url);
                 delete [] buffer;
 
@@ -213,7 +213,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
                 delete [] buffer;
                 CStringUtils::trim(info.accurevRepo);
                 break;
-            }  
+            }
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
             buffer = new WCHAR[len+1];
@@ -317,8 +317,8 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
 
     case IDC_SCCSCOMBO:
         switch(cmd) // Find out what message it was
-        {          
-        case CBN_SELCHANGE: // This means that list item has changed            
+        {
+        case CBN_SELCHANGE: // This means that list item has changed
             info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
             SetSCCS(info.sccs);
             break;

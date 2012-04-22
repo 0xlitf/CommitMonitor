@@ -35,7 +35,7 @@ BEGIN
             VALUE "FileDescription", "CommitMonitor"
             VALUE "FileVersion", STRFILEVER
             VALUE "InternalName", "CommitMonitor.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2007-2011"
+            VALUE "LegalCopyright", "Copyright (C) 2007-2012"
             VALUE "OriginalFilename", "CommitMonitor.exe"
             VALUE "ProductName", "CommitMonitor"
             VALUE "ProductVersion", STRPRODUCTVER

@@ -206,7 +206,7 @@ wstring CAppUtils::GetAppName(HMODULE hMod /* = NULL */)
 
 
 /* Number of micro-seconds between the beginning of the Windows epoch
-* (Jan. 1, 1601) and the Unix epoch (Jan. 1, 1970) 
+* (Jan. 1, 1601) and the Unix epoch (Jan. 1, 1970)
 */
 #define APR_DELTA_EPOCH_IN_USEC   APR_TIME_C(11644473600000000);
 
@@ -255,12 +255,12 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
     {
         wstring::size_type next = str.find(toreplace, pos);
         result.append(str, pos, next-pos);
-        if( next != std::string::npos ) 
+        if( next != std::string::npos )
         {
             result.append(replacewith);
             pos = next + toreplace.size();
-        } 
-        else 
+        }
+        else
         {
             break;  // exit loop
         }
@@ -312,15 +312,15 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
     {
         delete [] cmdbuf;
         LPVOID lpMsgBuf;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-            FORMAT_MESSAGE_FROM_SYSTEM | 
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
             FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL,
             GetLastError(),
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
             (LPTSTR) &lpMsgBuf,
             0,
-            NULL 
+            NULL
             );
         ::MessageBox(NULL, (LPCWSTR)lpMsgBuf, _T("CommitMonitor"), MB_ICONERROR|MB_TASKMODAL);
         LocalFree(lpMsgBuf);
@@ -455,13 +455,13 @@ wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
                 dwBufferSize,
                 pBuffer);
 
-            VerQueryValue(	pBuffer,
+            VerQueryValue(  pBuffer,
                 _T("\\VarFileInfo\\Translation"),
                 &lpFixedPointer,
                 &nFixedLength);
             lpTransArray = (TRANSARRAY*) lpFixedPointer;
 
-            _stprintf_s(strLangProduktVersion, MAX_PATH, 
+            _stprintf_s(strLangProduktVersion, MAX_PATH,
                 _T("\\StringFileInfo\\%04x%04x\\ProductVersion"),
                 lpTransArray[0].wLanguageID,
                 lpTransArray[0].wCharacterSet);
@@ -474,18 +474,18 @@ wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
             sVersion = (LPCTSTR)lpVersion;
             free(pBuffer);
         }
-    } 
+    }
 
     return sVersion;
 }
 
 bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath)
 {
-    HGLOBAL hResourceLoaded;		// handle to loaded resource 
-    HRSRC hRes;						// handle/ptr. to res. info. 
-    char *lpResLock;				// pointer to resource data 
+    HGLOBAL hResourceLoaded;        // handle to loaded resource
+    HRSRC hRes;                     // handle/ptr. to res. info.
+    char *lpResLock;                // pointer to resource data
     DWORD dwSizeRes;
-    wstring strAppLocation; 
+    wstring strAppLocation;
 
     strAppLocation = CAppUtils::GetAppDirectory();
 
@@ -494,17 +494,17 @@ bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourc
     if (hRes == NULL)
         return false;
 
-    // loads the specified resource into global memory. 
-    hResourceLoaded = LoadResource(NULL, hRes); 
+    // loads the specified resource into global memory.
+    hResourceLoaded = LoadResource(NULL, hRes);
     if (hResourceLoaded == NULL)
         return false;
 
     // get a pointer to the loaded resource!
-    lpResLock = (char*)LockResource(hResourceLoaded); 
+    lpResLock = (char*)LockResource(hResourceLoaded);
     if (lpResLock == NULL)
         return false;
 
-    // determine the size of the resource, so we know how much to write out to file!  
+    // determine the size of the resource, so we know how much to write out to file!
     dwSizeRes = SizeofResource(NULL, hRes);
 
     try
@@ -550,19 +550,19 @@ bool CAppUtils::WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwni
 
 
 bool CAppUtils::IsFullscreenWindowActive()
-{ 
-    HWND hwnd = GetForegroundWindow(); 
-    RECT rcWindow; 
-    GetWindowRect(hwnd, &rcWindow); 
+{
+    HWND hwnd = GetForegroundWindow();
+    RECT rcWindow;
+    GetWindowRect(hwnd, &rcWindow);
 
-    HMONITOR hm = MonitorFromRect(&rcWindow,MONITOR_DEFAULTTONULL); 
-    if (!hm) 
-        return false; 
+    HMONITOR hm = MonitorFromRect(&rcWindow,MONITOR_DEFAULTTONULL);
+    if (!hm)
+        return false;
 
-    MONITORINFO mi = {sizeof (mi)}; 
-    GetMonitorInfo(hm,&mi); 
+    MONITORINFO mi = {sizeof (mi)};
+    GetMonitorInfo(hm,&mi);
 
-    return !!EqualRect(&rcWindow, &mi.rcMonitor); 
+    return !!EqualRect(&rcWindow, &mi.rcMonitor);
 }
 
 void CAppUtils::CreateUUIDString(wstring& sUuid) {

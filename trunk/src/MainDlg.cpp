@@ -39,7 +39,7 @@
 #define CHECKBOXHEIGHT  16
 #define FILTERLABELWIDTH 50
 
-CMainDlg::CMainDlg(HWND hParent) 
+CMainDlg::CMainDlg(HWND hParent)
     : m_nDragMode(DRAGMODE_NONE)
     , m_oldx(-1)
     , m_oldy(-1)
@@ -80,21 +80,21 @@ CMainDlg::~CMainDlg(void)
 
 bool CMainDlg::CreateToolbar()
 {
-    m_hwndToolbar = CreateWindowEx(0, 
-        TOOLBARCLASSNAME, 
+    m_hwndToolbar = CreateWindowEx(0,
+        TOOLBARCLASSNAME,
         (LPCTSTR)NULL,
-        WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 
-        0, 0, 0, 0, 
+        WS_CHILD | WS_BORDER | WS_VISIBLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS,
+        0, 0, 0, 0,
         *this,
-        (HMENU)IDR_MAINDLG, 
-        hResource, 
+        (HMENU)IDR_MAINDLG,
+        hResource,
         NULL);
     if (m_hwndToolbar == INVALID_HANDLE_VALUE)
         return false;
 
     SendMessage(m_hwndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);
 
-#define MAINDLG_TOOLBARBUTTONCOUNT	11
+#define MAINDLG_TOOLBARBUTTONCOUNT  11
     TBBUTTON tbb[MAINDLG_TOOLBARBUTTONCOUNT];
     // create an image list containing the icons for the toolbar
     m_hToolbarImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, MAINDLG_TOOLBARBUTTONCOUNT, 4);
@@ -102,95 +102,95 @@ bool CMainDlg::CreateToolbar()
         return false;
     int index = 0;
     HICON hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_GETALL), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MAIN_CHECKREPOSITORIESNOW; 
-    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Check Now"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MAIN_CHECKREPOSITORIESNOW;
+    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Check Now");
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_ADD), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MAIN_ADDPROJECT; 
-    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Add Project"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MAIN_ADDPROJECT;
+    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Add Project");
 
-    tbb[index].iBitmap = 0; 
-    tbb[index].idCommand = 0; 
-    tbb[index].fsState = TBSTATE_ENABLED; 
-    tbb[index].fsStyle = BTNS_SEP; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = 0; 
+    tbb[index].iBitmap = 0;
+    tbb[index].idCommand = 0;
+    tbb[index].fsState = TBSTATE_ENABLED;
+    tbb[index].fsStyle = BTNS_SEP;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = 0;
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_EDIT), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MAIN_EDIT; 
-    tbb[index].fsState = BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("E&dit"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MAIN_EDIT;
+    tbb[index].fsState = BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("E&dit");
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_REMOVE), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MAIN_REMOVE; 
-    tbb[index].fsState = BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Remove"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MAIN_REMOVE;
+    tbb[index].fsState = BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Remove");
 
-    tbb[index].iBitmap = 0; 
-    tbb[index].idCommand = 0; 
-    tbb[index].fsState = TBSTATE_ENABLED; 
-    tbb[index].fsStyle = BTNS_SEP; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = 0; 
+    tbb[index].iBitmap = 0;
+    tbb[index].idCommand = 0;
+    tbb[index].fsState = TBSTATE_ENABLED;
+    tbb[index].fsStyle = BTNS_SEP;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = 0;
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_DIFF), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MAIN_SHOWDIFFCHOOSE; 
-    tbb[index].fsState = BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Show Diff"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MAIN_SHOWDIFFCHOOSE;
+    tbb[index].fsState = BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Show Diff");
 
-    tbb[index].iBitmap = 0; 
-    tbb[index].idCommand = 0; 
-    tbb[index].fsState = TBSTATE_ENABLED; 
-    tbb[index].fsStyle = BTNS_SEP; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = 0; 
+    tbb[index].iBitmap = 0;
+    tbb[index].idCommand = 0;
+    tbb[index].fsState = TBSTATE_ENABLED;
+    tbb[index].fsStyle = BTNS_SEP;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = 0;
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_MARKASREAD), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_POPUP_MARKALLASREAD; 
-    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Mark all as read"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_POPUP_MARKALLASREAD;
+    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Mark all as read");
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_OPTIONS), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MISC_OPTIONS; 
-    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("&Options"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MISC_OPTIONS;
+    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("&Options");
 
     hIcon = (HICON)LoadImage(hResource, MAKEINTRESOURCE(IDI_ABOUT), IMAGE_ICON, 0, 0, LR_VGACOLOR|LR_DEFAULTSIZE|LR_LOADTRANSPARENT);
-    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon); 
-    tbb[index].idCommand = ID_MISC_ABOUT; 
-    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT; 
-    tbb[index].fsStyle = BTNS_BUTTON; 
-    tbb[index].dwData = 0; 
-    tbb[index++].iString = (INT_PTR)_T("A&bout"); 
+    tbb[index].iBitmap = ImageList_AddIcon(m_hToolbarImages, hIcon);
+    tbb[index].idCommand = ID_MISC_ABOUT;
+    tbb[index].fsState = TBSTATE_ENABLED|BTNS_SHOWTEXT;
+    tbb[index].fsStyle = BTNS_BUTTON;
+    tbb[index].dwData = 0;
+    tbb[index++].iString = (INT_PTR)_T("A&bout");
 
     SendMessage(m_hwndToolbar, TB_SETIMAGELIST, 0, (LPARAM)m_hToolbarImages);
-    SendMessage(m_hwndToolbar, TB_ADDBUTTONS, (WPARAM)index, (LPARAM) (LPTBBUTTON) &tbb); 
-    SendMessage(m_hwndToolbar, TB_AUTOSIZE, 0, 0); 
-    ShowWindow(m_hwndToolbar, SW_SHOW); 
-    return true; 
+    SendMessage(m_hwndToolbar, TB_ADDBUTTONS, (WPARAM)index, (LPARAM) (LPTBBUTTON) &tbb);
+    SendMessage(m_hwndToolbar, TB_AUTOSIZE, 0, 0);
+    ShowWindow(m_hwndToolbar, SW_SHOW);
+    return true;
 }
 
 LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -326,14 +326,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                             if (DWORD(regHorzPos))
                             {
                                 POINT pt;
-                                pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
+                                pt.x = pt.y = DWORD(regHorzPos)+2;  // +2 because the slider is 4 pixels wide
                                 PositionChildWindows(pt, true, false);
                             }
                             CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPos"));
                             if (DWORD(regVertPos))
                             {
                                 POINT pt;
-                                pt.x = pt.y = DWORD(regVertPos)+2;	// +2 because the slider is 4 pixels wide
+                                pt.x = pt.y = DWORD(regVertPos)+2;  // +2 because the slider is 4 pixels wide
                                 PositionChildWindows(pt, false, false);
                             }
                             // adjust the slider position infos
@@ -356,14 +356,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 if (DWORD(regHorzPos))
                 {
                     POINT pt;
-                    pt.x = pt.y = DWORD(regHorzPos)+2;	// +2 because the slider is 4 pixels wide
+                    pt.x = pt.y = DWORD(regHorzPos)+2;  // +2 because the slider is 4 pixels wide
                     PositionChildWindows(pt, true, false);
                 }
                 CRegStdDWORD regVertPos(_T("Software\\CommitMonitor\\VertPosZoomed"));
                 if (DWORD(regVertPos))
                 {
                     POINT pt;
-                    pt.x = pt.y = DWORD(regVertPos)+2;	// +2 because the slider is 4 pixels wide
+                    pt.x = pt.y = DWORD(regVertPos)+2;  // +2 because the slider is 4 pixels wide
                     PositionChildWindows(pt, false, false);
                 }
                 // adjust the slider position infos
@@ -399,7 +399,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 regMaximized = 1;
             }
-            
+
             if ((wParam & 0xFFF0) == SC_RESTORE)
             {
                 regMaximized = 0;
@@ -849,7 +849,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     hMenu = ::GetSubMenu(hMenu, 0);
 
                     UINT uItem = 0;
-                    
+
                     if ((!wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
                         uItem = 1;
                     // set the default entry
@@ -1261,7 +1261,7 @@ LRESULT CMainDlg::DoCommand(int id)
             wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
             bool bUseTSVN = !(tsvninstalled.empty()) && (_tstoi(sVer.substr(3, 4).c_str()) > 4);
             bUseTSVN = bUseTSVN && !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-            
+
             ShowDiff(bUseTSVN);
         }
         break;
@@ -1340,9 +1340,9 @@ LRESULT CMainDlg::DoCommand(int id)
                         if (pLogEntry)
                         {
                             // get the info to put on the clipboard
-                            _stprintf_s(tempBuf, 1024, _T("Revision: %ld\nAuthor: %s\nDate: %s\nMessage:\n"), 
-                                pLogEntry->revision, 
-                                pLogEntry->author.c_str(), 
+                            _stprintf_s(tempBuf, 1024, _T("Revision: %ld\nAuthor: %s\nDate: %s\nMessage:\n"),
+                                pLogEntry->revision,
+                                pLogEntry->author.c_str(),
                                 CAppUtils::ConvertDate(pLogEntry->date).c_str());
                             sClipboardData += tempBuf;
                             sClipboardData += pLogEntry->message;
@@ -1460,7 +1460,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     // find the revision we have to show the diff for
     int selCount = ListView_GetSelectedCount(m_hListControl);
     if (selCount <= 0)
-        return FALSE;	//nothing selected, nothing to show
+        return FALSE;   //nothing selected, nothing to show
 
     // Get temp directory and current directory
     auto_buffer<WCHAR> cTempPath(32767);
@@ -1492,7 +1492,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
             if (item.state & LVIS_SELECTED)
             {
                 SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
-                
+
                 // Switch how the diff is done in SVN / Accurev
                 switch(pUrlInfo->sccs)
                 {
@@ -1531,7 +1531,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           TCHAR numBuf[100] = {0};
                           _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
                           cmd += numBuf;
-                          cmd += _T(" /endrev:"); 
+                          cmd += _T(" /endrev:");
                           _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
                           cmd += numBuf;
                           CAppUtils::LaunchApplication(cmd);
@@ -1601,7 +1601,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                     {
                       /* Accurev 'diff' cannot be used as it mutex locks itself to only allow diffing of one
                        * file at a time... how typical. Therefore we 'pop' (get copies) of the correct versions
-                       * of each file and then diff the directories :) 
+                       * of each file and then diff the directories :)
                        * TODO: Somehow hold onto and delete the temporary dirs when commit monitor is closed */
                       CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
 
@@ -1610,7 +1610,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 
                       wstring uuid;
                       CAppUtils::CreateUUIDString(uuid);
-                      
+
                       wstring newTempPath = wstring(origTempPath);
                       newTempPath.append(_T("\\"));
                       newTempPath.append(uuid);
@@ -1627,7 +1627,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       {
                         // Parse the file and file revision from the stored URL
                         wstring rawPath = it->first;
-                        
+
                         int lastBracket = rawPath.rfind(L" (");
                         rawPath.erase(lastBracket, wstring::npos);
                         int lastForwardSlash = rawPath.rfind(L"/");
@@ -1666,7 +1666,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                                     break;
                                 }
 
-                                /* If this is the basis version, and there is none, since the file was added, then break 
+                                /* If this is the basis version, and there is none, since the file was added, then break
                                 * so we only check out the new version. This will then be shown in the directory compare :) */
                                 if ((j == 1) && (iAccuRevision == 1)) break;
 
@@ -1680,7 +1680,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                                 accurevPopCmd.append(dir);
                                 accurevPopCmd.append(_T("\" \""));
                                 accurevPopCmd.append(finalPath);
-                                accurevPopCmd.append(_T("\""));   
+                                accurevPopCmd.append(_T("\""));
 
                                 // Run accurev to perform the pop command
                                 CAppUtils::LaunchApplication(accurevPopCmd, true, true, true);
@@ -1700,7 +1700,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 
                       // Find and replace "%NEW"
                       pos = finalDiffCmd.find(_T("%NEW"));
-                      finalDiffCmd.replace(pos, 4, sLatestRev, 0, sLatestRev.size());                          
+                      finalDiffCmd.replace(pos, 4, sLatestRev, 0, sLatestRev.size());
 
                       // Find and replace "%1"
                       pos = finalDiffCmd.find(_T("%1"));
@@ -1708,7 +1708,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 
                       // Find and replace "%2"
                       pos = finalDiffCmd.find(_T("%2"));
-                      finalDiffCmd.replace(pos, 2, latestDir, 0, latestDir.size()); 
+                      finalDiffCmd.replace(pos, 2, latestDir, 0, latestDir.size());
 
                       // Run accurev to perform the diff command
                       CAppUtils::LaunchApplication(finalDiffCmd, true, false, false);
@@ -1856,7 +1856,7 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
 {
     size_t pos = url.find_last_of('/');
     wstring parenturl = url.substr(0, pos);
-    do 
+    do
     {
         const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
         if (pRead->find(parenturl) != pRead->end())
@@ -1938,7 +1938,7 @@ bool CMainDlg::SelectNextWithUnread(HTREEITEM hItem)
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
     HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
-    SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT, 
+    SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT,
         MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
     SetRemoveButtonState();
     if (lpNMTreeView->itemNew.state & TVIS_SELECTED)
@@ -2061,7 +2061,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                             }
                         }
                     }
-                    catch (exception) 
+                    catch (exception)
                     {
                         bUseRegex = false;
                     }
@@ -2502,7 +2502,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
             }
         }
         break;
-    case 'N':	// next unread
+    case 'N':   // next unread
         {
             int selMark = ListView_GetSelectionMark(m_hListControl);
             if (selMark >= 0)
@@ -2511,7 +2511,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
                 LVITEM item = {0};
                 int i = selMark + 1;
                 int nCount = ListView_GetItemCount(m_hListControl);
-                do 
+                do
                 {
                     item.mask = LVIF_PARAM;
                     item.iItem = i;
@@ -2530,7 +2530,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
                     }
                     ++i;
                 } while (i < nCount);
-                
+
                 if (i == nCount)
                 {
                     // no unread item found anymore.
@@ -2550,7 +2550,7 @@ void CMainDlg::OnKeyDownListItem(LPNMLVKEYDOWN pnkd)
             }
         }
         break;
-    case 'B':	// back one message
+    case 'B':   // back one message
         {
             int selMark = ListView_GetSelectionMark(m_hListControl);
             if (selMark > 0)
@@ -2569,7 +2569,7 @@ void CMainDlg::RemoveSelectedListItems()
 {
     int selCount = ListView_GetSelectedCount(m_hListControl);
     if (selCount <= 0)
-        return;	//nothing selected, nothing to remove
+        return; //nothing selected, nothing to remove
     int nFirstDeleted = -1;
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     // get the url this entry refers to
@@ -2661,7 +2661,7 @@ void CMainDlg::DoResize(int width, int height)
     EndDeferWindowPos(hdwp);
 }
 
-bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message) 
+bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
 {
     UNREFERENCED_PARAMETER(message);
     UNREFERENCED_PARAMETER(nHitTest);
@@ -2744,7 +2744,7 @@ bool CMainDlg::OnMouseMove(UINT nFlags, POINT point)
 
     if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
-    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
+    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
     if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
         point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
@@ -2811,7 +2811,7 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
     OffsetRect(&treelist, -tempx, -tempy);
     OffsetRect(&loglist, -tempx, -tempy);
 
-    if ((point.y < loglist.top) || 
+    if ((point.y < loglist.top) ||
         (point.y > treelist.bottom))
         return false;
 
@@ -2821,7 +2821,7 @@ bool CMainDlg::OnLButtonDown(UINT nFlags, POINT point)
 
     if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
-    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
+    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
     if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
         point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
@@ -2902,13 +2902,13 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
     POINT point2 = point;
     if (point2.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
         point2.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
-    if (point2.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
+    if (point2.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH)
         point2.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
 
     POINT point3 = point;
     if (point3.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
         point3.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
-    if (point3.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT) 
+    if (point3.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
         point3.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
 
     point.x -= rect.left;
@@ -2922,7 +2922,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 
     if (point.x < treelist.left+REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.left+REPOBROWSER_CTRL_MIN_WIDTH;
-    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH) 
+    if (point.x > treelist.right-REPOBROWSER_CTRL_MIN_WIDTH)
         point.x = treelist.right-REPOBROWSER_CTRL_MIN_WIDTH;
     if (point.y > loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT)
         point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
@@ -2951,7 +2951,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
             GetWindowRect(m_hTreeControl, &treelist);
             treelist.right = point2.x - 2;
             MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-            hdwp = DeferWindowPos(hdwp, m_hTreeControl, NULL, 
+            hdwp = DeferWindowPos(hdwp, m_hTreeControl, NULL,
                 treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
@@ -2962,21 +2962,21 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
                 loglist.left, treelist.top+5, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_NOSIZE);
 
             hdwp = DeferWindowPos(hdwp, m_hFilterControl, NULL,
-                loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT, 
+                loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-            hdwp = DeferWindowPos(hdwp, m_hCheckControl, NULL, 
+            hdwp = DeferWindowPos(hdwp, m_hCheckControl, NULL,
                 loglist.left, treelist.top+FILTERBOXHEIGHT, loglist.right-loglist.left, CHECKBOXHEIGHT,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-            hdwp = DeferWindowPos(hdwp, m_hListControl, NULL, 
+            hdwp = DeferWindowPos(hdwp, m_hListControl, NULL,
                 loglist.left, treelist.top+FILTERBOXHEIGHT+CHECKBOXHEIGHT, loglist.right-loglist.left, loglist.bottom-treelist.top-FILTERBOXHEIGHT-CHECKBOXHEIGHT,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
             GetWindowRect(m_hLogMsgControl, &treelist);
             treelist.left = point2.x + 2;
             MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-            hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
+            hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL,
                 treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
         }
@@ -2992,7 +2992,7 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
             GetWindowRect(m_hLogMsgControl, &treelist);
             treelist.top = point3.y + 2;
             MapWindowPoints(NULL, *this, (LPPOINT)&treelist, 2);
-            hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL, 
+            hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, NULL,
                 treelist.left, treelist.top, treelist.right-treelist.left, treelist.bottom-treelist.top,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
         }
@@ -3002,9 +3002,9 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
 
 void CMainDlg::DrawXorBar(HDC hDC, LONG x1, LONG y1, LONG width, LONG height)
 {
-    static WORD _dotPatternBmp[8] = 
-    { 
-        0x0055, 0x00aa, 0x0055, 0x00aa, 
+    static WORD _dotPatternBmp[8] =
+    {
+        0x0055, 0x00aa, 0x0055, 0x00aa,
         0x0055, 0x00aa, 0x0055, 0x00aa
     };
 

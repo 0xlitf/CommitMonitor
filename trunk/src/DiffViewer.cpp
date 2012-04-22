@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@
 
 extern HINSTANCE hInst;
 
-CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/) 
+CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
     : CWindow(hInst, wcx)
     , m_bShowFindBar(false)
 {
@@ -41,9 +41,9 @@ CDiffViewer::~CDiffViewer(void)
 
 bool CDiffViewer::RegisterAndCreateWindow()
 {
-    WNDCLASSEX wcx; 
+    WNDCLASSEX wcx;
 
-    // Fill in the window class structure with default parameters 
+    // Fill in the window class structure with default parameters
     wcx.cbSize = sizeof(WNDCLASSEX);
     wcx.style = CS_HREDRAW | CS_VREDRAW;
     wcx.lpfnWndProc = CWindow::stWinMsgHandler;
@@ -102,7 +102,7 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             GetClientRect(*this, &rect);
             if (m_bShowFindBar)
             {
-                ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+                ::SetWindowPos(m_hWndEdit, HWND_TOP,
                     rect.left, rect.top,
                     rect.right-rect.left, rect.bottom-rect.top-30,
                     SWP_SHOWWINDOW);
@@ -113,7 +113,7 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             else
             {
-                ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+                ::SetWindowPos(m_hWndEdit, HWND_TOP,
                     rect.left, rect.top,
                     rect.right-rect.left, rect.bottom-rect.top,
                     SWP_SHOWWINDOW);
@@ -172,7 +172,7 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 GetClientRect(*this, &rect);
                 m_bShowFindBar = false;
                 ::ShowWindow(m_FindBar, SW_HIDE);
-                ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+                ::SetWindowPos(m_hWndEdit, HWND_TOP,
                     rect.left, rect.top,
                     rect.right-rect.left, rect.bottom-rect.top,
                     SWP_SHOWWINDOW);
@@ -195,7 +195,7 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 
 LRESULT CDiffViewer::DoCommand(int id)
 {
-    switch (id) 
+    switch (id)
     {
     case IDM_EXIT:
         ::PostQuitMessage(0);
@@ -206,7 +206,7 @@ LRESULT CDiffViewer::DoCommand(int id)
             ::ShowWindow(m_FindBar, SW_SHOW);
             RECT rect;
             GetClientRect(*this, &rect);
-            ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+            ::SetWindowPos(m_hWndEdit, HWND_TOP,
                 rect.left, rect.top,
                 rect.right-rect.left, rect.bottom-rect.top-30,
                 SWP_SHOWWINDOW);
@@ -242,7 +242,7 @@ LRESULT CDiffViewer::DoCommand(int id)
             GetClientRect(*this, &rect);
             m_bShowFindBar = false;
             ::ShowWindow(m_FindBar, SW_HIDE);
-            ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+            ::SetWindowPos(m_hWndEdit, HWND_TOP,
                 rect.left, rect.top,
                 rect.right-rect.left, rect.bottom-rect.top,
                 SWP_SHOWWINDOW);
@@ -261,7 +261,7 @@ LRESULT CDiffViewer::SendEditor(UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         return ((SciFnDirect) m_directFunction)(m_directPointer, Msg, wParam, lParam);
     }
-    return ::SendMessage(m_hWndEdit, Msg, wParam, lParam);  
+    return ::SendMessage(m_hWndEdit, Msg, wParam, lParam);
 }
 
 bool CDiffViewer::Initialize()
@@ -300,7 +300,7 @@ bool CDiffViewer::Initialize()
 
     RECT rect;
     GetClientRect(*this, &rect);
-    ::SetWindowPos(m_hWndEdit, HWND_TOP, 
+    ::SetWindowPos(m_hWndEdit, HWND_TOP,
         rect.left, rect.top,
         rect.right-rect.left, rect.bottom-rect.top,
         SWP_SHOWWINDOW);
@@ -337,13 +337,13 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 
     FILE *fp = NULL;
     _tfopen_s(&fp, filename, _T("rb"));
-    if (fp) 
+    if (fp)
     {
         //SetTitle();
         char data[4096];
         int lenFile = fread(data, 1, sizeof(data), fp);
         bool bUTF8 = IsUTF8(data, lenFile);
-        while (lenFile > 0) 
+        while (lenFile > 0)
         {
             SendEditor(SCI_ADDTEXT, lenFile,
                 reinterpret_cast<LPARAM>(static_cast<char *>(data)));
@@ -352,7 +352,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
         fclose(fp);
         SendEditor(SCI_SETCODEPAGE, bUTF8 ? SC_CP_UTF8 : GetACP());
     }
-    else 
+    else
     {
         return false;
     }
@@ -392,13 +392,13 @@ void CDiffViewer::SetTitle(LPCTSTR title)
     delete [] pBuf;
 }
 
-void CDiffViewer::SetAStyle(int style, COLORREF fore, COLORREF back, int size, const char *face) 
+void CDiffViewer::SetAStyle(int style, COLORREF fore, COLORREF back, int size, const char *face)
 {
     SendEditor(SCI_STYLESETFORE, style, fore);
     SendEditor(SCI_STYLESETBACK, style, back);
     if (size >= 1)
         SendEditor(SCI_STYLESETSIZE, style, size);
-    if (face) 
+    if (face)
         SendEditor(SCI_STYLESETFONT, style, reinterpret_cast<LPARAM>(face));
 }
 

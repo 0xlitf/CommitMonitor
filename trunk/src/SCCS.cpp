@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2010 - Stefan Kueng
+// Copyright (C) 2010, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ static char THIS_FILE[] = __FILE__;
 
 SCCS::SCCS(void)
 {
-  
+
 }
 
 SCCS::~SCCS(void)

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 
 /**
  * This class encapsulates an apr_pool taking care of destroying it at end of scope
- * Use this class in preference to doing svn_pool_create and then trying to remember all 
+ * Use this class in preference to doing svn_pool_create and then trying to remember all
  * the svn_pool_destroys which might be needed.
  */
 class SVNPool

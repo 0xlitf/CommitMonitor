@@ -1,6 +1,6 @@
 // this script is a local pre-commit hook script.
 // Used to check whether the copyright year of modified files has been bumped
-// up to the current (2011) year.
+// up to the current (2012) year.
 //
 // Only *.cpp and *.h files are checked
 //
@@ -31,45 +31,45 @@ var fileindex=0;
 var errormsg = "";
 while (fileindex < files.length)
 {
-	var f = files[fileindex];
+    var f = files[fileindex];
     if (f.match(filere) != null)
     {
-		if (fs.FileExists(f))
-		{
-			a = fs.OpenTextFile(f, ForReading, false);
-			var copyrightFound = false;
-			var yearFound = false;
-			while ((!a.AtEndOfStream)&&(!yearFound))
-			{
-				r =  a.ReadLine();
-				rv = r.match(basere);
-				if (rv != null)
-				{
-					rv = r.match(re);
-					if (rv != null)
-						yearFound = true;
+        if (fs.FileExists(f))
+        {
+            a = fs.OpenTextFile(f, ForReading, false);
+            var copyrightFound = false;
+            var yearFound = false;
+            while ((!a.AtEndOfStream)&&(!yearFound))
+            {
+                r =  a.ReadLine();
+                rv = r.match(basere);
+                if (rv != null)
+                {
+                    rv = r.match(re);
+                    if (rv != null)
+                        yearFound = true;
 
-					copyrightFound = true;
-				}
-			}
-			a.Close();
+                    copyrightFound = true;
+                }
+            }
+            a.Close();
 
-			if (copyrightFound && (!yearFound))
-			{
-				if (errormsg != "")
-					errormsg += "\n";
-				errormsg += f;
-				found = false;
-			}
-		}
+            if (copyrightFound && (!yearFound))
+            {
+                if (errormsg != "")
+                    errormsg += "\n";
+                errormsg += f;
+                found = false;
+            }
+        }
     }
     fileindex+=1;
 }
 
 if (found == false)
 {
-	errormsg = "the file(s):\n" + errormsg + "\nhave not the correct copyright year!";
-	WScript.stderr.writeLine(errormsg);
+    errormsg = "the file(s):\n" + errormsg + "\nhave not the correct copyright year!";
+    WScript.stderr.writeLine(errormsg);
 }
 
 WScript.Quit(!found);
@@ -77,20 +77,20 @@ WScript.Quit(!found);
 
 function readPaths(path)
 {
-	var retPaths = new Array();
-	var fs = new ActiveXObject("Scripting.FileSystemObject");
-	if (fs.FileExists(path))
-	{
-		var a = fs.OpenTextFile(path, 1, false);
-		var i = 0;
-		while (!a.AtEndOfStream)
-		{
-			var line = a.ReadLine();
-			retPaths[i] = line;
-			i = i + 1;
-		}
-		a.Close();
-	}
-	return retPaths;
-	
+    var retPaths = new Array();
+    var fs = new ActiveXObject("Scripting.FileSystemObject");
+    if (fs.FileExists(path))
+    {
+        var a = fs.OpenTextFile(path, 1, false);
+        var i = 0;
+        while (!a.AtEndOfStream)
+        {
+            var line = a.ReadLine();
+            retPaths[i] = line;
+            i = i + 1;
+        }
+        a.Close();
+    }
+    return retPaths;
+
 }

@@ -717,7 +717,7 @@ DWORD CHiddenWindow::RunThread()
               case CUrlInfo::SCCS_ACCUREV:
                 pSCCS = (SCCS *)&accurevAccess;
                 break;
-            } 
+            }
 
 
             pSCCS->SetAuthInfo(it->second.username, it->second.password);
@@ -998,7 +998,7 @@ DWORD CHiddenWindow::RunThread()
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             sPopupText = it->second.error;
                         }
-                        else 
+                        else
                         {
                             data.sProject = it->second.name;
                             if (nNewCommits == 1)
@@ -1474,7 +1474,7 @@ bool CHiddenWindow::StopThread(DWORD wait)
     return bRet;
 }
 
-void CHiddenWindow::ShowPopup(wstring& title, wstring& text, const wchar_t *alertType) 
+void CHiddenWindow::ShowPopup(wstring& title, wstring& text, const wchar_t *alertType)
 {
     popupData data;
     data.sText = text;

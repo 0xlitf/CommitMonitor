@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -155,9 +155,9 @@ svn_error_t* SVN::cancel(void *baton)
     return SVN_NO_ERROR;
 }
 
-svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void * /*baton*/, 
-    const char * /*realm*/, apr_uint32_t /*failures*/, 
-    const svn_auth_ssl_server_cert_info_t * /*cert_info*/, 
+svn_error_t* SVN::sslserverprompt(svn_auth_cred_ssl_server_trust_t **cred_p, void * /*baton*/,
+    const char * /*realm*/, apr_uint32_t /*failures*/,
+    const svn_auth_ssl_server_cert_info_t * /*cert_info*/,
     svn_boolean_t /*may_save*/, apr_pool_t *pool)
 {
     *cred_p = (svn_auth_cred_ssl_server_trust_t*)apr_pcalloc (pool, sizeof (**cred_p));
@@ -285,9 +285,9 @@ void SVN::SetAuthInfo(const wstring& username, const wstring& password)
     {
         if (!username.empty())
         {
-            svn_auth_set_parameter(m_pctx->auth_baton, 
+            svn_auth_set_parameter(m_pctx->auth_baton,
                 SVN_AUTH_PARAM_DEFAULT_USERNAME, apr_pstrdup(parentpool, CUnicodeUtils::StdGetUTF8(username).c_str()));
-            svn_auth_set_parameter(m_pctx->auth_baton, 
+            svn_auth_set_parameter(m_pctx->auth_baton,
                 SVN_AUTH_PARAM_DEFAULT_PASSWORD, apr_pstrdup(parentpool, CUnicodeUtils::StdGetUTF8(password).c_str()));
         }
     }
@@ -306,7 +306,7 @@ bool SVN::GetFile(wstring sUrl, wstring sFile)
     // if the file already exists, delete it before recreating it
     ::DeleteFile(sFile.c_str());
 
-    status = apr_file_open(&file, CUnicodeUtils::StdGetANSI(sFile).c_str(), 
+    status = apr_file_open(&file, CUnicodeUtils::StdGetANSI(sFile).c_str(),
         APR_WRITE | APR_CREATE | APR_TRUNCATE, APR_OS_DEFAULT, localpool);
     if (status)
     {
@@ -320,7 +320,7 @@ bool SVN::GetFile(wstring sUrl, wstring sFile)
     rev.kind = svn_opt_revision_head;
 
     const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
-    Err = svn_client_cat2(stream, urla, 
+    Err = svn_client_cat2(stream, urla,
         &pegrev, &rev, m_pctx, localpool);
 
     apr_file_close(file);
@@ -433,7 +433,7 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
     SVNPool localpool(pool);
 
     apr_array_header_t *targets = apr_array_make (pool, 1, sizeof(const char *));
-    (*((const char **) apr_array_push (targets))) = 
+    (*((const char **) apr_array_push (targets))) =
         svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url)).c_str(), localpool);
 
     svn_opt_revision_t end;
@@ -458,7 +458,7 @@ bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev,
     *(svn_opt_revision_range_t**)apr_array_push (revision_ranges)
         = &revision_range;
 
-    Err = svn_client_log5 (targets, 
+    Err = svn_client_log5 (targets,
         &start,
         revision_ranges,
         limit,
@@ -561,8 +561,8 @@ wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreA
 }
 
 bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
-    svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted, 
-    bool ignorecontenttype,  const wstring& options, bool bAppend, 
+    svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
+    bool ignorecontenttype,  const wstring& options, bool bAppend,
     const wstring& outputfile, const wstring& errorfile)
 {
     svn_error_clear(Err);

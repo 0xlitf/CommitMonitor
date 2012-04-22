@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2010-2011 - Stefan Kueng
+// Copyright (C) 2010-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -335,7 +335,7 @@ public:
     virtual svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url) = 0;
 
     virtual bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev) = 0;
-    
+
 
     virtual bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,

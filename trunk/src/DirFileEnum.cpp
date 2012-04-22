@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,7 +45,7 @@ m_sPathPrefix(sPath)
     }
     else
     {
-        m_hFindFile = ::FindFirstFile(m_sPathPrefix.c_str(), &m_FindFileData); 
+        m_hFindFile = ::FindFirstFile(m_sPathPrefix.c_str(), &m_FindFileData);
         m_bFile = TRUE;
     }
     if (m_hFindFile == INVALID_HANDLE_VALUE) {
@@ -174,7 +174,7 @@ bool CDirFileEnum::NextFile(wstring &sResult, bool* pbIsDirectory, bool recurse)
         PopStack();
     }
 
-    if (m_seStack) 
+    if (m_seStack)
     {
         sResult = m_seStack->GetFilePath();
         if(pbIsDirectory != NULL)

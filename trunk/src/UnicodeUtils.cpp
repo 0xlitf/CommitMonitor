@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2007, 2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,7 +140,7 @@ struct STRINGRESOURCEIMAGE
     WORD nLength;
     WCHAR achString[];
 };
-#pragma warning(pop)	// C4200
+#pragma warning(pop)    // C4200
 
 int LoadStringEx(HINSTANCE hInstance, UINT uID, LPTSTR lpBuffer, int nBufferMax, WORD wLanguage)
 {
