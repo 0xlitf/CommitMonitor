@@ -313,8 +313,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         // check whether the rectangle is at least partly
                         // visible in at least one monitor
                         RECT rc = {0};
-                        rc.left = HIWORD(DWORD(regXY));
-                        rc.top = LOWORD(DWORD(regXY));
+                        rc.left = (short)HIWORD(DWORD(regXY));
+                        rc.top = (short)LOWORD(DWORD(regXY));
                         rc.right = HIWORD(DWORD(regWHWindow)) + rc.left;
                         rc.bottom = LOWORD(DWORD(regWHWindow)) + rc.top;
                         if (MonitorFromRect(&rc, MONITOR_DEFAULTTONULL))
