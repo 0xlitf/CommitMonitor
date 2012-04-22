@@ -1727,6 +1727,17 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 /******************************************************************************/
 void CMainDlg::RefreshURLTree(bool bSelectUnread)
 {
+    HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+    std::wstring SelUrl;
+    if (hSelectedItem)
+    {
+        TVITEM item;
+        item.mask = TVIF_PARAM;
+        item.hItem = hSelectedItem;
+        TreeView_GetItem(m_hTreeControl, &item);
+        SelUrl = *(std::wstring*)item.lParam;
+    }
+
     // the m_URLInfos member must be up-to-date here
 
     m_bBlockListCtrlUI = true;
@@ -1796,6 +1807,8 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
             }
         }
         HTREEITEM hItem = TreeView_InsertItem(m_hTreeControl, &tv);
+        if (SelUrl.compare(it->first)==0)
+            hSelectedItem = hItem;
         if ((!bShowLastUnread)&&(m_lastSelectedProject.compare(it->second.name) == 0))
             tvToSel = hItem;
         if ((unread)&&(tvToSel == 0))
@@ -1809,13 +1822,8 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread)
     {
         TreeView_SelectItem(m_hTreeControl, tvToSel);
     }
-    else if (tvToSel == NULL)
-    {
-        tvToSel = TreeView_GetRoot(m_hTreeControl);
-        if (TreeView_GetChild(m_hTreeControl, tvToSel))
-            tvToSel = TreeView_GetChild(m_hTreeControl, tvToSel);
-        TreeView_SelectItem(m_hTreeControl, tvToSel);
-    }
+    else
+        TreeView_SelectItem(m_hTreeControl, hSelectedItem);
     ::InvalidateRect(m_hListControl, NULL, true);
 }
 
