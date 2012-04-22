@@ -1937,6 +1937,7 @@ bool CMainDlg::SelectNextWithUnread(HTREEITEM hItem)
 
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
+    SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(false, 0));
     HTREEITEM hSelectedItem = lpNMTreeView->itemNew.hItem;
     SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_EDIT,
         MAKELONG(!!(lpNMTreeView->itemNew.state & TVIS_SELECTED), 0));
@@ -2412,8 +2413,9 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             wstring diffFileName = CAppUtils::GetDataDir();
             diffFileName += _T("\\");
             diffFileName += wstring(buf);
-            SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(true, 0));
+            SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(ListView_GetSelectedCount(m_hListControl)!=0, 0));
         }
+
         m_pURLInfos->ReleaseReadOnlyData();
     }
 }
