@@ -30,7 +30,7 @@
             <arg value="/c" />
             <arg value="/Zi" />
             <arg value="/errorReport:prompt" />
-            <arg value="/GL" />
+            <arg value="/GL" if="${configuration == 'release'}" />
             <sources>
                 <include name="gssapi.cpp" />
             </sources>

@@ -96,7 +96,7 @@
           <arg value="/Zi" />
           <arg value="/MP" />
           <arg value="/errorReport:prompt" />
-          <arg value="/GL" />
+          <arg value="/GL" if="${configuration == 'release'}" />
           <sources>
             <include name="subversion\${fname}\**.c" />
             <exclude name="subversion\libsvn_subr\win32_crash**.c" />

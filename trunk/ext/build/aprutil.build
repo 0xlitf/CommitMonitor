@@ -72,7 +72,7 @@
       <arg value="/Zi" />
       <arg value="/MP" />
       <arg value="/errorReport:prompt" />
-      <arg value="/GL" />
+      <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="buckets\*.c" />
         <include name="crypto\*.c" />
