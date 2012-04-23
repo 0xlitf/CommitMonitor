@@ -111,7 +111,7 @@
             <include name="..\svn-win32-libintl\inc" />
             <include name="..\neon\src" />
             <include name="..\serf" />
-            <include name="..\..\common\zlib" />
+            <include name="..\zlib" />
             <include name="..\sqlite" />
             <include name="..\cyrus-sasl\include" />
           </includedirs>
@@ -151,7 +151,7 @@
           <arg value="/LTCG" if="${configuration == 'release'}" />
           <sources>
             <include name="${configuration}_${platform}\${fname}\**.obj" />
-            <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" if="${fname == 'libsvn_subr'}"/>
+            <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" if="${fname == 'libsvn_subr'}"/>
             <include name="..\sqlite\${configuration}_${platform}\sqlite.lib" if="${fname == 'libsvn_fs_fs'}"/>
           </sources>
         </lib>

@@ -1,3 +1,0 @@
-The libraries in this folder each have their own license.
-The code is only put here so it's not necessary to download them
-separately.

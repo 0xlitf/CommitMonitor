@@ -50,8 +50,8 @@
         <include name="..\apr\include" />
         <include name="..\apr-util\include" />
         <include name="..\apr-util\xml\expat\lib" />
-        <include name="..\..\common\zlib" />
-        <include name="..\..\common\openssl\inc32" />
+        <include name="..\zlib" />
+        <include name="..\openssl\inc32" />
       </includedirs>
       <defines>
         <define name="_CRT_NONSTDC_NO_DEPRECATE" />
@@ -82,9 +82,9 @@
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
-        <include name="..\..\common\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\..\common\openssl\out32\libeay32.lib" />
-        <include name="..\..\common\openssl\out32\ssleay32.lib" />
+        <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
+        <include name="..\openssl\out32\libeay32.lib" />
+        <include name="..\openssl\out32\ssleay32.lib" />
         <include name="..\apr-util\${configuration}_${platform}\libaprutil_tsvn.lib" />
         <include name="..\apr\${configuration}_${platform}\libapr_tsvn.lib" />
       </sources>

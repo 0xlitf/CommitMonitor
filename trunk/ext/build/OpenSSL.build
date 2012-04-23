@@ -2,27 +2,27 @@
 <project name="OpenSSL" default="OpenSSL">
   <target name="clean">
     <!-- to prevent 'nmake clean' to choke on userinput questions, give it our own del command -->
-    <echo file="..\..\common\openssl\del.bat" message="del %1 %2 %3 %4 %5 %6 %7 %8 %9 /Q" />
-    <exec program="nmake" workingdir="..\..\common\openssl" failonerror="false">
+    <echo file="..\openssl\del.bat" message="del %1 %2 %3 %4 %5 %6 %7 %8 %9 /Q" />
+    <exec program="nmake" workingdir="..\openssl" failonerror="false">
       <arg value="-f" />
       <arg value="ms\nt.mak" />
       <arg value="clean" />
     </exec>
   </target>
   <target name="OpenSSL" depends="clean">
-    <delete file="..\..\common\openssl\del.bat" if="${file::exists('..\..\common\openssl\del.bat')}" />
-    <exec program="perl" workingdir="..\..\common\openssl">
+    <delete file="..\openssl\del.bat" if="${file::exists('..\openssl\del.bat')}" />
+    <exec program="perl" workingdir="..\openssl">
       <arg value="Configure" />
       <arg value="VC-WIN32" />
       <arg value="no-asm" />
       <arg value="no-gost" />
       <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
     </exec>
-    <exec program="cmd" workingdir="..\..\common\openssl">
+    <exec program="cmd" workingdir="..\openssl">
       <arg value="/c" />
       <arg value="ms\do_ms" />
     </exec>
-    <loadfile file="..\..\common\openssl\ms\nt.mak" property="makefile">
+    <loadfile file="..\openssl\ms\nt.mak" property="makefile">
       <filterchain>
         <replacestring from="  /MD " to="  /MT " />
         <replacestring from=" /Ox /O2 " to=" /O2 /Oy /GL " />
@@ -30,8 +30,8 @@
         <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" />
       </filterchain>
     </loadfile>
-    <echo file="..\..\common\openssl\ms\nt.mak" message="${makefile}" />
-    <exec program="nmake" workingdir="..\..\common\openssl">
+    <echo file="..\openssl\ms\nt.mak" message="${makefile}" />
+    <exec program="nmake" workingdir="..\openssl">
       <arg value="-f" />
       <arg value="ms\nt.mak" />
     </exec>

@@ -223,7 +223,7 @@
         <include name="include" />
         <include name="plugins" />
         <include name="win32\include" />
-        <include name="..\..\common\openssl\inc32" />
+        <include name="..\openssl\inc32" />
         <include name="..\gssapi" />
       </includedirs>
       <defines>
@@ -287,7 +287,7 @@
 
     <link
       output="${configuration}_${platform}\saslDIGESTMD5.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\saslDIGESTMD5.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/saslDIGESTMD5.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:".\${configuration}_${platform}/saslDIGESTMD5.lib" ${machineoption} ..\..\common\openssl\out32\libeay32.lib ..\..\common\openssl\out32\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\saslDIGESTMD5.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/saslDIGESTMD5.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:".\${configuration}_${platform}/saslDIGESTMD5.lib" ${machineoption} ..\openssl\out32\libeay32.lib ..\openssl\out32\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -323,7 +323,7 @@
 
     <link
       output="${configuration}_${platform}\saslNTLM.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\saslNTLM.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/saslNTLM.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:".\${configuration}_${platform}/saslNTLM.lib" ${machineoption} ..\..\common\openssl\out32\libeay32.lib ..\..\common\openssl\out32\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\saslNTLM.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/saslNTLM.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:".\${configuration}_${platform}/saslNTLM.lib" ${machineoption} ..\openssl\out32\libeay32.lib ..\openssl\out32\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="zlib" default="build" basedir="..\..\common\zlib">
+<project name="zlib" default="build" basedir="..\zlib">
 
   <!-- ====================================================================== -->
   <!-- Project targets                                                        -->
