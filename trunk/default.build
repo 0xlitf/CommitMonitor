@@ -11,7 +11,7 @@
   <property name="buildtool" value="devenv.com" />
   <!-- build with VS2010, if there is a 10.0 in the VC path -->
   <property name="studioversion" value="2010" if="${string::contains (environment::get-variable('VCINSTALLDIR'), '10.0')}"/>
-  <property name="solutionname" value="CommitMonitor_VS10.sln" if="${studioversion == '2010'}"/>
+  <property name="solutionname" value="CommitMonitor.sln" if="${studioversion == '2010'}"/>
   <!-- the signinfo.txt file has to contain one line with parameters for signtool.exe,
        for example:
      /t "url/to/timestamp/server" /q
