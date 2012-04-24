@@ -1213,6 +1213,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             }
                             m_pURLInfos->Save();
                             m_pURLInfos->ReleaseWriteData();
+                            TreeView_SelectItem(m_hTreeControl, NULL);
                             RefreshURLTree(false);
                         }
                     }
@@ -1241,6 +1242,7 @@ LRESULT CMainDlg::DoCommand(int id)
                     m_pURLInfos->ReleaseWriteData();
                     m_pURLInfos->Save();
                 }
+                TreeView_SelectItem(m_hTreeControl, NULL);
                 RefreshURLTree(false);
             }
         }
