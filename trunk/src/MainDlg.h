@@ -68,7 +68,7 @@ private:
     void                    DoResize(int width, int height);
     bool                    CreateToolbar();
 
-    void                    RefreshURLTree(bool bSelectUnread);
+    void                    RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselect);
     HTREEITEM               FindParentTreeNode(const wstring& url);
     HTREEITEM               FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
     bool                    SelectNextWithUnread(HTREEITEM hItem = TVI_ROOT);

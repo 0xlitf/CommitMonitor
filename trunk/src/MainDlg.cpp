@@ -372,7 +372,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 GetClientRect(m_hListControl, &rect);
                 m_ySliderPos = rect.bottom+m_topmarg;
             }
-            RefreshURLTree(true);
+            RefreshURLTree(true, L"");
 
             ExtendFrameIntoClientArea(0, 0, 0, IDC_URLTREE);
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
@@ -1214,7 +1214,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             m_pURLInfos->Save();
                             m_pURLInfos->ReleaseWriteData();
                             TreeView_SelectItem(m_hTreeControl, NULL);
-                            RefreshURLTree(false);
+                            RefreshURLTree(false, inf->url);
                         }
                     }
                 }
@@ -1241,9 +1241,13 @@ LRESULT CMainDlg::DoCommand(int id)
                     }
                     m_pURLInfos->ReleaseWriteData();
                     m_pURLInfos->Save();
+                    RefreshURLTree(false, inf->url);
                 }
-                TreeView_SelectItem(m_hTreeControl, NULL);
-                RefreshURLTree(false);
+                else
+                {
+                    TreeView_SelectItem(m_hTreeControl, NULL);
+                    RefreshURLTree(false, L"");
+                }
             }
         }
         break;
@@ -1273,7 +1277,7 @@ LRESULT CMainDlg::DoCommand(int id)
             dlg.SetHiddenWnd(m_hParent);
             dlg.SetUrlInfos(m_pURLInfos);
             dlg.DoModal(hResource, IDD_OPTIONS, *this);
-            RefreshURLTree(false);
+            RefreshURLTree(false, L"");
         }
         break;
     case ID_MISC_ABOUT:
@@ -1727,11 +1731,11 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 /******************************************************************************/
 /* tree handling                                                              */
 /******************************************************************************/
-void CMainDlg::RefreshURLTree(bool bSelectUnread)
+void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselect)
 {
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
-    std::wstring SelUrl;
-    if (hSelectedItem)
+    std::wstring SelUrl = urltoselect;
+    if (SelUrl.empty() && hSelectedItem)
     {
         TVITEM item;
         item.mask = TVIF_PARAM;
