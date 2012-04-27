@@ -1,0 +1,69 @@
+Index: engines/e_capi.c
+===================================================================
+--- engines/e_capi.c	(Revision 675)
++++ engines/e_capi.c	(Arbeitskopie)
+@@ -57,7 +57,10 @@
+ #include <openssl/crypto.h>
+ #include <openssl/buffer.h>
+ #include <openssl/bn.h>
++#include <shlwapi.h>
+ 
++#pragma comment(lib, "shlwapi.lib")
++
+ #ifdef OPENSSL_SYS_WIN32
+ #ifndef OPENSSL_NO_CAPIENG
+ 
+@@ -575,6 +578,25 @@
+ 
+ void ENGINE_load_capi(void)
+ 	{
++    DWORD dwData = 0;
++    DWORD dwDataSize = 4;
++    int bLoad = 1;
++#ifdef _WIN64
++    if (SHGetValue(HKEY_CURRENT_USER, L"Software\\TortoiseSVN", L"OpenSSLCapi", &dwType, &dwData, &dwDataSize) == ERROR_SUCCESS)
++#else
++    if (SHGetValue(HKEY_CURRENT_USER, "Software\\TortoiseSVN", "OpenSSLCapi", &dwType, &dwData, &dwDataSize) == ERROR_SUCCESS)
++#endif
++    {
++        if (dwType == REG_DWORD)
++        {
++            if (dwData == 0)
++            {
++                bLoad = 0;
++            }
++        }
++    }
++    if (bLoad)
++    {
+ 	/* Copied from eng_[openssl|dyn].c */
+ 	ENGINE *toadd = engine_capi();
+ 	if(!toadd) return;
+@@ -582,6 +604,7 @@
+ 	ENGINE_free(toadd);
+ 	ERR_clear_error();
+ 	}
++    }
+ #endif
+ 
+ 
+@@ -1731,7 +1754,9 @@
+ 
+ static int cert_select_simple(ENGINE *e, SSL *ssl, STACK_OF(X509) *certs)
+ 	{
+-	return 0;
++        if (sk_X509_num(certs) == 1)
++            return 0;
++        return -1; /* let TSVN decide which certificate to use */
+ 	}
+ 
+ #ifdef OPENSSL_CAPIENG_DIALOG
+@@ -1822,7 +1847,7 @@
+ 		CertCloseStore(dstore, 0);
+ 	return idx;
+ 
+-	}
++    }
+ #endif
+ 
+ #else /* !__COMPILE_CAPIENG */
