@@ -2020,7 +2020,10 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         struct tm upTime;
         if (_localtime64_s(&upTime, &info->lastchecked) == 0)
         {
-            _tcsftime(updateTime, 1000, _T(" last checked: %X"), &upTime);
+            if (info->lastchecked == 0)
+                wcscpy_s(updateTime, L" last checked: N/A");
+            else
+                _tcsftime(updateTime, 1000, _T(" last checked: %X"), &upTime);
             SetDlgItemText(*this, IDC_INFOLABEL, updateTime);
         }
 
