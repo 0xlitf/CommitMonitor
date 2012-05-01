@@ -427,6 +427,13 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     iinfo.fState |= MFS_DEFAULT;
                     SetMenuItemInfo(hMenu, 0, MF_BYPOSITION, &iinfo);
 
+                    // destroy all popup windows
+                    HWND hPopup = FindWindow(L"StatusBarMsgWnd_{BAB03407-CF65-4942-A1D5-063FA1CA8530}", NULL);
+                    while (hPopup)
+                    {
+                        DestroyWindow(hPopup);
+                        hPopup = FindWindow(L"StatusBarMsgWnd_{BAB03407-CF65-4942-A1D5-063FA1CA8530}", NULL);
+                    }
                     // show the menu
                     ::SetForegroundWindow(*this);
                     int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
