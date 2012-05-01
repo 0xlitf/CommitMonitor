@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009-2010 - Stefan Kueng
+// Copyright (C) 2007, 2009-2010, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,7 +131,7 @@ void CDialog::AddToolTip(UINT ctrlID, LPTSTR text)
 {
     TOOLINFO tt;
     tt.cbSize = sizeof(TOOLINFO);
-    tt.uFlags = TTF_IDISHWND|TTF_CENTERTIP|TTF_SUBCLASS;
+    tt.uFlags = TTF_IDISHWND|TTF_SUBCLASS;
     tt.hwnd = GetDlgItem(*this, ctrlID);
     tt.uId = (UINT)GetDlgItem(*this, ctrlID);
     tt.lpszText = text;
