@@ -54,6 +54,7 @@ CMainDlg::CMainDlg(HWND hParent)
     , m_hImgList(NULL)
     , m_bNewerVersionAvailable(false)
     , m_refreshNeeded(false)
+    , m_listviewUnfilteredCount(0)
 {
     m_hParent = hParent;
     // use the default GUI font, create a copy of it and
@@ -575,6 +576,16 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                 bRequiresUpdate = tv.itemex.iImage != 2;
                                 tv.itemex.iImage = 2;
                                 tv.itemex.iSelectedImage = 2;
+                            }
+                        }
+                        if (tv.itemex.state & TVIS_SELECTED)
+                        {
+                            // if the item is selected, we have to check
+                            // whether there are new unread items (ignored entries) to show
+                            if ((it->second.logentries.size()!=m_listviewUnfilteredCount) &&
+                                (SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL)==BST_CHECKED))
+                            {
+                                bRequiresUpdate = true;
                             }
                         }
                         if ((bRequiresUpdate)||(sTitle.compare(str) != 0)||
@@ -1984,6 +1995,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(hTreeControl, &itemex);
     const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+    m_listviewUnfilteredCount = 0;
     if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
     {
         const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
@@ -2199,6 +2211,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
 
         ::InvalidateRect(m_hListControl, NULL, false);
+        m_listviewUnfilteredCount = info->logentries.size();
     }
     m_pURLInfos->ReleaseReadOnlyData();
 }

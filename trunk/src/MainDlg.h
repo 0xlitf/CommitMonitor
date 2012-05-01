@@ -124,6 +124,7 @@ private:
     bool                    m_bBlockListCtrlUI;
     bool                    m_bNewerVersionAvailable;
     bool                    m_refreshNeeded;
+    size_t                  m_listviewUnfilteredCount;
 
     AeroControlBase         m_aerocontrols;
 };
