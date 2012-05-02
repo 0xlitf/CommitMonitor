@@ -43,19 +43,19 @@
     <!-- set up the components in the directory structure -->
     <DirectoryRef Id="INSTALLDIR">
       <Component Id='CommitMonitor.EXE' Guid='325E1EEF-97EE-4b0e-8FCB-7A0CADE42934'>
-        <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release/CommitMonitor.exe' Vital='yes' />
+        <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release_win32/CommitMonitor.exe' Vital='yes' />
       </Component>
       <Component Id='MainReg' Guid='D94F1BA0-DC23-445B-96D0-E9E090451DC2'>
         <RegistryValue Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Value='[INSTALLDIR]' Type="string" />
       </Component>
       <Component Id="C__sasl" Guid="44E0376D-ACFF-422f-A372-0AB08A1F7EE1" >
-        <File Id="F__libsasl" Name="libsasl.dll" DiskId="1" Source="../../bin/release/libsasl.dll" KeyPath="yes" />
-        <File Id="F__saslANONYMOUS" Name="saslANONYMOUS.dll" DiskId="1" Source="../../bin/release/saslANONYMOUS.dll" />
-        <File Id="F__saslCRAMMD5" Name="saslCRAMMD5.dll" DiskId="1" Source="../../bin/release/saslCRAMMD5.dll" />
-        <File Id="F__saslDIGESTMD5" Name="saslDIGESTMD5.dll" DiskId="1" Source="../../bin/release/saslDIGESTMD5.dll" />
-        <File Id="F__saslLOGIN" Name="saslLOGIN.dll" DiskId="1" Source="../../bin/release/saslLOGIN.dll" />
-        <File Id="F__saslNTLM" Name="saslNTLM.dll" DiskId="1" Source="../../bin/release/saslNTLM.dll" />
-        <File Id="F__saslPLAIN" Name="saslPLAIN.dll" DiskId="1" Source="../../bin/release/saslPLAIN.dll" />
+        <File Id="F__libsasl" Name="libsasl.dll" DiskId="1" Source="../../bin/release_win32/libsasl.dll" KeyPath="yes" />
+        <File Id="F__saslANONYMOUS" Name="saslANONYMOUS.dll" DiskId="1" Source="../../bin/release_win32/saslANONYMOUS.dll" />
+        <File Id="F__saslCRAMMD5" Name="saslCRAMMD5.dll" DiskId="1" Source="../../bin/release_win32/saslCRAMMD5.dll" />
+        <File Id="F__saslDIGESTMD5" Name="saslDIGESTMD5.dll" DiskId="1" Source="../../bin/release_win32/saslDIGESTMD5.dll" />
+        <File Id="F__saslLOGIN" Name="saslLOGIN.dll" DiskId="1" Source="../../bin/release_win32/saslLOGIN.dll" />
+        <File Id="F__saslNTLM" Name="saslNTLM.dll" DiskId="1" Source="../../bin/release_win32/saslNTLM.dll" />
+        <File Id="F__saslPLAIN" Name="saslPLAIN.dll" DiskId="1" Source="../../bin/release_win32/saslPLAIN.dll" />
       </Component>
     </DirectoryRef>
 
