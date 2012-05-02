@@ -77,7 +77,7 @@
 
     <zip zipfile="..\..\bin\CommitMonitor${bindirextension}-${verstring}.zip" ziplevel="9">
       <fileset basedir="..\..\bin\${configuration}_${platform}">
-        <include name="CommitMonitor-${verstring}_portable.exe" />
+        <include name="CommitMonitor${bindirextension}-${verstring}_portable.exe" />
       </fileset>
     </zip>
 
