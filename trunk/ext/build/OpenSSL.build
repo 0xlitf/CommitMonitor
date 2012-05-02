@@ -28,8 +28,8 @@
       </exec>
       <loadfile file="..\openssl\ms\nt.mak" property="makefile">
         <filterchain>
-          <replacestring from="  /MD " to="  /MT " />
-          <replacestring from=" /Ox /O2 " to=" /O2 /Oy /GL " if="${configuration == 'release'}" />
+          <replacestring from="/MD" to="/MT" />
+          <replacestring from="/Ox /O2" to="/O2 /Oy /GL" if="${configuration == 'release'}" />
           <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${configuration == 'release'}" />
           <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${configuration == 'release'}" />
         </filterchain>
@@ -50,13 +50,14 @@
       </exec>
       <loadfile file="..\openssl\ms\nt.mak" property="makefile">
         <filterchain>
-          <replacestring from="  /MD " to="  /MT " />
-          <replacestring from=" /Ox /O2 " to=" /O2 /GL " if="${configuration == 'release'}" />
-          <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${configuration == 'release'}" />
-          <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${configuration == 'release'}" />
+          <replacestring from="/MD " to="/MT " />
+          <replacestring from="/Ox " to="/O2 /GL " if="${(configuration == 'release')}" />
+          <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${(configuration == 'release')}" />
+          <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${(configuration == 'release')}" />
         </filterchain>
       </loadfile>
     </if>
+    <echo file="..\openssl\ms\nt.mak" message="${makefile}" />
     <exec program="nmake" workingdir="..\openssl">
       <arg value="-f" />
       <arg value="ms\nt.mak" />
