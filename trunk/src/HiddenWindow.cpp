@@ -28,7 +28,7 @@
 #include "MainDlg.h"
 #include "SCCS.h"
 #include "SVN.h"
-#include "ACCUREV.h"
+#include "Accurev.h"
 #include "Callback.h"
 #include "AppUtils.h"
 #include "StatusBarMsgWnd.h"
