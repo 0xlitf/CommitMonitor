@@ -19,6 +19,8 @@
   </target>
 
   <target name="build" >
+    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
     <mkdir dir="${configuration}_${platform}" />
     <copy file="include\prop.h" tofile="include\orig_prop.h" overwrite="true" />
     <loadfile file="include\prop.h" property="propfile">
@@ -29,6 +31,7 @@
         <replacestring from="#  define LIBSASL_VAR  __declspec(dllimport)" to="#  define LIBSASL_VAR  " />
       </filterchain>
     </loadfile>
+    <echo file="include\prop.h" message="${propfile}" />
     <rc rcfile="win32\include\CyrusSasl.rc" output="${configuration}_${platform}\libsasl.res">
       <includedirs>
         <include name="include" />
@@ -95,6 +98,9 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </lib>
 
     <delete>
@@ -171,6 +177,9 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -259,6 +268,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\anonymous*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -277,6 +289,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\cram*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -295,6 +310,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\digest*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -313,6 +331,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\login*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -331,6 +352,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\ntlm*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
@@ -349,6 +373,9 @@
         <include name="${configuration}_${platform}\plugin_common.obj" />
         <include name="${configuration}_${platform}\plain*.obj" />
       </sources>
+      <libdirs>
+        <include name="..\openssl\out32${ssldbg}" />
+      </libdirs>
     </link>
     <exec program="mt.exe">
       <arg value="-nologo" />
