@@ -165,7 +165,12 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
             m_slots[m_thiscounter] = 0;
             m_counter--;
             assert(m_counter >= 0);
+        }
+        break;
+    case WM_NCDESTROY:
+        {
             delete this;
+            return 0;
         }
         break;
     default:
@@ -253,6 +258,7 @@ LRESULT CStatusBarMsgWnd::DoTimer()
     {
         ::KillTimer(*this, STATUSBARMSGWND_SHOWTIMER);
         DestroyWindow(*this);
+        return 0;
     }
     switch (m_uEdge)
     {
