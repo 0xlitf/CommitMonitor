@@ -16,6 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
+
 #include "stdafx.h"
 #include "StatusBarMsgWnd.h"
 #include "resource.h"
@@ -25,7 +26,7 @@
 
 #include "MemDC.h"
 
-#pragma comment(lib, "Winmm")
+#pragma comment(lib, "Winmm.lib")
 
 int CStatusBarMsgWnd::m_counter = 0;
 vector<int> CStatusBarMsgWnd::m_slots;

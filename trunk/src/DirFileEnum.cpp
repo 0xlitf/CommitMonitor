@@ -16,11 +16,12 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
-#include "StdAfx.h"
-#include "shlwapi.h"
+
+#include "stdafx.h"
+#include <shlwapi.h>
 #include "DirFileEnum.h"
 
-#pragma comment(lib, "shlwapi")
+#pragma comment(lib, "shlwapi.lib")
 
 CSimpleFileFind::CSimpleFileFind(const wstring &sPath, LPCTSTR pPattern) :
 m_dError(ERROR_SUCCESS),

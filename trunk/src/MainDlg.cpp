@@ -16,8 +16,9 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
-#include "StdAfx.h"
-#include "Resource.h"
+
+#include "stdafx.h"
+#include "resource.h"
 #include "MainDlg.h"
 
 #include "URLDlg.h"
@@ -3211,4 +3212,3 @@ int CALLBACK CMainDlg::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     return ret;
 
 }
-

@@ -16,9 +16,10 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
+
 #pragma once
 #include <string>
-#include "shlwapi.h"
+#include <shlwapi.h>
 
 typedef std::basic_string<TCHAR> tstring;
 
@@ -200,4 +201,3 @@ protected:
     BOOL    m_read;                 ///< indicates if the value has already been read from the registry
     BOOL    m_force;                ///< indicates if no cache should be used, i.e. always read and write directly from registry
 };
-

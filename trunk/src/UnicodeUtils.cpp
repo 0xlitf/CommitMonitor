@@ -16,8 +16,9 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
-#include "StdAfx.h"
-#include "unicodeutils.h"
+
+#include "stdafx.h"
+#include "UnicodeUtils.h"
 
 CUnicodeUtils::CUnicodeUtils(void)
 {
@@ -197,4 +198,3 @@ int LoadStringEx(HINSTANCE hInstance, UINT uID, LPTSTR lpBuffer, int nBufferMax,
 #endif
     return ret;
 }
-

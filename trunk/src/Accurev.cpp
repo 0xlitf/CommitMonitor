@@ -21,8 +21,8 @@
 // TODO: Implement XML parsing rather than the horribly hacky string parsing
 // TODO: Fix the reading of data from pipes to be asychronous
 
-#include "StdAfx.h"
-#include "accurev.h"
+#include "stdafx.h"
+#include "Accurev.h"
 #include "AppUtils.h"
 #include "version.h"
 #include "HiddenWindow.h"

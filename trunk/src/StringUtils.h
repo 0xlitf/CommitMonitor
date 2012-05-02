@@ -21,7 +21,6 @@
 #include <string>
 
 
-
 class CStringUtils
 {
 public:
@@ -59,4 +58,3 @@ public:
         return s;
     }
 };
-

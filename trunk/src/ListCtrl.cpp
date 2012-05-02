@@ -16,6 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
+
 #include "stdafx.h"
 #include "ListCtrl.h"
 
@@ -135,5 +136,3 @@ LRESULT CALLBACK CListCtrl::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
     return CallWindowProc(pListCtrl->m_pfnOrigCtlProc, hwnd, uMsg,
         wParam, lParam);
 }
-
-

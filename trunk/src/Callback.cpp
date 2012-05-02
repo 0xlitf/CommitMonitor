@@ -16,7 +16,8 @@
 // along with this program; if not, write to the Free Software Foundation,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
-#include "StdAfx.h"
+
+#include "stdafx.h"
 #include "Callback.h"
 
 #include <urlmon.h>
@@ -50,4 +51,3 @@ STDMETHODIMP CCallback::Authenticate( HWND * phwnd, LPWSTR * pszUsername, LPWSTR
     _tcscpy_s(*pszPassword, m_password.size()+1, m_password.c_str());
     return S_OK;
 }
-

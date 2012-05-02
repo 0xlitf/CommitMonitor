@@ -19,7 +19,7 @@
 
 #pragma once
 #include "AeroGlass.h"
-#include "registry.h"
+#include "Registry.h"
 #include <map>
 #include <gdiplus.h>
 
@@ -53,4 +53,3 @@ private:
     std::map<HWND, UINT_PTR>    subclassedControls;
     ULONG_PTR                   gdiplusToken;
 };
-
