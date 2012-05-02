@@ -98,9 +98,6 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
       </sources>
-      <libdirs>
-        <include name="..\openssl\out32${ssldbg}" />
-      </libdirs>
     </lib>
 
     <delete>

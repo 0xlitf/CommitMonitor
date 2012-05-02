@@ -147,8 +147,6 @@
         </cl>
         <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
         <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
-        <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-        <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
         <lib
           output="${configuration}_${platform}\${fname}.lib"
           options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
@@ -158,10 +156,6 @@
             <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" if="${fname == 'libsvn_subr'}"/>
             <include name="..\sqlite\${configuration}_${platform}\sqlite.lib" if="${fname == 'libsvn_fs_fs'}"/>
           </sources>
-          <libdirs>
-            <include name="..\openssl\out32${ssldbg}" />
-            <include name="..\neon\${configuration}_${platform}" />
-          </libdirs>
         </lib>
       </do>
     </foreach>
