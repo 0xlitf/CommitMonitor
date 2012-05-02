@@ -382,6 +382,9 @@
     <None Include="..\ext\build\zlib.build">
       <Filter>Build Scripts\ext</Filter>
     </None>
+    <None Include="Setup\Setup64.wxs">
+      <Filter>WiX</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\CommitMonitor.rc">

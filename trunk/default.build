@@ -9,16 +9,25 @@
   <property name="platform" value="win32" />
   <!-- default build tool is VS.NET2005 -->
   <property name="buildtool" value="devenv.com" />
-  <!-- build with VS2010, if there is a 10.0 in the VC path -->
-  <property name="studioversion" value="2010" if="${string::contains (environment::get-variable('VCINSTALLDIR'), '10.0')}"/>
-  <property name="solutionname" value="CommitMonitor.sln" if="${studioversion == '2010'}"/>
+  <!-- default: don't add a platform specific extension
+     to the bin folders 'release' / 'debug'	 -->
+  <property name="bindirextension" value="" />
+  <!-- default: we don't cross-compile -->
+  <property name="crosscompile" value="" />
+  <!-- default: we don't clean first -->
+  <property name="cleanup" value="" />
+  <!-- default: we build with VS2010 -->
+  <property name="studioversion" value="2010"/>
+  <!-- default: we build in a user session -->
+  <property name="solutionname" value="CommitMonitor.sln" />
+
+  <include buildfile="default.build.user" />
+
   <!-- the signinfo.txt file has to contain one line with parameters for signtool.exe,
        for example:
      /t "url/to/timestamp/server" /q
   -->
   <loadfile file="signinfo.txt" property="signinfo" failonerror="false" if="${file::exists('signinfo.txt')}"/>
-
-  <include buildfile="default.build.user" />
 
   <!-- ====================================================================== -->
   <!-- Configuration targets                                                  -->
@@ -38,13 +47,38 @@
     <property name="devrelease" value="" />
   </target>
 
+  <target name="x64">
+    <description>
+      Compiles everything for the win64 platform.
+    </description>
+    <property name="platform" value="x64" />
+    <property name="bindirextension" value="64" />
+  </target>
+
+  <target name="cross" depends="x64">
+    <description>
+      Cross-compiles on win32 for a different platform.
+    </description>
+    <property name="crosscompile" value="yes" if="${platform == 'x64'}"/>
+    <echo message="ignore cross-compiling (only supported for x64)" level="Warning" if="${platform != 'x64'}"/>
+  </target>
+
   <!-- ====================================================================== -->
   <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
+
   <target name="clean" depends="VSNET">
+    <description>
+      Cleans before building the target
+    </description>
+    <property name="cleanup" value="yes" />
+  </target>
+
+  <target name="cleanall" depends="VSNET">
     <description>
       Cleans every subproject.
     </description>
+    <property name="cleanup" value="yes" />
     <nant target="clean">
       <buildfiles>
         <include name="ext/build/OpenSSL.build" />
@@ -124,7 +158,7 @@
     </exec>
     <exec program="Tools\upx.exe" if="${platform == 'win32'}" >
       <arg value="-q" />
-      <arg value="bin\${configuration}\CommitMonitor.exe" />
+      <arg value="bin\${configuration}_${platform}\CommitMonitor.exe" />
     </exec>
   </target>
 
@@ -161,11 +195,13 @@
   <!-- Help target                                                            -->
   <!-- ====================================================================== -->
   <target name="help">
+    <!-- note: use spaces in the help text below! Otherwise the output won't be aligned in the console. -->
     <echo message="You must specify a target to tell us what you want to build!" />
     <echo />
     <echo message="The following targets are available:" />
     <echo message="clean        : this will clean up previous builds and force a" />
     <echo message="               complete rebuild later" />
+    <echo message="cleanall     : clean every subproject" />
     <echo message="Subversion   : builds the Subversion libraries, including its" />
     <echo message="               dependencies" />
     <echo message="CommitMonitor: builds CommitMonitor. You must have build the" />
@@ -174,15 +210,22 @@
     <echo message="msi          : creates the msi, but doesn't build the libs first" />
     <echo />
     <echo message="The following targets can be used to tweak the builds:" />
+    <echo message="clean   : clean those targets which are built next" />
     <echo message="debug   : if this target is called before other build targets," />
     <echo message="          those targets are built with debug support" />
     <echo message="release : call this if you want to create official releases." />
     <echo message="          It removes the '-dev' string from some builds" />
+    <echo message="x64     : call this if you want to create native 64 bit builds." />
+    <echo message="          (AMD64/EM64T only -- will not work on Itanium systems.)" />
+    <echo message="cross   : cross-compile on win32 for the given target platform." />
+    <echo message="          (currently only available with x64.)" />
     <echo />
     <echo message="Please specify the configuration targets BEFORE the main target." />
     <echo message="Examples:" />
     <echo />
     <echo message="nant release setup" />
+    <echo message="nant -v x64 debug" />
+    <echo message="nant cross x64 setup" />
     <echo />
   </target>
 </project>

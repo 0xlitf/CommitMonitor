@@ -22,16 +22,16 @@
 
   <target name="setup" depends="versioninfo">
     <property name="verstring" value="${environment::get-variable('MajorVersion')}.${environment::get-variable('MinorVersion')}.${environment::get-variable('MicroVersion')}.${environment::get-variable('WCREV')}" />
-    <property name="msifilename" value="CommitMonitor-${verstring}" />
+    <property name="msifilename" value="CommitMonitor${bindirextension}-${verstring}" />
     <!-- copy the exe to CommitMonitor_portable.exe -->
-    <copy file="..\..\bin\${configuration}\CommitMonitor.exe" tofile="..\..\bin\${configuration}\CommitMonitor-${verstring}_portable.exe" overwrite="true" />
+    <copy file="..\..\bin\${configuration}_${platform}\CommitMonitor.exe" tofile="..\..\bin\${configuration}_${platform}\CommitMonitor${bindirextension}-${verstring}_portable.exe" overwrite="true" />
     <!-- sign all binaries -->
     <if test="${file::exists('..\..\signinfo.txt')}">
       <foreach item="File" property="filename">
         <in>
           <items>
-            <include name="..\..\bin\${configuration}\*.dll" />
-            <include name="..\..\bin\${configuration}\*.exe" />
+            <include name="..\..\bin\${configuration}_${platform}\*.dll" />
+            <include name="..\..\bin\${configuration}_${platform}\*.exe" />
           </items>
         </in>
         <do>
@@ -48,7 +48,7 @@
       <arg value="-nologo" />
       <arg value="-out" />
       <arg value="..\..\bin\" />
-      <arg value="Setup.wxs" />
+      <arg value="Setup${bindirextension}.wxs" />
     </exec>
     <exec program="light">
       <arg value="-nologo" />
@@ -59,7 +59,7 @@
       <arg value="-cultures:en-us" />
       <arg value="-out" />
       <arg value="..\..\bin\${msifilename}.msi" />
-      <arg value="..\..\bin\Setup.wixobj" />
+      <arg value="..\..\bin\Setup${bindirextension}.wixobj" />
     </exec>
     <delete>
       <fileset>
@@ -75,8 +75,8 @@
       </exec>
     </if>
 
-    <zip zipfile="..\..\bin\CommitMonitor-${verstring}.zip" ziplevel="9">
-      <fileset basedir="..\..\bin\${configuration}">
+    <zip zipfile="..\..\bin\CommitMonitor${bindirextension}-${verstring}.zip" ziplevel="9">
+      <fileset basedir="..\..\bin\${configuration}_${platform}">
         <include name="CommitMonitor-${verstring}_portable.exe" />
       </fileset>
     </zip>

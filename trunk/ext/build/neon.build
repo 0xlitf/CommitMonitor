@@ -11,17 +11,19 @@
       Cleans previous built files.
     </description>
 
-    <delete>
-      <fileset>
-        <include name="${configuration}_${platform}\**" />
-        <include name=".version" />
-        <include name="config.hw" />
-        <include name="config.h" />
-      </fileset>
-    </delete>
+    <if test="${cleanup == 'yes'}">
+      <delete>
+        <fileset>
+          <include name="${configuration}_${platform}\**" />
+          <include name=".version" />
+          <include name="config.hw" />
+          <include name="config.h" />
+        </fileset>
+      </delete>
+    </if>
   </target>
 
-  <target name="build" >
+  <target name="build" depends="clean">
     <mkdir dir="${configuration}_${platform}" />
     <loadfile file="NEWS" property="versionfile" />
     <regex pattern="^Changes in release (?'NEON_MAJOR_VERSION'\d+)\.(?'NEON_MINOR_VERSION'\d+)\.(?'NEON_MICRO_VERSION'\d+):" input="${versionfile}" />
@@ -131,8 +133,10 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\openssl\out32\libeay32.lib" />
-        <include name="..\openssl\out32\ssleay32.lib" />
+        <include name="..\openssl\out32\libeay32.lib" if="${(configuration == 'release')}" />
+        <include name="..\openssl\out32\ssleay32.lib" if="${(configuration == 'release')}" />
+        <include name="..\openssl\out32.dbg\libeay32.lib" if="${(configuration != 'release')}" />
+        <include name="..\openssl\out32.dbg\ssleay32.lib" if="${(configuration != 'release')}" />
         <include name="..\gssapi\${configuration}_${platform}\gssapiu.lib" />
       </sources>
     </lib>

@@ -1,36 +1,62 @@
 <?xml version="1.0"?>
 <project name="OpenSSL" default="OpenSSL">
   <target name="clean">
-    <!-- to prevent 'nmake clean' to choke on userinput questions, give it our own del command -->
-    <echo file="..\openssl\del.bat" message="del %1 %2 %3 %4 %5 %6 %7 %8 %9 /Q" />
-    <exec program="nmake" workingdir="..\openssl" failonerror="false">
-      <arg value="-f" />
-      <arg value="ms\nt.mak" />
-      <arg value="clean" />
-    </exec>
+    <if test="${cleanup == 'yes'}">
+      <!-- to prevent 'nmake clean' to choke on userinput questions, give it our own del command -->
+      <echo file="..\openssl\del.bat" message="del %1 %2 %3 %4 %5 %6 %7 %8 %9 /Q" />
+      <exec program="nmake" workingdir="..\openssl" failonerror="false">
+        <arg value="-f" />
+        <arg value="ms\nt.mak" />
+        <arg value="clean" />
+      </exec>
+    </if>
   </target>
   <target name="OpenSSL" depends="clean">
     <delete file="..\openssl\del.bat" if="${file::exists('..\openssl\del.bat')}" />
-    <exec program="perl" workingdir="..\openssl">
-      <arg value="Configure" />
-      <arg value="VC-WIN32" />
-      <arg value="no-asm" />
-      <arg value="no-gost" />
-      <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
-    </exec>
-    <exec program="cmd" workingdir="..\openssl">
-      <arg value="/c" />
-      <arg value="ms\do_ms" />
-    </exec>
-    <loadfile file="..\openssl\ms\nt.mak" property="makefile">
-      <filterchain>
-        <replacestring from="  /MD " to="  /MT " />
-        <replacestring from=" /Ox /O2 " to=" /O2 /Oy /GL " if="${configuration == 'release'}" />
-        <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${configuration == 'release'}" />
-        <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${configuration == 'release'}" />
-      </filterchain>
-    </loadfile>
-    <echo file="..\openssl\ms\nt.mak" message="${makefile}" />
+    <if test="${platform == 'win32'}">
+      <exec program="perl" workingdir="..\openssl">
+        <arg value="Configure" />
+        <arg value="VC-WIN32" if="${(configuration == 'release')}" />
+        <arg value="debug-VC-WIN32" if="${(configuration != 'release')}" />
+        <arg value="no-asm" />
+        <arg value="no-gost" />
+        <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
+      </exec>
+      <exec program="cmd" workingdir="..\openssl">
+        <arg value="/c" />
+        <arg value="ms\do_ms" />
+      </exec>
+      <loadfile file="..\openssl\ms\nt.mak" property="makefile">
+        <filterchain>
+          <replacestring from="  /MD " to="  /MT " />
+          <replacestring from=" /Ox /O2 " to=" /O2 /Oy /GL " if="${configuration == 'release'}" />
+          <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${configuration == 'release'}" />
+          <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${configuration == 'release'}" />
+        </filterchain>
+      </loadfile>
+    </if>
+    <if test="${platform == 'x64'}">
+      <exec program="perl" workingdir="..\openssl">
+        <arg value="Configure" />
+        <arg value="VC-WIN64A" if="${(configuration == 'release')}" />
+        <arg value="debug-VC-WIN64A" if="${(configuration != 'release')}" />
+        <arg value="no-asm" />
+        <arg value="no-gost" />
+        <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
+      </exec>
+      <exec program="cmd" workingdir="..\openssl">
+        <arg value="/c" />
+        <arg value="ms\do_win64a" />
+      </exec>
+      <loadfile file="..\openssl\ms\nt.mak" property="makefile">
+        <filterchain>
+          <replacestring from="  /MD " to="  /MT " />
+          <replacestring from=" /Ox /O2 " to=" /O2 /GL " if="${configuration == 'release'}" />
+          <replacestring from="lib /nologo" to="lib /nologo /LTCG" if="${configuration == 'release'}" />
+          <replacestring from="/opt:ref /debug" to="/opt:ref,icf /debug /LTCG" if="${configuration == 'release'}" />
+        </filterchain>
+      </loadfile>
+    </if>
     <exec program="nmake" workingdir="..\openssl">
       <arg value="-f" />
       <arg value="ms\nt.mak" />

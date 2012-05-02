@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <?include Includes.wxi?>
+  <Product
+  UpgradeCode="485B449D-BCA7-4697-A2C0-FD46160AF63E"
+  Name="$(var.ProductName) $(var.VersionNumberUserVisible)"
+  Id='*'
+  Language='1033'
+  Codepage='1252'
+  Version="$(var.VersionNumberInternal)"
+  Manufacturer='Stefans Tools'>
+
+    <Package Id='*' Keywords='Installer'
+      Description="Subversion Commit Monitor"
+      Comments='http://tools.tortoisesvn.net' Manufacturer='Stefans Tools'
+      InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' Platform="x64" />
+
+    <Upgrade Id="485B449D-BCA7-4697-A2C0-FD46160AF63E" >
+      <!-- flag is set if the install will trigger an upgrade of an existing install -->
+      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="$(var.VersionNumberInternal)" IncludeMaximum="no" />
+    </Upgrade>
+
+    <Media Id='1' Cabinet='cmtmonitor.cab' EmbedCab='yes' />
+    <Icon Id="CMIcon" SourceFile="..\Resources\CommitMonitor.ico" />
+    <Property Id="ARPPRODUCTICON">CMIcon</Property>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <Condition Message='This application requires an 64-bit OS'>VersionNT64</Condition>
+
+    <Property Id="INSTALLDIR">
+      <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" />
+    </Property>
+
+    <!-- define directory structure -->
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFiles64Folder' Name='PFiles'>
+        <Directory Id='INSTALLDIR' Name='CommitMonitor'/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="CommitMonitor" />
+      </Directory>
+    </Directory>
+
+    <!-- set up the components in the directory structure -->
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id='CommitMonitor.EXE' Guid='F78B1D36-806E-46B7-AF8C-FFD5E8242985' Win64="yes">
+        <File Id='CommitMonitor.EXE' Name='CommitMonitor.exe' DiskId='1' Source='../../bin/release_x64/CommitMonitor.exe' Vital='yes' />
+      </Component>
+      <Component Id='MainReg' Guid='5CF9DC5F-50ED-43FE-9DD2-0011AED21129' Win64="yes">
+        <RegistryValue Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Value='[INSTALLDIR]' Type="string" />
+      </Component>
+      <Component Id="C__sasl" Guid="70213F1B-C30F-479A-952B-795F1D1DC663" Win64="yes">
+        <File Id="F__libsasl" Name="libsasl.dll" DiskId="1" Source="../../bin/release_x64/libsasl.dll" KeyPath="yes" />
+        <File Id="F__saslANONYMOUS" Name="saslANONYMOUS.dll" DiskId="1" Source="../../bin/release_x64/saslANONYMOUS.dll" />
+        <File Id="F__saslCRAMMD5" Name="saslCRAMMD5.dll" DiskId="1" Source="../../bin/release_x64/saslCRAMMD5.dll" />
+        <File Id="F__saslDIGESTMD5" Name="saslDIGESTMD5.dll" DiskId="1" Source="../../bin/release_x64/saslDIGESTMD5.dll" />
+        <File Id="F__saslLOGIN" Name="saslLOGIN.dll" DiskId="1" Source="../../bin/release_x64/saslLOGIN.dll" />
+        <File Id="F__saslNTLM" Name="saslNTLM.dll" DiskId="1" Source="../../bin/release_x64/saslNTLM.dll" />
+        <File Id="F__saslPLAIN" Name="saslPLAIN.dll" DiskId="1" Source="../../bin/release_x64/saslPLAIN.dll" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ProgramMenuDir">
+      <Component Id="StartMenuShortCut" Guid='EE23DC89-2639-41DB-9487-E05D6470C87F' Win64="yes">
+        <Shortcut Id="startMenuCommitMonitor" Directory="ProgramMenuDir" Name="CommitMonitor" Target="[INSTALLDIR]CommitMonitor.exe" Description="Subversion Commit Monitor" />
+        <RemoveFolder Id="ProgramMenuDir" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\CommitMonitor" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <IniFile Id='WebsiteUrl' Action='addLine' Name='Website.url' Directory='INSTALLDIR' Section='InternetShortcut' Key='URL' Value='http://tools.tortoisesvn.net' />
+        <Shortcut Id="WebsiteUrlShortCut" Directory="ProgramMenuDir" Name="Website" Target="[INSTALLDIR]Website.url" Description="http://tools.tortoisesvn.net" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id='Complete' Title='CommitMonitor' Description='The complete package.'
+      Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainEXE' Title='Program' Description='The main executable.' Level='1'>
+        <ComponentRef Id='CommitMonitor.EXE' />
+        <ComponentRef Id='MainReg' />
+        <ComponentRef Id='StartMenuShortCut' />
+        <ComponentRef Id='C__sasl' />
+      </Feature>
+    </Feature>
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <Publish Dialog="ExitDialog"
+                  Control="Finish"
+                  Event="DoAction"
+                  Value="LaunchApplication">NOT Installed</Publish>
+    </UI>
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="include\Banner.jpg" />
+    <WixVariable Id="WixUIDialogBmp" Value="include\Dialog.jpg" />
+    <Property Id="WixShellExecTarget" Value="[#CommitMonitor.EXE]" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <AppSearch Sequence="1"></AppSearch>
+      <LaunchConditions After="AppSearch" />
+      <RemoveExistingProducts After="InstallValidate"><![CDATA[PREVIOUSVERSIONSINSTALLED]]></RemoveExistingProducts>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>

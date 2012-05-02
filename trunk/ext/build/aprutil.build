@@ -21,12 +21,14 @@
       Cleans previous built files.
     </description>
 
-    <delete>
-      <fileset>
-        <include name="${configuration}_${platform}\**" />
-        <include name="xml\expat\lib\${configuration}_${platform}\**" />
-      </fileset>
-    </delete>
+    <if test="${cleanup == 'yes'}">
+      <delete>
+        <fileset>
+          <include name="${configuration}_${platform}\**" />
+          <include name="xml\expat\lib\${configuration}_${platform}\**" />
+        </fileset>
+      </delete>
+    </if>
   </target>
 
   <target name="build" depends="clean">

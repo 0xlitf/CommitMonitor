@@ -11,15 +11,16 @@
       Cleans previous built files.
     </description>
 
-
-    <delete>
-      <fileset>
-        <include name="${configuration}_${platform}\**" />
-      </fileset>
-    </delete>
+    <if test="${cleanup == 'yes'}">
+      <delete>
+        <fileset>
+          <include name="${configuration}_${platform}\**" />
+        </fileset>
+      </delete>
+    </if>
   </target>
 
-  <target name="build">
+  <target name="build" depends="clean">
     <mkdir dir="${configuration}_${platform}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
