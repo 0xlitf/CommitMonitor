@@ -16,7 +16,7 @@
        for example:
      /t "url/to/timestamp/server" /q
   -->
-  <loadfile file="signinfo.txt" property="signinfo" failonerror="false" />
+  <loadfile file="signinfo.txt" property="signinfo" failonerror="false" if="${file::exists('signinfo.txt')}"/>
 
   <include buildfile="default.build.user" />
 
@@ -122,7 +122,7 @@
       <arg value="/rebuild" />
       <arg value="${configuration}|${platform}" />
     </exec>
-    <exec program="Tools\upx.exe" >
+    <exec program="Tools\upx.exe" if="${platform == 'win32'}" >
       <arg value="-q" />
       <arg value="bin\${configuration}\CommitMonitor.exe" />
     </exec>
