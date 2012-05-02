@@ -35,7 +35,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define UNUSED(x)                 x
 #define ACCU_COMM_FAILURE         _T("Accurev comm failure")
 #define ACCU_NO_ERROR             _T("")
 
@@ -147,17 +146,17 @@ bool ACCUREV::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t r
                bool ignorecontenttype,  const wstring& options, bool bAppend,
                const wstring& outputfile, const wstring& errorfile)
 {
-    UNUSED(url1);
-    UNUSED(pegrevision);
-    UNUSED(revision1);
-    UNUSED(revision2);
-    UNUSED(ignoreancestry);
-    UNUSED(nodiffdeleted);
-    UNUSED(ignorecontenttype);
-    UNUSED(options);
-    UNUSED(bAppend);
-    UNUSED(outputfile);
-    UNUSED(errorfile);
+    UNREFERENCED_PARAMETER(url1);
+    UNREFERENCED_PARAMETER(pegrevision);
+    UNREFERENCED_PARAMETER(revision1);
+    UNREFERENCED_PARAMETER(revision2);
+    UNREFERENCED_PARAMETER(ignoreancestry);
+    UNREFERENCED_PARAMETER(nodiffdeleted);
+    UNREFERENCED_PARAMETER(ignorecontenttype);
+    UNREFERENCED_PARAMETER(options);
+    UNREFERENCED_PARAMETER(bAppend);
+    UNREFERENCED_PARAMETER(outputfile);
+    UNREFERENCED_PARAMETER(errorfile);
 
 
     return true;
@@ -170,8 +169,8 @@ wstring ACCUREV::CanonicalizeURL(const wstring& url)
 
 void ACCUREV::SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar/* = false*/)
 {
-    UNUSED(pProgressDlg);
-    UNUSED(bShowProgressBar);
+    UNREFERENCED_PARAMETER(pProgressDlg);
+    UNREFERENCED_PARAMETER(bShowProgressBar);
 }
 
 
@@ -611,7 +610,7 @@ bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long start
 
 bool ACCUREV::AccuIssueList(const wstring& repo, const wstring& url, long issueNo, wstring& rawLog)
 {
-  UNUSED(repo);
+  UNREFERENCED_PARAMETER(repo);
 
   bool retVal;
   wstring stdOut, stdErr;
