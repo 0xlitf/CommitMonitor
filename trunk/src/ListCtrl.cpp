@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007,2009 - Stefan Kueng
+// Copyright (C) 2007,2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,7 +57,7 @@ bool CListCtrl::SubClassListCtrl(HWND hWnd)
     m_hwnd = hWnd;
     m_pfnOrigCtlProc = (WNDPROC) GetWindowLongPtr(hWnd, GWLP_WNDPROC);
     SetProp(hWnd, PROP_OBJECT_PTR, (HANDLE)this);
-    return (SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG) (WNDPROC) stWinMsgHandler) != 0);
+    return (SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR) (WNDPROC) stWinMsgHandler) != 0);
 }
 
 void CListCtrl::SetInfoText(LPCTSTR sText, bool bPermanent /* = false */)

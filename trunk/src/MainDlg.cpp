@@ -291,10 +291,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_bottommarg = rect.bottom - m_bottommarg;
 
             // subclass the tree view control to intercept the WM_SETFOCUS messages
-            m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG)TreeProc);
-            SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG)this);
-            m_oldFilterWndProc = (WNDPROC)SetWindowLongPtr(m_hFilterControl, GWLP_WNDPROC, (LONG)FilterProc);
-            SetWindowLongPtr(m_hFilterControl, GWLP_USERDATA, (LONG)this);
+            m_oldTreeWndProc = (WNDPROC)SetWindowLongPtr(m_hTreeControl, GWLP_WNDPROC, (LONG_PTR)TreeProc);
+            SetWindowLongPtr(m_hTreeControl, GWLP_USERDATA, (LONG_PTR)this);
+            m_oldFilterWndProc = (WNDPROC)SetWindowLongPtr(m_hFilterControl, GWLP_WNDPROC, (LONG_PTR)FilterProc);
+            SetWindowLongPtr(m_hFilterControl, GWLP_USERDATA, (LONG_PTR)this);
 
             m_ListCtrl.SubClassListCtrl(m_hListControl);
 
@@ -1225,6 +1225,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             }
                             m_pURLInfos->Save();
                             m_pURLInfos->ReleaseWriteData();
+                            SetWindowRedraw(m_hTreeControl, FALSE);
                             TreeView_SelectItem(m_hTreeControl, NULL);
                             RefreshURLTree(false, inf->url);
                         }
@@ -1257,6 +1258,7 @@ LRESULT CMainDlg::DoCommand(int id)
                 }
                 else
                 {
+                    SetWindowRedraw(m_hTreeControl, FALSE);
                     TreeView_SelectItem(m_hTreeControl, NULL);
                     RefreshURLTree(false, L"");
                 }
@@ -1745,6 +1747,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
 /******************************************************************************/
 void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselect)
 {
+    SetWindowRedraw(m_hTreeControl, FALSE);
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     std::wstring SelUrl = urltoselect;
     if (SelUrl.empty() && hSelectedItem)
@@ -1849,6 +1852,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
             tvToSel = TreeView_GetChild(m_hTreeControl, tvToSel);
         TreeView_SelectItem(m_hTreeControl, tvToSel);
     }
+    SetWindowRedraw(m_hTreeControl, TRUE);
     ::InvalidateRect(m_hListControl, NULL, true);
 }
 
@@ -1947,6 +1951,7 @@ bool CMainDlg::SelectNextWithUnread(HTREEITEM hItem)
         TreeView_GetItem(m_hTreeControl, &item);
         if (item.state & TVIS_BOLD)
         {
+            SetWindowRedraw(m_hTreeControl, FALSE);
             TreeView_SelectItem(m_hTreeControl, hItem);
             TreeItemSelected(m_hTreeControl, hItem);
             ListView_SetSelectionMark(m_hListControl, 0);
