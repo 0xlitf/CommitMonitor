@@ -3140,7 +3140,6 @@ bool CMainDlg::PreTranslateMessage( MSG* pMsg )
         switch (pMsg->wParam)
         {
         case 'A':
-        case VK_INSERT:
             {
                 if (pMsg->hwnd == m_hLogMsgControl)
                 {

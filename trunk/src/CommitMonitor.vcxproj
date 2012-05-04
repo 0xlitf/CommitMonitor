@@ -314,7 +314,9 @@
     <None Include="..\ext\build\apr.build" />
     <None Include="..\ext\build\aprutil.build" />
     <None Include="..\ext\build\default.build" />
-    <None Include="..\ext\build\neon.build" />
+    <None Include="..\ext\build\neon.build">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\ext\build\OpenSSL.build" />
     <None Include="..\ext\build\sasl.build" />
     <None Include="..\ext\build\serf.build" />
