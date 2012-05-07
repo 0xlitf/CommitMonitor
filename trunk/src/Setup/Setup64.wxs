@@ -3,7 +3,7 @@
   <?include Includes.wxi?>
   <Product
   UpgradeCode="485B449D-BCA7-4697-A2C0-FD46160AF63E"
-  Name="$(var.ProductName) x64 $(var.VersionNumberUserVisible)"
+  Name="$(var.ProductName) $(var.VersionNumberUserVisible) (64-bit)"
   Id='*'
   Language='1033'
   Codepage='1252'
