@@ -300,8 +300,8 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
     startup.cb = sizeof(startup);
     memset(&process, 0, sizeof(process));
 
-    TCHAR * cmdbuf = new TCHAR[sCommandLine.length()+1];
-    _tcscpy_s(cmdbuf, sCommandLine.length()+1, sCommandLine.c_str());
+    std::unique_ptr<TCHAR[]> cmdbuf(new TCHAR[sCommandLine.length()+1]);
+    _tcscpy_s(cmdbuf.get(), sCommandLine.length()+1, sCommandLine.c_str());
 
     if (bHideWindow) {
       // Make sure the command window starts hidden
@@ -309,9 +309,8 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
       startup.wShowWindow = SW_HIDE;
     }
 
-    if (CreateProcess(NULL, cmdbuf, NULL, NULL, FALSE, 0, 0, 0, &startup, &process)==0)
+    if (CreateProcess(NULL, cmdbuf.get(), NULL, NULL, FALSE, 0, 0, 0, &startup, &process)==0)
     {
-        delete [] cmdbuf;
         LPVOID lpMsgBuf;
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
             FORMAT_MESSAGE_FROM_SYSTEM |
@@ -327,7 +326,6 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
         LocalFree(lpMsgBuf);
         return false;
     }
-    delete [] cmdbuf;
 
     if (bWaitForStartup)
     {
@@ -348,18 +346,16 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
 wstring CAppUtils::GetTempFilePath()
 {
     DWORD len = ::GetTempPath(0, NULL);
-    TCHAR * temppath = new TCHAR[len+1];
-    TCHAR * tempF = new TCHAR[len+50];
-    ::GetTempPath (len+1, temppath);
+    std::unique_ptr<TCHAR[]> temppath(new TCHAR[len+1]);
+    std::unique_ptr<TCHAR[]> tempF(new TCHAR[len+50]);
+    ::GetTempPath (len+1, temppath.get());
     wstring tempfile;
-    ::GetTempFileName (temppath, TEXT("cm_"), 0, tempF);
-    tempfile = wstring(tempF);
+    ::GetTempFileName (temppath.get(), TEXT("cm_"), 0, tempF.get());
+    tempfile = wstring(tempF.get());
     //now create the tempfile, so that subsequent calls to GetTempFile() return
     //different filenames.
     HANDLE hFile = CreateFile(tempfile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
     CloseHandle(hFile);
-    delete [] temppath;
-    delete [] tempF;
     return tempfile;
 }
 

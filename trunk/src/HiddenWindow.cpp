@@ -904,9 +904,9 @@ DWORD CHiddenWindow::RunThread()
                             sRootRobotsURL += _T("/svnrobots.txt");
                         wstring sFile = CAppUtils::GetTempFilePath();
                         string in;
-                        CCallback * callback = new CCallback;
+                        std::unique_ptr<CCallback> callback(new CCallback);
                         callback->SetAuthData(it->second.username, it->second.password);
-                        if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback) == S_OK))
+                        if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback.get()) == S_OK))
                         {
                             if (!m_bRun)
                                 continue;
@@ -955,7 +955,6 @@ DWORD CHiddenWindow::RunThread()
                                 fs.close();
                             }
                         }
-                        delete callback;
                         DeleteFile(sFile.c_str());
                         // the format of the svnrobots.txt file is as follows:
                         // # comment
@@ -1166,28 +1165,23 @@ DWORD CHiddenWindow::RunThread()
 
                     // we have to include the authentication in the URL itself
                     wstring tempfile = CAppUtils::GetTempFilePath();
-                    CCallback * callback = new CCallback;
+                    std::unique_ptr<CCallback> callback(new CCallback);
                     callback->SetAuthData(it->second.username, it->second.password);
                     DeleteFile(tempfile.c_str());
                     wstring projName = it->second.name;
                     wstring parentpathurl = it->first;
                     wstring parentpathurl2 = parentpathurl + _T("/");
-                    HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback);
+                    HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback.get());
                     if (!m_bRun)
                         continue;
                     if (hResUDL != S_OK)
                     {
-                        hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback);
+                        hResUDL = URLDownloadToFile(NULL, parentpathurl.c_str(), tempfile.c_str(), 0, callback.get());
                     }
                     if (!m_bRun)
                         continue;
                     if (hResUDL == S_OK)
                     {
-                        if (callback)
-                        {
-                            delete callback;
-                            callback = NULL;
-                        }
                         // we got a web page! But we can't be sure that it's the page from SVNParentPath.
                         // Use a regex to parse the website and find out...
                         ifstream fs(tempfile.c_str());
@@ -1336,11 +1330,6 @@ DWORD CHiddenWindow::RunThread()
                                 bNewEntries = false;
                             }
                         }
-                    }
-                    if (callback)
-                    {
-                        delete callback;
-                        callback = NULL;
                     }
                     DeleteFile(tempfile.c_str());
                 }

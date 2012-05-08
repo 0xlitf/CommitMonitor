@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "SerializeUtils.h"
 #include <assert.h>
+#include <memory>
 
 char CSerializeUtils::buffer[SERIALIZEBUFFERSIZE] = {0};
 wchar_t CSerializeUtils::wbuffer[SERIALIZEBUFFERSIZE] = {0};
@@ -128,14 +129,12 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
                             return true;
                         }
                     }
-                    char * pBuffer = new char[length];
-                    if (fread(pBuffer, sizeof(char), length, hFile))
+                    std::unique_ptr<char[]> pBuffer(new char[length]);
+                    if (fread(pBuffer.get(), sizeof(char), length, hFile))
                     {
-                        str = string(pBuffer, length);
-                        delete [] pBuffer;
+                        str = string(pBuffer.get(), length);
                         return true;
                     }
-                    delete [] pBuffer;
                 }
                 else
                 {
@@ -199,10 +198,9 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
             }
             else
             {
-                wchar_t * wide = new wchar_t[size+1];
-                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wide, size);
-                str = wstring(wide, ret);
-                delete [] wide;
+                std::unique_ptr<wchar_t[]> wide(new wchar_t[size+1]);
+                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wide.get(), size);
+                str = wstring(wide.get(), ret);
             }
             buf += length;
             return true;

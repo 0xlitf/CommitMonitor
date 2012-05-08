@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 #include "Registry.h"
 #include <string>
 #include <Commdlg.h>
+#include <memory>
 
 using namespace std;
 
@@ -86,10 +87,9 @@ LRESULT CFindBar::DoCommand(int id, int msg)
 void CFindBar::DoFind(bool bFindPrev)
 {
     int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_FINDTEXT));
-    TCHAR * findtext = new TCHAR[len+1];
-    ::GetDlgItemText(*this, IDC_FINDTEXT, findtext, len+1);
-    wstring ft = wstring(findtext);
-    delete [] findtext;
+    std::unique_ptr<TCHAR[]> findtext(new TCHAR[len+1]);
+    ::GetDlgItemText(*this, IDC_FINDTEXT, findtext.get(), len+1);
+    wstring ft = wstring(findtext.get());
     bool bCaseSensitive = !!SendMessage(GetDlgItem(*this, IDC_MATCHCASECHECK), BM_GETCHECK, 0, NULL);
     if (bFindPrev)
         ::SendMessage(m_hParent, COMMITMONITOR_FINDMSGPREV, (WPARAM)bCaseSensitive, (LPARAM)ft.c_str());

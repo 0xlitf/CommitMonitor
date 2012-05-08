@@ -27,7 +27,6 @@
 #include "UpdateDlg.h"
 #include "AppUtils.h"
 #include "DirFileEnum.h"
-#include "auto_buffer.h"
 #include <uxtheme.h>
 #include <algorithm>
 #include <assert.h>
@@ -512,7 +511,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     tv.hParent = FindParentTreeNode(it->first);
                     tv.hInsertAfter = TVI_SORT;
                     tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-                    WCHAR * str = new WCHAR[it->second.name.size()+10];
+                    std::unique_ptr<WCHAR[]> str(new WCHAR[it->second.name.size()+10]);
                     // find out if there are some unread entries
                     int unread = 0;
                     for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
@@ -520,7 +519,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         if (!logit->second.read)
                             unread++;
                     }
-                    tv.itemex.pszText = str;
+                    tv.itemex.pszText = str.get();
                     tv.itemex.lParam = (LPARAM)&it->first;
                     HTREEITEM directItem = FindTreeNode(it->first);
                     if (directItem != TVI_ROOT)
@@ -528,20 +527,20 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         // The node already exists, just update the information
                         tv.itemex.hItem = directItem;
                         tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-                        tv.itemex.pszText = str;
+                        tv.itemex.pszText = str.get();
                         tv.itemex.cchTextMax = (int)it->second.name.size()+9;
                         TreeView_GetItem(m_hTreeControl, &tv.itemex);
-                        wstring sTitle = wstring(str);
+                        wstring sTitle = wstring(str.get());
                         bool bRequiresUpdate = false;
                         if (unread)
                         {
-                            _stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+                            _stprintf_s(str.get(), it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
                             tv.itemex.state |= TVIS_BOLD;
                             tv.itemex.stateMask = TVIS_BOLD;
                         }
                         else
                         {
-                            _tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+                            _tcscpy_s(str.get(), it->second.name.size()+1, it->second.name.c_str());
                             tv.itemex.state &= ~TVIS_BOLD;
                             tv.itemex.stateMask = TVIS_BOLD;
                         }
@@ -589,7 +588,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                 bRequiresUpdate = true;
                             }
                         }
-                        if ((bRequiresUpdate)||(sTitle.compare(str) != 0)||
+                        if ((bRequiresUpdate)||(sTitle.compare(str.get()) != 0)||
                             ((tv.itemex.state & TVIS_SELECTED)&&(m_refreshNeeded)))
                         {
                             m_refreshNeeded = false;
@@ -615,13 +614,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     {
                         if (unread)
                         {
-                            _stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+                            _stprintf_s(str.get(), it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
                             tv.itemex.state = TVIS_BOLD;
                             tv.itemex.stateMask = TVIS_BOLD;
                         }
                         else
                         {
-                            _tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+                            _tcscpy_s(str.get(), it->second.name.size()+1, it->second.name.c_str());
                             tv.itemex.state = 0;
                             tv.itemex.stateMask = TVIS_BOLD;
                         }
@@ -653,7 +652,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
                         m_bBlockListCtrlUI = false;
                     }
-                    delete [] str;
                 }
                 m_pURLInfos->ReleaseReadOnlyData();
                 ::InvalidateRect(m_hListControl, NULL, true);
@@ -936,10 +934,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                         if (!it->second.read)
                                                             unread++;
                                                     }
-                                                    WCHAR * str = new WCHAR[uinfo->name.size()+10];
+                                                    std::unique_ptr<WCHAR[]> str(new WCHAR[uinfo->name.size()+10]);
                                                     if (unread)
                                                     {
-                                                        _stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
+                                                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
                                                         uritex.state = TVIS_BOLD;
                                                         uritex.stateMask = TVIS_BOLD;
                                                         uritex.iImage = 3;
@@ -947,14 +945,14 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                     }
                                                     else
                                                     {
-                                                        _stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
+                                                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
                                                         uritex.state = 0;
                                                         uritex.stateMask = TVIS_BOLD;
                                                         uritex.iImage = 2;
                                                         uritex.iSelectedImage = 2;
                                                     }
 
-                                                    uritex.pszText = str;
+                                                    uritex.pszText = str.get();
                                                     uritex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                                                     m_refreshNeeded = true;
                                                     TreeView_SetItem(m_hTreeControl, &uritex);
@@ -1476,19 +1474,19 @@ void CMainDlg::SetRemoveButtonState()
 
 bool CMainDlg::ShowDiff(bool bUseTSVN)
 {
-    auto_buffer<WCHAR> buf(4096);
+    std::unique_ptr<WCHAR[]> buf(new WCHAR[4096]);
     // find the revision we have to show the diff for
     int selCount = ListView_GetSelectedCount(m_hListControl);
     if (selCount <= 0)
         return FALSE;   //nothing selected, nothing to show
 
     // Get temp directory and current directory
-    auto_buffer<WCHAR> cTempPath(32767);
-    GetEnvironmentVariable(_T("TEMP"), cTempPath, 32767);
-    wstring origTempPath = wstring(cTempPath);
+    std::unique_ptr<WCHAR[]> cTempPath(new WCHAR[32767]);
+    GetEnvironmentVariable(_T("TEMP"), cTempPath.get(), 32767);
+    wstring origTempPath = wstring(cTempPath.get());
 
-    GetCurrentDirectory(32767, cTempPath);
-    wstring origCurDir = wstring(cTempPath);
+    GetCurrentDirectory(32767, cTempPath.get());
+    wstring origCurDir = wstring(cTempPath.get());
 
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     // get the url this entry refers to
@@ -1522,13 +1520,13 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       // find the diff name
                       const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
                       // in case the project name has 'path' chars in it, we have to remove those first
-                      _stprintf_s(buf, 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
+                      _stprintf_s(buf.get(), 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
                       wstring diffFileName = CAppUtils::GetDataDir();
                       diffFileName += _T("\\");
-                      diffFileName += wstring(buf);
+                      diffFileName += wstring(buf.get());
                       // construct a title for the diff viewer
-                      _stprintf_s(buf, 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
-                      wstring title = wstring(buf);
+                      _stprintf_s(buf.get(), 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
+                      wstring title = wstring(buf.get());
                       // start the diff viewer
                       wstring cmd;
                       wstring tsvninstalled = CAppUtils::GetTSVNPath();
@@ -1558,12 +1556,12 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       }
                       else
                       {
-                          auto_buffer<WCHAR> apppath(4096);
-                          GetModuleFileName(NULL, apppath, 4096);
+                          std::unique_ptr<WCHAR[]> apppath(new WCHAR[4096]);
+                          GetModuleFileName(NULL, apppath.get(), 4096);
                           CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
                           if (wstring(diffViewer).empty())
                           {
-                              cmd = apppath;
+                              cmd = apppath.get();
                               cmd += _T(" /patchfile:\"");
                           }
                           else
@@ -1782,7 +1780,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
         tv.hParent = FindParentTreeNode(it->first);
         tv.hInsertAfter = TVI_SORT;
         tv.itemex.mask = TVIF_TEXT|TVIF_PARAM|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-        WCHAR * str = new WCHAR[it->second.name.size()+10];
+        std::unique_ptr<WCHAR[]> str(new WCHAR[it->second.name.size()+10]);
         // find out if there are some unread entries
         int unread = 0;
         for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
@@ -1792,17 +1790,17 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
         }
         if (unread)
         {
-            _stprintf_s(str, it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
+            _stprintf_s(str.get(), it->second.name.size()+10, _T("%s (%d)"), it->second.name.c_str(), unread);
             tv.itemex.state = TVIS_BOLD;
             tv.itemex.stateMask = TVIS_BOLD;
         }
         else
         {
-            _tcscpy_s(str, it->second.name.size()+1, it->second.name.c_str());
+            _tcscpy_s(str.get(), it->second.name.size()+1, it->second.name.c_str());
             tv.itemex.state = 0;
             tv.itemex.stateMask = 0;
         }
-        tv.itemex.pszText = str;
+        tv.itemex.pszText = str.get();
         tv.itemex.lParam = (LPARAM)&it->first;
         if (it->second.parentpath)
         {
@@ -1835,7 +1833,6 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
         if ((unread)&&(tvToSel == 0))
             tvToSel = hItem;
         TreeView_Expand(m_hTreeControl, tv.hParent, TVE_EXPAND);
-        delete [] str;
     }
     m_pURLInfos->ReleaseReadOnlyData();
     m_bBlockListCtrlUI = false;
@@ -2246,11 +2243,11 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
         }
         // refresh the name of the tree item to indicate the new
         // number of unread log messages
-        WCHAR * str = new WCHAR[info->name.size()+10];
-        _stprintf_s(str, info->name.size()+10, _T("%s"), info->name.c_str());
+        std::unique_ptr<WCHAR[]> str(new WCHAR[info->name.size()+10]);
+        _stprintf_s(str.get(), info->name.size()+10, _T("%s"), info->name.c_str());
         itemex.state = 0;
         itemex.stateMask = TVIS_BOLD;
-        itemex.pszText = str;
+        itemex.pszText = str.get();
         if (info->parentpath)
         {
             itemex.iImage = 0;
@@ -2263,7 +2260,6 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
         }
         itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
         TreeView_SetItem(m_hTreeControl, &itemex);
-        delete [] str;
     }
     m_pURLInfos->ReleaseWriteData();
     if (includingChildren)
@@ -2378,10 +2374,10 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                         if (!it->second.read)
                             unread++;
                     }
-                    WCHAR * str = new WCHAR[uinfo->name.size()+10];
+                    std::unique_ptr<WCHAR[]> str(new WCHAR[uinfo->name.size()+10]);
                     if (unread)
                     {
-                        _stprintf_s(str, uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
+                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
                         itemex.state = TVIS_BOLD;
                         itemex.stateMask = TVIS_BOLD;
                         itemex.iImage = 3;
@@ -2389,14 +2385,14 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     }
                     else
                     {
-                        _stprintf_s(str, uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
+                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
                         itemex.state = 0;
                         itemex.stateMask = TVIS_BOLD;
                         itemex.iImage = 2;
                         itemex.iSelectedImage = 2;
                     }
 
-                    itemex.pszText = str;
+                    itemex.pszText = str.get();
                     itemex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                     TreeView_SetItem(m_hTreeControl, &itemex);
                 }

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009 - Stefan Kueng
+// Copyright (C) 2007-2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@
 
 #include "stdafx.h"
 #include "Registry.h"
+#include <memory>
 
 /////////////////////////////////////////////////////////////////////
 
@@ -69,11 +70,10 @@ tstring CRegStdString::read()
         int size = 0;
         DWORD type;
         RegQueryValueEx(m_hKey, m_key.c_str(), NULL, &type, NULL, (LPDWORD) &size);
-        TCHAR* pStr = new TCHAR[size];
-        if ((LastError = RegQueryValueEx(m_hKey, m_key.c_str(), NULL, &type, (BYTE*) pStr,(LPDWORD) &size))==ERROR_SUCCESS)
+        std::unique_ptr<TCHAR[]> pStr(new TCHAR[size]);
+        if ((LastError = RegQueryValueEx(m_hKey, m_key.c_str(), NULL, &type, (BYTE*) pStr.get(),(LPDWORD) &size))==ERROR_SUCCESS)
         {
-            m_value.assign(pStr);
-            delete [] pStr;
+            m_value.assign(pStr.get());
             m_read = TRUE;
             LastError = RegCloseKey(m_hKey);
             m_hKey = NULL;
@@ -81,7 +81,6 @@ tstring CRegStdString::read()
         }
         else
         {
-            delete [] pStr;
             RegCloseKey(m_hKey);
             m_hKey = NULL;
             m_value = m_defaultvalue;

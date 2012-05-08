@@ -564,10 +564,10 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         {
             // encrypt the password
             size_t bufSize = ((it->second.password.size() / 8) + 1) * 8;
-            WCHAR * pwBuf = new WCHAR[bufSize + 1];
-            SecureZeroMemory(pwBuf, bufSize*sizeof(WCHAR));
-            wcscpy_s(pwBuf, bufSize, it->second.password.c_str());
-            BYTE * pByteBuf = (BYTE*)pwBuf;
+            std::unique_ptr<WCHAR[]> pwBuf(new WCHAR[bufSize + 1]);
+            SecureZeroMemory(pwBuf.get(), bufSize*sizeof(WCHAR));
+            wcscpy_s(pwBuf.get(), bufSize, it->second.password.c_str());
+            BYTE * pByteBuf = (BYTE*)pwBuf.get();
             blower.Encrypt(pByteBuf, bufSize*sizeof(WCHAR));
             WCHAR tmpBuf[3];
             wstring encryptedPassword;
@@ -625,8 +625,8 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         if (unencryptedPassword.size())
         {
             // decrypt the password
-            BYTE * pPwBuf = new BYTE[unencryptedPassword.size()/2];
-            SecureZeroMemory(pPwBuf, unencryptedPassword.size()/2);
+            std::unique_ptr<BYTE[]> pPwBuf(new BYTE[unencryptedPassword.size()/2]);
+            SecureZeroMemory(pPwBuf.get(), unencryptedPassword.size()/2);
             const WCHAR * pUnencryptedString = unencryptedPassword.c_str();
             for (unsigned int i = 0; i < unencryptedPassword.size()/2; ++i)
             {
@@ -635,8 +635,8 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
                 WCHAR * stopString;
                 pPwBuf[i] = (BYTE)wcstol(tmpBuf, &stopString, 16);
             }
-            blower.Decrypt(pPwBuf, unencryptedPassword.size()/2);
-            WCHAR * pDecryptedPW = (WCHAR*)pPwBuf;
+            blower.Decrypt(pPwBuf.get(), unencryptedPassword.size()/2);
+            WCHAR * pDecryptedPW = (WCHAR*)pPwBuf.get();
             wstring plainPw = pDecryptedPW;
             info.password = plainPw;
         }

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2009 - Stefan Kueng
+// Copyright (C) 2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,15 +56,13 @@ LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
         if (HIWORD(wParam) == EN_CHANGE)
         {
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
-            TCHAR * pwBuf = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
-            wstring pw1 = wstring(pwBuf);
-            delete [] pwBuf;
+            std::unique_ptr<TCHAR[]> pwBuf(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_PW1, pwBuf.get(), len+1);
+            wstring pw1 = wstring(pwBuf.get());
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW2));
-            pwBuf = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_PW2, pwBuf, len+1);
-            wstring pw2 = wstring(pwBuf);
-            delete [] pwBuf;
+            pwBuf = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_PW2, pwBuf.get(), len+1);
+            wstring pw2 = wstring(pwBuf.get());
 
             DialogEnableWindow(IDOK, pw1.compare(pw2) == 0);
         }
@@ -82,10 +80,9 @@ LRESULT CPasswordDlg::DoCommand(int id)
     case IDOK:
         {
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
-            TCHAR * pwBuf = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_PW1, pwBuf, len+1);
-            password = wstring(pwBuf);
-            delete [] pwBuf;
+            std::unique_ptr<TCHAR[]> pwBuf(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_PW1, pwBuf.get(), len+1);
+            password = wstring(pwBuf.get());
             EndDialog(*this, id);
         }
         break;

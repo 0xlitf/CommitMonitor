@@ -19,6 +19,7 @@
 
 #include "stdafx.h"
 #include "UnicodeUtils.h"
+#include <memory>
 
 CUnicodeUtils::CUnicodeUtils(void)
 {
@@ -36,11 +37,10 @@ std::string CUnicodeUtils::StdGetUTF8(const std::wstring& wide)
     if (len==0)
         return std::string();
     int size = len*4;
-    char * narrow = new char[size];
-    int ret = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), len, narrow, size-1, NULL, NULL);
+    std::unique_ptr<char[]> narrow(new char[size]);
+    int ret = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), len, narrow.get(), size-1, NULL, NULL);
     narrow[ret] = 0;
-    std::string sRet = std::string(narrow);
-    delete [] narrow;
+    std::string sRet = std::string(narrow.get());
     return sRet;
 }
 
@@ -50,11 +50,10 @@ std::string CUnicodeUtils::StdGetANSI(const std::wstring& wide)
     if (len==0)
         return std::string();
     int size = len*4;
-    char * narrow = new char[size];
-    int ret = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), len, narrow, size-1, NULL, NULL);
+    std::unique_ptr<char[]> narrow(new char[size]);
+    int ret = WideCharToMultiByte(CP_ACP, 0, wide.c_str(), len, narrow.get(), size-1, NULL, NULL);
     narrow[ret] = 0;
-    std::string sRet = std::string(narrow);
-    delete [] narrow;
+    std::string sRet = std::string(narrow.get());
     return sRet;
 }
 
@@ -64,33 +63,30 @@ std::wstring CUnicodeUtils::StdGetUnicode(const std::string& multibyte)
     if (len==0)
         return std::wstring();
     int size = len*4;
-    wchar_t * wide = new wchar_t[size];
-    int ret = MultiByteToWideChar(CP_UTF8, 0, multibyte.c_str(), len, wide, size - 1);
+    std::unique_ptr<wchar_t[]> wide(new wchar_t[size]);
+    int ret = MultiByteToWideChar(CP_UTF8, 0, multibyte.c_str(), len, wide.get(), size - 1);
     wide[ret] = 0;
-    std::wstring sRet = std::wstring(wide);
-    delete [] wide;
+    std::wstring sRet = std::wstring(wide.get());
     return sRet;
 }
 #endif
 
 std::string WideToMultibyte(const std::wstring& wide)
 {
-    char * narrow = new char[wide.length()*3+2];
+    std::unique_ptr<char[]> narrow(new char[wide.length()*3+2]);
     BOOL defaultCharUsed;
-    int ret = (int)WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), narrow, (int)wide.length()*3 - 1, ".", &defaultCharUsed);
+    int ret = (int)WideCharToMultiByte(CP_ACP, 0, wide.c_str(), (int)wide.size(), narrow.get(), (int)wide.length()*3 - 1, ".", &defaultCharUsed);
     narrow[ret] = 0;
-    std::string str = narrow;
-    delete[] narrow;
+    std::string str = narrow.get();
     return str;
 }
 
 std::string WideToUTF8(const std::wstring& wide)
 {
-    char * narrow = new char[wide.length()*3+2];
-    int ret = (int)WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), narrow, (int)wide.length()*3 - 1, NULL, NULL);
+    std::unique_ptr<char[]> narrow(new char[wide.length()*3+2]);
+    int ret = (int)WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.size(), narrow.get(), (int)wide.length()*3 - 1, NULL, NULL);
     narrow[ret] = 0;
-    std::string str = narrow;
-    delete[] narrow;
+    std::string str = narrow.get();
     return str;
 }
 
@@ -100,13 +96,12 @@ std::wstring MultibyteToWide(const std::string& multibyte)
     if (length == 0)
         return std::wstring();
 
-    wchar_t * wide = new wchar_t[multibyte.length()*2+2];
+    std::unique_ptr<wchar_t[]> wide(new wchar_t[multibyte.length()*2+2]);
     if (wide == NULL)
         return std::wstring();
-    int ret = (int)MultiByteToWideChar(CP_ACP, 0, multibyte.c_str(), (int)multibyte.size(), wide, (int)length*2 - 1);
+    int ret = (int)MultiByteToWideChar(CP_ACP, 0, multibyte.c_str(), (int)multibyte.size(), wide.get(), (int)length*2 - 1);
     wide[ret] = 0;
-    std::wstring str = wide;
-    delete[] wide;
+    std::wstring str = wide.get();
     return str;
 }
 
@@ -116,13 +111,12 @@ std::wstring UTF8ToWide(const std::string& multibyte)
     if (length == 0)
         return std::wstring();
 
-    wchar_t * wide = new wchar_t[length*2+2];
+    std::unique_ptr<wchar_t[]> wide(new wchar_t[length*2+2]);
     if (wide == NULL)
         return std::wstring();
-    int ret = (int)MultiByteToWideChar(CP_UTF8, 0, multibyte.c_str(), (int)multibyte.size(), wide, (int)length*2 - 1);
+    int ret = (int)MultiByteToWideChar(CP_UTF8, 0, multibyte.c_str(), (int)multibyte.size(), wide.get(), (int)length*2 - 1);
     wide[ret] = 0;
-    std::wstring str = wide;
-    delete[] wide;
+    std::wstring str = wide.get();
     return str;
 }
 #ifdef UNICODE

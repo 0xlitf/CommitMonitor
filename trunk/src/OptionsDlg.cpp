@@ -182,10 +182,9 @@ LRESULT COptionsDlg::DoCommand(int id)
                 regStartWithWindows.removeValue();
 
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
-            TCHAR * divi = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_DIFFVIEWER, divi, len+1);
-            wstring dv = wstring(divi);
-            delete [] divi;
+            std::unique_ptr<TCHAR[]> divi(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_DIFFVIEWER, divi.get(), len+1);
+            wstring dv = wstring(divi.get());
             CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
             if (!dv.empty())
                 diffViewer = dv;
@@ -194,10 +193,9 @@ LRESULT COptionsDlg::DoCommand(int id)
 
             // RA Sewell
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUEXELOCATION));
-            divi = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_ACCUEXELOCATION, divi, len+1);
-            dv = wstring(divi);
-            delete [] divi;
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_ACCUEXELOCATION, divi.get(), len+1);
+            dv = wstring(divi.get());
             CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
             if (!dv.empty())
                 accurevExe = dv;
@@ -205,10 +203,9 @@ LRESULT COptionsDlg::DoCommand(int id)
                 accurevExe.removeValue();
 
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUDIFFCMD));
-            divi = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_ACCUDIFFCMD, divi, len+1);
-            dv = wstring(divi);
-            delete [] divi;
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_ACCUDIFFCMD, divi.get(), len+1);
+            dv = wstring(divi.get());
             CRegStdString accurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
             if (!dv.empty())
                 accurevDiffCmd = dv;
@@ -218,10 +215,9 @@ LRESULT COptionsDlg::DoCommand(int id)
 
 
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH));
-            divi = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, divi, len+1);
-            wstring ns = wstring(divi);
-            delete [] divi;
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, divi.get(), len+1);
+            wstring ns = wstring(divi.get());
             CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
             if (!ns.empty())
                 notifySound = ns;
@@ -229,11 +225,10 @@ LRESULT COptionsDlg::DoCommand(int id)
                 notifySound.removeValue();
 
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NUMLOGS));
-            divi = new TCHAR[len+1];
-            ::GetDlgItemText(*this, IDC_NUMLOGS, divi, len+1);
-            DWORD nLogs = _ttol(divi);
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
+            ::GetDlgItemText(*this, IDC_NUMLOGS, divi.get(), len+1);
+            DWORD nLogs = _ttol(divi.get());
             numlogs = nLogs;
-            delete [] divi;
 
             CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
             bool ignoreeol = !!SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_GETCHECK, 0, NULL);

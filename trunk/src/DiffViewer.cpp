@@ -25,6 +25,7 @@
 #include "resource.h"
 
 #include <stdio.h>
+#include <memory>
 
 extern HINSTANCE hInst;
 
@@ -387,10 +388,9 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 void CDiffViewer::SetTitle(LPCTSTR title)
 {
     size_t len = _tcslen(title);
-    TCHAR * pBuf = new TCHAR[len+40];
-    _stprintf_s(pBuf, len+40, _T("%s - CMDiff"), title);
-    SetWindowTitle(std::wstring(pBuf));
-    delete [] pBuf;
+    std::unique_ptr<TCHAR[]> pBuf(new TCHAR[len+40]);
+    _stprintf_s(pBuf.get(), len+40, _T("%s - CMDiff"), title);
+    SetWindowTitle(std::wstring(pBuf.get()));
 }
 
 void CDiffViewer::SetAStyle(int style, COLORREF fore, COLORREF back, int size, const char *face)

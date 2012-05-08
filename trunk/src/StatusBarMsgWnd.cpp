@@ -204,12 +204,11 @@ void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect)
     titlerect.left += (STATUSBARMSGWND_ICONSIZE + 5);
     titlerect.top += 2;
     titlerect.right -= 5;
-    TCHAR * textbuf = new TCHAR[m_title.size()+1];
-    _tcscpy_s(textbuf, m_title.size()+1, m_title.c_str());
-    DrawTextEx(hDC, textbuf, (int)m_title.length(), &titlerect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
+    std::unique_ptr<TCHAR[]> textbuf(new TCHAR[m_title.size()+1]);
+    _tcscpy_s(textbuf.get(), m_title.size()+1, m_title.c_str());
+    DrawTextEx(hDC, textbuf.get(), (int)m_title.length(), &titlerect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     titlerect.right = pRect->right-5;
-    DrawTextEx(hDC, textbuf, (int)m_title.length(), &titlerect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
-    delete [] textbuf;
+    DrawTextEx(hDC, textbuf.get(), (int)m_title.length(), &titlerect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     SelectObject(hDC, hFontOld);
     DeleteObject(hFont);
 
@@ -236,11 +235,10 @@ void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect)
     RECT statusrect = *pRect;
     statusrect.left += (STATUSBARMSGWND_ICONSIZE + 5);
     statusrect.top = (titlerect.bottom + 8);
-    textbuf = new TCHAR[m_text.size()+1];
-    _tcscpy_s(textbuf, m_text.size()+1, m_text.c_str());
+    textbuf = std::unique_ptr<WCHAR[]>(new TCHAR[m_text.size()+1]);
+    _tcscpy_s(textbuf.get(), m_text.size()+1, m_text.c_str());
     //DrawTextEx(hDC, textbuf, m_text.length(), &statusrect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
-    DrawTextEx(hDC, textbuf, (int)m_text.length(), &statusrect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
-    delete [] textbuf;
+    DrawTextEx(hDC, textbuf.get(), (int)m_text.length(), &statusrect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     SelectObject(hDC, hFontOld);
     DeleteObject(hFont);
 }
