@@ -1,5 +1,5 @@
 //
-// CommitMonitor.RC2 - resources Microsoft Visual C++ does not edit directly
+// CommitMonitor.rc2 - resources Microsoft Visual C++ does not edit directly
 //
 
 #ifdef APSTUDIO_INVOKED
@@ -9,11 +9,13 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // Add manually edited resources here...
+#include "version.h"
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
-#include "version.h"
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION FILEVER
  PRODUCTVERSION PRODUCTVER
@@ -34,9 +36,17 @@ BEGIN
             VALUE "CompanyName", "http://tools.tortoisesvn.net"
             VALUE "FileDescription", "CommitMonitor"
             VALUE "FileVersion", STRFILEVER
+#ifdef _WIN64
+            VALUE "InternalName", "CommitMonitor64.exe"
+#else
             VALUE "InternalName", "CommitMonitor.exe"
+#endif
             VALUE "LegalCopyright", "Copyright (C) 2007-2012"
+#ifdef _WIN64
+            VALUE "OriginalFilename", "CommitMonitor64.exe"
+#else
             VALUE "OriginalFilename", "CommitMonitor.exe"
+#endif
             VALUE "ProductName", "CommitMonitor"
             VALUE "ProductVersion", STRPRODUCTVER
         END

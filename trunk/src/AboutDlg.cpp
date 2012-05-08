@@ -47,7 +47,11 @@ LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
             // initialize the controls
             m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, _T("http://tools.tortoisesvn.net"));
             TCHAR verbuf[1024] = {0};
+#ifdef _WIN64
+            _stprintf_s(verbuf, 1024, _T("CommitMonitor version %d.%d.%d.%d (64-bit)"), CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
+#else
             _stprintf_s(verbuf, 1024, _T("CommitMonitor version %d.%d.%d.%d"), CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
+#endif
             SetDlgItemText(hwndDlg, IDC_VERSIONLABEL, verbuf);
         }
         return TRUE;

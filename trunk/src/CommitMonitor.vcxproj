@@ -109,6 +109,7 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\debug_x64\libapr.lib;..\ext\apr-util\debug_x64\libaprutil.lib;..\ext\neon\debug_x64\libneon.lib;..\ext\Subversion\debug_x64\libsvn_client.lib;..\ext\Subversion\debug_x64\libsvn_delta.lib;..\ext\Subversion\debug_x64\libsvn_diff.lib;..\ext\Subversion\debug_x64\libsvn_ra.lib;..\ext\Subversion\debug_x64\libsvn_ra_neon.lib;..\ext\Subversion\debug_x64\libsvn_ra_serf.lib;..\ext\Subversion\debug_x64\libsvn_ra_svn.lib;..\ext\Subversion\debug_x64\libsvn_repos.lib;..\ext\Subversion\debug_x64\libsvn_subr.lib;..\ext\Subversion\debug_x64\libsvn_wc.lib;..\ext\cyrus-sasl\debug_x64\libsasls.lib;..\ext\serf\debug_x64\libserf.lib;..\ext\sqlite\debug_x64\sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -158,6 +159,7 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;..\ext\apr\release_x64\libapr.lib;..\ext\apr-util\release_x64\libaprutil.lib;..\ext\neon\release_x64\libneon.lib;..\ext\Subversion\release_x64\libsvn_client.lib;..\ext\Subversion\release_x64\libsvn_delta.lib;..\ext\Subversion\release_x64\libsvn_diff.lib;..\ext\Subversion\release_x64\libsvn_ra.lib;..\ext\Subversion\release_x64\libsvn_ra_neon.lib;..\ext\Subversion\release_x64\libsvn_ra_serf.lib;..\ext\Subversion\release_x64\libsvn_ra_svn.lib;..\ext\Subversion\release_x64\libsvn_repos.lib;..\ext\Subversion\release_x64\libsvn_subr.lib;..\ext\Subversion\release_x64\libsvn_wc.lib;..\ext\cyrus-sasl\release_x64\libsasls.lib;..\ext\serf\release_x64\libserf.lib;..\ext\sqlite\release_x64\sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
