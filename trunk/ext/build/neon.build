@@ -126,6 +126,8 @@
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
+    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
@@ -133,10 +135,8 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\openssl\out32\libeay32.lib" if="${(configuration == 'release')}" />
-        <include name="..\openssl\out32\ssleay32.lib" if="${(configuration == 'release')}" />
-        <include name="..\openssl\out32.dbg\libeay32.lib" if="${(configuration != 'release')}" />
-        <include name="..\openssl\out32.dbg\ssleay32.lib" if="${(configuration != 'release')}" />
+        <include name="..\openssl\out32${ssldbg}\libeay32.lib" />
+        <include name="..\openssl\out32${ssldbg}\ssleay32.lib" />
         <include name="..\gssapi\${configuration}_${platform}\gssapiu.lib" />
       </sources>
     </lib>
