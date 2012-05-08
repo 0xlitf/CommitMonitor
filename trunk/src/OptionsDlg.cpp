@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -264,26 +264,24 @@ LRESULT COptionsDlg::DoCommand(int id)
             if (m_pURLInfos)
             {
                 CPasswordDlg dlg(*this);
-                if (dlg.DoModal(hResource, IDD_PASSWORD, *this) == IDOK)
+                INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
+                OPENFILENAME ofn = {0};     // common dialog box structure
+                TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+                // Initialize OPENFILENAME
+                ofn.lStructSize = sizeof(OPENFILENAME);
+                ofn.hwndOwner = *this;
+                ofn.lpstrFile = szFile;
+                ofn.nMaxFile = _countof(szFile);
+                ofn.lpstrTitle = _T("Export monitored projects to...\0");
+                ofn.Flags = OFN_HIDEREADONLY|OFN_DONTADDTORECENT|OFN_EXPLORER|OFN_ENABLESIZING|OFN_OVERWRITEPROMPT;
+                ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
+                ofn.nFilterIndex = 1;
+                // Display the Open dialog box.
+                if (GetSaveFileName(&ofn)==TRUE)
                 {
-                    OPENFILENAME ofn = {0};     // common dialog box structure
-                    TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
-                    // Initialize OPENFILENAME
-                    ofn.lStructSize = sizeof(OPENFILENAME);
-                    ofn.hwndOwner = *this;
-                    ofn.lpstrFile = szFile;
-                    ofn.nMaxFile = _countof(szFile);
-                    ofn.lpstrTitle = _T("Export monitored projects to...\0");
-                    ofn.Flags = OFN_HIDEREADONLY|OFN_DONTADDTORECENT|OFN_EXPLORER|OFN_ENABLESIZING|OFN_OVERWRITEPROMPT;
-                    ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
-                    ofn.nFilterIndex = 1;
-                    // Display the Open dialog box.
-                    if (GetSaveFileName(&ofn)==TRUE)
-                    {
-                        if (wcscmp(&szFile[wcslen(szFile)-6], L".cmprj"))
-                            wcscat_s(szFile, MAX_PATH, L".cmprj");
-                        m_pURLInfos->Export(szFile, dlg.password.c_str());
-                    }
+                    if (wcscmp(&szFile[wcslen(szFile)-6], L".cmprj"))
+                        wcscat_s(szFile, MAX_PATH, L".cmprj");
+                    m_pURLInfos->Export(szFile, ret == IDOK ? dlg.password.c_str() : L"");
                 }
             }
         }
@@ -293,24 +291,22 @@ LRESULT COptionsDlg::DoCommand(int id)
             if (m_pURLInfos)
             {
                 CPasswordDlg dlg(*this);
-                if (dlg.DoModal(hResource, IDD_PASSWORD, *this) == IDOK)
+                INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
+                OPENFILENAME ofn = {0};     // common dialog box structure
+                TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
+                // Initialize OPENFILENAME
+                ofn.lStructSize = sizeof(OPENFILENAME);
+                ofn.hwndOwner = *this;
+                ofn.lpstrFile = szFile;
+                ofn.nMaxFile = _countof(szFile);
+                ofn.lpstrTitle = _T("Import monitored projects from...\0");
+                ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
+                ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
+                ofn.nFilterIndex = 1;
+                // Display the Open dialog box.
+                if (GetOpenFileName(&ofn)==TRUE)
                 {
-                    OPENFILENAME ofn = {0};     // common dialog box structure
-                    TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
-                    // Initialize OPENFILENAME
-                    ofn.lStructSize = sizeof(OPENFILENAME);
-                    ofn.hwndOwner = *this;
-                    ofn.lpstrFile = szFile;
-                    ofn.nMaxFile = _countof(szFile);
-                    ofn.lpstrTitle = _T("Import monitored projects from...\0");
-                    ofn.Flags = OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_DONTADDTORECENT;
-                    ofn.lpstrFilter = _T("CommitMonitor Projects\0*.cmprj;*.com\0All files\0*.*\0\0");
-                    ofn.nFilterIndex = 1;
-                    // Display the Open dialog box.
-                    if (GetOpenFileName(&ofn)==TRUE)
-                    {
-                        m_pURLInfos->Import(szFile, dlg.password.c_str());
-                    }
+                    m_pURLInfos->Import(szFile, ret == IDOK ? dlg.password.c_str() : L"");
                 }
             }
         }

@@ -212,7 +212,7 @@ BEGIN
     EDITTEXT        IDC_PW2,74,46,148,14,ES_PASSWORD | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,111,68,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,172,68,50,14
-    LTEXT           "Please enter a password to encrypt/decrypt the login data of your monitored repositories.",IDC_INFOLABEL,7,7,215,18
+    LTEXT           "Please enter a password to encrypt/decrypt the login data of your monitored repositories. Or hit cancel to not use a password.",IDC_INFOLABEL,7,7,215,18
     LTEXT           "Password:",IDC_STATIC,7,32,34,8
     LTEXT           "Retype password:",IDC_STATIC,7,48,60,8
 END
