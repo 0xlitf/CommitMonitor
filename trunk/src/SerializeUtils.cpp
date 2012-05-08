@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,16 +191,16 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
         buf += sizeof(size_t);
         if (length)
         {
-            int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, NULL, 0);
+            int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, NULL, 0);
             if (size < SERIALIZEBUFFERSIZE)
             {
-                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wbuffer, size);
+                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wbuffer, size);
                 str = wstring(wbuffer, ret);
             }
             else
             {
                 wchar_t * wide = new wchar_t[size+1];
-                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, length, wide, size);
+                int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wide, size);
                 str = wstring(wide, ret);
                 delete [] wide;
             }

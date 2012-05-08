@@ -365,7 +365,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
           }
 
           // Strip the XML tag off the back
-          int endTagPos = commentLine.rfind(L"</comment>");
+          size_t endTagPos = commentLine.rfind(L"</comment>");
 
           if (endTagPos >= 0) {
             commentLine.erase(endTagPos, wstring::npos);
@@ -721,7 +721,7 @@ size_t ACCUREV::ExecuteAccurev(wstring Parameters, size_t SecondsToWait, wstring
                        &siStartupInfo, &piProcessInfo) != false)
     {
          /* Watch the process, waiting for completion */
-        dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, (SecondsToWait * 1000));
+        dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, DWORD(SecondsToWait * 1000));
 
         // Close the write end of the pipe before reading from the
         // read end of the pipe, to control child process execution.
@@ -835,8 +835,8 @@ static inline std::wstring &trim(std::wstring &s) {
 
 // trim from start
 static inline std::wstring &ltrim(std::wstring &s) {
-    int sSize = s.size();
-    int i = 0;
+    size_t sSize = s.size();
+    size_t i = 0;
 
     while (isspace(s[i]) && (i < sSize)) i++;
     if ((i > 0) && (i < sSize)) s.erase(0, i);
@@ -845,8 +845,8 @@ static inline std::wstring &ltrim(std::wstring &s) {
 
 // trim from end
 static inline std::wstring &rtrim(std::wstring &s) {
-    int sSize = s.size();
-    int i = sSize-1;
+    size_t sSize = s.size();
+    size_t i = sSize-1;
 
     while (isspace(s[i]) && (i >= 0)) i--;
     if ((i > 0) && (i < sSize-1)) s.erase(i+1, wstring::npos);

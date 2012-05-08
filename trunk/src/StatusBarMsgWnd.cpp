@@ -206,9 +206,9 @@ void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect)
     titlerect.right -= 5;
     TCHAR * textbuf = new TCHAR[m_title.size()+1];
     _tcscpy_s(textbuf, m_title.size()+1, m_title.c_str());
-    DrawTextEx(hDC, textbuf, m_title.length(), &titlerect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
+    DrawTextEx(hDC, textbuf, (int)m_title.length(), &titlerect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     titlerect.right = pRect->right-5;
-    DrawTextEx(hDC, textbuf, m_title.length(), &titlerect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
+    DrawTextEx(hDC, textbuf, (int)m_title.length(), &titlerect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     delete [] textbuf;
     SelectObject(hDC, hFontOld);
     DeleteObject(hFont);
@@ -239,7 +239,7 @@ void CStatusBarMsgWnd::OnPaint(HDC hDC, LPRECT pRect)
     textbuf = new TCHAR[m_text.size()+1];
     _tcscpy_s(textbuf, m_text.size()+1, m_text.c_str());
     //DrawTextEx(hDC, textbuf, m_text.length(), &statusrect, DT_CALCRECT|DT_CENTER|DT_WORD_ELLIPSIS, NULL);
-    DrawTextEx(hDC, textbuf, m_text.length(), &statusrect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
+    DrawTextEx(hDC, textbuf, (int)m_text.length(), &statusrect, DT_CENTER|DT_WORD_ELLIPSIS, NULL);
     delete [] textbuf;
     SelectObject(hDC, hFontOld);
     DeleteObject(hFont);

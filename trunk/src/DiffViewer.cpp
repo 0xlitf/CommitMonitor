@@ -342,8 +342,8 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
     {
         //SetTitle();
         char data[4096];
-        int lenFile = fread(data, 1, sizeof(data), fp);
-        bool bUTF8 = IsUTF8(data, lenFile);
+        size_t lenFile = fread(data, 1, sizeof(data), fp);
+        bool bUTF8 = IsUTF8(data, (int)lenFile);
         while (lenFile > 0)
         {
             SendEditor(SCI_ADDTEXT, lenFile,
@@ -386,7 +386,7 @@ bool CDiffViewer::LoadFile(LPCTSTR filename)
 
 void CDiffViewer::SetTitle(LPCTSTR title)
 {
-    int len = _tcslen(title);
+    size_t len = _tcslen(title);
     TCHAR * pBuf = new TCHAR[len+40];
     _stprintf_s(pBuf, len+40, _T("%s - CMDiff"), title);
     SetWindowTitle(std::wstring(pBuf));

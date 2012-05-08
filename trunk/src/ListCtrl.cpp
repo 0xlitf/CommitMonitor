@@ -107,7 +107,7 @@ LRESULT CALLBACK CListCtrl::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
                     rc.top += 10;
                     HGDIOBJ holdfont = SelectObject(hDC, GetStockObject(DEFAULT_GUI_FONT));
-                    DrawTextEx(hDC, (LPWSTR)pListCtrl->m_sInfoText.c_str(), pListCtrl->m_sInfoText.size(), &rc, DT_CENTER | DT_VCENTER |
+                    DrawTextEx(hDC, (LPWSTR)pListCtrl->m_sInfoText.c_str(), (int)pListCtrl->m_sInfoText.size(), &rc, DT_CENTER | DT_VCENTER |
                         DT_WORDBREAK | DT_NOPREFIX | DT_NOCLIP, NULL);
                     SelectObject(hDC, holdfont);
                 }

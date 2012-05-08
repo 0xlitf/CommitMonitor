@@ -55,7 +55,7 @@ bool CUrlInfo::Save(FILE * hFile)
     DATA_BLOB blob, outblob;
     string encpwd = CUnicodeUtils::StdGetUTF8(password);
     encpwd = "encrypted_" + encpwd;
-    blob.cbData = encpwd.size();
+    blob.cbData = (DWORD)encpwd.size();
     blob.pbData = (BYTE*)encpwd.c_str();
     if (CryptProtectData(&blob, _T("CommitMonitorLogin"), NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
     {
@@ -150,7 +150,7 @@ bool CUrlInfo::Load(const unsigned char *& buf)
 
     // decrypt the password
     DATA_BLOB blob, outblob;
-    blob.cbData = len;
+    blob.cbData = (DWORD)len;
     blob.pbData = pbData;
     if (CryptUnprotectData(&blob, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
     {
@@ -485,7 +485,7 @@ string CUrlInfos::CalcMD5(LPCWSTR s)
     HCRYPTHASH hHash = 0;
     BYTE bHash[0x7f];
     DWORD dwHashLen= 16; // The MD5 algorithm always returns 16 bytes.
-    DWORD cbContent= wcslen(s)*sizeof(WCHAR);
+    DWORD cbContent= (DWORD)wcslen(s)*sizeof(WCHAR);
     BYTE* pbContent= (BYTE*)s;
     string retHash;
 
@@ -563,7 +563,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         if (it->second.password.size())
         {
             // encrypt the password
-            int bufSize = ((it->second.password.size() / 8) + 1) * 8;
+            size_t bufSize = ((it->second.password.size() / 8) + 1) * 8;
             WCHAR * pwBuf = new WCHAR[bufSize + 1];
             SecureZeroMemory(pwBuf, bufSize*sizeof(WCHAR));
             wcscpy_s(pwBuf, bufSize, it->second.password.c_str());

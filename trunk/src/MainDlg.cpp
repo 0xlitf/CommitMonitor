@@ -476,19 +476,19 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
         {
             POINT pt = {LOWORD(lParam), HIWORD(lParam)};
-            return OnMouseMove(wParam, pt);
+            return OnMouseMove((UINT)wParam, pt);
         }
         break;
     case WM_LBUTTONDOWN:
         {
             POINT pt = {LOWORD(lParam), HIWORD(lParam)};
-            return OnLButtonDown(wParam, pt);
+            return OnLButtonDown((UINT)wParam, pt);
         }
         break;
     case WM_LBUTTONUP:
         {
             POINT pt = {LOWORD(lParam), HIWORD(lParam)};
-            return OnLButtonUp(wParam, pt);
+            return OnLButtonUp((UINT)wParam, pt);
         }
         break;
     case WM_TIMER:
@@ -529,7 +529,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         tv.itemex.hItem = directItem;
                         tv.itemex.stateMask = TVIS_SELECTED|TVIS_BOLD|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
                         tv.itemex.pszText = str;
-                        tv.itemex.cchTextMax = it->second.name.size()+9;
+                        tv.itemex.cchTextMax = (int)it->second.name.size()+9;
                         TreeView_GetItem(m_hTreeControl, &tv.itemex);
                         wstring sTitle = wstring(str);
                         bool bRequiresUpdate = false;
@@ -1648,9 +1648,9 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                         // Parse the file and file revision from the stored URL
                         wstring rawPath = it->first;
 
-                        int lastBracket = rawPath.rfind(L" (");
+                        size_t lastBracket = rawPath.rfind(L" (");
                         rawPath.erase(lastBracket, wstring::npos);
-                        int lastForwardSlash = rawPath.rfind(L"/");
+                        size_t lastForwardSlash = rawPath.rfind(L"/");
                         wstring sLatestAccuRevision(rawPath);
                         sLatestAccuRevision.erase(0, lastForwardSlash+1);
                         int iAccuRevision = _wtoi(sLatestAccuRevision.c_str());
@@ -1659,7 +1659,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                         wstring sBasisAccuRevision(basisRevisionNo);
 
                         wstring finalPath(rawPath);
-                        int lastSpace = rawPath.rfind(L" ");
+                        size_t lastSpace = rawPath.rfind(L" ");
                         finalPath.erase(lastSpace, wstring::npos);
 
                         // Can't diff unless there is a version to diff against :)
@@ -1715,7 +1715,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       finalDiffCmd.append(wstring(diffCmd));
 
                       // Find and replace "%OLD"
-                      int pos = finalDiffCmd.find(_T("%OLD"));
+                      size_t pos = finalDiffCmd.find(_T("%OLD"));
                       finalDiffCmd.replace(pos, 4, sBasisRev, 0, sBasisRev.size());
 
                       // Find and replace "%NEW"
@@ -2012,7 +2012,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         {
             // there was an error when we last tried to access this url.
             // Show a message box with the error.
-            int len = info->error.length()+info->url.length()+1024;
+            size_t len = info->error.length()+info->url.length()+1024;
             std::unique_ptr<TCHAR[]> pBuf(new TCHAR[len]);
             _stprintf_s(pBuf.get(), len, _T("An error occurred the last time CommitMonitor\ntried to access the url: %s\n\n%s\n\nDoubleclick here to clear the error message."), info->url.c_str(), info->error.c_str());
             m_ListCtrl.SetInfoText(pBuf.get());

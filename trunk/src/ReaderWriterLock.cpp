@@ -88,7 +88,7 @@ bool CReaderWriterLockNonReentrance::_ReaderWait(DWORD dwTimeout) throw()
         DWORD const dwBeginTime = GetTickCount();
         DWORD dwConsumedTime = 0;
 
-        while(TRUE)
+        for(;;)
         {
             blCanRead = (WAIT_OBJECT_0 == WaitForSingleObject(m_hSafeToReadEvent,
                 dwTimeout - dwConsumedTime));
