@@ -538,7 +538,12 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         iniFile.SetValue(it->first.c_str(), L"username", it->second.username.c_str());
         iniFile.SetValue(it->first.c_str(), L"url", it->second.url.c_str());
         iniFile.SetValue(it->first.c_str(), L"name", it->second.name.c_str());
-        iniFile.SetValue(it->first.c_str(), L"ignoreUsers", it->second.ignoreUsers.c_str());
+        wstring ignoreUsers = it->second.ignoreUsers;
+        CAppUtils::SearchReplace(ignoreUsers, L"\r\n", L"\t");
+        iniFile.SetValue(it->first.c_str(), L"ignoreUsers", ignoreUsers.c_str());
+        wstring includeUsers = it->second.includeUsers;
+        CAppUtils::SearchReplace(includeUsers, L"\r\n", L"\t");
+        iniFile.SetValue(it->first.c_str(), L"includeUsers", includeUsers.c_str());
         iniFile.SetValue(it->first.c_str(), L"callcommand", it->second.callcommand.c_str());
         iniFile.SetValue(it->first.c_str(), L"webviewer", it->second.webviewer.c_str());
 
@@ -603,6 +608,9 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         info.url = wstring(iniFile.GetValue(*it, _T("url"), _T("")));
         info.name = wstring(iniFile.GetValue(*it, _T("name"), _T("")));
         info.ignoreUsers = wstring(iniFile.GetValue(*it, _T("ignoreUsers"), _T("")));
+        CAppUtils::SearchReplace(info.ignoreUsers, L"\t", L"\r\n");
+        info.includeUsers = wstring(iniFile.GetValue(*it, L"includeUsers", L""));
+        CAppUtils::SearchReplace(info.includeUsers, L"\t", L"\r\n");
         info.callcommand = wstring(iniFile.GetValue(*it, _T("callcommand"), _T("")));
         info.webviewer = wstring(iniFile.GetValue(*it, _T("webviewer"), _T("")));
 
