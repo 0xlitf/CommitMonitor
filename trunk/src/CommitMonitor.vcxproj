@@ -238,7 +238,6 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="Accurev.h" />
-    <ClInclude Include="auto_buffer.h" />
     <ClInclude Include="Callback.h" />
     <ClInclude Include="CommitMonitor.h" />
     <ClInclude Include="DiffViewer.h" />
