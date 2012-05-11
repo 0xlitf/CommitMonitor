@@ -159,7 +159,8 @@
             <include name="..\sqlite\${configuration}_${platform}\sqlite.lib" if="${fname == 'libsvn_fs_fs'}"/>
           </sources>
           <libdirs>
-            <include name="..\openssl\out32${ssldbg}" />
+            <include name="..\openssl\out32${ssldbg}" if="${platform == 'win32'}" />
+            <include name="..\openssl\out64${ssldbg}" if="${platform == 'x64'}" />
             <include name="..\neon\${configuration}_${platform}" />
           </libdirs>
         </lib>

@@ -91,7 +91,8 @@
         <include name="src" />
         <include name="..\apr-util\xml\expat\lib" />
         <include name="..\zlib" />
-        <include name="..\openssl\inc32" />
+        <include name="..\openssl\inc32" if="${platform == 'win32'}" />
+        <include name="..\openssl\inc64" if="${platform == 'x64'}" />
         <include name="..\gssapi" />
       </includedirs>
       <defines>
@@ -135,8 +136,10 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\openssl\out32${ssldbg}\libeay32.lib" />
-        <include name="..\openssl\out32${ssldbg}\ssleay32.lib" />
+        <include name="..\openssl\out32${ssldbg}\libeay32.lib" if="${platform == 'win32'}" />
+        <include name="..\openssl\out32${ssldbg}\ssleay32.lib" if="${platform == 'win32'}" />
+        <include name="..\openssl\out64${ssldbg}\libeay32.lib" if="${platform == 'x64'}" />
+        <include name="..\openssl\out64${ssldbg}\ssleay32.lib" if="${platform == 'x64'}" />
         <include name="..\gssapi\${configuration}_${platform}\gssapiu.lib" />
       </sources>
     </lib>
