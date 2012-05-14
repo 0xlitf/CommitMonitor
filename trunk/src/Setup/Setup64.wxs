@@ -24,10 +24,10 @@
     <Icon Id="CMIcon" SourceFile="..\Resources\CommitMonitor.ico" />
     <Property Id="ARPPRODUCTICON">CMIcon</Property>
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <Condition Message='This application requires an 64-bit OS'>VersionNT64</Condition>
+    <Condition Message="This application requires an 64-bit OS">VersionNT64</Condition>
 
     <Property Id="INSTALLDIR">
-      <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" />
+      <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" Win64="yes" />
     </Property>
 
     <!-- define directory structure -->
