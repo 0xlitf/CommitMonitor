@@ -13,7 +13,7 @@
     <Package Id='*' Keywords='Installer'
       Description="Subversion Commit Monitor"
       Comments='http://tools.tortoisesvn.net' Manufacturer='Stefans Tools'
-      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+      InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
     <Upgrade Id="B49D2664-0941-465d-A704-CAC63D1D0789" >
       <!-- flag is set if the install will trigger an upgrade of an existing install -->
@@ -24,8 +24,9 @@
     <Icon Id="CMIcon" SourceFile="..\Resources\CommitMonitor.ico" />
     <Property Id="ARPPRODUCTICON">CMIcon</Property>
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
-    <Condition Message='This application only runs on Windows 2000 and later.'>VersionNT &gt;= 500</Condition>
-
+    <Condition Message="This application only runs on Windows XP with Service Pack 3 and later.">
+      <![CDATA[Installed OR ((VersionNT > 501) OR ((VersionNT = 501) AND (ServicePackLevel >= 3)))]]>
+    </Condition>
     <Property Id="INSTALLDIR">
       <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" />
     </Property>
