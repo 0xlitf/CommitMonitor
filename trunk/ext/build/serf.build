@@ -21,6 +21,10 @@
   </target>
 
   <target name="build" depends="clean">
+    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
+    <property name="sslplat" value="32" if="${platform == 'win32'}" />
+    <property name="sslplat" value="64" if="${platform == 'x64'}" />
     <mkdir dir="${configuration}_${platform}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
@@ -53,8 +57,7 @@
         <include name="..\apr-util\include" />
         <include name="..\apr-util\xml\expat\lib" />
         <include name="..\zlib" />
-        <include name="..\openssl\inc32" if="${platform == 'win32'}" />
-        <include name="..\openssl\inc64" if="${platform == 'x64'}" />
+        <include name="..\openssl\inc${sslplat}" />
       </includedirs>
       <defines>
         <define name="_CRT_NONSTDC_NO_DEPRECATE" />
@@ -79,8 +82,6 @@
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
-    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
     <lib
       output="${configuration}_${platform}\libserf.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
@@ -88,10 +89,8 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\openssl\out32${ssldbg}\libeay32.lib" if="${platform == 'win32'}" />
-        <include name="..\openssl\out32${ssldbg}\ssleay32.lib" if="${platform == 'win32'}" />
-        <include name="..\openssl\out64${ssldbg}\libeay32.lib" if="${platform == 'x64'}" />
-        <include name="..\openssl\out64${ssldbg}\ssleay32.lib" if="${platform == 'x64'}" />
+        <include name="..\openssl\out${sslplat}${ssldbg}\libeay32.lib" />
+        <include name="..\openssl\out${sslplat}${ssldbg}\ssleay32.lib" />
         <include name="..\apr-util\${configuration}_${platform}\libaprutil_tsvn.lib" />
         <include name="..\apr\${configuration}_${platform}\libapr_tsvn.lib" />
       </sources>

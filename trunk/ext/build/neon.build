@@ -24,6 +24,10 @@
   </target>
 
   <target name="build" depends="clean">
+    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
+    <property name="sslplat" value="32" if="${platform == 'win32'}" />
+    <property name="sslplat" value="64" if="${platform == 'x64'}" />
     <mkdir dir="${configuration}_${platform}" />
     <loadfile file="NEWS" property="versionfile" />
     <regex pattern="^Changes in release (?'NEON_MAJOR_VERSION'\d+)\.(?'NEON_MINOR_VERSION'\d+)\.(?'NEON_MICRO_VERSION'\d+):" input="${versionfile}" />
@@ -91,8 +95,7 @@
         <include name="src" />
         <include name="..\apr-util\xml\expat\lib" />
         <include name="..\zlib" />
-        <include name="..\openssl\inc32" if="${platform == 'win32'}" />
-        <include name="..\openssl\inc64" if="${platform == 'x64'}" />
+        <include name="..\openssl\inc${sslplat}" />
         <include name="..\gssapi" />
       </includedirs>
       <defines>
@@ -127,8 +130,6 @@
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
-    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
     <lib
       output="${configuration}_${platform}\libneon.lib"
       options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
@@ -136,10 +137,8 @@
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
         <include name="..\zlib\${configuration}_${platform}\zlibstat.lib" />
-        <include name="..\openssl\out32${ssldbg}\libeay32.lib" if="${platform == 'win32'}" />
-        <include name="..\openssl\out32${ssldbg}\ssleay32.lib" if="${platform == 'win32'}" />
-        <include name="..\openssl\out64${ssldbg}\libeay32.lib" if="${platform == 'x64'}" />
-        <include name="..\openssl\out64${ssldbg}\ssleay32.lib" if="${platform == 'x64'}" />
+        <include name="..\openssl\out${sslplat}${ssldbg}\libeay32.lib" />
+        <include name="..\openssl\out${sslplat}${ssldbg}\ssleay32.lib" />
         <include name="..\gssapi\${configuration}_${platform}\gssapiu.lib" />
       </sources>
     </lib>
