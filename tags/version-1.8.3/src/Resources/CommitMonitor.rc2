@@ -1,0 +1,60 @@
+//
+// CommitMonitor.rc2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Add manually edited resources here...
+#include "version.h"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION FILEVER
+ PRODUCTVERSION PRODUCTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004e4"
+        BEGIN
+            VALUE "CompanyName", "http://tools.tortoisesvn.net"
+            VALUE "FileDescription", "CommitMonitor"
+            VALUE "FileVersion", STRFILEVER
+#ifdef _WIN64
+            VALUE "InternalName", "CommitMonitor64.exe"
+#else
+            VALUE "InternalName", "CommitMonitor.exe"
+#endif
+            VALUE "LegalCopyright", "Copyright (C) 2007-2012"
+#ifdef _WIN64
+            VALUE "OriginalFilename", "CommitMonitor64.exe"
+#else
+            VALUE "OriginalFilename", "CommitMonitor.exe"
+#endif
+            VALUE "ProductName", "CommitMonitor"
+            VALUE "ProductVersion", STRPRODUCTVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1252
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
