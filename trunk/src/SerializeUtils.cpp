@@ -81,7 +81,7 @@ bool CSerializeUtils::SaveString(FILE * hFile, string str)
     SerializeTypes type = SerializeType_String;
     if (fwrite(&type, sizeof(type), 1, hFile))
     {
-        size_t length = str.size();
+        int length = (int)str.size();
         if (fwrite(&length, sizeof(length), 1, hFile))
         {
             if (fwrite(str.c_str(), sizeof(char), length, hFile)>=0)
@@ -100,7 +100,8 @@ bool CSerializeUtils::SaveBuffer(FILE * hFile, BYTE * pbData, size_t len)
     SerializeTypes type = SerializeType_Buffer;
     if (fwrite(&type, sizeof(type), 1, hFile))
     {
-        if (fwrite(&len, sizeof(len), 1, hFile))
+        int writelen = len;
+        if (fwrite(&writelen, sizeof(writelen), 1, hFile))
         {
             if (fwrite(pbData, sizeof(BYTE), len, hFile)>=0)
                 return true;
@@ -116,7 +117,7 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
     {
         if (type == SerializeType_String)
         {
-            size_t length = 0;
+            int length = 0;
             if (fread(&length, sizeof(length), 1, hFile))
             {
                 if (length)
@@ -154,8 +155,8 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, std::string &str)
 
     if (type == SerializeType_String)
     {
-        size_t length = *((size_t *)buf);
-        buf += sizeof(size_t);
+        int length = *((int *)buf);
+        buf += sizeof(int);
         if (length)
         {
             str = string((const char *)buf, length);
@@ -186,8 +187,8 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
 
     if (type == SerializeType_String)
     {
-        size_t length = *((size_t *)buf);
-        buf += sizeof(size_t);
+        int length = *((int *)buf);
+        buf += sizeof(int);
         if (length)
         {
             int size = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, NULL, 0);
@@ -218,8 +219,8 @@ bool CSerializeUtils::LoadBuffer(const unsigned char *& buf, BYTE *& pbData, siz
 
     if (type == SerializeType_Buffer)
     {
-        size_t length = *((size_t *)buf);
-        buf += sizeof(size_t);
+        int length = *((int *)buf);
+        buf += sizeof(int);
         if (length)
         {
             pbData = new BYTE[length];

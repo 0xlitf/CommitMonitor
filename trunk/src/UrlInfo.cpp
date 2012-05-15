@@ -323,12 +323,10 @@ bool CUrlInfos::Load()
 {
     wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
     wstring urlfilebak = CAppUtils::GetDataDir() + _T("\\urls_backup");
-#ifdef _WIN64
-    urlfile += L"64";
-    urlfilebak += L"64";
-#endif
     if (!PathFileExists(urlfile.c_str()))
+    {
         return false;
+    }
     if (Load(urlfile.c_str()))
     {
         // urls file successfully loaded: create a backup copy
@@ -359,10 +357,6 @@ void CUrlInfos::Save()
 
     wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
     wstring urlfilenew = CAppUtils::GetDataDir() + _T("\\urls_new");
-#ifdef _WIN64
-    urlfile += L"64";
-    urlfilenew += L"64";
-#endif
     if (Save(urlfilenew.c_str()))
     {
         DeleteFile(urlfile.c_str());
