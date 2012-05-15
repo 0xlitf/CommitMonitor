@@ -1538,7 +1538,11 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           // then directly diff that url instead of the project url
                           std::wstring diffurl = pInfo->url;
                           if (pLogEntry->m_changedPaths.size()==1)
+                          {
+                              SVN svn;
+                              diffurl = svn.GetRootUrl(pInfo->url);
                               diffurl += pLogEntry->m_changedPaths.cbegin()->first.c_str();
+                          }
                           // call TortoiseProc to do the diff for us
                           cmd = _T("\"");
                           cmd += wstring(tsvninstalled);
