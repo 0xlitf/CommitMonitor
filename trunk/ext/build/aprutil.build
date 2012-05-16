@@ -62,11 +62,11 @@
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${configuration == 'release'}" />
-      <arg value="/MTd" if="${configuration != 'release'}" />
+      <arg value="/MTd" if="${configuration == 'debug'}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
@@ -109,7 +109,7 @@
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="_WINDLL" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
         <define name="COMPILED_FROM_DSP" />
         <define name="XML_STATIC" />
       </defines>

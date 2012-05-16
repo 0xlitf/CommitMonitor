@@ -22,18 +22,18 @@
 
   <target name="build" depends="clean">
     <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration == 'debug')}" />
     <property name="sslplat" value="32" if="${platform == 'win32'}" />
     <property name="sslplat" value="64" if="${platform == 'x64'}" />
     <mkdir dir="${configuration}_${platform}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration != 'release')}" />
+      <arg value="/MTd" if="${(configuration == 'debug')}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
@@ -71,7 +71,7 @@
         <define name="_WIN32_WINNT" value="0x0501" />
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
         <define name="WIN32_LEAN_AND_MEAN" />
         <define name="NOUSER" />
         <define name="NOGDI" />

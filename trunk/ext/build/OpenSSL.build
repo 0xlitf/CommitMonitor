@@ -17,7 +17,7 @@
       <exec program="perl" workingdir="..\openssl">
         <arg value="Configure" />
         <arg value="VC-WIN32" if="${(configuration == 'release')}" />
-        <arg value="debug-VC-WIN32" if="${(configuration != 'release')}" />
+        <arg value="debug-VC-WIN32" if="${(configuration == 'debug')}" />
         <arg value="no-asm" />
         <arg value="no-gost" />
         <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
@@ -39,7 +39,7 @@
       <exec program="perl" workingdir="..\openssl">
         <arg value="Configure" />
         <arg value="VC-WIN64A" if="${(configuration == 'release')}" />
-        <arg value="debug-VC-WIN64A" if="${(configuration != 'release')}" />
+        <arg value="debug-VC-WIN64A" if="${(configuration == 'debug')}" />
         <arg value="no-asm" />
         <arg value="no-gost" />
         <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />

@@ -86,11 +86,11 @@
         <cl outputdir="${configuration}_${platform}\${fname}">
           <arg value="/O2" if="${configuration == 'release'}" />
           <arg value="/Oy" if="${configuration == 'release'}" />
-          <arg value="/Od" if="${configuration != 'release'}" />
+          <arg value="/Od" if="${configuration == 'debug'}" />
           <arg value="/FD" />
           <arg value="/EHsc" />
           <arg value="/MT" if="${configuration == 'release'}" />
-          <arg value="/MTd" if="${configuration != 'release'}" />
+          <arg value="/MTd" if="${configuration == 'debug'}" />
           <arg value="/Gy" />
           <arg value="/W0" />
           <arg value="/nologo" />
@@ -130,7 +130,7 @@
             <define name="SVN_HAVE_NEON" />
             <define name="SVN_HAVE_SERF" />
             <define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
-            <define name="SVN_DEBUG" if="${configuration != 'release'}" />
+            <define name="SVN_DEBUG" if="${configuration == 'debug'}" />
             <define name="SVN_HAVE_SASL=1" />
             <define name="APR_HAVE_IPV6" />
             <define name="alloca=_alloca" />
@@ -141,14 +141,14 @@
             <define name="_WIN32_WINNT" value="0x0501" />
             <define name="WIN64" if="${platform == 'x64'}" />
             <define name="NDEBUG" if="${configuration == 'release'}"/>
-            <define name="_DEBUG" if="${configuration != 'release'}"/>
+            <define name="_DEBUG" if="${configuration == 'debug'}"/>
             <define name="XML_STATIC" />
           </defines>
         </cl>
         <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
         <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
         <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-        <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
+        <property name="ssldbg" value=".dbg" if="${(configuration == 'debug')}" />
         <property name="sslplat" value="32" if="${platform == 'win32'}" />
         <property name="sslplat" value="64" if="${platform == 'x64'}" />
         <lib

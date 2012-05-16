@@ -20,7 +20,7 @@
 
   <target name="build" >
     <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-    <property name="ssldbg" value=".dbg" if="${(configuration != 'release')}" />
+    <property name="ssldbg" value=".dbg" if="${(configuration == 'debug')}" />
     <property name="sslplat" value="32" if="${platform == 'win32'}" />
     <property name="sslplat" value="64" if="${platform == 'x64'}" />
     <mkdir dir="${configuration}_${platform}" />
@@ -42,11 +42,11 @@
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration != 'release')}" />
+      <arg value="/MTd" if="${(configuration == 'debug')}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
@@ -87,7 +87,7 @@
         <define name="TARGET_WIN_SYSTEM" value="50" />
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
@@ -114,13 +114,13 @@
 
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/Gs-" if="${configuration == 'release'}" />
       <arg value="/GS-" if="${configuration == 'release'}" />
       <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration != 'release')}" />
+      <arg value="/MTd" if="${(configuration == 'debug')}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
@@ -165,7 +165,7 @@
         <define name="TARGET_WIN_SYSTEM" value="50" />
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
@@ -198,13 +198,13 @@
 
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
-      <arg value="/Od" if="${configuration != 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/Gs-" if="${configuration == 'release'}" />
       <arg value="/GS-" if="${configuration == 'release'}" />
       <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration != 'release')}" />
+      <arg value="/MTd" if="${(configuration == 'debug')}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
@@ -251,7 +251,7 @@
         <define name="TARGET_WIN_SYSTEM" value="50" />
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
-        <define name="_DEBUG" if="${configuration != 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
         <define name="HAVE_GSS_C_NT_HOSTBASED_SERVICE" />
         <define name="SSIZE_T_DEFINED" />
         <define name="HAVE_GSSAPI_H" />

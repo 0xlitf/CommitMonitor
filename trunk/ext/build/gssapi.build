@@ -19,11 +19,11 @@
         <cl outputdir="${configuration}_${platform}">
             <arg value="/O2" if="${configuration == 'release'}" />
             <arg value="/Oy" if="${configuration == 'release'}" />
-            <arg value="/Od" if="${configuration != 'release'}" />
+            <arg value="/Od" if="${configuration == 'debug'}" />
             <arg value="/FD" />
             <arg value="/EHa-" />
             <arg value="/MT" if="${(configuration == 'release')}" />
-            <arg value="/MTd" if="${(configuration != 'release')}" />
+            <arg value="/MTd" if="${(configuration == 'debug')}" />
             <arg value="/Gy" />
             <arg value="/W0" />
             <arg value="/nologo" />
