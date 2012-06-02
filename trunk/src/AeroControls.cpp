@@ -670,8 +670,6 @@ LRESULT AeroControlBase::ButtonWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
                             }
 
 
-
-
                             if (hFontOld)
                             {
                                 SelectObject(hdcPaint, hFontOld);
@@ -682,7 +680,6 @@ LRESULT AeroControlBase::ButtonWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
                         }
                         m_theme.CloseThemeData(hTheme);
                     }
-
 
                 }
                 else if(BS_PUSHBUTTON==dwButtonType || BS_DEFPUSHBUTTON==dwButtonType)
@@ -716,7 +713,6 @@ LRESULT AeroControlBase::ButtonWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
                             if(dwButtonStyle==BS_RADIOBUTTON || dwButtonStyle==BS_AUTORADIOBUTTON)
                                 iPartId = BP_RADIOBUTTON;
 
-
                             iState = GetStateFromBtnState(dwStyle, bHot, bFocus, dwCheckState, iPartId, GetCapture()==hWnd);
 
                             ///
@@ -726,9 +722,7 @@ LRESULT AeroControlBase::ButtonWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
                             RECT rcPaint = rcClient;
                             m_theme.DrawThemeBackground(hTheme, hdcPaint, iPartId, iState, &rcPaint, NULL);
 
-
                             m_theme.GetThemeBackgroundContentRect(hTheme, hdcPaint, iPartId, iState, &rcPaint, &rc);
-
 
                             DTTOPTS DttOpts = {sizeof(DTTOPTS)};
                             DttOpts.dwFlags = DTT_COMPOSITED;
@@ -737,7 +731,6 @@ LRESULT AeroControlBase::ButtonWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
                             DttOpts.iGlowSize = 12; // Default value
 
                             m_theme.DetermineGlowSize(&DttOpts.iGlowSize);
-
 
                             HFONT hFontOld = (HFONT)SendMessage(hWnd, WM_GETFONT, 0L, NULL);
                             if(hFontOld)
@@ -1024,7 +1017,6 @@ void AeroControlBase::PaintControl(HWND hWnd, HDC hdc, RECT* prc, bool bDrawBord
             InflateRect(prc, 1, 1);
             FrameRect(hdcPaint, prc, (HBRUSH)GetStockObject(BLACK_BRUSH));
         }
-
 
         // Make every pixel opaque
         m_theme.BufferedPaintMakeOpaque_(hBufferedPaint, prc);

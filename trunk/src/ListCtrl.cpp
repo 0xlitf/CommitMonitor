@@ -43,7 +43,6 @@ static CGlobalAtom ga;
 #define PROP_OBJECT_PTR         MAKEINTATOM(ga.atom)
 #define PROP_ORIGINAL_PROC      MAKEINTATOM(ga.atom)
 
-
 CListCtrl::CListCtrl()
     : m_pfnOrigCtlProc(NULL)
     , m_bInfoTextPermanent(false)
@@ -70,7 +69,6 @@ void CListCtrl::SetInfoText(LPCTSTR sText, bool bPermanent /* = false */)
     else
         m_sInfoText = _T("");
 }
-
 
 LRESULT CALLBACK CListCtrl::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

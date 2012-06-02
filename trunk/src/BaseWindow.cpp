@@ -31,7 +31,6 @@ ResString::ResString (HINSTANCE hInst, int resId)
     }
 }
 
-
 bool CWindow::RegisterWindow(UINT style, HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground,
                                     LPCTSTR lpszMenuName, LPCTSTR lpszClassName, HICON hIconSm)
 {

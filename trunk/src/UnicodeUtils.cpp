@@ -29,7 +29,6 @@ CUnicodeUtils::~CUnicodeUtils(void)
 {
 }
 
-
 #ifdef UNICODE
 std::string CUnicodeUtils::StdGetUTF8(const std::wstring& wide)
 {
@@ -126,7 +125,6 @@ std::string StringToUTF8(const tstring& string) {return WideToUTF8(string);}
 tstring UTF8ToString(const std::string& string) {return WideToMultibyte(UTF8ToWide(string));}
 std::string StringToUTF8(const tstring& string) {return WideToUTF8(MultibyteToWide(string));}
 #endif
-
 
 #pragma warning(push)
 #pragma warning(disable: 4200)

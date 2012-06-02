@@ -256,7 +256,6 @@ LRESULT CDiffViewer::DoCommand(int id)
     return 1;
 }
 
-
 LRESULT CDiffViewer::SendEditor(UINT Msg, WPARAM wParam, LPARAM lParam)
 {
     if (m_directFunction)

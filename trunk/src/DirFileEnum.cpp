@@ -100,7 +100,6 @@ bool CSimpleFileFind::FindNextFileNoDirectories()
     return result;
 }
 
-
 /*
 * Implementation notes:
 *
@@ -121,7 +120,6 @@ bool CSimpleFileFind::FindNextFileNoDirectories()
 *
 * The "." and ".." psedo-directories are ignored for obvious reasons.
 */
-
 
 CDirFileEnum::CDirStackEntry::CDirStackEntry(CDirStackEntry * seNext,
                                              const wstring& sDirName)

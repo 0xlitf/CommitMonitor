@@ -1973,7 +1973,6 @@ bool CMainDlg::SelectNextWithUnread(HTREEITEM hItem)
     return false;
 }
 
-
 void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 {
     SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(false, 0));
@@ -2033,7 +2032,6 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 _tcsftime(updateTime, 1000, _T(" last checked: %X"), &upTime);
             SetDlgItemText(*this, IDC_INFOLABEL, updateTime);
         }
-
 
         m_bBlockListCtrlUI = true;
         int selMark = ListView_GetSelectionMark(m_hListControl);
@@ -2973,7 +2971,6 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
         point.y = loglist.bottom-REPOBROWSER_CTRL_MIN_HEIGHT;
     if (point.y < loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT)
         point.y = loglist.top+REPOBROWSER_CTRL_MIN_HEIGHT;
-
 
     if (bShowBar)
     {

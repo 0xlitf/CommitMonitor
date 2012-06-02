@@ -90,6 +90,7 @@ bool CSerializeUtils::SaveString(FILE * hFile, string str)
     }
     return false;
 }
+
 bool CSerializeUtils::SaveString(FILE * hFile, wstring str)
 {
     return SaveString(hFile, CUnicodeUtils::StdGetUTF8(str));

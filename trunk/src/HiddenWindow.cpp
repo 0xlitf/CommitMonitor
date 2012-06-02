@@ -44,7 +44,6 @@ using namespace std;
 // for Vista
 #define MSGFLT_ADD 1
 
-
 extern HINSTANCE hInst;
 
 CHiddenWindow *hiddenWindowPointer = NULL;
@@ -730,7 +729,6 @@ DWORD CHiddenWindow::RunThread()
                 break;
             }
 
-
             pSCCS->SetAuthInfo(it->second.username, it->second.password);
             if (m_hMainDlg)
             {
@@ -1336,7 +1334,6 @@ DWORD CHiddenWindow::RunThread()
             }
         }
     }
-
 
     // check for newer versions
     if (m_bRun && (CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), TRUE) != FALSE))

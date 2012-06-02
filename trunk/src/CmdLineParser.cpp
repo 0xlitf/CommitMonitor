@@ -26,7 +26,6 @@ const TCHAR CCmdLineParser::m_sDelims[] = _T("-/");
 const TCHAR CCmdLineParser::m_sQuotes[] = _T("\"");
 const TCHAR CCmdLineParser::m_sValueSep[] = _T(" :"); // don't forget space!!
 
-
 CCmdLineParser::CCmdLineParser(LPCTSTR sCmdLine)
 {
     if(sCmdLine)
@@ -151,7 +150,6 @@ BOOL CCmdLineParser::HasKey(LPCTSTR sKey) const
     return true;
 }
 
-
 BOOL CCmdLineParser::HasVal(LPCTSTR sKey) const
 {
     CValsMap::const_iterator it = findKey(sKey);
@@ -177,7 +175,6 @@ LONG CCmdLineParser::GetLongVal(LPCTSTR sKey) const
         return 0;
     return _tstol(it->second.c_str());
 }
-
 
 CCmdLineParser::ITERPOS CCmdLineParser::begin() const
 {

@@ -186,7 +186,7 @@ CRegStdDWORD::~CRegStdDWORD(void)
         RegCloseKey(m_hKey);
 }
 
-DWORD   CRegStdDWORD::read()
+DWORD CRegStdDWORD::read()
 {
     if ((LastError = RegOpenKeyEx(m_base, m_path.c_str(), 0, KEY_EXECUTE | m_sam, &m_hKey))==ERROR_SUCCESS)
     {

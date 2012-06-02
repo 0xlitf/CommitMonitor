@@ -140,7 +140,6 @@ void CDialog::AddToolTip(UINT ctrlID, LPTSTR text)
     SendMessage (m_hToolTips, TTM_ADDTOOL, 0, (LPARAM) &tt);
 }
 
-
 INT_PTR CALLBACK CDialog::stDlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static bool bInDlgProc = false;

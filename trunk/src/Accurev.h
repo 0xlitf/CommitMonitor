@@ -27,7 +27,6 @@
 
 using namespace std;
 
-
 class ACCUREV : public SCCS
 {
 public:

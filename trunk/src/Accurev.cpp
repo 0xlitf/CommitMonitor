@@ -35,8 +35,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define ACCU_COMM_FAILURE         _T("Accurev comm failure")
-#define ACCU_NO_ERROR             _T("")
+#define ACCU_COMM_FAILURE   _T("Accurev comm failure")
+#define ACCU_NO_ERROR       _T("")
 
 // Local functions
 static inline void char2wchar(char *pChar, wchar_t *pwChar, int length);
@@ -55,7 +55,6 @@ ACCUREV::~ACCUREV(void)
 {
 
 }
-
 
 wstring ACCUREV::GetLastErrorMsg()
 {
@@ -86,7 +85,6 @@ wstring ACCUREV::GetRootUrl(const std::wstring& /*path*/)
     ClearErrors();
     return L"";
 }
-
 
 svn_revnum_t ACCUREV::GetHEADRevision(const wstring& repo, const wstring& url)
 {
@@ -124,7 +122,6 @@ bool ACCUREV::GetLog(const wstring& repo, const wstring& url, svn_revnum_t start
         endrev = startrev - limit;
         if (endrev < 1) endrev = 1;
     }
-
 
     if (!AccuGetHistory(repo, url, (long)startrev, (long)endrev, rawLog))
     {
@@ -173,8 +170,6 @@ void ACCUREV::SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowPro
     UNREFERENCED_PARAMETER(bShowProgressBar);
 }
 
-
-
 #define MAX_LOG_ENTRIES 1000
 #if 0   // Old log parser (parses non-xml output)
 
@@ -214,7 +209,6 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
         logEntry.date = (apr_time_t)0;
         logEntry.message = wstring();
         logEntry.m_changedPaths.clear();
-
 
         // Split transaction line into transactionNo:promote:date:user
         int iLogTokenNo = 0;
@@ -462,7 +456,6 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
     if (pIssueNos) free(pIssueNos);
 #endif
 
-
     return retVal;
 }
 
@@ -519,11 +512,9 @@ bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
 #endif
 
 
-
 //////////////////////////////////////////////////////////////////////////
 // Accurev access functions
 //////////////////////////////////////////////////////////////////////////
-
 
 // accurev login "chsslr@audatex.com" "password"
 bool ACCUREV::AccuLogin(const wstring& username, const wstring& password)
@@ -578,7 +569,6 @@ bool ACCUREV::AccuGetLastPromote(const wstring& repo, const wstring& url, long *
 
   return retVal;
 }
-
 
 bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long startrev, long endrev, wstring& rawLog)
 {
@@ -636,10 +626,9 @@ bool ACCUREV::AccuIssueList(const wstring& repo, const wstring& url, long issueN
 }
 
 
-
-
 #define BUFSIZE 8192
 #define PIPESIZE (1024 * 1024 * 2) // 2MB
+
 size_t ACCUREV::ExecuteAccurev(wstring Parameters, size_t SecondsToWait, wstring& stdOut, wstring& stdErr)
 {
     wstring fullPathToExe = (LPCTSTR)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
@@ -801,7 +790,6 @@ void ACCUREV::ClearErrors() {
 void ACCUREV::SetError(const wchar_t *pErrorString) {
   this->pErrorString = pErrorString;
 }
-
 
 static inline void char2wchar(char *pChar, wchar_t *pwChar, int length)
 {

@@ -56,6 +56,7 @@ bool CProgressDlg::EnsureValid()
     }
     return m_bValid;
 }
+
 void CProgressDlg::SetTitle(LPCWSTR szTitle)
 {
     if (m_bValid)
@@ -94,6 +95,7 @@ void CProgressDlg::SetAnimation(HINSTANCE hinst, UINT uRsrcID)
         m_pIDlg->SetAnimation(hinst, uRsrcID);
     }
 }
+
 #ifdef _MFC_VER
 void CProgressDlg::SetAnimation(UINT uRsrcID)
 {
@@ -103,6 +105,7 @@ void CProgressDlg::SetAnimation(UINT uRsrcID)
     }
 }
 #endif
+
 void CProgressDlg::SetTime(bool bTime /* = true */)
 {
     m_dwDlgFlags &= ~(PROGDLG_NOTIME | PROGDLG_AUTOTIME);
@@ -120,6 +123,7 @@ void CProgressDlg::SetShowProgressBar(bool bShow /* = true */)
     else
         m_dwDlgFlags |= PROGDLG_NOPROGRESSBAR;
 }
+
 #ifdef _MFC_VER
 HRESULT CProgressDlg::ShowModal (CWnd* pwndParent)
 {
@@ -156,15 +160,14 @@ void CProgressDlg::FormatNonPathLine(DWORD dwLine, UINT idFormatText, ...)
 
     va_end(args);
 }
-
 #endif
+
 HRESULT CProgressDlg::ShowModal (HWND hWndParent)
 {
     EnsureValid();
     HRESULT hr;
     if (m_bValid)
     {
-
         hr = m_pIDlg->StartProgressDialog(hWndParent,
             NULL,
             m_dwDlgFlags | PROGDLG_MODAL,
@@ -219,7 +222,6 @@ void CProgressDlg::SetProgress(DWORD dwProgress, DWORD dwMax)
     }
 }
 
-
 void CProgressDlg::SetProgress64(ULONGLONG u64Progress, ULONGLONG u64ProgressMax)
 {
     if (m_bValid)
@@ -227,7 +229,6 @@ void CProgressDlg::SetProgress64(ULONGLONG u64Progress, ULONGLONG u64ProgressMax
         m_pIDlg->SetProgress64(u64Progress, u64ProgressMax);
     }
 }
-
 
 bool CProgressDlg::HasUserCancelled()
 {

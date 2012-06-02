@@ -153,7 +153,6 @@ string CAppUtils::PathEscape(const string& path)
     return ret;
 }
 
-
 wstring CAppUtils::GetDataDir()
 {
     bool bPortable = false;
