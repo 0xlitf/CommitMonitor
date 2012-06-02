@@ -336,6 +336,7 @@ LRESULT CALLBACK CHyperLink::_HyperlinkProc(HWND hwnd, UINT message,
             if (pHyperLink->m_strURL && _tcslen(pHyperLink->m_strURL))
             {
                 pHyperLink->Navigate();
+                InvalidateRect(hwnd, NULL, FALSE);
                 return 0;
             }
         }
