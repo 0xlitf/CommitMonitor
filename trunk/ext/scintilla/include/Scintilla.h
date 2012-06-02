@@ -51,6 +51,7 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_ADDSTYLEDTEXT 2002
 #define SCI_INSERTTEXT 2003
 #define SCI_CLEARALL 2004
+#define SCI_DELETERANGE 2645
 #define SCI_CLEARDOCUMENTSTYLE 2005
 #define SCI_GETLENGTH 2006
 #define SCI_GETCHARAT 2007
@@ -460,6 +461,7 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SC_WRAPVISUALFLAG_NONE 0x0000
 #define SC_WRAPVISUALFLAG_END 0x0001
 #define SC_WRAPVISUALFLAG_START 0x0002
+#define SC_WRAPVISUALFLAG_MARGIN 0x0004
 #define SCI_SETWRAPVISUALFLAGS 2460
 #define SCI_GETWRAPVISUALFLAGS 2461
 #define SC_WRAPVISUALFLAGLOC_DEFAULT 0x0000
@@ -727,6 +729,8 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_GETPOSITIONCACHE 2515
 #define SCI_COPYALLOWLINE 2519
 #define SCI_GETCHARACTERPOINTER 2520
+#define SCI_GETRANGEPOINTER 2643
+#define SCI_GETGAPPOSITION 2644
 #define SCI_SETKEYSUNICODE 2521
 #define SCI_GETKEYSUNICODE 2522
 #define SCI_INDICSETALPHA 2523
