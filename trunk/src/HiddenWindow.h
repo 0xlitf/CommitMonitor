@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2011 - Stefan Kueng
+// Copyright (C) 2007-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,10 +42,10 @@
 
 typedef struct
 {
-    wstring             sProject;
-    wstring             sTitle;
-    wstring             sText;
-    wstring             sAlertType;
+    std::wstring             sProject;
+    std::wstring             sTitle;
+    std::wstring             sText;
+    std::wstring             sAlertType;
 } popupData;
 
 class CHiddenWindow : public CWindow
@@ -68,7 +68,7 @@ public:
 
     void                SetTask(bool b) {m_bIsTask = b;}
 
-    void                ShowPopup(wstring& title, wstring& text, const wchar_t *alertType);
+    void                ShowPopup(std::wstring& title, std::wstring& text, const wchar_t *alertType);
 
     void                Save() { m_UrlInfos.Save(); }
 protected:
@@ -108,7 +108,7 @@ private:
     bool                m_bIsTask;
     bool                m_bNewerVersionAvailable;
 
-    wstring             m_UrlToWorkOn;
+    std::wstring        m_UrlToWorkOn;
     CRegStdString       m_regLastSelectedProject;
 
     std::vector<popupData>  m_popupData;

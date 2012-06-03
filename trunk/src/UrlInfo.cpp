@@ -53,7 +53,7 @@ bool CUrlInfo::Save(FILE * hFile)
         return false;
     // encrypt the password
     DATA_BLOB blob, outblob;
-    string encpwd = CUnicodeUtils::StdGetUTF8(password);
+    std::string encpwd = CUnicodeUtils::StdGetUTF8(password);
     encpwd = "encrypted_" + encpwd;
     blob.cbData = (DWORD)encpwd.size();
     blob.pbData = (BYTE*)encpwd.c_str();
@@ -119,7 +119,7 @@ bool CUrlInfo::Save(FILE * hFile)
     if (!CSerializeUtils::SaveNumber(hFile, logentries.size()))
         return false;
 
-    for (map<svn_revnum_t,SCCSLogEntry>::iterator it = logentries.begin(); it != logentries.end(); ++it)
+    for (auto it = logentries.begin(); it != logentries.end(); ++it)
     {
         if (!CSerializeUtils::SaveNumber(hFile, it->first))
             return false;
@@ -154,7 +154,7 @@ bool CUrlInfo::Load(const unsigned char *& buf)
     blob.pbData = pbData;
     if (CryptUnprotectData(&blob, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &outblob))
     {
-        string encpwd = string((const char*)outblob.pbData, outblob.cbData);
+        std::string encpwd = std::string((const char*)outblob.pbData, outblob.cbData);
         if (_strnicmp(encpwd.c_str(), "encrypted_", 10) == 0)
         {
             encpwd = encpwd.substr(10);
@@ -321,8 +321,8 @@ CUrlInfos::~CUrlInfos(void)
 
 bool CUrlInfos::Load()
 {
-    wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
-    wstring urlfilebak = CAppUtils::GetDataDir() + _T("\\urls_backup");
+    std::wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+    std::wstring urlfilebak = CAppUtils::GetDataDir() + _T("\\urls_backup");
     if (!PathFileExists(urlfile.c_str()))
     {
         return false;
@@ -344,7 +344,7 @@ bool CUrlInfos::Load()
 void CUrlInfos::Save()
 {
     bool bExit = false;
-    const map<wstring,CUrlInfo> * pInfos = GetReadOnlyData();
+    const std::map<std::wstring,CUrlInfo> * pInfos = GetReadOnlyData();
     if (pInfos->size() == 0)
     {
         // empty project list: don't save it!
@@ -355,8 +355,8 @@ void CUrlInfos::Save()
     if (bExit)
         return;
 
-    wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
-    wstring urlfilenew = CAppUtils::GetDataDir() + _T("\\urls_new");
+    std::wstring urlfile = CAppUtils::GetDataDir() + _T("\\urls");
+    std::wstring urlfilenew = CAppUtils::GetDataDir() + _T("\\urls_new");
     if (Save(urlfilenew.c_str()))
     {
         DeleteFile(urlfile.c_str());
@@ -424,7 +424,7 @@ bool CUrlInfos::Save(FILE * hFile)
         return false;
     if (!CSerializeUtils::SaveNumber(hFile, infos.size()))
         return false;
-    for (map<wstring,CUrlInfo>::iterator it = infos.begin(); it != infos.end(); ++it)
+    for (auto it = infos.begin(); it != infos.end(); ++it)
     {
         if (!CSerializeUtils::SaveString(hFile, it->first))
             return false;
@@ -449,7 +449,7 @@ bool CUrlInfos::Load(const unsigned char *& buf)
         {
             for (unsigned __int64 i=0; i<value; ++i)
             {
-                wstring key;
+                std::wstring key;
                 CUrlInfo info;
                 if (!CSerializeUtils::LoadString(buf, key))
                     return false;
@@ -473,7 +473,7 @@ bool CUrlInfos::IsEmpty()
     return bIsEmpty;
 }
 
-string CUrlInfos::CalcMD5(LPCWSTR s)
+std::string CUrlInfos::CalcMD5(LPCWSTR s)
 {
     HCRYPTPROV hCryptProv;
     HCRYPTHASH hHash = 0;
@@ -481,7 +481,7 @@ string CUrlInfos::CalcMD5(LPCWSTR s)
     DWORD dwHashLen= 16; // The MD5 algorithm always returns 16 bytes.
     DWORD cbContent= (DWORD)wcslen(s)*sizeof(WCHAR);
     BYTE* pbContent= (BYTE*)s;
-    string retHash;
+    std::string retHash;
 
     if (CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_MACHINE_KEYSET))
     {
@@ -519,7 +519,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
     if (hFile == NULL)
         return false;
 
-    string pwHash = CalcMD5(password);
+    std::string pwHash = CalcMD5(password);
 
     guard.AcquireReaderLock();
 
@@ -527,15 +527,15 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
     CBlowFish blower((const unsigned char*)pwHash.c_str(), 16);
     WCHAR numberBuf[1024];
 
-    for (map<wstring,CUrlInfo>::iterator it = infos.begin(); it != infos.end(); ++it)
+    for (auto it = infos.begin(); it != infos.end(); ++it)
     {
         iniFile.SetValue(it->first.c_str(), L"username", it->second.username.c_str());
         iniFile.SetValue(it->first.c_str(), L"url", it->second.url.c_str());
         iniFile.SetValue(it->first.c_str(), L"name", it->second.name.c_str());
-        wstring ignoreUsers = it->second.ignoreUsers;
+        std::wstring ignoreUsers = it->second.ignoreUsers;
         CAppUtils::SearchReplace(ignoreUsers, L"\r\n", L"\t");
         iniFile.SetValue(it->first.c_str(), L"ignoreUsers", ignoreUsers.c_str());
-        wstring includeUsers = it->second.includeUsers;
+        std::wstring includeUsers = it->second.includeUsers;
         CAppUtils::SearchReplace(includeUsers, L"\r\n", L"\t");
         iniFile.SetValue(it->first.c_str(), L"includeUsers", includeUsers.c_str());
         iniFile.SetValue(it->first.c_str(), L"callcommand", it->second.callcommand.c_str());
@@ -564,7 +564,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
             BYTE * pByteBuf = (BYTE*)pwBuf.get();
             blower.Encrypt(pByteBuf, bufSize*sizeof(WCHAR));
             WCHAR tmpBuf[3];
-            wstring encryptedPassword;
+            std::wstring encryptedPassword;
             for (unsigned int i = 0; i < bufSize*sizeof(WCHAR); ++i)
             {
                 swprintf_s(tmpBuf, 3, L"%02x", pByteBuf[i]);
@@ -588,7 +588,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
     if (iniFile.LoadFile(filename) != SI_OK)
         return false;
 
-    string pwHash = CalcMD5(password);
+    std::string pwHash = CalcMD5(password);
     guard.AcquireWriterLock();
     CBlowFish blower((const unsigned char*)pwHash.c_str(), 16);
 
@@ -598,15 +598,15 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
     {
         CUrlInfo info;
 
-        info.username = wstring(iniFile.GetValue(*it, _T("username"), _T("")));
-        info.url = wstring(iniFile.GetValue(*it, _T("url"), _T("")));
-        info.name = wstring(iniFile.GetValue(*it, _T("name"), _T("")));
-        info.ignoreUsers = wstring(iniFile.GetValue(*it, _T("ignoreUsers"), _T("")));
+        info.username = std::wstring(iniFile.GetValue(*it, _T("username"), _T("")));
+        info.url = std::wstring(iniFile.GetValue(*it, _T("url"), _T("")));
+        info.name = std::wstring(iniFile.GetValue(*it, _T("name"), _T("")));
+        info.ignoreUsers = std::wstring(iniFile.GetValue(*it, _T("ignoreUsers"), _T("")));
         CAppUtils::SearchReplace(info.ignoreUsers, L"\t", L"\r\n");
-        info.includeUsers = wstring(iniFile.GetValue(*it, L"includeUsers", L""));
+        info.includeUsers = std::wstring(iniFile.GetValue(*it, L"includeUsers", L""));
         CAppUtils::SearchReplace(info.includeUsers, L"\t", L"\r\n");
-        info.callcommand = wstring(iniFile.GetValue(*it, _T("callcommand"), _T("")));
-        info.webviewer = wstring(iniFile.GetValue(*it, _T("webviewer"), _T("")));
+        info.callcommand = std::wstring(iniFile.GetValue(*it, _T("callcommand"), _T("")));
+        info.webviewer = std::wstring(iniFile.GetValue(*it, _T("webviewer"), _T("")));
 
         info.minutesinterval = _wtol(iniFile.GetValue(*it, L"minutesinterval", L""));
         info.minminutesinterval = _wtol(iniFile.GetValue(*it, L"minminutesinterval", L""));
@@ -615,7 +615,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         info.noexecuteignored = !!_wtol(iniFile.GetValue(*it, L"noexecuteignored", L""));
         info.monitored = !!_wtol(iniFile.GetValue(*it, L"monitored", L"1"));
 
-        wstring unencryptedPassword = wstring(iniFile.GetValue(*it, _T("password"), _T("")));
+        std::wstring unencryptedPassword = std::wstring(iniFile.GetValue(*it, _T("password"), _T("")));
         if (unencryptedPassword.size())
         {
             // decrypt the password
@@ -631,7 +631,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             }
             blower.Decrypt(pPwBuf.get(), unencryptedPassword.size()/2);
             WCHAR * pDecryptedPW = (WCHAR*)pPwBuf.get();
-            wstring plainPw = pDecryptedPW;
+            std::wstring plainPw = pDecryptedPW;
             info.password = plainPw;
         }
 
@@ -662,13 +662,13 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
     return true;
 }
 
-const map<wstring,CUrlInfo> * CUrlInfos::GetReadOnlyData()
+const std::map<std::wstring,CUrlInfo> * CUrlInfos::GetReadOnlyData()
 {
     guard.AcquireReaderLock();
     return &infos;
 }
 
-map<wstring,CUrlInfo> * CUrlInfos::GetWriteData()
+std::map<std::wstring,CUrlInfo> * CUrlInfos::GetWriteData()
 {
     guard.AcquireWriterLock();
     return &infos;

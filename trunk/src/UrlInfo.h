@@ -43,13 +43,13 @@ public:
       SCCS_LEN
     } SCCS_TYPE;
 
-    wstring                     username;
-    wstring                     password;
+    std::wstring                username;
+    std::wstring                password;
 
     SCCS_TYPE                   sccs;
-    wstring                     accurevRepo;
-    wstring                     url;
-    wstring                     name;
+    std::wstring                accurevRepo;
+    std::wstring                url;
+    std::wstring                name;
     __time64_t                  lastchecked;
     svn_revnum_t                lastcheckedrev;
     __time64_t                  lastcheckedrobots;
@@ -59,18 +59,18 @@ public:
     bool                        fetchdiffs;
     bool                        disallowdiffs;
     bool                        monitored;
-    wstring                     ignoreUsers;
-    wstring                     includeUsers;
+    std::wstring                ignoreUsers;
+    std::wstring                includeUsers;
 
-    map<svn_revnum_t,SCCSLogEntry> logentries;
+    std::map<svn_revnum_t,SCCSLogEntry> logentries;
     int                         maxentries;
 
     bool                        parentpath;
-    wstring                     error;
+    std::wstring                error;
     apr_status_t                errNr;
-    wstring                     callcommand;
+    std::wstring                callcommand;
     bool                        noexecuteignored;
-    wstring                     webviewer;
+    std::wstring                webviewer;
 
     bool                        Save(FILE * hFile);
     bool                        Load(const unsigned char *& buf);
@@ -91,17 +91,17 @@ public:
     bool                        CheckPassword(LPCWSTR filename, LPCWSTR password);
     bool                        Import(LPCWSTR filename, LPCWSTR password);
 
-    const map<wstring,CUrlInfo> *   GetReadOnlyData();
-    map<wstring,CUrlInfo> *     GetWriteData();
+    const std::map<std::wstring,CUrlInfo> *   GetReadOnlyData();
+    std::map<std::wstring,CUrlInfo> *     GetWriteData();
     void                        ReleaseReadOnlyData();
     void                        ReleaseWriteData();
 
 protected:
     bool                        Save(FILE * hFile);
     bool                        Load(const unsigned char *& buf);
-    string                      CalcMD5(LPCWSTR s);
+    std::string                 CalcMD5(LPCWSTR s);
 
 private:
-    map<wstring,CUrlInfo>       infos;
-    CReaderWriterLock           guard;
+    std::map<std::wstring,CUrlInfo> infos;
+    CReaderWriterLock               guard;
 };

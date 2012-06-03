@@ -38,7 +38,6 @@
 
 #define FILTER_ELAPSE 500
 
-using namespace std;
 
 /**
  * main dialog.
@@ -51,8 +50,8 @@ public:
 
     void                    SetUrlInfos(CUrlInfos * pUrlInfos) {m_pURLInfos = pUrlInfos;}
     void                    SetUpdateAvailable(bool bUpdate) {m_bNewerVersionAvailable = bUpdate;}
-    void                    SetLastSelectedProject(const wstring& proj) { m_lastSelectedProject = proj; }
-    wstring                 GetLastSelectedProject() { return m_lastSelectedProject; }
+    void                    SetLastSelectedProject(const std::wstring& proj) { m_lastSelectedProject = proj; }
+    std::wstring            GetLastSelectedProject() { return m_lastSelectedProject; }
 
 protected:
     LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -70,8 +69,8 @@ private:
     bool                    CreateToolbar();
 
     void                    RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselect);
-    HTREEITEM               FindParentTreeNode(const wstring& url);
-    HTREEITEM               FindTreeNode(const wstring& url, HTREEITEM hItem = TVI_ROOT);
+    HTREEITEM               FindParentTreeNode(const std::wstring& url);
+    HTREEITEM               FindTreeNode(const std::wstring& url, HTREEITEM hItem = TVI_ROOT);
     bool                    SelectNextWithUnread(HTREEITEM hItem = TVI_ROOT);
     void                    OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView);
     void                    OnSelectListItem(LPNMLISTVIEW lpNMListView);
@@ -120,7 +119,7 @@ private:
     HFONT                   m_boldFont;
 
     CUrlInfos *             m_pURLInfos;
-    wstring                 m_lastSelectedProject;
+    std::wstring            m_lastSelectedProject;
 
     bool                    m_bBlockListCtrlUI;
     bool                    m_bNewerVersionAvailable;

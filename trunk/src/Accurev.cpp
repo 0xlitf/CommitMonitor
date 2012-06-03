@@ -56,37 +56,37 @@ ACCUREV::~ACCUREV(void)
 
 }
 
-wstring ACCUREV::GetLastErrorMsg()
+std::wstring ACCUREV::GetLastErrorMsg()
 {
     return pErrorString;
 }
 
-void ACCUREV::SetAuthInfo(const wstring& username, const wstring& password)
+void ACCUREV::SetAuthInfo(const std::wstring& username, const std::wstring& password)
 {
   ClearErrors();
 
   if (!AccuLogin(username, password))
   {
-    wstring title = ACCU_COMM_FAILURE;
-    wstring text = _T("Could not log in as ") + username;
+    std::wstring title = ACCU_COMM_FAILURE;
+    std::wstring text = _T("Could not log in as ") + username;
     hiddenWindowPointer->ShowPopup(title, text, ALERTTYPE_FAILEDCONNECT);
     SetError(ACCU_COMM_FAILURE);
   }
 }
 
-bool ACCUREV::GetFile(wstring sUrl, wstring sFile)
+bool ACCUREV::GetFile(std::wstring sUrl, std::wstring sFile)
 {
     ClearErrors();
     return (Err == NULL);
 }
 
-wstring ACCUREV::GetRootUrl(const std::wstring& /*path*/)
+std::wstring ACCUREV::GetRootUrl(const std::wstring& /*path*/)
 {
     ClearErrors();
     return L"";
 }
 
-svn_revnum_t ACCUREV::GetHEADRevision(const wstring& repo, const wstring& url)
+svn_revnum_t ACCUREV::GetHEADRevision(const std::wstring& repo, const std::wstring& url)
 {
     svn_revnum_t revNum = (svn_revnum_t)0;
 
@@ -94,8 +94,8 @@ svn_revnum_t ACCUREV::GetHEADRevision(const wstring& repo, const wstring& url)
 
     if (!AccuGetLastPromote(repo, url, (long *)&revNum))
     {
-      wstring title = ACCU_COMM_FAILURE;
-      wstring text = _T("Could not get history for ") + repo + L":" + url;
+      std::wstring title = ACCU_COMM_FAILURE;
+      std::wstring text = _T("Could not get history for ") + repo + L":" + url;
       hiddenWindowPointer->ShowPopup(title, text, ALERTTYPE_FAILEDCONNECT);
       SetError(ACCU_COMM_FAILURE);
     }
@@ -103,10 +103,10 @@ svn_revnum_t ACCUREV::GetHEADRevision(const wstring& repo, const wstring& url)
     return (svn_revnum_t)revNum;
 }
 
-bool ACCUREV::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
+bool ACCUREV::GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
     bool retVal = false;
-    wstring rawLog;
+    std::wstring rawLog;
 
     ClearErrors();
 
@@ -125,8 +125,8 @@ bool ACCUREV::GetLog(const wstring& repo, const wstring& url, svn_revnum_t start
 
     if (!AccuGetHistory(repo, url, (long)startrev, (long)endrev, rawLog))
     {
-      wstring title = ACCU_COMM_FAILURE;
-      wstring text = _T("Could not get history for ") + repo + L":" + url;
+      std::wstring title = ACCU_COMM_FAILURE;
+      std::wstring text = _T("Could not get history for ") + repo + L":" + url;
       hiddenWindowPointer->ShowPopup(title, text, ALERTTYPE_FAILEDCONNECT);
       SetError(ACCU_COMM_FAILURE);
     }
@@ -138,10 +138,10 @@ bool ACCUREV::GetLog(const wstring& repo, const wstring& url, svn_revnum_t start
     return retVal;
 }
 
-bool ACCUREV::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
+bool ACCUREV::Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
                svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
-               bool ignorecontenttype,  const wstring& options, bool bAppend,
-               const wstring& outputfile, const wstring& errorfile)
+               bool ignorecontenttype,  const std::wstring& options, bool bAppend,
+               const std::wstring& outputfile, const std::wstring& errorfile)
 {
     UNREFERENCED_PARAMETER(url1);
     UNREFERENCED_PARAMETER(pegrevision);
@@ -159,7 +159,7 @@ bool ACCUREV::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t r
     return true;
 }
 
-wstring ACCUREV::CanonicalizeURL(const wstring& url)
+std::wstring ACCUREV::CanonicalizeURL(const std::wstring& url)
 {
     return url;
 }
@@ -274,16 +274,16 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
 
 #else
 
-bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& rawLog) {
+bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const std::wstring& rawLog) {
     bool retVal = false;
 
     SCCSLogEntry logEntry;
-    wstring dateTemp;
-    wstring wDateTime;
-    wstring wVirtualVersion, wRealVersion, wPath;
-    string sDateTime;
+    std::wstring dateTemp;
+    std::wstring wDateTime;
+    std::wstring wVirtualVersion, wRealVersion, wPath;
+    std::string sDateTime;
     BOOL bIssueRetrieved = FALSE;
-    wstring wIssueNo;
+    std::wstring wIssueNo;
 
     int *pIssueNos = NULL;
     int issueNoCount = 0;
@@ -298,7 +298,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
 
     while (szLineToken != NULL)
     {
-      wstring wsLine(szLineToken);
+      std::wstring wsLine(szLineToken);
       wsLine = trim (wsLine);
 
       // Detect transaction line
@@ -321,27 +321,27 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
 
         // Clear the logEntry object
         logEntry.revision = 0;
-        logEntry.author = wstring();
+        logEntry.author = std::wstring();
         logEntry.date = (apr_time_t)0;
-        logEntry.message = wstring();
+        logEntry.message = std::wstring();
         logEntry.m_changedPaths.clear();
 
         // Parse out transaction
-        wsLine.erase(wsLine.size() - 1, wstring::npos);
+        wsLine.erase(wsLine.size() - 1, std::wstring::npos);
         wsLine.erase(0, 4);
         logEntry.revision = _wtoi(wsLine.c_str());
       }
       else if (wsLine.find(L"time=\"") == 0) {
-        wsLine.erase(wsLine.size() - 1, wstring::npos);
+        wsLine.erase(wsLine.size() - 1, std::wstring::npos);
         wsLine.erase(0, 6);
         wsLine.append(L"000000");
         logEntry.date = _wtoi64(wsLine.c_str());
         //svn_time_from_cstring (&logEntry.date, wsLine.c_str(), NULL);
       }
       else if (wsLine.find(L"user=\"") == 0) {
-        wsLine.erase(wsLine.size() - 2, wstring::npos);
+        wsLine.erase(wsLine.size() - 2, std::wstring::npos);
         wsLine.erase(0, 6);
-        logEntry.author = wstring(wsLine);
+        logEntry.author = std::wstring(wsLine);
       }
       else if (wsLine.find(L"<comment>") == 0) {
         // Parse the log entry
@@ -350,7 +350,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
         // Handle multi-line comments
         while (!bEndofLogComment && (szLineToken != NULL))
         {
-          wstring commentLine(szLineToken);
+          std::wstring commentLine(szLineToken);
           commentLine = rtrim (commentLine);
 
           // Strip XML tag off the front
@@ -362,7 +362,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
           size_t endTagPos = commentLine.rfind(L"</comment>");
 
           if (endTagPos >= 0) {
-            commentLine.erase(endTagPos, wstring::npos);
+            commentLine.erase(endTagPos, std::wstring::npos);
             bEndofLogComment = true;
           }
 
@@ -379,19 +379,19 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
       }
       else if (wsLine.find(L"path=\"\\.\\") == 0) {
         // Parse the file line
-        wsLine.erase(wsLine.size() - 1, wstring::npos);
+        wsLine.erase(wsLine.size() - 1, std::wstring::npos);
         wsLine.erase(0, 9);
         wPath = wsLine;
       }
       else if (wsLine.find(L"virtual=\"") == 0) {
         // Parse the file line
-        wsLine.erase(wsLine.size() - 1, wstring::npos);
+        wsLine.erase(wsLine.size() - 1, std::wstring::npos);
         wsLine.erase(0, 9);
         wVirtualVersion = wsLine;
       }
       else if (wsLine.find(L"real=\"") == 0) {
         // Parse the file line
-        wsLine.erase(wsLine.size() - 1, wstring::npos);
+        wsLine.erase(wsLine.size() - 1, std::wstring::npos);
         wsLine.erase(0, 6);
         wRealVersion = wsLine;
 
@@ -408,7 +408,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
       }
       else if (wsLine.find(L"<issueNum>") == 0) {
         // Get Issue information if not already done so for this issue
-        wsLine.erase(wsLine.size() - 11, wstring::npos);
+        wsLine.erase(wsLine.size() - 11, std::wstring::npos);
         wsLine.erase(0, 10);
         long issueNo = _wtoi(wsLine.c_str());
 
@@ -425,7 +425,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
           pIssueNos[issueNoCount++] = issueNo;
 
           // Retrieve the JIRA link information
-          wstring rawIssueListLog;
+          std::wstring rawIssueListLog;
           if (AccuIssueList(repo, url, issueNo, rawIssueListLog)) {
             issueParser(rawIssueListLog, logEntry);
           }
@@ -459,7 +459,7 @@ bool ACCUREV::logParser(const wstring& repo, const wstring& url, const wstring& 
     return retVal;
 }
 
-bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
+bool ACCUREV::issueParser(const std::wstring& rawLog, SCCSLogEntry& logEntry) {
   bool retVal = false;
 
 
@@ -468,22 +468,22 @@ bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
   const LPWSTR szLineTokens = L"\r\n";
   LPWSTR szNextLineToken = NULL;
   LPWSTR szLineToken = wcstok_s((wchar_t *)rawLog.c_str(), szLineTokens, &szNextLineToken);
-  wstring wsJiraSummary;
+  std::wstring wsJiraSummary;
 
   while (szLineToken != NULL)
   {
-    wstring wsLine(szLineToken);
+    std::wstring wsLine(szLineToken);
     wsLine = trim (wsLine);
 
     // Detect issue fixversion line
     if (wsLine.find(L"fid=\"21\">") == 0) {
-      wsLine.erase(wsLine.size() - 13, wstring::npos);
+      wsLine.erase(wsLine.size() - 13, std::wstring::npos);
       wsLine.erase(0, 9);
       wsJiraSummary = wsLine;
     }
     // Detect issueKey line
     else if (wsLine.find(L"fid=\"34\">") == 0) {
-      wsLine.erase(wsLine.size() - 11, wstring::npos);
+      wsLine.erase(wsLine.size() - 11, std::wstring::npos);
       wsLine.erase(0, 9);
       if (wsJiraSummary.size() == 0) {
         wsJiraSummary = wsLine + L" ";
@@ -494,9 +494,9 @@ bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
     }
     // Detect issue summary line
     else if (wsLine.find(L"fid=\"4\">") == 0) {
-      wsLine.erase(wsLine.size() - 10, wstring::npos);
+      wsLine.erase(wsLine.size() - 10, std::wstring::npos);
       wsLine.erase(0, 8);
-      wsJiraSummary = wsJiraSummary + wstring(wsLine) + L"\n";
+      wsJiraSummary = wsJiraSummary + std::wstring(wsLine) + L"\n";
 
       // Append the JIRA to the comment log (at the front)
       logEntry.message = wsJiraSummary + logEntry.message;
@@ -517,10 +517,10 @@ bool ACCUREV::issueParser(const wstring& rawLog, SCCSLogEntry& logEntry) {
 //////////////////////////////////////////////////////////////////////////
 
 // accurev login "chsslr@audatex.com" "password"
-bool ACCUREV::AccuLogin(const wstring& username, const wstring& password)
+bool ACCUREV::AccuLogin(const std::wstring& username, const std::wstring& password)
 {
   bool retVal;
-  wstring stdOut, stdErr;
+  std::wstring stdOut, stdErr;
 
   // Perform accurev login
   retVal = (ExecuteAccurev(L"login \"" + username + L"\" \"" + password + L"\"", 60, stdOut, stdErr) == 0);
@@ -532,10 +532,10 @@ bool ACCUREV::AccuLogin(const wstring& username, const wstring& password)
   return retVal;
 }
 
-bool ACCUREV::AccuGetLastPromote(const wstring& repo, const wstring& url, long *pTransactionNo)
+bool ACCUREV::AccuGetLastPromote(const std::wstring& repo, const std::wstring& url, long *pTransactionNo)
 {
   bool retVal;
-  wstring stdOut, stdErr;
+  std::wstring stdOut, stdErr;
 
   // Perform accurev hist command
   retVal = (ExecuteAccurev(L"hist -p " + repo + L" -s " + url + L" -k promote -t now.1", 60, stdOut, stdErr) == 0);
@@ -570,10 +570,10 @@ bool ACCUREV::AccuGetLastPromote(const wstring& repo, const wstring& url, long *
   return retVal;
 }
 
-bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long startrev, long endrev, wstring& rawLog)
+bool ACCUREV::AccuGetHistory(const std::wstring& repo, const std::wstring& url, long startrev, long endrev, std::wstring& rawLog)
 {
   bool retVal;
-  wstring stdOut, stdErr;
+  std::wstring stdOut, stdErr;
 
   rawLog.clear();
 
@@ -583,7 +583,7 @@ bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long start
   _itow_s(startrev, start, 10);
   _itow_s(endrev, end, 10);
   // Non-xml version: wstring cmd = L"hist -p " + repo + L" -s " + url + L" -k promote -t \"" + start + L"-" + end + L"\"";
-  wstring cmd = L"hist -p " + repo + L" -s " + url + L" -k promote -fx -t \"" + start + L"-" + end + L"\"";
+  std::wstring cmd = L"hist -p " + repo + L" -s " + url + L" -k promote -fx -t \"" + start + L"-" + end + L"\"";
   retVal = (ExecuteAccurev(cmd, 60, rawLog, stdErr) == 0);
 
   if (retVal) {
@@ -598,19 +598,19 @@ bool ACCUREV::AccuGetHistory(const wstring& repo, const wstring& url, long start
   return retVal;
 }
 
-bool ACCUREV::AccuIssueList(const wstring& repo, const wstring& url, long issueNo, wstring& rawLog)
+bool ACCUREV::AccuIssueList(const std::wstring& repo, const std::wstring& url, long issueNo, std::wstring& rawLog)
 {
   UNREFERENCED_PARAMETER(repo);
 
   bool retVal;
-  wstring stdOut, stdErr;
+  std::wstring stdOut, stdErr;
 
   rawLog.clear();
 
   // Perform accurev hist command
   wchar_t sIssueNo[64];
   _itow_s(issueNo, sIssueNo, 10);
-  wstring cmd = L"issuelist -s " + url + L" -fx -I " + sIssueNo;
+  std::wstring cmd = L"issuelist -s " + url + L" -fx -I " + sIssueNo;
   retVal = (ExecuteAccurev(cmd, 60, rawLog, stdErr) == 0);
 
   if (retVal) {
@@ -629,9 +629,9 @@ bool ACCUREV::AccuIssueList(const wstring& repo, const wstring& url, long issueN
 #define BUFSIZE 8192
 #define PIPESIZE (1024 * 1024 * 2) // 2MB
 
-size_t ACCUREV::ExecuteAccurev(wstring Parameters, size_t SecondsToWait, wstring& stdOut, wstring& stdErr)
+size_t ACCUREV::ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, std::wstring& stdOut, std::wstring& stdErr)
 {
-    wstring fullPathToExe = (LPCTSTR)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+    std::wstring fullPathToExe = (LPCTSTR)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
     //size_t iMyCounter = 0, iReturnVal = 0;
     size_t iReturnVal = 0;
     DWORD dwExitCode = 0;
@@ -651,7 +651,7 @@ size_t ACCUREV::ExecuteAccurev(wstring Parameters, size_t SecondsToWait, wstring
     // TODO!
 
 
-    wstring execCmd = L"\"" + fullPathToExe + L"\" " + Parameters;
+    std::wstring execCmd = L"\"" + fullPathToExe + L"\" " + Parameters;
 
     // Build the command line string
     wchar_t * pwszParam = new wchar_t[execCmd.size() + 1];
@@ -808,7 +808,7 @@ static inline std::wstring& replaceAll(std::wstring& context, const std::wstring
 {
     size_t lookHere = 0;
     size_t foundHere;
-    while((foundHere = context.find(from, lookHere)) != wstring::npos)
+    while((foundHere = context.find(from, lookHere)) != std::wstring::npos)
     {
           context.replace(foundHere, from.size(), to);
           lookHere = foundHere + to.size();
@@ -837,7 +837,7 @@ static inline std::wstring &rtrim(std::wstring &s) {
     size_t i = sSize-1;
 
     while (isspace(s[i]) && (i >= 0)) i--;
-    if ((i > 0) && (i < sSize-1)) s.erase(i+1, wstring::npos);
+    if ((i > 0) && (i < sSize-1)) s.erase(i+1, std::wstring::npos);
 
     return s;
 }

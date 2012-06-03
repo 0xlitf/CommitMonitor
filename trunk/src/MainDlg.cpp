@@ -208,13 +208,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // RA Sewell
             // Set defaults for the registry values is nothing exists
             CRegStdString regAccurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
-            wstring sAccurevExe(regAccurevExe);
+            std::wstring sAccurevExe(regAccurevExe);
             if (sAccurevExe.size() == 0)
             {
               regAccurevExe = _T("C:\\Program Files\\AccuRev\\bin\\accurev.EXE");              // Writes value to registry
             }
             CRegStdString regAccurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
-            wstring sAccurevDiffCmd(regAccurevDiffCmd);
+            std::wstring sAccurevDiffCmd(regAccurevDiffCmd);
             if (sAccurevDiffCmd.size() == 0)
             {
               regAccurevDiffCmd = _T("\"C:\\Program Files\\WinMerge\\WinMergeU.exe\" /e /u /r /dl \"%OLD\" /dr \"%NEW\" \"%1\" \"%2\"");
@@ -504,8 +504,8 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             else if (wParam == TIMER_REFRESH)
             {
-                const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
+                const std::map<std::wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                for (auto it = pRead->cbegin(); it != pRead->cend(); ++it)
                 {
                     TVINSERTSTRUCT tv = {0};
                     tv.hParent = FindParentTreeNode(it->first);
@@ -514,7 +514,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     std::unique_ptr<WCHAR[]> str(new WCHAR[it->second.name.size()+10]);
                     // find out if there are some unread entries
                     int unread = 0;
-                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                    for (auto logit = it->second.logentries.cbegin(); logit != it->second.logentries.cend(); ++logit)
                     {
                         if (!logit->second.read)
                             unread++;
@@ -530,7 +530,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         tv.itemex.pszText = str.get();
                         tv.itemex.cchTextMax = (int)it->second.name.size()+9;
                         TreeView_GetItem(m_hTreeControl, &tv.itemex);
-                        wstring sTitle = wstring(str.get());
+                        std::wstring sTitle = std::wstring(str.get());
                         bool bRequiresUpdate = false;
                         if (unread)
                         {
@@ -750,7 +750,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     m_bBlockListCtrlUI = false;
 
                     HMENU hMenu = NULL;
-                    wstring tsvninstalled = CAppUtils::GetTSVNPath();
+                    std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
                     if (tsvninstalled.empty())
                         hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
                     else
@@ -760,10 +760,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     itemex.hItem = hittest.hItem;
                     itemex.mask = TVIF_PARAM;
                     TreeView_GetItem(m_hTreeControl, &itemex);
-                    const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                    if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
                     {
-                        const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                         if (info)
                         {
                             CheckMenuItem(hMenu, ID_POPUP_ACTIVE, MF_BYCOMMAND | (info->monitored ? MF_CHECKED : MF_UNCHECKED));
@@ -810,10 +810,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         RefreshAll(hittest.hItem);
                         break;
                     case ID_POPUP_ACTIVE:
-                        map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-                        if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+                        std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                        if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
                         {
-                            CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+                            CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
                             if (info)
                             {
                                 info->monitored = !info->monitored;
@@ -851,7 +851,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 if (hittest.flags & LVHT_ONITEM)
                 {
                     HMENU hMenu = NULL;
-                    wstring tsvninstalled = CAppUtils::GetTSVNPath();
+                    std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
                     if (tsvninstalled.empty())
                         hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
                     else
@@ -860,7 +860,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                     UINT uItem = 0;
 
-                    if ((!wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+                    if ((!std::wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
                         uItem = 1;
                     // set the default entry
                     MENUITEMINFO iinfo = {0};
@@ -876,13 +876,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     itemex.hItem = TreeView_GetSelection(m_hTreeControl);
                     itemex.mask = TVIF_PARAM;
                     TreeView_GetItem(m_hTreeControl, &itemex);
-                    const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                    if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
                     {
-                        const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                         if ((info)&&(!info->webviewer.empty()))
                         {
-                            uItem = wstring(tsvninstalled).empty() ? 1 : 2;
+                            uItem = std::wstring(tsvninstalled).empty() ? 1 : 2;
                             GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
                             iinfo.fState &= ~MFS_DISABLED;
                             SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
@@ -924,12 +924,12 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                                 // refresh the name of the tree item to indicate the new
                                                 // number of unread log messages
                                                 // e.g. instead of 'TortoiseSVN (2)', show now 'TortoiseSVN (3)'
-                                                if (pRead->find(*(wstring*)uritex.lParam) != pRead->end())
+                                                if (pRead->find(*(std::wstring*)uritex.lParam) != pRead->end())
                                                 {
-                                                    const CUrlInfo * uinfo = &pRead->find(*(wstring*)uritex.lParam)->second;
+                                                    const CUrlInfo * uinfo = &pRead->find(*(std::wstring*)uritex.lParam)->second;
                                                     // count the number of unread messages
                                                     int unread = 0;
-                                                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
+                                                    for (auto it = uinfo->logentries.cbegin(); it != uinfo->logentries.cend(); ++it)
                                                     {
                                                         if (!it->second.read)
                                                             unread++;
@@ -994,10 +994,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             itemex.hItem = TreeView_GetSelection(m_hTreeControl);
             itemex.mask = TVIF_PARAM;
             TreeView_GetItem(m_hTreeControl, &itemex);
-            map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-            if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+            std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+            if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
             {
-                CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+                CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
                 info->error.clear();
             }
             m_pURLInfos->ReleaseWriteData();
@@ -1062,12 +1062,12 @@ LRESULT CMainDlg::DoCommand(int id)
                     itemex.hItem = hItem;
                     itemex.mask = TVIF_PARAM;
                     TreeView_GetItem(m_hTreeControl, &itemex);
-                    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
                     HTREEITEM hPrev = TVI_ROOT;
-                    map<wstring,CUrlInfo>::iterator it = pWrite->find(*(wstring*)itemex.lParam);
+                    std::map<std::wstring,CUrlInfo>::iterator it = pWrite->find(*(std::wstring*)itemex.lParam);
                     if (it != pWrite->end())
                     {
-                        wstring mask = it->second.name;
+                        std::wstring mask = it->second.name;
                         // ask the user if he really wants to remove the url
                         TCHAR question[4096] = {0};
                         _stprintf_s(question, 4096, _T("Do you really want to stop monitoring the project\n%s ?"), mask.c_str());
@@ -1082,7 +1082,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             }
 
                             int unread = 0;
-                            for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                            for (auto logit = it->second.logentries.cbegin(); logit != it->second.logentries.cend(); ++logit)
                             {
                                 if (!logit->second.read)
                                     unread++;
@@ -1126,16 +1126,16 @@ LRESULT CMainDlg::DoCommand(int id)
             itemex.hItem = TreeView_GetSelection(m_hTreeControl);
             itemex.mask = TVIF_PARAM;
             TreeView_GetItem(m_hTreeControl, &itemex);
-            const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-            if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+            const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+            if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
             {
-                const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+                const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                 if ((info)&&(!info->webviewer.empty()))
                 {
                     // replace "%revision" with the new HEAD revision
-                    wstring tag(_T("%revision"));
-                    wstring commandline = info->webviewer;
-                    wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
+                    std::wstring tag(_T("%revision"));
+                    std::wstring commandline = info->webviewer;
+                    std::wstring::iterator it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
                     if (it_begin != commandline.end())
                     {
                         // find the revision
@@ -1155,8 +1155,8 @@ LRESULT CMainDlg::DoCommand(int id)
                                     // prepare the revision
                                     TCHAR revBuf[40] = {0};
                                     _stprintf_s(revBuf, 40, _T("%ld"), pLogEntry->revision);
-                                    wstring srev = revBuf;
-                                    wstring::iterator it_end= it_begin + tag.size();
+                                    std::wstring srev = revBuf;
+                                    std::wstring::iterator it_end= it_begin + tag.size();
                                     commandline.replace(it_begin, it_end, srev);
                                     break;
                                 }
@@ -1168,7 +1168,7 @@ LRESULT CMainDlg::DoCommand(int id)
                     it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
                     if (it_begin != commandline.end())
                     {
-                        wstring::iterator it_end= it_begin + tag.size();
+                        std::wstring::iterator it_end= it_begin + tag.size();
                         commandline.replace(it_begin, it_end, info->url);
                     }
                     // replace "%project" with the project name
@@ -1176,7 +1176,7 @@ LRESULT CMainDlg::DoCommand(int id)
                     it_begin = search(commandline.begin(), commandline.end(), tag.begin(), tag.end());
                     if (it_begin != commandline.end())
                     {
-                        wstring::iterator it_end= it_begin + tag.size();
+                        std::wstring::iterator it_end= it_begin + tag.size();
                         commandline.replace(it_begin, it_end, info->name);
                     }
                     if (!commandline.empty())
@@ -1199,11 +1199,11 @@ LRESULT CMainDlg::DoCommand(int id)
                 itemex.hItem = hItem;
                 itemex.mask = TVIF_PARAM;
                 TreeView_GetItem(m_hTreeControl, &itemex);
-                const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+                const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
                 {
-                    dlg.SetInfo(&pRead->find(*(wstring*)itemex.lParam)->second);
-                    wstring origurl = dlg.GetInfo()->url;
+                    dlg.SetInfo(&pRead->find(*(std::wstring*)itemex.lParam)->second);
+                    std::wstring origurl = dlg.GetInfo()->url;
                     if (id == ID_POPUP_ADDPROJECTWITHTEMPLATE)
                         dlg.ClearForTemplate();
                     m_pURLInfos->ReleaseReadOnlyData();
@@ -1214,11 +1214,11 @@ LRESULT CMainDlg::DoCommand(int id)
                         {
                             inf->errNr = 0;
                             inf->error.clear();
-                            map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                            std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
                             if ((inf) && (inf->url.size()) && ((origurl.compare(inf->url)) || (id == ID_MAIN_EDIT)))
                             {
                                 if (id == ID_MAIN_EDIT)
-                                    pWrite->erase(*(wstring*)itemex.lParam);
+                                    pWrite->erase(*(std::wstring*)itemex.lParam);
                                 (*pWrite)[inf->url] = *inf;
                             }
                             m_pURLInfos->Save();
@@ -1245,7 +1245,7 @@ LRESULT CMainDlg::DoCommand(int id)
                 CUrlInfo * inf = dlg.GetInfo();
                 if ((inf)&&inf->url.size())
                 {
-                    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
                     if ((inf)&&inf->url.size())
                     {
                         (*pWrite)[inf->url] = *inf;
@@ -1275,8 +1275,8 @@ LRESULT CMainDlg::DoCommand(int id)
         break;
     case ID_MAIN_SHOWDIFFCHOOSE:
         {
-            wstring tsvninstalled = CAppUtils::GetTSVNPath();
-            wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
             bool bUseTSVN = !(tsvninstalled.empty()) && (_tstoi(sVer.substr(3, 4).c_str()) > 4);
             bUseTSVN = bUseTSVN && !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 
@@ -1342,7 +1342,7 @@ LRESULT CMainDlg::DoCommand(int id)
             TreeView_GetItem(m_hTreeControl, &itemex);
             if (itemex.lParam != 0)
             {
-                wstring sClipboardData;
+                std::wstring sClipboardData;
                 TCHAR tempBuf[1024];
                 LVITEM item = {0};
                 int nItemCount = ListView_GetItemCount(m_hListControl);
@@ -1366,7 +1366,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             sClipboardData += pLogEntry->message;
                             sClipboardData += _T("\n-------------------------------\n");
                             // now add all changed paths, one path per line
-                            for (map<std::wstring, SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+                            for (auto it = pLogEntry->m_changedPaths.cbegin(); it != pLogEntry->m_changedPaths.cend(); ++it)
                             {
                                 // action
                                 sClipboardData += it->second.action;
@@ -1395,7 +1395,7 @@ LRESULT CMainDlg::DoCommand(int id)
                                     sClipboardData += it->second.copyfrom_path;
                                     sClipboardData += _T(", revision ");
                                     _stprintf_s(tempBuf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
-                                    sClipboardData += wstring(tempBuf);
+                                    sClipboardData += std::wstring(tempBuf);
                                 }
                                 else
                                     sClipboardData += _T("\n\n");
@@ -1414,15 +1414,15 @@ LRESULT CMainDlg::DoCommand(int id)
             itemex.hItem = hSelectedItem;
             itemex.mask = TVIF_PARAM;
             TreeView_GetItem(m_hTreeControl, &itemex);
-            wstring url = *(wstring*)itemex.lParam;
+            std::wstring url = *(std::wstring*)itemex.lParam;
 
-            wstring cmd;
-            wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            std::wstring cmd;
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
             if (!tsvninstalled.empty())
             {
                 // yes, we have TSVN installed
                 cmd = _T("\"");
-                cmd += wstring(tsvninstalled);
+                cmd += std::wstring(tsvninstalled);
                 cmd += _T("\" /command:repobrowser /path:\"");
                 cmd += url;
                 cmd += _T("\"");
@@ -1437,15 +1437,15 @@ LRESULT CMainDlg::DoCommand(int id)
             itemex.hItem = hSelectedItem;
             itemex.mask = TVIF_PARAM;
             TreeView_GetItem(m_hTreeControl, &itemex);
-            wstring url = *(wstring*)itemex.lParam;
+            std::wstring url = *(std::wstring*)itemex.lParam;
 
-            wstring cmd;
-            wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            std::wstring cmd;
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
             if (!tsvninstalled.empty())
             {
                 // yes, we have TSVN installed
                 cmd = _T("\"");
-                cmd += wstring(tsvninstalled);
+                cmd += std::wstring(tsvninstalled);
                 cmd += _T("\" /command:log /path:\"");
                 cmd += url;
                 cmd += _T("\"");
@@ -1483,10 +1483,10 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     // Get temp directory and current directory
     std::unique_ptr<WCHAR[]> cTempPath(new WCHAR[32767]);
     GetEnvironmentVariable(_T("TEMP"), cTempPath.get(), 32767);
-    wstring origTempPath = wstring(cTempPath.get());
+    std::wstring origTempPath = std::wstring(cTempPath.get());
 
     GetCurrentDirectory(32767, cTempPath.get());
-    wstring origCurDir = wstring(cTempPath.get());
+    std::wstring origCurDir = std::wstring(cTempPath.get());
 
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     // get the url this entry refers to
@@ -1494,10 +1494,10 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     itemex.hItem = hSelectedItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
-    const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-    const CUrlInfo * pUrlInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+    const CUrlInfo * pUrlInfo = &pRead->find(*(std::wstring*)itemex.lParam)->second;
 
-    if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
     {
         LVITEM item = {0};
         int nItemCount = ListView_GetItemCount(m_hListControl);
@@ -1518,19 +1518,19 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                   case CUrlInfo::SCCS_SVN:
                     {
                       // find the diff name
-                      const CUrlInfo * pInfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+                      const CUrlInfo * pInfo = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                       // in case the project name has 'path' chars in it, we have to remove those first
                       _stprintf_s(buf.get(), 4096, _T("%s_%ld.diff"), CAppUtils::ConvertName(pInfo->name).c_str(), pLogEntry->revision);
-                      wstring diffFileName = CAppUtils::GetDataDir();
+                      std::wstring diffFileName = CAppUtils::GetDataDir();
                       diffFileName += _T("\\");
-                      diffFileName += wstring(buf.get());
+                      diffFileName += std::wstring(buf.get());
                       // construct a title for the diff viewer
                       _stprintf_s(buf.get(), 4096, _T("%s, revision %ld"), pInfo->name.c_str(), pLogEntry->revision);
-                      wstring title = wstring(buf.get());
+                      std::wstring title = std::wstring(buf.get());
                       // start the diff viewer
-                      wstring cmd;
-                      wstring tsvninstalled = CAppUtils::GetTSVNPath();
-                      wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+                      std::wstring cmd;
+                      std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
+                      std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
                       if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
                       {
                           // yes, we have TSVN installed
@@ -1545,7 +1545,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           }
                           // call TortoiseProc to do the diff for us
                           cmd = _T("\"");
-                          cmd += wstring(tsvninstalled);
+                          cmd += std::wstring(tsvninstalled);
                           cmd += _T("\" /command:diff /path:\"");
                           cmd += diffurl;
                           cmd += _T("\" /startrev:");
@@ -1563,19 +1563,19 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           std::unique_ptr<WCHAR[]> apppath(new WCHAR[4096]);
                           GetModuleFileName(NULL, apppath.get(), 4096);
                           CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
-                          if (wstring(diffViewer).empty())
+                          if (std::wstring(diffViewer).empty())
                           {
                               cmd = apppath.get();
                               cmd += _T(" /patchfile:\"");
                           }
                           else
                           {
-                              cmd = (wstring)diffViewer;
+                              cmd = (std::wstring)diffViewer;
                               cmd += _T(" \"");
                           }
                           cmd += diffFileName;
                           cmd += _T("\"");
-                          if (wstring(diffViewer).empty())
+                          if (std::wstring(diffViewer).empty())
                           {
                               cmd += _T(" /title:\"");
                               cmd += title;
@@ -1599,7 +1599,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                               progDlg.SetLine(1, dispbuf);
                               progDlg.SetProgress(3, 100);    // set some dummy progress
                               CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
-                              if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, wstring()))
+                              if (!svn.Diff(pInfo->url, pLogEntry->revision, pLogEntry->revision-1, pLogEntry->revision, true, true, false, diffParams, false, diffFileName, std::wstring()))
                               {
                                   progDlg.Stop();
                                   if (svn.Err->apr_err != SVN_ERR_CANCELLED)
@@ -1630,39 +1630,39 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       wchar_t transactionNo[64];
                       _itow_s(pLogEntry->revision, transactionNo, 10);
 
-                      wstring uuid;
+                      std::wstring uuid;
                       CAppUtils::CreateUUIDString(uuid);
 
-                      wstring newTempPath = wstring(origTempPath);
+                      std::wstring newTempPath = std::wstring(origTempPath);
                       newTempPath.append(_T("\\"));
                       newTempPath.append(uuid);
-                      wstring sLatestRev(transactionNo);
-                      wstring sBasisRev = _T("BASIS");
-                      wstring latestDir(newTempPath + _T("\\") + sLatestRev);
-                      wstring basisDir(newTempPath + _T("\\") + sBasisRev);
+                      std::wstring sLatestRev(transactionNo);
+                      std::wstring sBasisRev = _T("BASIS");
+                      std::wstring latestDir(newTempPath + _T("\\") + sLatestRev);
+                      std::wstring basisDir(newTempPath + _T("\\") + sBasisRev);
                       CreateDirectory(newTempPath.c_str(), NULL);
                       CreateDirectory(latestDir.c_str(), NULL);
                       CreateDirectory(basisDir.c_str(), NULL);
 
                       // For each file that should be diffed
-                      for (map<std::wstring,SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+                      for (auto it = pLogEntry->m_changedPaths.cbegin(); it != pLogEntry->m_changedPaths.cend(); ++it)
                       {
                         // Parse the file and file revision from the stored URL
-                        wstring rawPath = it->first;
+                        std::wstring rawPath = it->first;
 
                         size_t lastBracket = rawPath.rfind(L" (");
-                        rawPath.erase(lastBracket, wstring::npos);
+                        rawPath.erase(lastBracket, std::wstring::npos);
                         size_t lastForwardSlash = rawPath.rfind(L"/");
-                        wstring sLatestAccuRevision(rawPath);
+                        std::wstring sLatestAccuRevision(rawPath);
                         sLatestAccuRevision.erase(0, lastForwardSlash+1);
                         int iAccuRevision = _wtoi(sLatestAccuRevision.c_str());
                         wchar_t basisRevisionNo[64];
                         _itow_s(iAccuRevision-1, basisRevisionNo, 10);
-                        wstring sBasisAccuRevision(basisRevisionNo);
+                        std::wstring sBasisAccuRevision(basisRevisionNo);
 
-                        wstring finalPath(rawPath);
+                        std::wstring finalPath(rawPath);
                         size_t lastSpace = rawPath.rfind(L" ");
-                        finalPath.erase(lastSpace, wstring::npos);
+                        finalPath.erase(lastSpace, std::wstring::npos);
 
                         // Can't diff unless there is a version to diff against :)
                         if (iAccuRevision >= 1)
@@ -1671,9 +1671,9 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                             // Build the accurev command line
                             for (int j=0; j<2; j++)
                             {
-                                wstring accurevPopCmd;
-                                wstring rev;
-                                wstring dir;
+                                std::wstring accurevPopCmd;
+                                std::wstring rev;
+                                std::wstring dir;
 
                                 switch (j)
                                 {
@@ -1693,7 +1693,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                                 if ((j == 1) && (iAccuRevision == 1)) break;
 
                                 accurevPopCmd.append(_T("\""));
-                                accurevPopCmd.append(wstring(accurevExe));
+                                accurevPopCmd.append(std::wstring(accurevExe));
                                 accurevPopCmd.append(_T("\" pop -O -R -v "));
                                 accurevPopCmd.append(pUrlInfo->url);
                                 accurevPopCmd.append(_T("/"));
@@ -1711,10 +1711,10 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       }
 
                       CRegStdString diffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
-                      wstring finalDiffCmd;
+                      std::wstring finalDiffCmd;
 
                       // Build the final diff command
-                      finalDiffCmd.append(wstring(diffCmd));
+                      finalDiffCmd.append(std::wstring(diffCmd));
 
                       // Find and replace "%OLD"
                       size_t pos = finalDiffCmd.find(_T("%OLD"));
@@ -1777,8 +1777,8 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
 
     bool bShowLastUnread = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
     // now add a tree item for every entry in m_URLInfos
-    const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-    for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
+    const std::map<std::wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+    for (auto it = pRead->cbegin(); it != pRead->cend(); ++it)
     {
         TVINSERTSTRUCT tv = {0};
         tv.hParent = FindParentTreeNode(it->first);
@@ -1787,7 +1787,7 @@ void CMainDlg::RefreshURLTree(bool bSelectUnread, const std::wstring& urltoselec
         std::unique_ptr<WCHAR[]> str(new WCHAR[it->second.name.size()+10]);
         // find out if there are some unread entries
         int unread = 0;
-        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+        for (auto logit = it->second.logentries.cbegin(); logit != it->second.logentries.cend(); ++logit)
         {
             if (!logit->second.read)
                 unread++;
@@ -1872,8 +1872,8 @@ LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw)
         {
             if (!m_bBlockListCtrlUI)
             {
-                const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                const CUrlInfo * info = &pRead->find(*(wstring*)lpNMCustomDraw->nmcd.lItemlParam)->second;
+                const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                const CUrlInfo * info = &pRead->find(*(std::wstring*)lpNMCustomDraw->nmcd.lItemlParam)->second;
                 COLORREF crText = lpNMCustomDraw->clrText;
 
                 if ((info)&&(!info->error.empty() && !info->parentpath))
@@ -1890,13 +1890,13 @@ LRESULT CMainDlg::OnCustomDrawTreeItem(LPNMTVCUSTOMDRAW lpNMCustomDraw)
     return result;
 }
 
-HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
+HTREEITEM CMainDlg::FindParentTreeNode(const std::wstring& url)
 {
     size_t pos = url.find_last_of('/');
-    wstring parenturl = url.substr(0, pos);
+    std::wstring parenturl = url.substr(0, pos);
     do
     {
-        const map<wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+        const std::map<std::wstring, CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
         if (pRead->find(parenturl) != pRead->end())
         {
             m_pURLInfos->ReleaseReadOnlyData();
@@ -1907,13 +1907,13 @@ HTREEITEM CMainDlg::FindParentTreeNode(const wstring& url)
         m_pURLInfos->ReleaseReadOnlyData();
         pos = parenturl.find_last_of('/');
         parenturl = parenturl.substr(0, pos);
-        if (pos == string::npos)
+        if (pos == std::string::npos)
             parenturl.clear();
     } while (!parenturl.empty());
     return TVI_ROOT;
 }
 
-HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
+HTREEITEM CMainDlg::FindTreeNode(const std::wstring& url, HTREEITEM hItem)
 {
     if (hItem == TVI_ROOT)
         hItem = TreeView_GetRoot(m_hTreeControl);
@@ -1923,7 +1923,7 @@ HTREEITEM CMainDlg::FindTreeNode(const wstring& url, HTREEITEM hItem)
     {
         item.hItem = hItem;
         TreeView_GetItem(m_hTreeControl, &item);
-        if (url.compare(*(wstring*)item.lParam) == 0)
+        if (url.compare(*(std::wstring*)item.lParam) == 0)
             return hItem;
         HTREEITEM hChild = TreeView_GetChild(m_hTreeControl, hItem);
         if (hChild)
@@ -2000,11 +2000,11 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
     itemex.hItem = hSelectedItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(hTreeControl, &itemex);
-    const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
     m_listviewUnfilteredCount = 0;
-    if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
     {
-        const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
 
         m_lastSelectedProject = info->name;
 
@@ -2063,7 +2063,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         int len = GetWindowTextLength(m_hFilterControl);
         std::unique_ptr<WCHAR[]> buffer(new WCHAR[len+1]);
         GetDlgItemText(*this, IDC_FILTERSTRING, buffer.get(), len+1);
-        wstring filterstring = wstring(buffer.get(), len);
+        std::wstring filterstring = std::wstring(buffer.get(), len);
         bool bNegateFilter = false;
         if (len)
             bNegateFilter = filterstring[0] == '-';
@@ -2071,12 +2071,12 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         {
             filterstring = filterstring.substr(1);
         }
-        wstring filterstringlower = filterstring;
+        std::wstring filterstringlower = filterstring;
         std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
 
         bool bShowIgnored = !!SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL);
 
-        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
+        for (auto it = info->logentries.cbegin(); it != info->logentries.cend(); ++it)
         {
             // only add entries that match the filter string
             bool addEntry = true;
@@ -2089,21 +2089,21 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 {
                     try
                     {
-                        const tr1::wregex regCheck(filterstring.substr(1), tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
+                        const std::wregex regCheck(filterstring.substr(1), std::regex_constants::icase | std::regex_constants::ECMAScript);
 
-                        addEntry = tr1::regex_search(it->second.author, regCheck);
+                        addEntry = std::regex_search(it->second.author, regCheck);
                         if (!addEntry)
                         {
-                            addEntry = tr1::regex_search(it->second.message, regCheck);
+                            addEntry = std::regex_search(it->second.message, regCheck);
                             if (!addEntry)
                             {
                                 _stprintf_s(buf, 1024, _T("%ld"), it->first);
-                                wstring s = wstring(buf);
-                                addEntry = tr1::regex_search(s, regCheck);
+                                std::wstring s = std::wstring(buf);
+                                addEntry = std::regex_search(s, regCheck);
                             }
                         }
                     }
-                    catch (exception)
+                    catch (std::exception)
                     {
                         bUseRegex = false;
                     }
@@ -2116,20 +2116,20 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                     // note: \Q...\E doesn't seem to work with tr1 - it still
                     // throws an exception if the regex in between is not a valid regex :(
 
-                    wstring s = it->second.author;
+                    std::wstring s = it->second.author;
                     std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                    addEntry = s.find(filterstringlower) != wstring::npos;
+                    addEntry = s.find(filterstringlower) != std::wstring::npos;
 
                     if (!addEntry)
                     {
                         s = it->second.message;
                         std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                        addEntry = s.find(filterstringlower) != wstring::npos;
+                        addEntry = s.find(filterstringlower) != std::wstring::npos;
                         if (!addEntry)
                         {
                             _stprintf_s(buf, 1024, _T("%ld"), it->first);
                             s = buf;
-                            addEntry = s.find(filterstringlower) != wstring::npos;
+                            addEntry = s.find(filterstringlower) != std::wstring::npos;
                         }
                     }
                     if (bNegateFilter)
@@ -2139,18 +2139,18 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
             if ((!bShowIgnored)&&(addEntry))
             {
-                wstring author1 = it->second.author;
+                std::wstring author1 = it->second.author;
                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
 
                 if (info->includeUsers.size() > 0)
                 {
-                    wstring s1 = info->includeUsers;
+                    std::wstring s1 = info->includeUsers;
                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
 
-                    vector<wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                    std::vector<std::wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
                     bool bInclude = false;
-                    for (vector<wstring>::iterator inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
+                    for (auto inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
                     {
                         if (author1.compare(*inclIt) == 0)
                         {
@@ -2163,11 +2163,11 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
                 if (addEntry)
                 {
-                    wstring s1 = info->ignoreUsers;
+                    std::wstring s1 = info->ignoreUsers;
                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
-                    vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-                    for (vector<wstring>::iterator ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
+                    std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                    for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
                     {
                         if (author1.compare(*ignoreIt) == 0)
                         {
@@ -2196,7 +2196,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             else
                 _tcscpy_s(buf, 1024, _T("(no author)"));
             ListView_SetItemText(m_hListControl, 0, 2, buf);
-            wstring msg = it->second.message;
+            std::wstring msg = it->second.message;
             std::remove(msg.begin(), msg.end(), '\r');
             std::replace(msg.begin(), msg.end(), '\n', ' ');
             std::replace(msg.begin(), msg.end(), '\t', ' ');
@@ -2231,13 +2231,13 @@ void CMainDlg::MarkAllAsRead(HTREEITEM hItem, bool includingChildren)
     itemex.hItem = hItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
-    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
     bool bChanged = false;
-    if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
     {
-        CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+        CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
 
-        for (map<svn_revnum_t,SCCSLogEntry>::iterator it = info->logentries.begin(); it != info->logentries.end(); ++it)
+        for (auto it = info->logentries.begin(); it != info->logentries.end(); ++it)
         {
             if (!it->second.read)
                 bChanged = true;
@@ -2289,11 +2289,11 @@ void CMainDlg::CheckNow(HTREEITEM hItem)
     itemex.hItem = hItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
-    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-    wstring url;
-    if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+    std::wstring url;
+    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
     {
-        CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+        CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
         url = info->url;
     }
     m_pURLInfos->ReleaseWriteData();
@@ -2307,14 +2307,14 @@ void CMainDlg::RefreshAll(HTREEITEM hItem)
     itemex.hItem = hItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
-    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-    wstring url;
-    if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+    std::wstring url;
+    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
     {
-        CUrlInfo * info = &pWrite->find(*(wstring*)itemex.lParam)->second;
+        CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
 
         svn_revnum_t lowestRev = 0;
-        map<svn_revnum_t,SCCSLogEntry>::iterator it = info->logentries.begin();
+        std::map<svn_revnum_t,SCCSLogEntry>::iterator it = info->logentries.begin();
         if (it != info->logentries.end())
         {
             lowestRev = it->second.revision;
@@ -2340,7 +2340,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
         return;
     if ((lpNMListView->uOldState ^ lpNMListView->uNewState) & LVIS_SELECTED)
     {
-        const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+        const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
         LVITEM item = {0};
         item.mask = LVIF_PARAM;
         if (lpNMListView->uNewState & LVIS_SELECTED)
@@ -2369,12 +2369,12 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 // refresh the name of the tree item to indicate the new
                 // number of unread log messages
                 // e.g. instead of 'TortoiseSVN (3)', show now 'TortoiseSVN (2)'
-                if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+                if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
                 {
-                    const CUrlInfo * uinfo = &pRead->find(*(wstring*)itemex.lParam)->second;
+                    const CUrlInfo * uinfo = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                     // count the number of unread messages
                     int unread = 0;
-                    for (map<svn_revnum_t,SCCSLogEntry>::const_iterator it = uinfo->logentries.begin(); it != uinfo->logentries.end(); ++it)
+                    for (auto it = uinfo->logentries.cbegin(); it != uinfo->logentries.cend(); ++it)
                     {
                         if (!it->second.read)
                             unread++;
@@ -2406,7 +2406,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
             }
             TCHAR buf[1024];
-            wstring msg;
+            std::wstring msg;
             if (ListView_GetSelectedCount(m_hListControl) > 1)
             {
                 msg = _T("multiple log entries selected. Info for the last selected one:\n-------------------------------\n\n");
@@ -2414,7 +2414,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             msg += pLogEntry->message.c_str();
             msg += _T("\n\n-------------------------------\n");
             // now add all changed paths, one path per line
-            for (map<std::wstring, SCCSLogChangedPaths>::const_iterator it = pLogEntry->m_changedPaths.begin(); it != pLogEntry->m_changedPaths.end(); ++it)
+            for (auto it = pLogEntry->m_changedPaths.cbegin(); it != pLogEntry->m_changedPaths.cend(); ++it)
             {
                 // action
                 msg += it->second.action;
@@ -2443,7 +2443,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     msg += it->second.copyfrom_path;
                     msg += _T(", revision ");
                     _stprintf_s(buf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
-                    msg += wstring(buf);
+                    msg += std::wstring(buf);
                 }
                 else
                     msg += _T("\n");
@@ -2453,10 +2453,10 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             SetWindowText(m_hLogMsgControl, msg.c_str());
 
             // find the diff name
-            _stprintf_s(buf, 1024, _T("%s_%ld.diff"), pRead->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-            wstring diffFileName = CAppUtils::GetDataDir();
+            _stprintf_s(buf, 1024, _T("%s_%ld.diff"), pRead->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+            std::wstring diffFileName = CAppUtils::GetDataDir();
             diffFileName += _T("\\");
-            diffFileName += wstring(buf);
+            diffFileName += std::wstring(buf);
             SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(ListView_GetSelectedCount(m_hListControl)!=0, 0));
         }
 
@@ -2475,10 +2475,10 @@ void CMainDlg::OnDblClickListItem(LPNMITEMACTIVATE /*lpnmitem*/)
         itemex.hItem = TreeView_GetSelection(m_hTreeControl);
         itemex.mask = TVIF_PARAM;
         TreeView_GetItem(m_hTreeControl, &itemex);
-        const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-        if (pRead->find(*(wstring*)itemex.lParam) != pRead->end())
+        const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+        if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
         {
-            const CUrlInfo * info = &pRead->find(*(wstring*)itemex.lParam)->second;
+            const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
             if ((info)&&(!info->webviewer.empty()))
             {
                 bUseWebViewer = true;
@@ -2623,8 +2623,8 @@ void CMainDlg::RemoveSelectedListItems()
     itemex.hItem = hSelectedItem;
     itemex.mask = TVIF_PARAM;
     TreeView_GetItem(m_hTreeControl, &itemex);
-    map<wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-    if (pWrite->find(*(wstring*)itemex.lParam) != pWrite->end())
+    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
     {
         LVITEM item = {0};
         int i = 0;
@@ -2641,13 +2641,13 @@ void CMainDlg::RemoveSelectedListItems()
             {
                 SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                 // find the diff name
-                _stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-                wstring diffFileName = CAppUtils::GetDataDir();
+                _stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+                std::wstring diffFileName = CAppUtils::GetDataDir();
                 diffFileName += _T("\\");
-                diffFileName += wstring(buf);
+                diffFileName += std::wstring(buf);
                 DeleteFile(diffFileName.c_str());
 
-                pWrite->find((*(wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
+                pWrite->find((*(std::wstring*)itemex.lParam))->second.logentries.erase(pLogEntry->revision);
                 ListView_DeleteItem(m_hListControl, i);
                 if (nFirstDeleted < 0)
                     nFirstDeleted = i;

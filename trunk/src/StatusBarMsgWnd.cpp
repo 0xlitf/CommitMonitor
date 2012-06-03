@@ -29,7 +29,7 @@
 #pragma comment(lib, "Winmm.lib")
 
 int CStatusBarMsgWnd::m_counter = 0;
-vector<int> CStatusBarMsgWnd::m_slots;
+std::vector<int> CStatusBarMsgWnd::m_slots;
 
 CStatusBarMsgWnd::~CStatusBarMsgWnd()
 {
@@ -66,8 +66,8 @@ bool CStatusBarMsgWnd::RegisterAndCreateWindow()
 
 void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParentWnd, UINT messageOnClick, int stay /* = 10 */)
 {
-    m_title = wstring(title);
-    m_text = wstring(text);
+    m_title = std::wstring(title);
+    m_text = std::wstring(text);
     m_hParentWnd = hParentWnd;
     m_messageOnClick = messageOnClick;
     m_stay = stay;
@@ -87,7 +87,7 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParent
     m_counter++;
     // find an empty slot
     m_thiscounter = 0;
-    for (vector<int>::iterator it = m_slots.begin(); it != m_slots.end(); ++it)
+    for (auto it = m_slots.begin(); it != m_slots.end(); ++it)
     {
         if (*it)
             m_thiscounter++;
@@ -105,10 +105,10 @@ void CStatusBarMsgWnd::Show(LPCTSTR title, LPCTSTR text, UINT icon, HWND hParent
     if (DWORD(regPlay))
     {
         CRegStdString regSound(_T("Software\\CommitMonitor\\NotificationSound"));
-        if (wstring(regSound).empty())
+        if (std::wstring(regSound).empty())
             PlaySound(_T("MailBeep"), NULL, SND_ALIAS | SND_ASYNC | SND_NODEFAULT);
         else
-            PlaySound(wstring(regSound).c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
+            PlaySound(std::wstring(regSound).c_str(), NULL, SND_FILENAME | SND_ASYNC | SND_NODEFAULT);
     }
 }
 

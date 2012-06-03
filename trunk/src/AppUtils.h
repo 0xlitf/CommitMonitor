@@ -23,31 +23,29 @@
 #include <vector>
 #include "svn_time.h"
 
-using namespace std;
-
 class CAppUtils
 {
 public:
     CAppUtils(void);
     ~CAppUtils(void);
 
-    static wstring                  GetDataDir();
-    static wstring                  GetAppDataDir();
-    static wstring                  GetAppDirectory(HMODULE hMod = NULL);
-    static wstring                  GetAppName(HMODULE hMod = NULL);
-    static wstring                  ConvertDate(apr_time_t time);
-    static void                     SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith);
-    static vector<wstring>          tokenize_str(const wstring& str, const wstring& delims);
-    static bool                     LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup = false, bool bWaitForExit = false, bool bHideWindow = false);
-    static wstring                  GetTempFilePath();
-    static wstring                  ConvertName(const wstring& name);
-    static string                   PathEscape(const string& path);
+    static std::wstring             GetDataDir();
+    static std::wstring             GetAppDataDir();
+    static std::wstring             GetAppDirectory(HMODULE hMod = NULL);
+    static std::wstring             GetAppName(HMODULE hMod = NULL);
+    static std::wstring             ConvertDate(apr_time_t time);
+    static void                     SearchReplace(std::wstring& str, const std::wstring& toreplace, const std::wstring& replacewith);
+    static std::vector<std::wstring> tokenize_str(const std::wstring& str, const std::wstring& delims);
+    static bool                     LaunchApplication(const std::wstring& sCommandLine, bool bWaitForStartup = false, bool bWaitForExit = false, bool bHideWindow = false);
+    static std::wstring             GetTempFilePath();
+    static std::wstring             ConvertName(const std::wstring& name);
+    static std::string              PathEscape(const std::string& path);
     static bool                     IsWow64();
-    static wstring                  GetTSVNPath();
-    static wstring                  GetVersionStringFromExe(LPCTSTR path);
-    static bool                     ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath);
-    static bool                     WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd);
+    static std::wstring             GetTSVNPath();
+    static std::wstring             GetVersionStringFromExe(LPCTSTR path);
+    static bool                     ExtractBinResource(const std::wstring& strCustomResName, int nResourceId, const std::wstring& strOutputPath);
+    static bool                     WriteAsciiStringToClipboard(const std::wstring& sClipdata, HWND hOwningWnd);
     static bool                     IsFullscreenWindowActive();
-    static void                     CreateUUIDString(wstring& sUuid);
+    static void                     CreateUUIDString(std::wstring& sUuid);
     static bool                     IsWindowCovered(HWND hWnd);
 };

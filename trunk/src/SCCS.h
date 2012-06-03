@@ -44,7 +44,6 @@
 
 #include <string>
 
-using namespace std;
 
 class SCCSInfoData
 {
@@ -202,7 +201,7 @@ public:
     std::wstring        author;
     apr_time_t          date;
     std::wstring        message;
-    map<std::wstring, SCCSLogChangedPaths>   m_changedPaths;
+    std::map<std::wstring, SCCSLogChangedPaths>   m_changedPaths;
 
     bool Save(FILE * hFile) const
     {
@@ -221,7 +220,7 @@ public:
             return false;
         if (!CSerializeUtils::SaveNumber(hFile, m_changedPaths.size()))
             return false;
-        for (map<std::wstring,SCCSLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
+        for (std::map<std::wstring,SCCSLogChangedPaths>::const_iterator it = m_changedPaths.begin(); it != m_changedPaths.end(); ++it)
         {
             if (!CSerializeUtils::SaveString(hFile, it->first))
                 return false;
@@ -256,7 +255,7 @@ public:
             {
                 for (unsigned __int64 i=0; i<value; ++i)
                 {
-                    wstring key;
+                    std::wstring key;
                     SCCSLogChangedPaths cpaths;
                     if (!CSerializeUtils::LoadString(hFile, key))
                         return false;
@@ -296,7 +295,7 @@ public:
             {
                 for (unsigned __int64 i=0; i<value; ++i)
                 {
-                    wstring key;
+                    std::wstring key;
                     SCCSLogChangedPaths cpaths;
                     if (!CSerializeUtils::LoadString(buf, key))
                         return false;
@@ -330,7 +329,7 @@ public:
      * \param recurse if TRUE, then GetNextFileInfo() returns the info also
      * for all children of \a path.
      */
-    virtual wstring GetRootUrl(const std::wstring& path) = 0;
+    virtual std::wstring GetRootUrl(const std::wstring& path) = 0;
     virtual size_t GetFileCount() = 0;
 
     virtual svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url) = 0;
@@ -338,13 +337,13 @@ public:
     virtual bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev) = 0;
 
 
-    virtual bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
+    virtual bool Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
-        bool ignorecontenttype,  const wstring& options, bool bAppend,
-        const wstring& outputfile, const wstring& errorfile) = 0;
+        bool ignorecontenttype,  const std::wstring& options, bool bAppend,
+        const std::wstring& outputfile, const std::wstring& errorfile) = 0;
 
-    virtual wstring CanonicalizeURL(const wstring& url) { return url; }
-    virtual wstring GetLastErrorMsg() = 0;
+    virtual std::wstring CanonicalizeURL(const std::wstring& url) { return url; }
+    virtual std::wstring GetLastErrorMsg() = 0;
 
     /**
      * Sets and clears the progress info which is shown during lengthy operations.
@@ -361,10 +360,10 @@ public:
         apr_off_t total;            ///< operation progress
         apr_off_t overall_total;    ///< total bytes transferred, use SetAndClearProgressInfo() to reset this
         apr_off_t BytesPerSecond;   ///< Speed in bytes per second
-        wstring   SpeedString;      ///< String for speed. Either "xxx Bytes/s" or "xxx kBytes/s"
+        std::wstring   SpeedString; ///< String for speed. Either "xxx Bytes/s" or "xxx kBytes/s"
     };
 
     bool                        m_bCanceled;
     svn_error_t *               Err;            ///< Global error object struct
-    map<svn_revnum_t,SCCSLogEntry> m_logs;       ///< contains the gathered log information
+    std::map<svn_revnum_t,SCCSLogEntry> m_logs; ///< contains the gathered log information
 };

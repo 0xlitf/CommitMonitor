@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009-2011 - Stefan Kueng
+// Copyright (C) 2007, 2009-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,7 +44,6 @@
 
 #include <string>
 
-using namespace std;
 
 
 class SVN : public SCCS
@@ -65,7 +64,7 @@ public:
      * \param recurse if TRUE, then GetNextFileInfo() returns the info also
      * for all children of \a path.
      */
-    wstring GetRootUrl(const std::wstring& path);
+    std::wstring GetRootUrl(const std::wstring& path);
     size_t GetFileCount() {return m_arInfo.size();}
 
     svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
@@ -73,15 +72,15 @@ public:
     bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
     //map<svn_revnum_t,SVNLogEntry> m_logs;       ///< contains the gathered log information
 
-    bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
+    bool Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
-        bool ignorecontenttype,  const wstring& options, bool bAppend,
-        const wstring& outputfile, const wstring& errorfile);
+        bool ignorecontenttype,  const std::wstring& options, bool bAppend,
+        const std::wstring& outputfile, const std::wstring& errorfile);
 
-    static wstring GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces);
+    static std::wstring GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces);
 
-    wstring CanonicalizeURL(const wstring& url);
-    wstring GetLastErrorMsg();
+    std::wstring CanonicalizeURL(const std::wstring& url);
+    std::wstring GetLastErrorMsg();
 
     /**
      * Sets and clears the progress info which is shown during lengthy operations.
@@ -98,7 +97,7 @@ private:
     svn_client_ctx_t *          m_pctx;         ///< pointer to client context
     svn_auth_baton_t *          auth_baton;
 
-    vector<SCCSInfoData>         m_arInfo;       ///< contains all gathered info structs.
+    std::vector<SCCSInfoData>   m_arInfo;       ///< contains all gathered info structs.
     unsigned int                m_pos;          ///< the current position of the vector.
 
     SVNProgress                 m_SVNProgressMSG;

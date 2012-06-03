@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@
 
 #include "UnicodeUtils.h"
 
-using namespace std;
 
 #define SERIALIZEBUFFERSIZE 4096
 class CSerializeUtils
@@ -36,13 +35,13 @@ public:
     static bool LoadNumber(const unsigned char *& buf, unsigned __int64& value);
     static bool LoadBuffer(const unsigned char *& buf, BYTE *& pbData, size_t & len);
 
-    static bool SaveString(FILE * hFile, string str);
-    static bool SaveString(FILE * hFile, wstring str);
+    static bool SaveString(FILE * hFile, std::string str);
+    static bool SaveString(FILE * hFile, std::wstring str);
     static bool SaveBuffer(FILE * hFile, BYTE * pbData, size_t len);
-    static bool LoadString(FILE * hFile, string& str);
-    static bool LoadString(const unsigned char *& buf, string& str);
-    static bool LoadString(FILE * hFile, wstring& str);
-    static bool LoadString(const unsigned char *& buf, wstring& str);
+    static bool LoadString(FILE * hFile, std::string& str);
+    static bool LoadString(const unsigned char *& buf, std::string& str);
+    static bool LoadString(FILE * hFile, std::wstring& str);
+    static bool LoadString(const unsigned char *& buf, std::wstring& str);
 
     enum SerializeTypes
     {

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 #define STATUSBARMSGWND_SHOWTIMER       101
 #define STATUSBARMSGWND_ICONSIZE        32
@@ -61,8 +60,8 @@ protected:
     void                ShowFromBottom();
 
 private:
-    wstring             m_title;
-    wstring             m_text;
+    std::wstring        m_title;
+    std::wstring        m_text;
     HICON               m_icon;
     UINT                m_messageOnClick;
     HWND                m_hParentWnd;
@@ -77,5 +76,5 @@ private:
 
     int                 m_thiscounter;
     static int          m_counter;
-    static vector<int>  m_slots;
+    static std::vector<int>  m_slots;
 };

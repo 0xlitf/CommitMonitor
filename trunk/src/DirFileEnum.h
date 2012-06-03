@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,8 +19,6 @@
 
 #pragma once
 #include <string>
-
-using namespace std;
 
 /**
  * Enumerates over a directory tree, non-recursively.
@@ -67,7 +65,7 @@ protected:
     * ("C:" is different from "C:\", and "C:filename" is
     * legal anyway.)
     */
-    wstring m_sPathPrefix;
+    std::wstring m_sPathPrefix;
 
    /**
     * The file data returned by FindFirstFile()/FindNextFile().
@@ -82,7 +80,7 @@ public:
     * \param sPath    The path to search in.
     * \param sPattern The filename pattern - default all files.
     */
-    CSimpleFileFind(const wstring &sPath, LPCTSTR pPattern = _T("*.*"));
+    CSimpleFileFind(const std::wstring &sPath, LPCTSTR pPattern = _T("*.*"));
    ~CSimpleFileFind();
 
    /**
@@ -179,7 +177,7 @@ public:
     *
     * \return the current file name.
     */
-   inline wstring GetFileName() const
+   inline std::wstring GetFileName() const
    {
       return m_FindFileData.cFileName;
    }
@@ -189,7 +187,7 @@ public:
     *
     * \return the current file path.
     */
-   inline wstring GetFilePath() const
+   inline std::wstring GetFilePath() const
    {
        if (m_bFile)
            return m_sPathPrefix;
@@ -222,7 +220,7 @@ private:
 
    class CDirStackEntry : public CSimpleFileFind {
    public:
-       CDirStackEntry(CDirStackEntry * seNext, const wstring& sDirName);
+       CDirStackEntry(CDirStackEntry * seNext, const std::wstring& sDirName);
       ~CDirStackEntry();
 
       CDirStackEntry * m_seNext;
@@ -232,7 +230,7 @@ private:
    bool m_bIsNew;
 
    inline void PopStack();
-   inline void PushStack(const wstring& sDirName);
+   inline void PushStack(const std::wstring& sDirName);
 
 public:
    /**
@@ -244,7 +242,7 @@ public:
     *
     * @param dirName The directory to search in.
     */
-    CDirFileEnum(const wstring& dirName);
+    CDirFileEnum(const std::wstring& dirName);
 
    /**
     * Destructor.  Frees all resources.
@@ -263,5 +261,5 @@ public:
     * \param  recurse true if recursing into subdirectories is requested.
     * \return TRUE iff a file was found, false at end of the iteration.
     */
-   bool NextFile(wstring &result, bool* pbIsDirectory, bool recurse = true);
+   bool NextFile(std::wstring &result, bool* pbIsDirectory, bool recurse = true);
 };

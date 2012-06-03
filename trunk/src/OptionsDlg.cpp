@@ -26,7 +26,6 @@
 #include <string>
 #include <Commdlg.h>
 
-using namespace std;
 
 COptionsDlg::COptionsDlg(HWND hParent) : m_pURLInfos(NULL)
 {
@@ -67,7 +66,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 
             // initialize the controls
             bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
-            bool bStartWithWindows = !wstring((LPCTSTR)CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
+            bool bStartWithWindows = !std::wstring((LPCTSTR)CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"))).empty();
             bool bAnimateIcon = !!CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
             bool bPlaySound = !!CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
             bool bUseTSVN = !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
@@ -89,12 +88,12 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_AUTOSTART, BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_USETSVN, BM_SETCHECK, bUseTSVN ? BST_CHECKED : BST_UNCHECKED, NULL);
-            SetDlgItemText(*this, IDC_DIFFVIEWER, wstring(diffViewer).c_str());
+            SetDlgItemText(*this, IDC_DIFFVIEWER, std::wstring(diffViewer).c_str());
 
-            SetDlgItemText(*this, IDC_ACCUEXELOCATION, wstring(accurevExe).c_str());
-            SetDlgItemText(*this, IDC_ACCUDIFFCMD, wstring(accurevDiffCmd).c_str());
+            SetDlgItemText(*this, IDC_ACCUEXELOCATION, std::wstring(accurevExe).c_str());
+            SetDlgItemText(*this, IDC_ACCUDIFFCMD, std::wstring(accurevDiffCmd).c_str());
 
-            SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, wstring(notifySound).c_str());
+            SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, std::wstring(notifySound).c_str());
             SendDlgItemMessage(*this, IDC_NOTIFICATIONSOUND, BM_SETCHECK, bPlaySound ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_CHECKNEWER, BM_SETCHECK, DWORD(updatecheck) ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -103,16 +102,16 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_SETCHECK, bWebViewer ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_SHOWPOPUPS, BM_SETCHECK, bShowPopups ? BST_CHECKED : BST_UNCHECKED, NULL);
 
-            wstring tsvninstalled = CAppUtils::GetTSVNPath();
-            wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
             if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
                 DialogEnableWindow(IDC_USETSVN, FALSE);
             SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
 
             CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
-            bool ignoreeol = wstring(diffParams).find(_T("--ignore-eol-style")) != wstring::npos;
-            bool ignorewhitespaces = wstring(diffParams).find(_T("-b")) != wstring::npos;
-            bool ignoreallwhitespaces = wstring(diffParams).find(_T("-w")) != wstring::npos;
+            bool ignoreeol = std::wstring(diffParams).find(_T("--ignore-eol-style")) != std::wstring::npos;
+            bool ignorewhitespaces = std::wstring(diffParams).find(_T("-b")) != std::wstring::npos;
+            bool ignoreallwhitespaces = std::wstring(diffParams).find(_T("-w")) != std::wstring::npos;
             SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_SETCHECK, ignoreeol ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, ignorewhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, ignoreallwhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -174,7 +173,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             {
                 TCHAR buf[MAX_PATH*4];
                 GetModuleFileName(NULL, buf, MAX_PATH*4);
-                wstring cmd = wstring(buf);
+                std::wstring cmd = std::wstring(buf);
                 cmd += _T(" /hidden");
                 regStartWithWindows = cmd;
             }
@@ -184,7 +183,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_DIFFVIEWER));
             std::unique_ptr<TCHAR[]> divi(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_DIFFVIEWER, divi.get(), len+1);
-            wstring dv = wstring(divi.get());
+            std::wstring dv = std::wstring(divi.get());
             CRegStdString diffViewer = CRegStdString(_T("Software\\CommitMonitor\\DiffViewer"));
             if (!dv.empty())
                 diffViewer = dv;
@@ -195,7 +194,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUEXELOCATION));
             divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_ACCUEXELOCATION, divi.get(), len+1);
-            dv = wstring(divi.get());
+            dv = std::wstring(divi.get());
             CRegStdString accurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
             if (!dv.empty())
                 accurevExe = dv;
@@ -205,7 +204,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_ACCUDIFFCMD));
             divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_ACCUDIFFCMD, divi.get(), len+1);
-            dv = wstring(divi.get());
+            dv = std::wstring(divi.get());
             CRegStdString accurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
             if (!dv.empty())
                 accurevDiffCmd = dv;
@@ -217,7 +216,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_NOTIFICATIONSOUNDPATH));
             divi = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, divi.get(), len+1);
-            wstring ns = wstring(divi.get());
+            std::wstring ns = std::wstring(divi.get());
             CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
             if (!ns.empty())
                 notifySound = ns;

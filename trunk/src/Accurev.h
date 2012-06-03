@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2011 - Stefan Kueng
+// Copyright (C) 2011-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,7 +25,6 @@
 
 #include <string>
 
-using namespace std;
 
 class ACCUREV : public SCCS
 {
@@ -37,35 +36,35 @@ public:
 
     bool GetFile(std::wstring sUrl, std::wstring sFile);
 
-    wstring GetRootUrl(const std::wstring& path);
+    std::wstring GetRootUrl(const std::wstring& path);
     size_t GetFileCount() {return (size_t)0;}
 
     svn_revnum_t GetHEADRevision(const std::wstring& repo, const std::wstring& url);
 
     bool GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev);
 
-    bool Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
+    bool Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
         svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
-        bool ignorecontenttype,  const wstring& options, bool bAppend,
-        const wstring& outputfile, const wstring& errorfile);
+        bool ignorecontenttype,  const std::wstring& options, bool bAppend,
+        const std::wstring& outputfile, const std::wstring& errorfile);
 
-    wstring CanonicalizeURL(const wstring& url);
-    wstring GetLastErrorMsg();
+    std::wstring CanonicalizeURL(const std::wstring& url);
+    std::wstring GetLastErrorMsg();
 
     void SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar = false);
 
 private:
 
-  bool logParser(const wstring& repo, const wstring& url, const wstring& rawLog);
-  bool issueParser(const wstring& rawLog, SCCSLogEntry& logEntry);
+  bool logParser(const std::wstring& repo, const std::wstring& url, const std::wstring& rawLog);
+  bool issueParser(const std::wstring& rawLog, SCCSLogEntry& logEntry);
 
   // Accurev command line calls
-  bool AccuLogin(const wstring& username, const wstring& password);
-  bool AccuGetLastPromote(const wstring& repo, const wstring& url, long *pTransactionNo);
-  bool AccuGetHistory(const wstring& repo, const wstring& url, long startrev, long endrev, wstring& rawLog);
-  bool AccuIssueList(const wstring& repo, const wstring& url, long issueNo, wstring& rawLog);
+  bool AccuLogin(const std::wstring& username, const std::wstring& password);
+  bool AccuGetLastPromote(const std::wstring& repo, const std::wstring& url, long *pTransactionNo);
+  bool AccuGetHistory(const std::wstring& repo, const std::wstring& url, long startrev, long endrev, std::wstring& rawLog);
+  bool AccuIssueList(const std::wstring& repo, const std::wstring& url, long issueNo, std::wstring& rawLog);
 
-  size_t ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, wstring& stdOut, wstring& stdErr);
+  size_t ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, std::wstring& stdOut, std::wstring& stdErr);
 
   void ClearErrors();
   void SetError(const wchar_t *pErrorString);

@@ -26,7 +26,6 @@
 #include "SVN.h"
 #include <cctype>
 #include <regex>
-using namespace std;
 
 CURLDlg::CURLDlg(void)
 {
@@ -175,7 +174,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             SVN svn;
             int len;
             std::unique_ptr<WCHAR[]> buffer;
-            wstring tempurl;
+            std::wstring tempurl;
 
             info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
 
@@ -186,7 +185,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
                 len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
                 buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
                 GetDlgItemText(*this, IDC_URLTOMONITOR, buffer.get(), len+1);
-                info.url = svn.CanonicalizeURL(wstring(buffer.get(), len));
+                info.url = svn.CanonicalizeURL(std::wstring(buffer.get(), len));
                 CStringUtils::trim(info.url);
 
                 tempurl = info.url.substr(0, 7);
@@ -203,13 +202,13 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
                 len = GetWindowTextLength(GetDlgItem(*this, IDC_URLTOMONITOR));
                 buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
                 GetDlgItemText(*this, IDC_URLTOMONITOR, buffer.get(), len+1);
-                info.url = wstring(buffer.get(), len);
+                info.url = std::wstring(buffer.get(), len);
                 CStringUtils::trim(info.url);
 
                 len = GetWindowTextLength(GetDlgItem(*this, IDC_ACCUREVREPO));
                 buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
                 GetDlgItemText(*this, IDC_ACCUREVREPO, buffer.get(), len+1);
-                info.accurevRepo = wstring(buffer.get(), len);
+                info.accurevRepo = std::wstring(buffer.get(), len);
                 CStringUtils::trim(info.accurevRepo);
                 break;
             }
@@ -217,7 +216,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             len = GetWindowTextLength(GetDlgItem(*this, IDC_PROJECTNAME));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_PROJECTNAME, buffer.get(), len+1);
-            info.name = wstring(buffer.get(), len);
+            info.name = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.name);
             if (info.name.size()==0)
             {
@@ -243,13 +242,13 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             len = GetWindowTextLength(GetDlgItem(*this, IDC_USERNAME));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_USERNAME, buffer.get(), len+1);
-            info.username = wstring(buffer.get(), len);
+            info.username = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.username);
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_PASSWORD));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_PASSWORD, buffer.get(), len+1);
-            info.password = wstring(buffer.get(), len);
+            info.password = std::wstring(buffer.get(), len);
             info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_MAXLOGENTRIES));
@@ -275,25 +274,25 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             len = GetWindowTextLength(GetDlgItem(*this, IDC_IGNOREUSERS));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_IGNOREUSERS, buffer.get(), len+1);
-            info.ignoreUsers = wstring(buffer.get(), len);
+            info.ignoreUsers = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.ignoreUsers);
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_INCLUDEUSERS));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_INCLUDEUSERS, buffer.get(), len+1);
-            info.includeUsers = wstring(buffer.get(), len);
+            info.includeUsers = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.includeUsers);
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_SCRIPT));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_SCRIPT, buffer.get(), len+1);
-            info.callcommand = wstring(buffer.get(), len);
+            info.callcommand = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.callcommand);
 
             len = GetWindowTextLength(GetDlgItem(*this, IDC_WEBDIFF));
             buffer = std::unique_ptr<WCHAR[]>(new WCHAR[len+1]);
             GetDlgItemText(*this, IDC_WEBDIFF, buffer.get(), len+1);
-            info.webviewer = wstring(buffer.get(), len);
+            info.webviewer = std::wstring(buffer.get(), len);
             CStringUtils::trim(info.webviewer);
 
             info.noexecuteignored = !!SendMessage(GetDlgItem(*this, IDC_EXECUTEIGNORED), BM_GETCHECK, 0, NULL);

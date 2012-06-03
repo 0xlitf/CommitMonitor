@@ -110,7 +110,7 @@ SVN::SVN(void)
     m_pctx->client_name = apr_pstrdup(pool, namestring);
 
     //set up the SVN_SSH param
-    wstring tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
+    std::wstring tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
     if (tsvn_ssh.empty())
     {
         tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"), _T(""), false, HKEY_CURRENT_USER, KEY_WOW64_64KEY);
@@ -204,9 +204,9 @@ svn_error_t* SVN::sslpwprompt(svn_auth_cred_ssl_client_cert_pw_t **cred, void *b
     return SVN_NO_ERROR;
 }
 
-wstring SVN::GetLastErrorMsg()
+std::wstring SVN::GetLastErrorMsg()
 {
-    wstring msg;
+    std::wstring msg;
     char errbuf[256];
 
     if (Err != NULL)
@@ -279,7 +279,7 @@ wstring SVN::GetLastErrorMsg()
     return msg;
 }
 
-void SVN::SetAuthInfo(const wstring& username, const wstring& password)
+void SVN::SetAuthInfo(const std::wstring& username, const std::wstring& password)
 {
     this->password = password;
     if (m_pctx)
@@ -294,7 +294,7 @@ void SVN::SetAuthInfo(const wstring& username, const wstring& password)
     }
 }
 
-bool SVN::GetFile(wstring sUrl, wstring sFile)
+bool SVN::GetFile(std::wstring sUrl, std::wstring sFile)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -329,7 +329,7 @@ bool SVN::GetFile(wstring sUrl, wstring sFile)
     return (Err == NULL);
 }
 
-wstring SVN::GetRootUrl(const wstring& path)
+std::wstring SVN::GetRootUrl(const std::wstring& path)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -400,7 +400,7 @@ svn_error_t * SVN::infoReceiver(void* baton, const char * path, const svn_client
     return NULL;
 }
 
-svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
+svn_revnum_t SVN::GetHEADRevision(const std::wstring& repo, const std::wstring& url)
 {
     UNREFERENCED_PARAMETER(repo);
 
@@ -425,7 +425,7 @@ svn_revnum_t SVN::GetHEADRevision(const wstring& repo, const wstring& url)
     return rev;
 }
 
-bool SVN::GetLog(const wstring& repo, const wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
+bool SVN::GetLog(const std::wstring& repo, const std::wstring& url, svn_revnum_t startrev, svn_revnum_t endrev)
 {
     UNREFERENCED_PARAMETER(repo);
 
@@ -531,7 +531,7 @@ svn_error_t* SVN::logReceiver(void *baton, svn_log_entry_t *log_entry, apr_pool_
             svn_sort__item_t *item = &(APR_ARRAY_IDX (sorted_paths, i, svn_sort__item_t));
             const char *path = (const char *)item->key;
             svn_log_changed_path2_t *log_changedpaths = (svn_log_changed_path2_t *)apr_hash_get (log_entry->changed_paths2, item->key, item->klen);
-            wstring path_native = CUnicodeUtils::StdGetUnicode(path);
+            std::wstring path_native = CUnicodeUtils::StdGetUnicode(path);
             changedPaths.action = log_changedpaths->action;
             if (log_changedpaths->copyfrom_path && SVN_IS_VALID_REVNUM (log_changedpaths->copyfrom_rev))
             {
@@ -549,9 +549,9 @@ svn_error_t* SVN::logReceiver(void *baton, svn_log_entry_t *log_entry, apr_pool_
     return error;
 }
 
-wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces)
+std::wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreAllSpaces)
 {
-    wstring opts;
+    std::wstring opts;
     if (bIgnoreEOL)
         opts += _T("--ignore-eol-style ");
     if (bIgnoreAllSpaces)
@@ -561,10 +561,10 @@ wstring SVN::GetOptionsString(bool bIgnoreEOL, bool bIgnoreSpaces, bool bIgnoreA
     return opts;
 }
 
-bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
+bool SVN::Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revision1,
     svn_revnum_t revision2, bool ignoreancestry, bool nodiffdeleted,
-    bool ignorecontenttype,  const wstring& options, bool bAppend,
-    const wstring& outputfile, const wstring& errorfile)
+    bool ignorecontenttype,  const std::wstring& options, bool bAppend,
+    const std::wstring& outputfile, const std::wstring& errorfile)
 {
     svn_error_clear(Err);
     m_bCanceled = false;
@@ -588,7 +588,7 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
     if (Err)
         return false;
 
-    wstring workingErrorFile;
+    std::wstring workingErrorFile;
     if (errorfile.empty())
     {
         workingErrorFile = CAppUtils::GetTempFilePath();
@@ -647,11 +647,11 @@ bool SVN::Diff(const wstring& url1, svn_revnum_t pegrevision, svn_revnum_t revis
     return true;
 }
 
-wstring SVN::CanonicalizeURL(const wstring& url)
+std::wstring SVN::CanonicalizeURL(const std::wstring& url)
 {
     m_bCanceled = false;
     SVNPool localpool(pool);
-    return CUnicodeUtils::StdGetUnicode(string(svn_uri_canonicalize (CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
+    return CUnicodeUtils::StdGetUnicode(std::string(svn_uri_canonicalize (CUnicodeUtils::StdGetUTF8(url).c_str(), localpool)));
 }
 
 void SVN::SetAndClearProgressInfo(CProgressDlg * pProgressDlg, bool bShowProgressBar/* = false*/)
@@ -713,7 +713,7 @@ void SVN::progress_func(apr_off_t progress, apr_off_t total, void *baton, apr_po
             if ((pSVN->m_bShowProgressBar && (progress > 1000) && (total > 0)))
                 pSVN->m_pProgressDlg->SetProgress64(progress, total);
 
-            wstring sTotal;
+            std::wstring sTotal;
             if (pSVN->m_SVNProgressMSG.overall_total < 1024)
                 _stprintf_s(formatbuf, 4096, _T("%I64d Bytes transferred"), pSVN->m_SVNProgressMSG.overall_total);
             else if (pSVN->m_SVNProgressMSG.overall_total < 1200000)

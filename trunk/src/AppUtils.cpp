@@ -112,9 +112,9 @@ CAppUtils::~CAppUtils(void)
 {
 }
 
-string CAppUtils::PathEscape(const string& path)
+std::string CAppUtils::PathEscape(const std::string& path)
 {
-    string ret2;
+    std::string ret2;
     int c;
     for (int i=0; path[i]; ++i)
     {
@@ -132,7 +132,7 @@ string CAppUtils::PathEscape(const string& path)
             ret2 += temp;
         }
     }
-    string ret;
+    std::string ret;
     for (size_t i=0; i < ret2.size(); ++i)
     {
         c = (unsigned char)ret2[i];
@@ -153,14 +153,14 @@ string CAppUtils::PathEscape(const string& path)
     return ret;
 }
 
-wstring CAppUtils::GetDataDir()
+std::wstring CAppUtils::GetDataDir()
 {
     bool bPortable = false;
 
-    wstring appname = CAppUtils::GetAppName();
+    std::wstring appname = CAppUtils::GetAppName();
     std::transform(appname.begin(), appname.end(), appname.begin(), std::tolower);
-    if ((appname.find(_T("portable")) != wstring::npos) ||
-        (appname.find(_T("local")) != wstring::npos))
+    if ((appname.find(_T("portable")) != std::wstring::npos) ||
+        (appname.find(_T("local")) != std::wstring::npos))
         bPortable = true;
 
     if (bPortable)
@@ -170,20 +170,20 @@ wstring CAppUtils::GetDataDir()
     return CAppUtils::GetAppDataDir();
 }
 
-wstring CAppUtils::GetAppDataDir()
+std::wstring CAppUtils::GetAppDataDir()
 {
     WCHAR path[MAX_PATH];
     SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
     PathAppend(path, _T("CommitMonitor"));
     if (!PathFileExists(path))
         CreateDirectory(path, NULL);
-    return wstring(path);
+    return std::wstring(path);
 }
 
-wstring CAppUtils::GetAppDirectory(HMODULE hMod /* = NULL */)
+std::wstring CAppUtils::GetAppDirectory(HMODULE hMod /* = NULL */)
 {
     TCHAR pathbuf[MAX_PATH] = {0};
-    wstring path;
+    std::wstring path;
     DWORD bufferlen = MAX_PATH;
     GetModuleFileName(hMod, pathbuf, bufferlen);
     path = pathbuf;
@@ -192,10 +192,10 @@ wstring CAppUtils::GetAppDirectory(HMODULE hMod /* = NULL */)
     return path;
 }
 
-wstring CAppUtils::GetAppName(HMODULE hMod /* = NULL */)
+std::wstring CAppUtils::GetAppName(HMODULE hMod /* = NULL */)
 {
     TCHAR pathbuf[MAX_PATH] = {0};
-    wstring path;
+    std::wstring path;
     DWORD bufferlen = MAX_PATH;
     GetModuleFileName(hMod, pathbuf, bufferlen);
     path = pathbuf;
@@ -220,7 +220,7 @@ __inline void AprTimeToFileTime(LPFILETIME pft, apr_time_t t)
     return;
 }
 
-wstring CAppUtils::ConvertDate(apr_time_t time)
+std::wstring CAppUtils::ConvertDate(apr_time_t time)
 {
     FILETIME ft = {0};
     AprTimeToFileTime(&ft, time);
@@ -240,20 +240,20 @@ wstring CAppUtils::ConvertDate(apr_time_t time)
     GetDateFormat(locale, DATE_SHORTDATE, &localsystime, NULL, datebuf, 1024);
     GetTimeFormat(locale, 0, &localsystime, NULL, timebuf, 1024);
 
-    wstring sRet = datebuf;
+    std::wstring sRet = datebuf;
     sRet += _T(" ");
     sRet += timebuf;
 
     return sRet;
 }
 
-void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstring& replacewith)
+void CAppUtils::SearchReplace(std::wstring& str, const std::wstring& toreplace, const std::wstring& replacewith)
 {
-    wstring result;
-    wstring::size_type pos = 0;
+    std::wstring result;
+    std::wstring::size_type pos = 0;
     for ( ; ; ) // while (true)
     {
-        wstring::size_type next = str.find(toreplace, pos);
+        std::wstring::size_type next = str.find(toreplace, pos);
         result.append(str, pos, next-pos);
         if( next != std::string::npos )
         {
@@ -268,17 +268,17 @@ void CAppUtils::SearchReplace(wstring& str, const wstring& toreplace, const wstr
     str.swap(result);
 }
 
-vector<wstring> CAppUtils::tokenize_str(const wstring& str, const wstring& delims)
+std::vector<std::wstring> CAppUtils::tokenize_str(const std::wstring& str, const std::wstring& delims)
 {
     // Skip delims at beginning, find start of first token
-    wstring::size_type lastPos = str.find_first_not_of(delims, 0);
+    std::wstring::size_type lastPos = str.find_first_not_of(delims, 0);
     // Find next delimiter @ end of token
-    wstring::size_type pos     = str.find_first_of(delims, lastPos);
+    std::wstring::size_type pos     = str.find_first_of(delims, lastPos);
 
     // output vector
-    vector<wstring> tokens;
+    std::vector<std::wstring> tokens;
 
-    while (wstring::npos != pos || wstring::npos != lastPos)
+    while (std::wstring::npos != pos || std::wstring::npos != lastPos)
     {
         // Found a token, add it to the vector.
         tokens.push_back(str.substr(lastPos, pos - lastPos));
@@ -291,7 +291,7 @@ vector<wstring> CAppUtils::tokenize_str(const wstring& str, const wstring& delim
     return tokens;
 }
 
-bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStartup, bool bWaitForExit, bool bHideWindow)
+bool CAppUtils::LaunchApplication(const std::wstring& sCommandLine, bool bWaitForStartup, bool bWaitForExit, bool bHideWindow)
 {
     STARTUPINFO startup;
     PROCESS_INFORMATION process;
@@ -342,15 +342,15 @@ bool CAppUtils::LaunchApplication(const wstring& sCommandLine, bool bWaitForStar
     return true;
 }
 
-wstring CAppUtils::GetTempFilePath()
+std::wstring CAppUtils::GetTempFilePath()
 {
     DWORD len = ::GetTempPath(0, NULL);
     std::unique_ptr<TCHAR[]> temppath(new TCHAR[len+1]);
     std::unique_ptr<TCHAR[]> tempF(new TCHAR[len+50]);
     ::GetTempPath (len+1, temppath.get());
-    wstring tempfile;
+    std::wstring tempfile;
     ::GetTempFileName (temppath.get(), TEXT("cm_"), 0, tempF.get());
-    tempfile = wstring(tempF.get());
+    tempfile = std::wstring(tempF.get());
     //now create the tempfile, so that subsequent calls to GetTempFile() return
     //different filenames.
     HANDLE hFile = CreateFile(tempfile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
@@ -358,7 +358,7 @@ wstring CAppUtils::GetTempFilePath()
     return tempfile;
 }
 
-wstring CAppUtils::ConvertName(const wstring& name)
+std::wstring CAppUtils::ConvertName(const std::wstring& name)
 {
     TCHAR convertedName[4096] = {0};
     _tcscpy_s(convertedName, 4096, name.c_str());
@@ -381,7 +381,7 @@ wstring CAppUtils::ConvertName(const wstring& name)
         }
         cI++;
     }
-    return wstring(convertedName);
+    return std::wstring(convertedName);
 }
 
 typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
@@ -405,23 +405,23 @@ bool CAppUtils::IsWow64()
     return !!bIsWow64;
 }
 
-wstring CAppUtils::GetTSVNPath()
+std::wstring CAppUtils::GetTSVNPath()
 {
-    wstring sRet;
+    std::wstring sRet;
     CRegStdString tsvninstalled = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE);
-    sRet = wstring(tsvninstalled);
+    sRet = std::wstring(tsvninstalled);
     if (sRet.empty())
     {
         if (IsWow64())
         {
             CRegStdString tsvninstalled64 = CRegStdString(_T("Software\\TortoiseSVN\\ProcPath"), _T(""), false, HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
-            sRet = wstring(tsvninstalled64);
+            sRet = std::wstring(tsvninstalled64);
         }
     }
     return sRet;
 }
 
-wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
+std::wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
 {
     struct TRANSARRAY
     {
@@ -429,7 +429,7 @@ wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
         WORD wCharacterSet;
     };
 
-    wstring sVersion;
+    std::wstring sVersion;
     DWORD dwReserved,dwBufferSize;
     dwBufferSize = GetFileVersionInfoSize((LPTSTR)path,&dwReserved);
 
@@ -475,13 +475,13 @@ wstring CAppUtils::GetVersionStringFromExe(LPCTSTR path)
     return sVersion;
 }
 
-bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourceId, const wstring& strOutputPath)
+bool CAppUtils::ExtractBinResource(const std::wstring& strCustomResName, int nResourceId, const std::wstring& strOutputPath)
 {
     HGLOBAL hResourceLoaded;        // handle to loaded resource
     HRSRC hRes;                     // handle/ptr. to res. info.
     char *lpResLock;                // pointer to resource data
     DWORD dwSizeRes;
-    wstring strAppLocation;
+    std::wstring strAppLocation;
 
     strAppLocation = CAppUtils::GetAppDirectory();
 
@@ -510,7 +510,7 @@ bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourc
         outputFile.write((const char*)lpResLock, dwSizeRes);
         outputFile.close();
     }
-    catch (exception e)
+    catch (std::exception e)
     {
         return false;
     }
@@ -518,7 +518,7 @@ bool CAppUtils::ExtractBinResource(const wstring& strCustomResName, int nResourc
     return true;
 }
 
-bool CAppUtils::WriteAsciiStringToClipboard(const wstring& sClipdata, HWND hOwningWnd)
+bool CAppUtils::WriteAsciiStringToClipboard(const std::wstring& sClipdata, HWND hOwningWnd)
 {
     CClipboardHelper clipboardHelper;
     if (clipboardHelper.Open(hOwningWnd))
@@ -561,14 +561,14 @@ bool CAppUtils::IsFullscreenWindowActive()
     return !!EqualRect(&rcWindow, &mi.rcMonitor);
 }
 
-void CAppUtils::CreateUUIDString(wstring& sUuid) {
+void CAppUtils::CreateUUIDString(std::wstring& sUuid) {
     UUID Uuid;
     CoCreateGuid(&Uuid);
     RPC_WSTR pUIDStr;
     // Convert Unique ID to String
     UuidToString( &Uuid, &pUIDStr );
 
-    sUuid = wstring((WCHAR *)pUIDStr);
+    sUuid = std::wstring((WCHAR *)pUIDStr);
 
     // Free allocated string memory
     RpcStringFree( &pUIDStr );

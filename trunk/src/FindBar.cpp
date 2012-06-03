@@ -25,7 +25,6 @@
 #include <Commdlg.h>
 #include <memory>
 
-using namespace std;
 
 CFindBar::CFindBar()
 {
@@ -89,7 +88,7 @@ void CFindBar::DoFind(bool bFindPrev)
     int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_FINDTEXT));
     std::unique_ptr<TCHAR[]> findtext(new TCHAR[len+1]);
     ::GetDlgItemText(*this, IDC_FINDTEXT, findtext.get(), len+1);
-    wstring ft = wstring(findtext.get());
+    std::wstring ft = std::wstring(findtext.get());
     bool bCaseSensitive = !!SendMessage(GetDlgItem(*this, IDC_MATCHCASECHECK), BM_GETCHECK, 0, NULL);
     if (bFindPrev)
         ::SendMessage(m_hParent, COMMITMONITOR_FINDMSGPREV, (WPARAM)bCaseSensitive, (LPARAM)ft.c_str());

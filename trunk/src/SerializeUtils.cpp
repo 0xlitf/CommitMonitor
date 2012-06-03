@@ -76,7 +76,7 @@ bool CSerializeUtils::LoadNumber(const unsigned char *& buf, unsigned __int64& v
     return false;
 }
 
-bool CSerializeUtils::SaveString(FILE * hFile, string str)
+bool CSerializeUtils::SaveString(FILE * hFile, std::string str)
 {
     SerializeTypes type = SerializeType_String;
     if (fwrite(&type, sizeof(type), 1, hFile))
@@ -91,7 +91,7 @@ bool CSerializeUtils::SaveString(FILE * hFile, string str)
     return false;
 }
 
-bool CSerializeUtils::SaveString(FILE * hFile, wstring str)
+bool CSerializeUtils::SaveString(FILE * hFile, std::wstring str)
 {
     return SaveString(hFile, CUnicodeUtils::StdGetUTF8(str));
 }
@@ -101,7 +101,7 @@ bool CSerializeUtils::SaveBuffer(FILE * hFile, BYTE * pbData, size_t len)
     SerializeTypes type = SerializeType_Buffer;
     if (fwrite(&type, sizeof(type), 1, hFile))
     {
-        int writelen = len;
+        int writelen = (int)len;
         if (fwrite(&writelen, sizeof(writelen), 1, hFile))
         {
             if (fwrite(pbData, sizeof(BYTE), len, hFile)>=0)
@@ -127,20 +127,20 @@ bool CSerializeUtils::LoadString(FILE * hFile, std::string &str)
                     {
                         if (fread(buffer, sizeof(char), length, hFile))
                         {
-                            str = string(buffer, length);
+                            str = std::string(buffer, length);
                             return true;
                         }
                     }
                     std::unique_ptr<char[]> pBuffer(new char[length]);
                     if (fread(pBuffer.get(), sizeof(char), length, hFile))
                     {
-                        str = string(pBuffer.get(), length);
+                        str = std::string(pBuffer.get(), length);
                         return true;
                     }
                 }
                 else
                 {
-                    str = string("");
+                    str = std::string("");
                     return true;
                 }
             }
@@ -160,19 +160,19 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, std::string &str)
         buf += sizeof(int);
         if (length)
         {
-            str = string((const char *)buf, length);
+            str = std::string((const char *)buf, length);
             buf += length;
             return true;
         }
-        str = string("");
+        str = std::string("");
         return true;
     }
     return false;
 }
 
-bool CSerializeUtils::LoadString(FILE * hFile, wstring& str)
+bool CSerializeUtils::LoadString(FILE * hFile, std::wstring& str)
 {
-    string tempstr;
+    std::string tempstr;
     if (LoadString(hFile, tempstr))
     {
         str = CUnicodeUtils::StdGetUnicode(tempstr);
@@ -181,7 +181,7 @@ bool CSerializeUtils::LoadString(FILE * hFile, wstring& str)
     return false;
 }
 
-bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
+bool CSerializeUtils::LoadString(const unsigned char *& buf, std::wstring& str)
 {
     SerializeTypes type = *((SerializeTypes*)buf);
     buf += sizeof(SerializeTypes);
@@ -196,18 +196,18 @@ bool CSerializeUtils::LoadString(const unsigned char *& buf, wstring& str)
             if (size < SERIALIZEBUFFERSIZE)
             {
                 int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wbuffer, size);
-                str = wstring(wbuffer, ret);
+                str = std::wstring(wbuffer, ret);
             }
             else
             {
                 std::unique_ptr<wchar_t[]> wide(new wchar_t[size+1]);
                 int ret = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)buf, (int)length, wide.get(), size);
-                str = wstring(wide.get(), ret);
+                str = std::wstring(wide.get(), ret);
             }
             buf += length;
             return true;
         }
-        str = wstring(_T(""));
+        str = std::wstring(_T(""));
         return true;
     }
     return false;

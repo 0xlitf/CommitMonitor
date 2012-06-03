@@ -39,7 +39,6 @@
 #include <cctype>
 #include <regex>
 #include <set>
-using namespace std;
 
 // for Vista
 #define MSGFLT_ADD 1
@@ -192,7 +191,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
             Snarl::SnarlInterface snarlIface;
             if ((snarlIface.GetVersionEx() != Snarl::M_FAILED)&&(Snarl::SnarlInterface::GetSnarlWindow() != NULL))
             {
-                wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
+                std::wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
                 if (CAppUtils::ExtractBinResource(_T("PNG"), IDB_COMMITMONITOR, imgPath))
                 {
                     // register with Snarl
@@ -298,7 +297,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
         break;
     case COMMITMONITOR_GETALL:
         if (lParam)
-            m_UrlToWorkOn = wstring((wchar_t*)lParam);
+            m_UrlToWorkOn = std::wstring((wchar_t*)lParam);
         DoTimer(true);
         break;
     case COMMITMONITOR_POPUP:
@@ -317,7 +316,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 }
                 else
                 {
-                    wstring iconPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
+                    std::wstring iconPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
                     if (!PathFileExists(iconPath.c_str()))
                         iconPath = _T("");
                     snarlIface.ShowNotification(pData->sAlertType.c_str(), pData->sTitle.c_str(), pData->sText.c_str(), 5, iconPath.c_str(), *this, COMMITMONITOR_POPUPCLICK);
@@ -352,10 +351,10 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 {
                     // find the number of unread items
                     int nNewCommits = 0;
-                    const map<wstring, CUrlInfo> * pRead = m_UrlInfos.GetReadOnlyData();
-                    for (map<wstring, CUrlInfo>::const_iterator it = pRead->begin(); it != pRead->end(); ++it)
+                    const std::map<std::wstring, CUrlInfo> * pRead = m_UrlInfos.GetReadOnlyData();
+                    for (auto it = pRead->cbegin(); it != pRead->cend(); ++it)
                     {
-                        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator logit = it->second.logentries.begin(); logit != it->second.logentries.end(); ++logit)
+                        for (auto logit = it->second.logentries.cbegin(); logit != it->second.logentries.cend(); ++logit)
                         {
                             if (!logit->second.read)
                                 nNewCommits++;
@@ -460,11 +459,11 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                         break;
                     case ID_POPUP_MARKALLASREAD:
                         {
-                            map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                            for (map<wstring, CUrlInfo>::iterator it = pWrite->begin(); it != pWrite->end(); ++it)
+                            std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                            for (auto it = pWrite->begin(); it != pWrite->end(); ++it)
                             {
                                 CUrlInfo * pInfo = &it->second;
-                                for (map<svn_revnum_t,SCCSLogEntry>::iterator logit = pInfo->logentries.begin(); logit != pInfo->logentries.end(); ++logit)
+                                for (auto logit = pInfo->logentries.begin(); logit != pInfo->logentries.end(); ++logit)
                                 {
                                     logit->second.read = true;
                                 }
@@ -538,8 +537,8 @@ void CHiddenWindow::DoTimer(bool bForce)
     if (bForce)
     {
         // reset the 'last checked times' of all urls
-        map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetWriteData();
-        for (map<wstring,CUrlInfo>::iterator it = pInfos->begin(); it != pInfos->end(); ++it)
+        std::map<std::wstring,CUrlInfo> * pInfos = m_UrlInfos.GetWriteData();
+        for (auto it = pInfos->begin(); it != pInfos->end(); ++it)
         {
             if (m_UrlToWorkOn.size())
             {
@@ -554,15 +553,15 @@ void CHiddenWindow::DoTimer(bool bForce)
 
     bool bAllRead = true;
     bool bHasErrors = false;
-    const map<wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
-    for (map<wstring,CUrlInfo>::const_iterator it = pInfos->begin(); it != pInfos->end(); ++it)
+    const std::map<std::wstring,CUrlInfo> * pInfos = m_UrlInfos.GetReadOnlyData();
+    for (auto it = pInfos->cbegin(); it != pInfos->cend(); ++it)
     {
         CUrlInfo inf = it->second;
         if ((!it->second.error.empty())&&(!it->second.parentpath))
             bHasErrors = true;
 
         // go through the log entries and find unread items
-        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator rit = it->second.logentries.begin(); rit != it->second.logentries.end(); ++rit)
+        for (auto rit = it->second.logentries.cbegin(); rit != it->second.logentries.cend(); ++rit)
         {
             if (!rit->second.read)
             {
@@ -691,13 +690,13 @@ DWORD CHiddenWindow::RunThread()
     // to avoid blocking access to the urls info for the whole time this thread is running,
     // create a copy of it here. Copying the whole structure is relatively fast and therefore
     // won't block anything for too long.
-    map<wstring,CUrlInfo> urlinfoReadOnly = *m_UrlInfos.GetReadOnlyData();
+    std::map<std::wstring,CUrlInfo> urlinfoReadOnly = *m_UrlInfos.GetReadOnlyData();
     m_UrlInfos.ReleaseReadOnlyData();
 
     TCHAR infotextbuf[1024];
     TRACE(_T("monitor thread started\n"));
-    const map<wstring,CUrlInfo> * pUrlInfoReadOnly = &urlinfoReadOnly;
-    map<wstring,CUrlInfo>::const_iterator it = pUrlInfoReadOnly->begin();
+    const std::map<std::wstring,CUrlInfo> * pUrlInfoReadOnly = &urlinfoReadOnly;
+    std::map<std::wstring,CUrlInfo>::const_iterator it = pUrlInfoReadOnly->begin();
     for (; (it != pUrlInfoReadOnly->end()) && m_bRun; ++it)
     {
         int mit = max(it->second.minutesinterval, it->second.minminutesinterval);
@@ -739,8 +738,8 @@ DWORD CHiddenWindow::RunThread()
             if ((pSCCS->Err)&&(pSCCS->Err->apr_err == SVN_ERR_RA_NOT_AUTHORIZED))
             {
                 // only block the object for a short time
-                map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                std::map<std::wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
                 if (writeIt != pWrite->end())
                 {
                     writeIt->second.lastchecked = currenttime;
@@ -771,8 +770,8 @@ DWORD CHiddenWindow::RunThread()
                         continue;
 
                     // only block the object for a short time
-                    map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                    map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                    std::map<std::wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
                     if (writeIt != pWrite->end())
                     {
                         writeIt->second.lastcheckedrev = headrev;
@@ -784,9 +783,9 @@ DWORD CHiddenWindow::RunThread()
                     if (!m_bRun)
                         continue;
 
-                    wstring sPopupText;
+                    std::wstring sPopupText;
                     bool hadError = !it->second.error.empty();
-                    for (map<svn_revnum_t,SCCSLogEntry>::iterator logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
+                    for (auto logit = pSCCS->m_logs.begin(); logit != pSCCS->m_logs.end(); ++logit)
                     {
                         // again, only block for a short time
                         pWrite = m_UrlInfos.GetWriteData();
@@ -795,7 +794,7 @@ DWORD CHiddenWindow::RunThread()
                         bool bEntryExists = false;
                         if (writeIt != pWrite->end())
                         {
-                            map<svn_revnum_t,SCCSLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
+                            std::map<svn_revnum_t,SCCSLogEntry>::iterator existIt = writeIt->second.logentries.find(logit->first);
                             bEntryExists = existIt != writeIt->second.logentries.end();
                             bool readState = false;
                             if (bEntryExists)
@@ -806,17 +805,17 @@ DWORD CHiddenWindow::RunThread()
 
                             if (!bEntryExists)
                             {
-                                wstring author1 = logit->second.author;
+                                std::wstring author1 = logit->second.author;
                                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
                                 authors.insert(author1);
                                 if (writeIt->second.includeUsers.size() > 0)
                                 {
-                                    wstring s1 = writeIt->second.includeUsers;
+                                    std::wstring s1 = writeIt->second.includeUsers;
                                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
-                                    vector<wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                                    std::vector<std::wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
                                     bool bInclude = false;
-                                    for (vector<wstring>::iterator inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
+                                    for (auto inclIt = includeVector.begin(); inclIt != includeVector.end(); ++inclIt)
                                     {
                                         if (author1.compare(*inclIt) == 0)
                                         {
@@ -827,11 +826,11 @@ DWORD CHiddenWindow::RunThread()
                                     bIgnore = !bInclude;
                                 }
 
-                                wstring s1 = writeIt->second.ignoreUsers;
+                                std::wstring s1 = writeIt->second.ignoreUsers;
                                 std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
                                 CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
-                                vector<wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-                                for (vector<wstring>::iterator ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
+                                std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                                for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
                                 {
                                     if (author1.compare(*ignoreIt) == 0)
                                     {
@@ -867,9 +866,9 @@ DWORD CHiddenWindow::RunThread()
                             TCHAR buf[4096];
                             // first, find a name where to store the diff for that revision
                             _stprintf_s(buf, 4096, _T("%s_%ld.diff"), it->second.name.c_str(), logit->first);
-                            wstring diffFileName = CAppUtils::GetAppDataDir();
+                            std::wstring diffFileName = CAppUtils::GetAppDataDir();
                             diffFileName += _T("/");
-                            diffFileName += wstring(buf);
+                            diffFileName += std::wstring(buf);
                             // do we already have that diff?
                             if (!PathFileExists(diffFileName.c_str()))
                             {
@@ -879,7 +878,7 @@ DWORD CHiddenWindow::RunThread()
                                     _stprintf_s(infotextbuf, 1024, _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
                                     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
                                 }
-                                if (!pSCCS->Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, wstring(), false, diffFileName, wstring()))
+                                if (!pSCCS->Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, std::wstring(), false, diffFileName, std::wstring()))
                                 {
                                     TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
                                     DeleteFile(diffFileName.c_str());
@@ -893,22 +892,22 @@ DWORD CHiddenWindow::RunThread()
                     }
                     if ((it->second.lastcheckedrobots + (60*60*24*2)) < currenttime)
                     {
-                        wstring sRobotsURL = it->first;
+                        std::wstring sRobotsURL = it->first;
                         sRobotsURL += _T("/svnrobots.txt");
-                        wstring sRootRobotsURL;
-                        wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
+                        std::wstring sRootRobotsURL;
+                        std::wstring sDomainRobotsURL = sRobotsURL.substr(0, sRobotsURL.find('/', sRobotsURL.find(':')+3))+ _T("/svnrobots.txt");
                         sRootRobotsURL = pSCCS->GetRootUrl(it->first);
                         if (!sRootRobotsURL.empty())
                             sRootRobotsURL += _T("/svnrobots.txt");
-                        wstring sFile = CAppUtils::GetTempFilePath();
-                        string in;
+                        std::wstring sFile = CAppUtils::GetTempFilePath();
+                        std::string in;
                         std::unique_ptr<CCallback> callback(new CCallback);
                         callback->SetAuthData(it->second.username, it->second.password);
                         if ((!sDomainRobotsURL.empty())&&(URLDownloadToFile(NULL, sDomainRobotsURL.c_str(), sFile.c_str(), 0, callback.get()) == S_OK))
                         {
                             if (!m_bRun)
                                 continue;
-                            ifstream fs(sFile.c_str());
+                            std::ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
                                 in.reserve((unsigned int)fs.rdbuf()->in_avail());
@@ -923,7 +922,7 @@ DWORD CHiddenWindow::RunThread()
                         }
                         else if ((!sRootRobotsURL.empty())&&(pSCCS->GetFile(sRootRobotsURL, sFile)))
                         {
-                            ifstream fs(sFile.c_str());
+                            std::ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
                                 in.reserve((unsigned int)fs.rdbuf()->in_avail());
@@ -939,7 +938,7 @@ DWORD CHiddenWindow::RunThread()
                         }
                         else if (pSCCS->GetFile(sRobotsURL, sFile))
                         {
-                            ifstream fs(sFile.c_str());
+                            std::ifstream fs(sFile.c_str());
                             if (!fs.bad())
                             {
                                 in.reserve((unsigned int)fs.rdbuf()->in_avail());
@@ -962,8 +961,8 @@ DWORD CHiddenWindow::RunThread()
                         // with 'checkinterval' being the minimum amount of time to wait
                         // between checks in minutes.
 
-                        istringstream iss(in);
-                        string line;
+                        std::istringstream iss(in);
+                        std::string line;
                         int minutes = 0;
                         bool disallowdiffs = false;
                         while (getline(iss, line))
@@ -978,7 +977,7 @@ DWORD CHiddenWindow::RunThread()
                                     }
                                     else if ((line.length() > 13) && (line.substr(0, 13).compare("checkinterval") == 0))
                                     {
-                                        string num = line.substr(line.find('=')+1);
+                                        std::string num = line.substr(line.find('=')+1);
                                         minutes = atoi(num.c_str());
                                     }
                                 }
@@ -1015,13 +1014,13 @@ DWORD CHiddenWindow::RunThread()
                             _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
                         }
                         data.sText = sPopupText;
-                        data.sTitle = wstring(sTitle);
+                        data.sTitle = std::wstring(sTitle);
                         data.sAlertType = ALERTTYPE_NEWCOMMITS;
                         // check if there still are unread items
                         bool bUnread = false;
                         pWrite = m_UrlInfos.GetWriteData();
                         writeIt = pWrite->find(it->first);
-                        for (map<svn_revnum_t,SCCSLogEntry>::const_iterator lit = writeIt->second.logentries.begin(); lit != writeIt->second.logentries.end(); ++lit)
+                        for (auto lit = writeIt->second.logentries.cbegin(); lit != writeIt->second.logentries.cend(); ++lit)
                         {
                             if (!lit->second.read)
                             {
@@ -1039,8 +1038,8 @@ DWORD CHiddenWindow::RunThread()
                 else
                 {
                     // only block the object for a short time
-                    map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                    map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                    std::map<std::wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
                     if (writeIt != pWrite->end())
                     {
                         writeIt->second.lastchecked = currenttime;
@@ -1057,12 +1056,12 @@ DWORD CHiddenWindow::RunThread()
                     if ((!it->second.noexecuteignored)||(nNewCommits > 0))
                     {
                         // replace "%revision" with the new HEAD revision
-                        wstring tag(_T("%revision"));
-                        wstring commandline = it->second.callcommand;
+                        std::wstring tag(_T("%revision"));
+                        std::wstring commandline = it->second.callcommand;
                         // prepare the revision
                         TCHAR revBuf[40] = {0};
                         _stprintf_s(revBuf, 40, _T("%ld"), headrev);
-                        wstring srev = revBuf;
+                        std::wstring srev = revBuf;
                         CAppUtils::SearchReplace(commandline, tag, srev);
 
                         // replace "%url" with the repository url
@@ -1093,8 +1092,8 @@ DWORD CHiddenWindow::RunThread()
             else if (headrev > 0)
             {
                 // only block the object for a short time
-                map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                std::map<std::wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
                 if (writeIt != pWrite->end())
                 {
                     writeIt->second.lastchecked = currenttime;
@@ -1110,7 +1109,7 @@ DWORD CHiddenWindow::RunThread()
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
-                            data.sTitle = wstring(sTitle);
+                            data.sTitle = std::wstring(sTitle);
                             data.sAlertType = ALERTTYPE_FAILEDCONNECT;
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
                         }
@@ -1127,8 +1126,8 @@ DWORD CHiddenWindow::RunThread()
             else
             {
                 // only block the object for a short time
-                map<wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
-                map<wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
+                std::map<std::wstring,CUrlInfo> * pWrite = m_UrlInfos.GetWriteData();
+                std::map<std::wstring,CUrlInfo>::iterator writeIt = pWrite->find(it->first);
                 if (writeIt != pWrite->end())
                 {
                     writeIt->second.lastchecked = currenttime;
@@ -1144,7 +1143,7 @@ DWORD CHiddenWindow::RunThread()
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
-                            data.sTitle = wstring(sTitle);
+                            data.sTitle = std::wstring(sTitle);
                             data.sAlertType = ALERTTYPE_FAILEDCONNECT;
                             ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
                         }
@@ -1162,13 +1161,13 @@ DWORD CHiddenWindow::RunThread()
                     // instead of pointing to an actual repository.
 
                     // we have to include the authentication in the URL itself
-                    wstring tempfile = CAppUtils::GetTempFilePath();
+                    std::wstring tempfile = CAppUtils::GetTempFilePath();
                     std::unique_ptr<CCallback> callback(new CCallback);
                     callback->SetAuthData(it->second.username, it->second.password);
                     DeleteFile(tempfile.c_str());
-                    wstring projName = it->second.name;
-                    wstring parentpathurl = it->first;
-                    wstring parentpathurl2 = parentpathurl + _T("/");
+                    std::wstring projName = it->second.name;
+                    std::wstring parentpathurl = it->first;
+                    std::wstring parentpathurl2 = parentpathurl + _T("/");
                     HRESULT hResUDL = URLDownloadToFile(NULL, parentpathurl2.c_str(), tempfile.c_str(), 0, callback.get());
                     if (!m_bRun)
                         continue;
@@ -1182,8 +1181,8 @@ DWORD CHiddenWindow::RunThread()
                     {
                         // we got a web page! But we can't be sure that it's the page from SVNParentPath.
                         // Use a regex to parse the website and find out...
-                        ifstream fs(tempfile.c_str());
-                        string in;
+                        std::ifstream fs(tempfile.c_str());
+                        std::string in;
                         if (!fs.bad())
                         {
                             in.reserve((unsigned int)fs.rdbuf()->in_avail());
@@ -1209,10 +1208,10 @@ DWORD CHiddenWindow::RunThread()
                             // We therefore check for <index rev="0" to make sure it's either
                             // an empty repository or really an SVNParentPathList
                             const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
-                            const tr1::regex titex(reTitle, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
-                            const tr1::regex titex2(reTitle2, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
-                            tr1::match_results<string::const_iterator> fwhat;
-                            if (tr1::regex_search(in.begin(), in.end(), titex, tr1::regex_constants::match_default))
+                            const std::regex titex(reTitle, std::regex_constants::icase | std::regex_constants::ECMAScript);
+                            const std::regex titex2(reTitle2, std::regex_constants::icase | std::regex_constants::ECMAScript);
+                            std::match_results<std::string::const_iterator> fwhat;
+                            if (std::regex_search(in.begin(), in.end(), titex, std::regex_constants::match_default))
                             {
                                 TRACE(_T("found repository url instead of SVNParentPathList\n"));
                                 continue;
@@ -1221,20 +1220,20 @@ DWORD CHiddenWindow::RunThread()
                             const char * re = "<\\s*LI\\s*>\\s*<\\s*A\\s+[^>]*HREF\\s*=\\s*\"([^\"]*)\"\\s*>([^<]+)<\\s*/\\s*A\\s*>\\s*<\\s*/\\s*LI\\s*>";
                             const char * re2 = "<\\s*DIR\\s*name\\s*=\\s*\"([^\"]*)\"\\s*HREF\\s*=\\s*\"([^\"]*)\"\\s*/\\s*>";
 
-                            const tr1::regex expression(re, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
-                            const tr1::regex expression2(re2, tr1::regex_constants::icase | tr1::regex_constants::ECMAScript);
-                            tr1::match_results<string::const_iterator> what;
+                            const std::regex expression(re, std::regex_constants::icase | std::regex_constants::ECMAScript);
+                            const std::regex expression2(re2, std::regex_constants::icase | std::regex_constants::ECMAScript);
+                            std::match_results<std::string::const_iterator> what;
                             bool hasNewEntries = false;
                             int nCountNewEntries = 0;
-                            wstring popupText;
-                            const tr1::sregex_iterator end;
-                            for (tr1::sregex_iterator i(in.begin(), in.end(), expression); i != end && m_bRun; ++i)
+                            std::wstring popupText;
+                            const std::sregex_iterator end;
+                            for (std::sregex_iterator i(in.begin(), in.end(), expression); i != end && m_bRun; ++i)
                             {
-                                const tr1::smatch match = *i;
+                                const std::smatch match = *i;
                                 // what[0] contains the whole string
                                 // what[1] contains the url part.
                                 // what[2] contains the name
-                                wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
+                                std::wstring url = CUnicodeUtils::StdGetUnicode(std::string(match[1]));
                                 url = it->first + _T("/") + url;
                                 url = pSCCS->CanonicalizeURL(url);
 
@@ -1245,7 +1244,7 @@ DWORD CHiddenWindow::RunThread()
                                     // we found a new URL, add it to our list
                                     CUrlInfo newinfo;
                                     newinfo.url = url;
-                                    newinfo.name = CUnicodeUtils::StdGetUnicode(string(match[2]));
+                                    newinfo.name = CUnicodeUtils::StdGetUnicode(std::string(match[2]));
                                     newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
                                     newinfo.username = it->second.username;
                                     newinfo.password = it->second.password;
@@ -1274,13 +1273,13 @@ DWORD CHiddenWindow::RunThread()
                                 TRACE(_T("found repository url instead of SVNParentPathList\n"));
                                 continue;
                             }
-                            for (tr1::sregex_iterator i(in.begin(), in.end(), expression2); i != end && m_bRun; ++i)
+                            for (std::sregex_iterator i(in.begin(), in.end(), expression2); i != end && m_bRun; ++i)
                             {
-                                const tr1::smatch match = *i;
+                                const std::smatch match = *i;
                                 // what[0] contains the whole string
                                 // what[1] contains the url part.
                                 // what[2] contains the name
-                                wstring url = CUnicodeUtils::StdGetUnicode(string(match[1]));
+                                std::wstring url = CUnicodeUtils::StdGetUnicode(std::string(match[1]));
                                 url = it->first + _T("/") + url;
                                 url = pSCCS->CanonicalizeURL(url);
 
@@ -1291,7 +1290,7 @@ DWORD CHiddenWindow::RunThread()
                                     // we found a new URL, add it to our list
                                     CUrlInfo newinfo;
                                     newinfo.url = url;
-                                    newinfo.name = CUnicodeUtils::StdGetUnicode(string(match[2]));
+                                    newinfo.name = CUnicodeUtils::StdGetUnicode(std::string(match[2]));
                                     newinfo.name.erase(newinfo.name.find_last_not_of(_T("/ ")) + 1);
                                     newinfo.username = it->second.username;
                                     newinfo.password = it->second.password;
@@ -1322,7 +1321,7 @@ DWORD CHiddenWindow::RunThread()
                                 _stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
                                 popupData data;
                                 data.sText = popupText;
-                                data.sTitle = wstring(popupTitle);
+                                data.sTitle = std::wstring(popupTitle);
                                 data.sAlertType = ALERTTYPE_NEWPROJECTS;
                                 ::SendMessage(*this, COMMITMONITOR_POPUP, 0, (LPARAM)&data);
                                 bNewEntries = false;
@@ -1359,29 +1358,29 @@ DWORD CHiddenWindow::RunThread()
                 {
                     oldweek = week;
                     //
-                    wstring temp;
-                    wstring tempfile = CAppUtils::GetTempFilePath();
+                    std::wstring temp;
+                    std::wstring tempfile = CAppUtils::GetTempFilePath();
 
                     CRegStdString checkurluser = CRegStdString(_T("Software\\CommitMonitor\\UpdateCheckURL"), _T(""));
                     CRegStdString checkurlmachine = CRegStdString(_T("Software\\CommitMonitor\\UpdateCheckURL"), _T(""), FALSE, HKEY_LOCAL_MACHINE);
-                    wstring sCheckURL = (wstring)checkurluser;
+                    std::wstring sCheckURL = (std::wstring)checkurluser;
                     if (sCheckURL.empty())
                     {
-                        sCheckURL = (wstring)checkurlmachine;
+                        sCheckURL = (std::wstring)checkurlmachine;
                         if (sCheckURL.empty())
                             sCheckURL = _T("http://commitmonitor.googlecode.com/svn/trunk/version.txt");
                     }
                     HRESULT res = URLDownloadToFile(NULL, sCheckURL.c_str(), tempfile.c_str(), 0, NULL);
                     if (res == S_OK)
                     {
-                        ifstream File;
+                        std::ifstream File;
                         File.open(tempfile.c_str());
                         if (File.good())
                         {
                             char line[1024];
                             char * pLine = line;
                             File.getline(line, sizeof(line));
-                            string vertemp = line;
+                            std::string vertemp = line;
                             int major = 0;
                             int minor = 0;
                             int micro = 0;
@@ -1471,7 +1470,7 @@ bool CHiddenWindow::StopThread(DWORD wait)
     return bRet;
 }
 
-void CHiddenWindow::ShowPopup(wstring& title, wstring& text, const wchar_t *alertType)
+void CHiddenWindow::ShowPopup(std::wstring& title, std::wstring& text, const wchar_t *alertType)
 {
     popupData data;
     data.sText = text;

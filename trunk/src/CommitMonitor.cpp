@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007,2009-2011 - Stefan Kueng
+// Copyright (C) 2007,2009-2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,7 +143,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         {
             if ((snarlIface.GetVersionEx() != Snarl::M_FAILED)&&(Snarl::SnarlInterface::GetSnarlWindow() != NULL))
             {
-                wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
+                std::wstring imgPath = CAppUtils::GetAppDataDir()+L"\\CM.png";
                 if (CAppUtils::ExtractBinResource(_T("PNG"), IDB_COMMITMONITOR, imgPath))
                 {
                     // register with Snarl

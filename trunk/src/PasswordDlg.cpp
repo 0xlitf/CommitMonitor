@@ -25,7 +25,6 @@
 #include <string>
 #include <Commdlg.h>
 
-using namespace std;
 
 CPasswordDlg::CPasswordDlg(HWND hParent)
 {
@@ -58,11 +57,11 @@ LRESULT CPasswordDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
             std::unique_ptr<TCHAR[]> pwBuf(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_PW1, pwBuf.get(), len+1);
-            wstring pw1 = wstring(pwBuf.get());
+            std::wstring pw1 = std::wstring(pwBuf.get());
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW2));
             pwBuf = std::unique_ptr<WCHAR[]>(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_PW2, pwBuf.get(), len+1);
-            wstring pw2 = wstring(pwBuf.get());
+            std::wstring pw2 = std::wstring(pwBuf.get());
 
             DialogEnableWindow(IDOK, pw1.compare(pw2) == 0);
         }
@@ -82,7 +81,7 @@ LRESULT CPasswordDlg::DoCommand(int id)
             int len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PW1));
             std::unique_ptr<TCHAR[]> pwBuf(new TCHAR[len+1]);
             ::GetDlgItemText(*this, IDC_PW1, pwBuf.get(), len+1);
-            password = wstring(pwBuf.get());
+            password = std::wstring(pwBuf.get());
             EndDialog(*this, id);
         }
         break;
