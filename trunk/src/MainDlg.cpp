@@ -2343,7 +2343,10 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
         const map<wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
         LVITEM item = {0};
         item.mask = LVIF_PARAM;
-        item.iItem = lpNMListView->iItem;
+        if (lpNMListView->uNewState & LVIS_SELECTED)
+            item.iItem = lpNMListView->iItem;
+        else
+            item.iItem = ListView_GetSelectionMark(m_hListControl);
         ListView_GetItem(m_hListControl, &item);
         SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
         if (pLogEntry)
