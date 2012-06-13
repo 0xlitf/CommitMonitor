@@ -281,7 +281,6 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
     std::wstring dateTemp;
     std::wstring wDateTime;
     std::wstring wVirtualVersion, wRealVersion, wPath;
-    std::string sDateTime;
     BOOL bIssueRetrieved = FALSE;
     std::wstring wIssueNo;
 
@@ -634,7 +633,6 @@ size_t ACCUREV::ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, st
     std::wstring fullPathToExe = (LPCTSTR)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
     //size_t iMyCounter = 0, iReturnVal = 0;
     size_t iReturnVal = 0;
-    DWORD dwExitCode = 0;
     std::wstring sTempStr = L"";
     //int msToWait = SecondsToWait * 1000;
 
@@ -704,6 +702,7 @@ size_t ACCUREV::ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, st
      * should be read while the process is running. This would require overlapped I/O and
      * I can't be bothered to do that right now. */
 
+    DWORD dwExitCode = 0;
     if (CreateProcessW(NULL,
                        pwszParam, 0, 0, true,
                        CREATE_DEFAULT_ERROR_MODE, 0, 0,

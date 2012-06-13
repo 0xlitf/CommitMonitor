@@ -48,7 +48,10 @@
 class SCCSInfoData
 {
 public:
-    SCCSInfoData(){}
+    SCCSInfoData()
+        : lock_davcomment(false)
+        , hasWCInfo(false)
+    {}
 
     std::wstring        url;
     svn_revnum_t        rev;

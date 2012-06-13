@@ -31,6 +31,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 SCCS::SCCS(void)
+    : m_bCanceled(false)
+    , Err(NULL)
 {
 
 }

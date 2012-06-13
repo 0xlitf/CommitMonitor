@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007,2009 - Stefan Kueng
+// Copyright (C) 2007,2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -165,9 +165,9 @@ void CProgressDlg::FormatNonPathLine(DWORD dwLine, UINT idFormatText, ...)
 HRESULT CProgressDlg::ShowModal (HWND hWndParent)
 {
     EnsureValid();
-    HRESULT hr;
     if (m_bValid)
     {
+        HRESULT hr;
         hr = m_pIDlg->StartProgressDialog(hWndParent,
             NULL,
             m_dwDlgFlags | PROGDLG_MODAL,

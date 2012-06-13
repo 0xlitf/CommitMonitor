@@ -346,7 +346,7 @@ std::wstring SVN::GetRootUrl(const std::wstring& path)
     Err = svn_client_info3 (urla, &peg, &rev, svn_depth_empty, false, false, NULL, infoReceiver, this, m_pctx, localpool);
     if (Err != NULL)
         return NULL;
-    if (m_arInfo.size() == 0)
+    if (m_arInfo.empty())
         return NULL;
 
     return m_arInfo[0].reposRoot;

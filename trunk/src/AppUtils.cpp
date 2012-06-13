@@ -510,7 +510,7 @@ bool CAppUtils::ExtractBinResource(const std::wstring& strCustomResName, int nRe
         outputFile.write((const char*)lpResLock, dwSizeRes);
         outputFile.close();
     }
-    catch (std::exception e)
+    catch (const std::exception& /*e*/)
     {
         return false;
     }

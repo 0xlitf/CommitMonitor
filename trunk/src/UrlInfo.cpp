@@ -38,6 +38,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
     , errNr(0)
     , maxentries(1000)
     , sccs(SCCS_SVN)
+    , noexecuteignored(false)
 {
 }
 
@@ -345,7 +346,7 @@ void CUrlInfos::Save()
 {
     bool bExit = false;
     const std::map<std::wstring,CUrlInfo> * pInfos = GetReadOnlyData();
-    if (pInfos->size() == 0)
+    if (pInfos->empty())
     {
         // empty project list: don't save it!
         // See issue #267 for why: http://code.google.com/p/commitmonitor/issues/detail?id=267
@@ -373,7 +374,7 @@ bool CUrlInfos::Save(LPCWSTR filename)
     _tfopen_s(&hFile, filename, _T("w+b"));
     if (hFile == NULL)
         return false;
-    char filebuffer[4096];
+    char filebuffer[4096] = {0};
     setvbuf(hFile, filebuffer, _IOFBF, 4096);
 
     guard.AcquireReaderLock();
@@ -468,7 +469,7 @@ bool CUrlInfos::IsEmpty()
 {
     bool bIsEmpty = true;
     guard.AcquireReaderLock();
-    bIsEmpty = (infos.size() == 0);
+    bIsEmpty = (infos.empty());
     guard.ReleaseReaderLock();
     return bIsEmpty;
 }

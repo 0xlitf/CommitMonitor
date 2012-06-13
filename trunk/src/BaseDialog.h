@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2007, 2009, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -29,6 +29,15 @@
 class CDialog
 {
 public:
+    CDialog()
+        : hResource(nullptr)
+        , m_hwnd(nullptr)
+        , m_bPseudoModal(false)
+        , m_bPseudoEnded(false)
+        , m_iPseudoRet(0)
+        , m_hToolTips(nullptr)
+    {
+    }
     INT_PTR DoModal(HINSTANCE hInstance, int resID, HWND hWndParent);
     INT_PTR DoModal(HINSTANCE hInstance, int resID, HWND hWndParent, UINT idAccel);
     HWND    Create(HINSTANCE hInstance, int resID, HWND hWndParent);

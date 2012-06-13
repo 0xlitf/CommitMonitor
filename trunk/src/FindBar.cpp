@@ -27,6 +27,8 @@
 
 
 CFindBar::CFindBar()
+    : m_hParent(NULL)
+    , m_hBmp(NULL)
 {
 }
 

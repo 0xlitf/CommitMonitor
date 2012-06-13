@@ -27,11 +27,13 @@
 #include <stdio.h>
 #include <memory>
 
-extern HINSTANCE hInst;
-
 CDiffViewer::CDiffViewer(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
     : CWindow(hInst, wcx)
     , m_bShowFindBar(false)
+    , m_directFunction(NULL)
+    , m_directPointer(NULL)
+    , m_hWndEdit(NULL)
+    , m_bMatchCase(false)
 {
     Scintilla_RegisterClasses(hInst);
     SetWindowTitle(_T("CommitMonitorDiff"));
@@ -63,7 +65,7 @@ bool CDiffViewer::RegisterAndCreateWindow()
         if (Create(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_CLIPCHILDREN, NULL))
         {
             m_FindBar.SetParent(*this);
-            m_FindBar.Create(hInst, IDD_FINDBAR, *this);
+            m_FindBar.Create(hResource, IDD_FINDBAR, *this);
             ShowWindow(*this, SW_SHOW);
             UpdateWindow(*this);
             return true;
@@ -294,7 +296,7 @@ bool CDiffViewer::Initialize()
         CW_USEDEFAULT, CW_USEDEFAULT,
         *this,
         0,
-        hInst,
+        hResource,
         0);
     if (m_hWndEdit == NULL)
         return false;

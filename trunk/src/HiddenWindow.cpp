@@ -43,8 +43,6 @@
 // for Vista
 #define MSGFLT_ADD 1
 
-extern HINSTANCE hInst;
-
 CHiddenWindow *hiddenWindowPointer = NULL;
 
 DWORD WINAPI MonitorThread(LPVOID lpParam);
@@ -169,7 +167,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
         dlg.SetLastSelectedProject(m_regLastSelectedProject);
         dlg.SetUrlInfos(&m_UrlInfos);
         dlg.SetUpdateAvailable(m_bNewerVersionAvailable);
-        dlg.DoModal(hInst, IDD_MAINDLG, NULL, IDC_COMMITMONITOR);
+        dlg.DoModal(hResource, IDD_MAINDLG, NULL, IDC_COMMITMONITOR);
         m_regLastSelectedProject = dlg.GetLastSelectedProject();
         m_bNewerVersionAvailable = false;
         ShowTrayIcon(false);
@@ -415,7 +413,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     POINT pt;
                     GetCursorPos( &pt );
 
-                    HMENU hMenu = ::LoadMenu(hInst, MAKEINTRESOURCE(IDC_COMMITMONITOR));
+                    HMENU hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDC_COMMITMONITOR));
                     hMenu = ::GetSubMenu(hMenu, 0);
 
                     // set the default entry

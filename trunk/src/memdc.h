@@ -161,7 +161,6 @@ public:
             // this keeps us from accidentally deleting the handles associated with
             // the CDC that was passed to the constructor.
             DeleteObject(m_hBitmap);
-            DeleteDC(m_hMemDC);
             m_hMemDC = NULL;
         }
     }

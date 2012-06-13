@@ -27,7 +27,9 @@
 #include <Commdlg.h>
 
 
-COptionsDlg::COptionsDlg(HWND hParent) : m_pURLInfos(NULL)
+COptionsDlg::COptionsDlg(HWND hParent)
+    : m_pURLInfos(NULL)
+    , m_hHiddenWnd(NULL)
 {
     m_hParent = hParent;
 }
