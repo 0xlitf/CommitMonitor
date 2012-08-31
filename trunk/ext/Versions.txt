@@ -5,7 +5,7 @@ apr-util        1.3.12      http://apr.apache.org/
 cyrus-sasl      2.1.24rc1   http://ftp.andrew.cmu.edu/pub/cyrus-mail/
 neon            0.29.6      http://www.webdav.org/neon/
 OpenSSL         1.0.1c      http://www.openssl.org/
-scintilla       3.2.1       http://www.scintilla.org/
+scintilla       3.2.2       http://www.scintilla.org/
 serf            1.1.0       http://code.google.com/p/serf/
 sqlite          3.7.13      http://sqlite.org/
 Subversion      1.7.6       http://subversion.apache.org/
