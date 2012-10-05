@@ -722,268 +722,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CONTEXTMENU:
         {
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-
-            if (HWND(wParam) == m_hTreeControl)
-            {
-                TVHITTESTINFO hittest = {0};
-                if (pt.x == -1 && pt.y == -1)
-                {
-                    hittest.hItem = TreeView_GetSelection(m_hTreeControl);
-                    if (hittest.hItem)
-                    {
-                        hittest.flags = TVHT_ONITEM;
-                        RECT rect;
-                        TreeView_GetItemRect(m_hTreeControl, hittest.hItem, &rect, TRUE);
-                        pt.x = rect.left + ((rect.right-rect.left)/2);
-                        pt.y = rect.top + ((rect.bottom - rect.top)/2);
-                        ClientToScreen(m_hTreeControl, &pt);
-                    }
-                }
-                else
-                {
-                    POINT clPt = pt;
-                    ::ScreenToClient(m_hTreeControl, &clPt);
-                    hittest.pt = clPt;
-                    TreeView_HitTest(m_hTreeControl, &hittest);
-                }
-                if (hittest.flags & TVHT_ONITEM)
-                {
-                    HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
-                    m_bBlockListCtrlUI = true;
-                    TreeView_SelectItem(m_hTreeControl, hittest.hItem);
-                    m_bBlockListCtrlUI = false;
-
-                    HMENU hMenu = NULL;
-                    std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
-                    if (tsvninstalled.empty())
-                        hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
-                    else
-                        hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUPTSVN));
-                    hMenu = ::GetSubMenu(hMenu, 0);
-                    TVITEMEX itemex = {0};
-                    itemex.hItem = hittest.hItem;
-                    itemex.mask = TVIF_PARAM;
-                    TreeView_GetItem(m_hTreeControl, &itemex);
-                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
-                    {
-                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
-                        if (info)
-                        {
-                            CheckMenuItem(hMenu, ID_POPUP_ACTIVE, MF_BYCOMMAND | (info->monitored ? MF_CHECKED : MF_UNCHECKED));
-                            if (!info->parentpath)
-                            {
-                                // remove the 'mark all as read' since this is not a parent (SVNParentPath) item
-                                DeleteMenu(hMenu, ID_POPUP_MARKALLASREAD, MF_BYCOMMAND);
-                            }
-                        }
-                    }
-                    m_pURLInfos->ReleaseReadOnlyData();
-
-                    int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
-                    m_bBlockListCtrlUI = true;
-                    TreeView_SelectItem(m_hTreeControl, hSel);
-                    m_bBlockListCtrlUI = false;
-                    switch (cmd)
-                    {
-                    case ID_POPUP_ADDPROJECTWITHTEMPLATE:
-                    case ID_MAIN_EDIT:
-                    case ID_MAIN_REMOVE:
-                    case ID_POPUP_REPOBROWSER:
-                    case ID_POPUP_SHOWLOG:
-                        {
-                            m_bBlockListCtrlUI = true;
-                            TreeView_SelectItem(m_hTreeControl, hittest.hItem);
-                            m_bBlockListCtrlUI = false;
-                            ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
-                            m_bBlockListCtrlUI = true;
-                            TreeView_SelectItem(m_hTreeControl, hSel);
-                            m_bBlockListCtrlUI = false;
-                        }
-                        break;
-                    case ID_POPUP_MARKALLASREAD:
-                        MarkAllAsRead(hittest.hItem, true);
-                        break;
-                    case ID_POPUP_CHECKNOW:
-                        CheckNow(hittest.hItem);
-                        break;
-                    case ID_POPUP_MARKNODEASREAD:
-                        MarkAllAsRead(hittest.hItem, false);
-                        break;
-                    case ID_POPUP_REFRESHALL:
-                        RefreshAll(hittest.hItem);
-                        break;
-                    case ID_POPUP_ACTIVE:
-                        std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-                        if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
-                        {
-                            CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
-                            if (info)
-                            {
-                                info->monitored = !info->monitored;
-                            }
-                        }
-                        m_pURLInfos->ReleaseWriteData();
-                        ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
-                        break;
-                    }
-                }
-            }
-            else if (HWND(wParam) == m_hListControl)
-            {
-                LVHITTESTINFO hittest = {0};
-                if (pt.x == -1 && pt.y == -1)
-                {
-                    hittest.iItem = ListView_GetSelectionMark(m_hListControl);
-                    if (hittest.iItem >= 0)
-                    {
-                        hittest.flags = LVHT_ONITEM;
-                        RECT rect;
-                        ListView_GetItemRect(m_hListControl, hittest.iItem, &rect, LVIR_LABEL);
-                        pt.x = rect.left + ((rect.right-rect.left)/2);
-                        pt.y = rect.top + ((rect.bottom - rect.top)/2);
-                        ClientToScreen(m_hListControl, &pt);
-                    }
-                }
-                else
-                {
-                    POINT clPt = pt;
-                    ::ScreenToClient(m_hListControl, &clPt);
-                    hittest.pt = clPt;
-                    ListView_HitTest(m_hListControl, &hittest);
-                }
-                if (hittest.flags & LVHT_ONITEM)
-                {
-                    HMENU hMenu = NULL;
-                    std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
-                    if (tsvninstalled.empty())
-                        hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
-                    else
-                        hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUPTSVN));
-                    hMenu = ::GetSubMenu(hMenu, 0);
-
-                    UINT uItem = 0;
-
-                    if ((!std::wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
-                        uItem = 1;
-                    // set the default entry
-                    MENUITEMINFO iinfo = {0};
-                    iinfo.cbSize = sizeof(MENUITEMINFO);
-                    iinfo.fMask = MIIM_STATE;
-                    GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
-                    iinfo.fState |= MFS_DEFAULT;
-                    SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
-
-                    // enable the "Open WebViewer" entry if there is one specified
-                    // get the url this entry refers to
-                    TVITEMEX itemex = {0};
-                    itemex.hItem = TreeView_GetSelection(m_hTreeControl);
-                    itemex.mask = TVIF_PARAM;
-                    TreeView_GetItem(m_hTreeControl, &itemex);
-                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
-                    {
-                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
-                        if ((info)&&(!info->webviewer.empty()))
-                        {
-                            uItem = std::wstring(tsvninstalled).empty() ? 1 : 2;
-                            GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
-                            iinfo.fState &= ~MFS_DISABLED;
-                            SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
-                        }
-                    }
-                    m_pURLInfos->ReleaseReadOnlyData();
-
-                    int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
-                    switch (cmd)
-                    {
-                    case ID_POPUP_MARKASUNREAD:
-                        {
-                            pRead = m_pURLInfos->GetReadOnlyData();
-                            HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
-                            // get the url this entry refers to
-                            TVITEMEX uritex = {0};
-                            uritex.hItem = hSelectedItem;
-                            uritex.mask = TVIF_PARAM;
-                            TreeView_GetItem(m_hTreeControl, &uritex);
-                            if (uritex.lParam != 0)
-                            {
-                                LVITEM item = {0};
-                                int nItemCount = ListView_GetItemCount(m_hListControl);
-                                for (int i=0; i<nItemCount; ++i)
-                                {
-                                    item.mask = LVIF_PARAM|LVIF_STATE;
-                                    item.stateMask = LVIS_SELECTED;
-                                    item.iItem = i;
-                                    ListView_GetItem(m_hListControl, &item);
-                                    if (item.state & LVIS_SELECTED)
-                                    {
-                                        SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
-                                        if (pLogEntry)
-                                        {
-                                            // set the entry as unread
-                                            if (pLogEntry->read)
-                                            {
-                                                pLogEntry->read = false;
-                                                // refresh the name of the tree item to indicate the new
-                                                // number of unread log messages
-                                                // e.g. instead of 'TortoiseSVN (2)', show now 'TortoiseSVN (3)'
-                                                if (pRead->find(*(std::wstring*)uritex.lParam) != pRead->end())
-                                                {
-                                                    const CUrlInfo * uinfo = &pRead->find(*(std::wstring*)uritex.lParam)->second;
-                                                    // count the number of unread messages
-                                                    int unread = 0;
-                                                    for (auto it = uinfo->logentries.cbegin(); it != uinfo->logentries.cend(); ++it)
-                                                    {
-                                                        if (!it->second.read)
-                                                            unread++;
-                                                    }
-                                                    std::unique_ptr<WCHAR[]> str(new WCHAR[uinfo->name.size()+10]);
-                                                    if (unread)
-                                                    {
-                                                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
-                                                        uritex.state = TVIS_BOLD;
-                                                        uritex.stateMask = TVIS_BOLD;
-                                                        uritex.iImage = 3;
-                                                        uritex.iSelectedImage = 3;
-                                                    }
-                                                    else
-                                                    {
-                                                        _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
-                                                        uritex.state = 0;
-                                                        uritex.stateMask = TVIS_BOLD;
-                                                        uritex.iImage = 2;
-                                                        uritex.iSelectedImage = 2;
-                                                    }
-
-                                                    uritex.pszText = str.get();
-                                                    uritex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-                                                    m_refreshNeeded = true;
-                                                    TreeView_SetItem(m_hTreeControl, &uritex);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            m_pURLInfos->ReleaseReadOnlyData();
-                        }
-                        break;
-                    case ID_MAIN_SHOWDIFFTSVN:
-                    case ID_MAIN_SHOWDIFF:
-                    case ID_MAIN_REMOVE:
-                    case ID_MAIN_COPY:
-                    case ID_POPUP_OPENWEBVIEWER:
-                        {
-                            ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
-                        }
-                        break;
-                    }
-                }
-            }
+            OnContextMenu(wParam, lParam);
         }
         break;
     case COMMITMONITOR_INFOTEXT:
@@ -3116,6 +2855,272 @@ void CMainDlg::SaveWndPosition()
     }
     CRegStdDWORD regCheck(_T("Software\\CommitMonitor\\showignoredcheck"), FALSE);
     regCheck = ::SendMessage(m_hCheckControl, BM_GETCHECK, 0, 0) == BST_CHECKED;
+}
+
+void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
+{
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+
+    if (HWND(wParam) == m_hTreeControl)
+    {
+        TVHITTESTINFO hittest = {0};
+        if (pt.x == -1 && pt.y == -1)
+        {
+            hittest.hItem = TreeView_GetSelection(m_hTreeControl);
+            if (hittest.hItem)
+            {
+                hittest.flags = TVHT_ONITEM;
+                RECT rect;
+                TreeView_GetItemRect(m_hTreeControl, hittest.hItem, &rect, TRUE);
+                pt.x = rect.left + ((rect.right-rect.left)/2);
+                pt.y = rect.top + ((rect.bottom - rect.top)/2);
+                ClientToScreen(m_hTreeControl, &pt);
+            }
+        }
+        else
+        {
+            POINT clPt = pt;
+            ::ScreenToClient(m_hTreeControl, &clPt);
+            hittest.pt = clPt;
+            TreeView_HitTest(m_hTreeControl, &hittest);
+        }
+        if (hittest.flags & TVHT_ONITEM)
+        {
+            HTREEITEM hSel = TreeView_GetSelection(m_hTreeControl);
+            m_bBlockListCtrlUI = true;
+            TreeView_SelectItem(m_hTreeControl, hittest.hItem);
+            m_bBlockListCtrlUI = false;
+
+            HMENU hMenu = NULL;
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            if (tsvninstalled.empty())
+                hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUP));
+            else
+                hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUPTSVN));
+            hMenu = ::GetSubMenu(hMenu, 0);
+            TVITEMEX itemex = {0};
+            itemex.hItem = hittest.hItem;
+            itemex.mask = TVIF_PARAM;
+            TreeView_GetItem(m_hTreeControl, &itemex);
+            const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+            if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
+            {
+                const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
+                if (info)
+                {
+                    CheckMenuItem(hMenu, ID_POPUP_ACTIVE, MF_BYCOMMAND | (info->monitored ? MF_CHECKED : MF_UNCHECKED));
+                    if (!info->parentpath)
+                    {
+                        // remove the 'mark all as read' since this is not a parent (SVNParentPath) item
+                        DeleteMenu(hMenu, ID_POPUP_MARKALLASREAD, MF_BYCOMMAND);
+                    }
+                }
+            }
+            m_pURLInfos->ReleaseReadOnlyData();
+
+            int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+            m_bBlockListCtrlUI = true;
+            TreeView_SelectItem(m_hTreeControl, hSel);
+            m_bBlockListCtrlUI = false;
+            switch (cmd)
+            {
+            case ID_POPUP_ADDPROJECTWITHTEMPLATE:
+            case ID_MAIN_EDIT:
+            case ID_MAIN_REMOVE:
+            case ID_POPUP_REPOBROWSER:
+            case ID_POPUP_SHOWLOG:
+                {
+                    m_bBlockListCtrlUI = true;
+                    TreeView_SelectItem(m_hTreeControl, hittest.hItem);
+                    m_bBlockListCtrlUI = false;
+                    ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+                    m_bBlockListCtrlUI = true;
+                    TreeView_SelectItem(m_hTreeControl, hSel);
+                    m_bBlockListCtrlUI = false;
+                }
+                break;
+            case ID_POPUP_MARKALLASREAD:
+                MarkAllAsRead(hittest.hItem, true);
+                break;
+            case ID_POPUP_CHECKNOW:
+                CheckNow(hittest.hItem);
+                break;
+            case ID_POPUP_MARKNODEASREAD:
+                MarkAllAsRead(hittest.hItem, false);
+                break;
+            case ID_POPUP_REFRESHALL:
+                RefreshAll(hittest.hItem);
+                break;
+            case ID_POPUP_ACTIVE:
+                std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
+                {
+                    CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
+                    if (info)
+                    {
+                        info->monitored = !info->monitored;
+                    }
+                }
+                m_pURLInfos->ReleaseWriteData();
+                ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
+                break;
+            }
+        }
+    }
+    else if (HWND(wParam) == m_hListControl)
+    {
+        LVHITTESTINFO hittest = {0};
+        if (pt.x == -1 && pt.y == -1)
+        {
+            hittest.iItem = ListView_GetSelectionMark(m_hListControl);
+            if (hittest.iItem >= 0)
+            {
+                hittest.flags = LVHT_ONITEM;
+                RECT rect;
+                ListView_GetItemRect(m_hListControl, hittest.iItem, &rect, LVIR_LABEL);
+                pt.x = rect.left + ((rect.right-rect.left)/2);
+                pt.y = rect.top + ((rect.bottom - rect.top)/2);
+                ClientToScreen(m_hListControl, &pt);
+            }
+        }
+        else
+        {
+            POINT clPt = pt;
+            ::ScreenToClient(m_hListControl, &clPt);
+            hittest.pt = clPt;
+            ListView_HitTest(m_hListControl, &hittest);
+        }
+        if (hittest.flags & LVHT_ONITEM)
+        {
+            HMENU hMenu = NULL;
+            std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
+            if (tsvninstalled.empty())
+                hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUP));
+            else
+                hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_LISTPOPUPTSVN));
+            hMenu = ::GetSubMenu(hMenu, 0);
+
+            UINT uItem = 0;
+
+            if ((!std::wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+                uItem = 1;
+            // set the default entry
+            MENUITEMINFO iinfo = {0};
+            iinfo.cbSize = sizeof(MENUITEMINFO);
+            iinfo.fMask = MIIM_STATE;
+            GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+            iinfo.fState |= MFS_DEFAULT;
+            SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+
+            // enable the "Open WebViewer" entry if there is one specified
+            // get the url this entry refers to
+            TVITEMEX itemex = {0};
+            itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+            itemex.mask = TVIF_PARAM;
+            TreeView_GetItem(m_hTreeControl, &itemex);
+            const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+            if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
+            {
+                const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
+                if ((info)&&(!info->webviewer.empty()))
+                {
+                    uItem = std::wstring(tsvninstalled).empty() ? 1 : 2;
+                    GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+                    iinfo.fState &= ~MFS_DISABLED;
+                    SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
+                }
+            }
+            m_pURLInfos->ReleaseReadOnlyData();
+
+            int cmd = ::TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_NONOTIFY , pt.x, pt.y, NULL, *this, NULL);
+            switch (cmd)
+            {
+            case ID_POPUP_MARKASUNREAD:
+                {
+                    pRead = m_pURLInfos->GetReadOnlyData();
+                    HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
+                    // get the url this entry refers to
+                    TVITEMEX uritex = {0};
+                    uritex.hItem = hSelectedItem;
+                    uritex.mask = TVIF_PARAM;
+                    TreeView_GetItem(m_hTreeControl, &uritex);
+                    if (uritex.lParam != 0)
+                    {
+                        LVITEM item = {0};
+                        int nItemCount = ListView_GetItemCount(m_hListControl);
+                        for (int i=0; i<nItemCount; ++i)
+                        {
+                            item.mask = LVIF_PARAM|LVIF_STATE;
+                            item.stateMask = LVIS_SELECTED;
+                            item.iItem = i;
+                            ListView_GetItem(m_hListControl, &item);
+                            if (item.state & LVIS_SELECTED)
+                            {
+                                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
+                                if (pLogEntry)
+                                {
+                                    // set the entry as unread
+                                    if (pLogEntry->read)
+                                    {
+                                        pLogEntry->read = false;
+                                        // refresh the name of the tree item to indicate the new
+                                        // number of unread log messages
+                                        // e.g. instead of 'TortoiseSVN (2)', show now 'TortoiseSVN (3)'
+                                        if (pRead->find(*(std::wstring*)uritex.lParam) != pRead->end())
+                                        {
+                                            const CUrlInfo * uinfo = &pRead->find(*(std::wstring*)uritex.lParam)->second;
+                                            // count the number of unread messages
+                                            int unread = 0;
+                                            for (auto it = uinfo->logentries.cbegin(); it != uinfo->logentries.cend(); ++it)
+                                            {
+                                                if (!it->second.read)
+                                                    unread++;
+                                            }
+                                            std::unique_ptr<WCHAR[]> str(new WCHAR[uinfo->name.size()+10]);
+                                            if (unread)
+                                            {
+                                                _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s (%d)"), uinfo->name.c_str(), unread);
+                                                uritex.state = TVIS_BOLD;
+                                                uritex.stateMask = TVIS_BOLD;
+                                                uritex.iImage = 3;
+                                                uritex.iSelectedImage = 3;
+                                            }
+                                            else
+                                            {
+                                                _stprintf_s(str.get(), uinfo->name.size()+10, _T("%s"), uinfo->name.c_str());
+                                                uritex.state = 0;
+                                                uritex.stateMask = TVIS_BOLD;
+                                                uritex.iImage = 2;
+                                                uritex.iSelectedImage = 2;
+                                            }
+
+                                            uritex.pszText = str.get();
+                                            uritex.mask = TVIF_TEXT|TVIF_STATE|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+                                            m_refreshNeeded = true;
+                                            TreeView_SetItem(m_hTreeControl, &uritex);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    m_pURLInfos->ReleaseReadOnlyData();
+                }
+                break;
+            case ID_MAIN_SHOWDIFFTSVN:
+            case ID_MAIN_SHOWDIFF:
+            case ID_MAIN_REMOVE:
+            case ID_MAIN_COPY:
+            case ID_POPUP_OPENWEBVIEWER:
+                {
+                    ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
+                }
+                break;
+            }
+        }
+    }
 }
 
 LRESULT CALLBACK CMainDlg::TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)

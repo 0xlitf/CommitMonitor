@@ -340,9 +340,6 @@
     <None Include="Setup\VersionNumberInclude.in.wxi">
       <Filter>WiX</Filter>
     </None>
-    <None Include="Setup\WixUI_Custom.wxs">
-      <Filter>WiX</Filter>
-    </None>
     <None Include="..\default.build">
       <Filter>Build Scripts</Filter>
     </None>

@@ -87,6 +87,7 @@ private:
     bool                    ShowDiff(bool bUseTSVN);
     void                    SortItems(int col);
     void                    SaveWndPosition();
+    void                    OnContextMenu(WPARAM wParam, LPARAM lParam);
 
     /// window procedure of the sub classed tree view control
     static LRESULT CALLBACK TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
