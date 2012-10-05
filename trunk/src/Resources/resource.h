@@ -174,6 +174,7 @@
 #define ID_POPUP_REPOSITORYB            32823
 #define ID_POPUP_SHOWLOG                32824
 #define ID_POPUP_REPOBROWSER            32825
+#define ID_POPUP_OPENREPOSITORYBROWSER  32838
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -182,7 +183,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        165
-#define _APS_NEXT_COMMAND_VALUE         32838
+#define _APS_NEXT_COMMAND_VALUE         32839
 #define _APS_NEXT_CONTROL_VALUE         1071
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

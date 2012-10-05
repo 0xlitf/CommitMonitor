@@ -3118,6 +3118,48 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                     ::SendMessage(*this, WM_COMMAND, MAKELONG(cmd, 0), 0);
                 }
                 break;
+            case ID_POPUP_OPENREPOSITORYBROWSER:
+                {
+                    TVITEMEX itemex = {0};
+                    itemex.hItem = TreeView_GetSelection(m_hTreeControl);
+                    itemex.mask = TVIF_PARAM;
+                    TreeView_GetItem(m_hTreeControl, &itemex);
+                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
+                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
+                    {
+                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
+                        if (info)
+                        {
+                            // call TortoiseProc to do the diff for us
+                            std::wstring sCmd = _T("\"");
+                            sCmd += std::wstring(tsvninstalled);
+                            sCmd += _T("\" /command:repobrowser /path:\"");
+                            sCmd += info->url;
+                            sCmd += _T("\" /rev:");
+
+                            LVITEM item = {0};
+                            int nSel = ListView_GetSelectionMark(m_hListControl);
+                            item.mask = LVIF_PARAM|LVIF_STATE;
+                            item.stateMask = LVIS_SELECTED;
+                            item.iItem = nSel;
+                            ListView_GetItem(m_hListControl, &item);
+                            if (item.state & LVIS_SELECTED)
+                            {
+                                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
+                                if (pLogEntry)
+                                {
+                                    TCHAR numBuf[100] = {0};
+                                    _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+                                    sCmd += numBuf;
+                                }
+                            }
+                            CAppUtils::LaunchApplication(sCmd);
+                        }
+                    }
+                    m_pURLInfos->ReleaseReadOnlyData();
+
+                }
+                break;
             }
         }
     }
