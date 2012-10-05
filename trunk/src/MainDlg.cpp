@@ -398,6 +398,11 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             if (wParam != SIZE_MINIMIZED)
                 DoResize(LOWORD(lParam), HIWORD(lParam));
+            if (wParam == SIZE_MAXIMIZED)
+            {
+                CRegStdDWORD regMaximized(_T("Software\\CommitMonitor\\Maximized"));
+                regMaximized = 1;
+            }
         }
         break;
     case WM_SYSCOMMAND:
