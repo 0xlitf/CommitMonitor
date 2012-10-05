@@ -259,8 +259,6 @@ LRESULT COptionsDlg::DoCommand(int id)
         {
             if (m_pURLInfos)
             {
-                CPasswordDlg dlg(*this);
-                INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
                 OPENFILENAME ofn = {0};     // common dialog box structure
                 TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
                 // Initialize OPENFILENAME
@@ -277,7 +275,10 @@ LRESULT COptionsDlg::DoCommand(int id)
                 {
                     if (wcscmp(&szFile[wcslen(szFile)-6], L".cmprj"))
                         wcscat_s(szFile, MAX_PATH, L".cmprj");
-                    m_pURLInfos->Export(szFile, ret == IDOK ? dlg.password.c_str() : L"");
+                    CPasswordDlg dlg(*this);
+                    INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
+                    if (ret == IDOK)
+                        m_pURLInfos->Export(szFile, dlg.password.c_str());
                 }
             }
         }
@@ -286,8 +287,6 @@ LRESULT COptionsDlg::DoCommand(int id)
         {
             if (m_pURLInfos)
             {
-                CPasswordDlg dlg(*this);
-                INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
                 OPENFILENAME ofn = {0};     // common dialog box structure
                 TCHAR szFile[MAX_PATH] = {0};  // buffer for file name
                 // Initialize OPENFILENAME
@@ -302,7 +301,10 @@ LRESULT COptionsDlg::DoCommand(int id)
                 // Display the Open dialog box.
                 if (GetOpenFileName(&ofn)==TRUE)
                 {
-                    m_pURLInfos->Import(szFile, ret == IDOK ? dlg.password.c_str() : L"");
+                    CPasswordDlg dlg(*this);
+                    INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
+                    if (ret == IDOK)
+                        m_pURLInfos->Import(szFile, dlg.password.c_str());
                 }
             }
         }
