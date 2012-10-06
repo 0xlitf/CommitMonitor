@@ -29,6 +29,7 @@
 #include "DirFileEnum.h"
 #include <uxtheme.h>
 #include <algorithm>
+#include <set>
 #include <assert.h>
 #include <cctype>
 #include <regex>
@@ -611,14 +612,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                                 int listCount = ListView_GetItemCount(m_hListControl);
                                 int listSelMark = ListView_GetSelectionMark(m_hListControl);
                                 TreeItemSelected(m_hTreeControl, tv.itemex.hItem);
-                                // re-set the currently selected item
-                                int itemsAdded = ListView_GetItemCount(m_hListControl) - listCount;
-                                m_bBlockListCtrlUI = false;
-                                if (ListView_GetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED) & LVIS_SELECTED)
-                                {
-                                    ListView_SetSelectionMark(m_hListControl, listSelMark + itemsAdded);
-                                    ListView_SetItemState(m_hListControl, listSelMark + itemsAdded, LVIS_SELECTED, LVIS_SELECTED);
-                                }
                             }
                         }
                     }
@@ -1756,7 +1749,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
     if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
     {
         const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
-
+        bool sameProject = m_lastSelectedProject.compare(info->name) == 0;
         m_lastSelectedProject = info->name;
 
         if ((!info->error.empty())&&(!info->parentpath))
@@ -1785,6 +1778,27 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         }
 
         m_bBlockListCtrlUI = true;
+        std::set<svn_revnum_t> selectedRevisions;
+        if (sameProject)
+        {
+            int nCount = ListView_GetItemCount(m_hListControl);
+            for (int i = 0; i < nCount; ++i)
+            {
+                LVITEM item = {0};
+                item.mask = LVIF_PARAM|LVIF_STATE;
+                item.stateMask = LVIS_SELECTED;
+                item.iItem = i;
+                item.lParam = 0;
+                ListView_GetItem(m_hListControl, &item);
+                if (item.state & LVIS_SELECTED)
+                {
+                    SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
+                    if (pLogEntry)
+                        selectedRevisions.insert(pLogEntry->revision);
+                }
+            }
+        }
+
         int selMark = ListView_GetSelectionMark(m_hListControl);
         DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
         ListView_DeleteAllItems(m_hListControl);
@@ -1934,6 +1948,12 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             item.mask = LVIF_TEXT|LVIF_PARAM;
             item.iItem = 0;
             item.lParam = (LPARAM)&it->second;
+            if (selectedRevisions.find(it->second.revision) != selectedRevisions.end())
+            {
+                item.mask |= LVIF_STATE;
+                item.stateMask = LVIS_SELECTED;
+                item.state = LVIS_SELECTED;
+            }
             _stprintf_s(buf, 1024, _T("%ld"), it->first);
             item.pszText = buf;
             ListView_InsertItem(m_hListControl, &item);
@@ -1961,13 +1981,18 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             if (iLastUnread >= 0)
                 iLastUnread++;
         }
-        ListView_SetSelectionMark(m_hListControl, selMark);
         m_bBlockListCtrlUI = false;
         ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 3, LVSCW_AUTOSIZE_USEHEADER);
         ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
+        if ((selMark >= 0) && sameProject)
+        {
+            ListView_SetSelectionMark(m_hListControl, selMark);
+            ListView_SetItemState(m_hListControl, selMark, LVIS_SELECTED, LVIS_SELECTED);
+            ListView_EnsureVisible(m_hListControl, selMark, FALSE);
+        }
 
         ::InvalidateRect(m_hListControl, NULL, false);
         m_listviewUnfilteredCount = info->logentries.size();
