@@ -2079,6 +2079,7 @@ void CMainDlg::RefreshAll(HTREEITEM hItem)
         url = info->url;
     }
     m_pURLInfos->ReleaseWriteData();
+    m_refreshNeeded = true;
     SendMessage(m_hParent, COMMITMONITOR_GETALL, 0, (LPARAM)url.c_str());
 }
 
