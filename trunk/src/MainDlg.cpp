@@ -3031,7 +3031,7 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                 const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
                 if ((info)&&(!info->webviewer.empty()))
                 {
-                    uItem = std::wstring(tsvninstalled).empty() ? 1 : 2;
+                    uItem = std::wstring(tsvninstalled).empty() ? 2 : 3;
                     GetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
                     iinfo.fState &= ~MFS_DISABLED;
                     SetMenuItemInfo(hMenu, uItem, MF_BYPOSITION, &iinfo);
