@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<project name="zlib" default="build" basedir="..\zlib">
+
+  <!-- ====================================================================== -->
+  <!-- Project targets                                                        -->
+  <!-- ====================================================================== -->
+  <target name="rebuild" depends="clean,build" />
+
+  <target name="clean">
+    <description>
+      Cleans previous built files.
+    </description>
+
+    <if test="${cleanup == 'yes'}">
+      <delete>
+        <fileset>
+          <include name="${configuration}_${platform}\**" />
+        </fileset>
+      </delete>
+    </if>
+  </target>
+
+  <target name="build" depends="clean">
+    <mkdir dir="${configuration}_${platform}" />
+    <if test="${platform == 'win32'}">
+      <copy todir="." overwrite="true">
+        <fileset basedir="contrib/masmx86">
+          <include name="*.asm" />
+          <include name="*.c" />
+        </fileset>
+      </copy>
+      <if test="${file::exists('gvmat32.asm')}" >
+        <exec program="ml" commandline="-nologo -c -Zi -coff -DASMV -DASMINF -Fo${configuration}_${platform}\gvmat32.obj gvmat32.asm" />
+      </if>
+    </if>
+    <if test="${platform == 'x64'}">
+      <copy todir="." overwrite="true">
+        <fileset basedir="contrib/masmx64">
+          <include name="*.asm" />
+          <include name="*.c" />
+        </fileset>
+      </copy>
+      <exec program="ml64" commandline="-nologo -c -Zi -Fo${configuration}_${platform}\gvmat64.obj gvmat64.asm" />
+    </if>
+    <cl outputdir="${configuration}_${platform}">
+      <arg value="/O2" if="${configuration == 'release'}" />
+      <arg value="/Oy" if="${configuration == 'release'}" />
+      <arg value="/Od" if="${configuration == 'debug'}" />
+      <arg value="/FD" />
+      <arg value="/EHa-" />
+      <arg value="/MT" if="${configuration == 'release'}" />
+      <arg value="/MTd" if="${configuration == 'debug'}" />
+      <arg value="/Gy" />
+      <arg value="/W0" />
+      <arg value="/nologo" />
+      <arg value="/c" />
+      <arg value="/Zi" />
+      <arg value="/MP" />
+      <arg value="/errorReport:prompt" />
+      <arg value="/GL" if="${configuration == 'release'}" />
+      <sources>
+        <include name="*.c" />
+      </sources>
+      <includedirs>
+        <include name="." />
+      </includedirs>
+      <defines>
+        <define name="_CRT_NONSTDC_NO_DEPRECATE" />
+        <define name="_CRT_SECURE_NO_DEPRECATE" />
+        <define name="APR_DECLARE_STATIC" />
+        <define name="APU_DECLARE_STATIC" />
+        <define name="WIN32" />
+        <define name="_WINDOWS" />
+        <define name="_WIN32" />
+        <define name="HAS_ADLER32_FAST" />
+        <define name="WIN64" if="${platform == 'x64'}" />
+        <define name="NDEBUG" if="${configuration == 'release'}"/>
+        <define name="_DEBUG" if="${configuration == 'debug'}"/>
+      </defines>
+    </cl>
+    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
+    <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
+    <lib
+      output="${configuration}_${platform}\zlibstat.lib"
+      options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      <arg value="/LTCG" if="${configuration == 'release'}" />
+      <sources>
+        <include name="${configuration}_${platform}\*.obj" />
+        <exclude name="${configuration}_${platform}\example.obj" />
+      </sources>
+    </lib>
+  </target>
+
+</project>
