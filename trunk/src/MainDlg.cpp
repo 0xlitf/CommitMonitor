@@ -609,8 +609,6 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                             if (tv.itemex.state & TVIS_SELECTED)
                             {
                                 m_bBlockListCtrlUI = true;
-                                int listCount = ListView_GetItemCount(m_hListControl);
-                                int listSelMark = ListView_GetSelectionMark(m_hListControl);
                                 TreeItemSelected(m_hTreeControl, tv.itemex.hItem);
                             }
                         }
