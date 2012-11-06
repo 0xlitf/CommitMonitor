@@ -44,7 +44,7 @@ LRESULT CUpdateDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
         {
             InitDialog(hwndDlg, IDI_COMMITMONITOR);
             // initialize the controls
-            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBURL, _T("http://tools.tortoisesvn.net/CommitMonitor"));
+            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBURL, _T("http://tools.tortoisesvn.net/CommitMonitor.html"));
 
             ExtendFrameIntoClientArea((UINT)-1, (UINT)-1, (UINT)-1, (UINT)-1);
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
