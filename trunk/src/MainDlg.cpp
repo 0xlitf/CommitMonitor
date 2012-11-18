@@ -806,37 +806,47 @@ LRESULT CMainDlg::DoCommand(int id)
                     TreeView_GetItem(m_hTreeControl, &itemex);
                     std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
                     HTREEITEM hPrev = TVI_ROOT;
-                    std::map<std::wstring,CUrlInfo>::iterator it = pWrite->find(*(std::wstring*)itemex.lParam);
+                    std::wstring delUrl = *(std::wstring*)itemex.lParam;
+                    std::map<std::wstring,CUrlInfo>::iterator it = pWrite->find(delUrl);
                     if (it != pWrite->end())
                     {
-                        std::wstring mask = it->second.name;
                         // ask the user if he really wants to remove the url
                         TCHAR question[4096] = {0};
-                        _stprintf_s(question, 4096, _T("Do you really want to stop monitoring the project\n%s ?"), mask.c_str());
+                        _stprintf_s(question, 4096, _T("Do you really want to stop monitoring the project\n%s ?"), it->second.name.c_str());
                         if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO)==IDYES)
                         {
-                            // delete all fetched and stored diff files
-                            mask += _T("*.*");
-                            CSimpleFileFind sff(CAppUtils::GetDataDir(), mask.c_str());
-                            while (sff.FindNextFileNoDots())
+                            // go through the whole list: deleting just the selected item is not enough
+                            // we also have to remove all sub-projects as well.
+                            bool bRecursive = it->second.parentpath;
+                            for (auto recIt = pWrite->begin(); recIt != pWrite->end(); ++recIt)
                             {
-                                DeleteFile(sff.GetFilePath().c_str());
-                            }
+                                if (recIt->first.size() >= delUrl.size())
+                                {
+                                    if (recIt->first.substr(0, delUrl.size()).compare(delUrl)==0)
+                                    {
+                                        if ( (recIt->first.compare(delUrl)==0) || ((bRecursive)&&(recIt->first[delUrl.size()] == '/')) )
+                                        {
+                                            // delete all fetched and stored diff files
+                                            std::wstring mask = recIt->second.name;
+                                            mask += _T("*.*");
+                                            CSimpleFileFind sff(CAppUtils::GetDataDir(), mask.c_str());
+                                            while (sff.FindNextFileNoDots())
+                                            {
+                                                DeleteFile(sff.GetFilePath().c_str());
+                                            }
+                                            pWrite->erase(recIt);
+                                            hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
+                                            TreeView_DeleteItem(m_hTreeControl, hItem);
 
-                            int unread = 0;
-                            for (auto logit = it->second.logentries.cbegin(); logit != it->second.logentries.cend(); ++logit)
-                            {
-                                if (!logit->second.read)
-                                    unread++;
+                                            recIt = pWrite->begin();
+                                        }
+                                    }
+                                }
                             }
-                            pWrite->erase(it);
-                            if (unread)
-                                ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
-                            ::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
-                            hPrev = TreeView_GetPrevSibling(m_hTreeControl, hItem);
                             m_pURLInfos->ReleaseWriteData();
                             m_pURLInfos->Save();
-                            TreeView_DeleteItem(m_hTreeControl, hItem);
+                            ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
+                            ::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
                             if (hPrev == NULL)
                                 hPrev = TreeView_GetRoot(m_hTreeControl);
                             if ((hPrev)&&(hPrev != TVI_ROOT))
