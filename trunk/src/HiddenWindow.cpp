@@ -1153,7 +1153,7 @@ DWORD CHiddenWindow::RunThread()
                 // check whether the url points to an SVNParentPath: it points
                 // to a repository, but we got an error for some reason when
                 // trying to find the HEAD revision
-                if (pSCCS->Err && (it->second.logentries.size() == 0)&&(it->second.lastcheckedrev == 0)&&((pSCCS->Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)))
+                if (pSCCS->Err && (it->second.logentries.size() == 0)&&(it->second.lastcheckedrev == 0)&&((pSCCS->Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_MALFORMED_DATA)))
                 {
                     // if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
                     // instead of pointing to an actual repository.
