@@ -7,16 +7,18 @@ First, you need to install the compiler package.
   extensions (or the SP1 for VS2010 which contains the feature pack).
 
 Next you need to install some utilities/programs:
-- Python 2.7.3(*)         : http://www.python.org/windows/
-- Perl                    : http://www.activestate.com/Products/ActivePerl/
-- WiX 3.5(*)              : http://wix.sourceforge.net
-- NAnt(*)                 : http://nant.sourceforge.net
+- Python 2.7.3(*)   : http://www.python.org/windows/
+- Perl              : http://strawberryperl.com/releases.html
+                      or
+                      http://www.activestate.com/Products/ActivePerl/
+- WiX 3.6(*)        : http://wix.sourceforge.net
+- NAnt(*)           : http://nant.sourceforge.net
 
-(*) Add the paths of the binaries to the PATH environment variable
-    You may have to logoff/logon to make the new environment variables take effect!
+(*) Add the paths of the binaries to the PATH environment variable.
+    You may have to logoff/logon for the new environment variables take effect!
 
 Now you're almost ready. Only a few more steps to do:
-- create a new folder on your harddisk, e.g. SVN.
+- Create a new folder on your harddisk, e.g. SVN.
 - Checkout the CommitMonitor sources from the Subversion repository into
   SVN\CommitMonitor
 - Make a copy of the file default.build.user.tmpl in the CommitMonitor root folder and
@@ -40,7 +42,6 @@ Building packages
   .sln file in VS2010 and compile the CommitMonitor there.
   Don't forget to also build the debug versions of the libraries:
   > nant debug Subversion
-
 
   If you encounter any build errors, you can run nant again like this:
 
