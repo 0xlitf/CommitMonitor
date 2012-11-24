@@ -1833,12 +1833,10 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         TCHAR buf[1024];
         int iLastUnread = -1;
 
-        int len = GetWindowTextLength(m_hFilterControl);
-        std::unique_ptr<WCHAR[]> buffer(new WCHAR[len+1]);
-        GetDlgItemText(*this, IDC_FILTERSTRING, buffer.get(), len+1);
-        std::wstring filterstring = std::wstring(buffer.get(), len);
+        auto buffer = GetDlgItemText(IDC_FILTERSTRING);
+        std::wstring filterstring = std::wstring(buffer.get());
         bool bNegateFilter = false;
-        if (len)
+        if (!filterstring.empty())
             bNegateFilter = filterstring[0] == '-';
         if (bNegateFilter)
         {

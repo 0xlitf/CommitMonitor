@@ -25,12 +25,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{766eaf8f-6f8b-4b49-b050-bdf4ced096af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sktoolslib">
+      <UniqueIdentifier>{839d8d48-0ffb-4fb1-b865-1fc7447eacca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Callback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CommitMonitor.cpp">
@@ -81,52 +81,19 @@
     <ClCompile Include="UrlInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AeroControls.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="AeroGlass.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="AppUtils.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseDialog.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseWindow.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="CmdLineParser.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="DirFileEnum.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="hyperlink.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="ListCtrl.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="MappedInFile.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="ReaderWriterLock.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Registry.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="UnicodeUtils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="SCCS.cpp">
@@ -135,12 +102,48 @@
     <ClCompile Include="Accurev.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\Registry.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\StringUtils.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\UnicodeUtils.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\AeroControls.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\AeroGlass.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\BaseDialog.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\BaseWindow.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\Callback.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\CmdLineParser.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\DirFileEnum.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\hyperlink.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\ListCtrl.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\ReaderWriterLock.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CommitMonitor.h">
@@ -194,40 +197,13 @@
     <ClInclude Include="UrlInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AeroControls.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="AeroGlass.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="AppUtils.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseDialog.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseWindow.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\ext\BlowFish\Blowfish.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ClipboardHelper.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="CmdLineParser.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Debug.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="DirFileEnum.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="hyperlink.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="ListCtrl.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="MappedInFile.h">
@@ -236,22 +212,7 @@
     <ClInclude Include="memdc.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ReaderWriterLock.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Registry.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleIni.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\ext\snarl\SnarlInterface.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="StringUtils.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="UnicodeUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Accurev.h">
@@ -259,6 +220,51 @@
     </ClInclude>
     <ClInclude Include="SCCS.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\Registry.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\SimpleIni.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\StringUtils.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\UnicodeUtils.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\AeroControls.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\AeroGlass.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\BaseDialog.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\BaseWindow.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\Callback.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\ClipboardHelper.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\CmdLineParser.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\DirFileEnum.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\hyperlink.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\ListCtrl.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\ReaderWriterLock.h">
+      <Filter>sktoolslib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

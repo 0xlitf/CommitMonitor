@@ -76,7 +76,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -99,7 +99,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -123,7 +123,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -149,7 +149,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;Resources;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -173,9 +173,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ext\sktoolslib\AeroControls.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\AeroGlass.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\BaseDialog.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\BaseWindow.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\Callback.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\CmdLineParser.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\DirFileEnum.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\hyperlink.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\ListCtrl.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\ReaderWriterLock.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\Registry.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\StringUtils.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\UnicodeUtils.cpp" />
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="Accurev.cpp" />
-    <ClCompile Include="Callback.cpp" />
     <ClCompile Include="CommitMonitor.cpp" />
     <ClCompile Include="DiffViewer.cpp" />
     <ClCompile Include="FindBar.cpp" />
@@ -198,11 +210,7 @@
     <ClCompile Include="UpdateDlg.cpp" />
     <ClCompile Include="URLDlg.cpp" />
     <ClCompile Include="UrlInfo.cpp" />
-    <ClCompile Include="AeroControls.cpp" />
-    <ClCompile Include="AeroGlass.cpp" />
     <ClCompile Include="AppUtils.cpp" />
-    <ClCompile Include="BaseDialog.cpp" />
-    <ClCompile Include="BaseWindow.cpp" />
     <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -213,14 +221,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="CmdLineParser.cpp" />
     <ClCompile Include="Debug.cpp" />
-    <ClCompile Include="DirFileEnum.cpp" />
-    <ClCompile Include="hyperlink.cpp" />
-    <ClCompile Include="ListCtrl.cpp" />
     <ClCompile Include="MappedInFile.cpp" />
-    <ClCompile Include="ReaderWriterLock.cpp" />
-    <ClCompile Include="Registry.cpp" />
     <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -235,12 +237,25 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="UnicodeUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ext\sktoolslib\AeroControls.h" />
+    <ClInclude Include="..\ext\sktoolslib\AeroGlass.h" />
+    <ClInclude Include="..\ext\sktoolslib\BaseDialog.h" />
+    <ClInclude Include="..\ext\sktoolslib\BaseWindow.h" />
+    <ClInclude Include="..\ext\sktoolslib\Callback.h" />
+    <ClInclude Include="..\ext\sktoolslib\ClipboardHelper.h" />
+    <ClInclude Include="..\ext\sktoolslib\CmdLineParser.h" />
+    <ClInclude Include="..\ext\sktoolslib\DirFileEnum.h" />
+    <ClInclude Include="..\ext\sktoolslib\hyperlink.h" />
+    <ClInclude Include="..\ext\sktoolslib\ListCtrl.h" />
+    <ClInclude Include="..\ext\sktoolslib\ReaderWriterLock.h" />
+    <ClInclude Include="..\ext\sktoolslib\Registry.h" />
+    <ClInclude Include="..\ext\sktoolslib\SimpleIni.h" />
+    <ClInclude Include="..\ext\sktoolslib\StringUtils.h" />
+    <ClInclude Include="..\ext\sktoolslib\UnicodeUtils.h" />
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="Accurev.h" />
-    <ClInclude Include="Callback.h" />
     <ClInclude Include="CommitMonitor.h" />
     <ClInclude Include="DiffViewer.h" />
     <ClInclude Include="FindBar.h" />
@@ -259,26 +274,12 @@
     <ClInclude Include="UpdateDlg.h" />
     <ClInclude Include="URLDlg.h" />
     <ClInclude Include="UrlInfo.h" />
-    <ClInclude Include="AeroControls.h" />
-    <ClInclude Include="AeroGlass.h" />
     <ClInclude Include="AppUtils.h" />
-    <ClInclude Include="BaseDialog.h" />
-    <ClInclude Include="BaseWindow.h" />
     <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
-    <ClInclude Include="ClipboardHelper.h" />
-    <ClInclude Include="CmdLineParser.h" />
     <ClInclude Include="Debug.h" />
-    <ClInclude Include="DirFileEnum.h" />
-    <ClInclude Include="hyperlink.h" />
-    <ClInclude Include="ListCtrl.h" />
     <ClInclude Include="MappedInFile.h" />
     <ClInclude Include="memdc.h" />
-    <ClInclude Include="ReaderWriterLock.h" />
-    <ClInclude Include="Registry.h" />
-    <ClInclude Include="SimpleIni.h" />
     <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
-    <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="UnicodeUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\about.ico" />
