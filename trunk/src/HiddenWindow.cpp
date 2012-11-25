@@ -1099,11 +1099,11 @@ DWORD CHiddenWindow::RunThread()
                     writeIt->second.error = pSCCS->GetLastErrorMsg();
                     if (pSCCS->Err)
                         writeIt->second.errNr = pSCCS->Err->apr_err;
-                    TCHAR sTitle[1024] = {0};
                     if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                     {
                         if (!hadError)
                         {
+                            TCHAR sTitle[1024] = {0};
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
@@ -1133,11 +1133,11 @@ DWORD CHiddenWindow::RunThread()
                     writeIt->second.error = pSCCS->GetLastErrorMsg();
                     if (pSCCS->Err)
                         writeIt->second.errNr = pSCCS->Err->apr_err;
-                    TCHAR sTitle[1024] = {0};
                     if (!writeIt->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                     {
                         if (!hadError)
                         {
+                            TCHAR sTitle[1024] = {0};
                             _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
@@ -1208,7 +1208,6 @@ DWORD CHiddenWindow::RunThread()
                             const char * reTitle2 = "<\\s*index\\s*rev\\s*=\\s*\"0\"";
                             const std::regex titex(reTitle, std::regex_constants::icase | std::regex_constants::ECMAScript);
                             const std::regex titex2(reTitle2, std::regex_constants::icase | std::regex_constants::ECMAScript);
-                            std::match_results<std::string::const_iterator> fwhat;
                             if (std::regex_search(in.begin(), in.end(), titex, std::regex_constants::match_default))
                             {
                                 TRACE(_T("found repository url instead of SVNParentPathList\n"));
@@ -1220,7 +1219,6 @@ DWORD CHiddenWindow::RunThread()
 
                             const std::regex expression(re, std::regex_constants::icase | std::regex_constants::ECMAScript);
                             const std::regex expression2(re2, std::regex_constants::icase | std::regex_constants::ECMAScript);
-                            std::match_results<std::string::const_iterator> what;
                             bool hasNewEntries = false;
                             int nCountNewEntries = 0;
                             std::wstring popupText;
@@ -1356,7 +1354,6 @@ DWORD CHiddenWindow::RunThread()
                 {
                     oldweek = week;
                     //
-                    std::wstring temp;
                     std::wstring tempfile = CAppUtils::GetTempFilePath();
 
                     CRegStdString checkurluser = CRegStdString(_T("Software\\CommitMonitor\\UpdateCheckURL"), _T(""));

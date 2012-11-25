@@ -572,7 +572,7 @@ bool ACCUREV::AccuGetLastPromote(const std::wstring& repo, const std::wstring& u
 bool ACCUREV::AccuGetHistory(const std::wstring& repo, const std::wstring& url, long startrev, long endrev, std::wstring& rawLog)
 {
   bool retVal;
-  std::wstring stdOut, stdErr;
+  std::wstring stdErr;
 
   rawLog.clear();
 
@@ -602,7 +602,7 @@ bool ACCUREV::AccuIssueList(const std::wstring& repo, const std::wstring& url, l
   UNREFERENCED_PARAMETER(repo);
 
   bool retVal;
-  std::wstring stdOut, stdErr;
+  std::wstring stdErr;
 
   rawLog.clear();
 
