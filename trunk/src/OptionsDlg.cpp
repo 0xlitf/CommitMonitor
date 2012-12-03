@@ -30,8 +30,8 @@
 COptionsDlg::COptionsDlg(HWND hParent)
     : m_pURLInfos(NULL)
     , m_hHiddenWnd(NULL)
+	, m_hParent(hParent)
 {
-    m_hParent = hParent;
 }
 
 COptionsDlg::~COptionsDlg(void)
