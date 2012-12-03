@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007 - Stefan Kueng
+// Copyright (C) 2007, 2012 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ public:
     CFindBar();
     ~CFindBar(void);
 
-    void                    SetParent(HWND hParent) {m_hParent = hParent;}
+    void                    SetParent(HWND hParent) { m_hParent = hParent; }
 protected:
     LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
     LRESULT                 DoCommand(int id, int msg);
