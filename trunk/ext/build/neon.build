@@ -48,7 +48,6 @@
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
-      <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${configuration == 'release'}" />
       <arg value="/MTd" if="${configuration == 'debug'}" />
@@ -58,7 +57,6 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/MP" />
-      <arg value="/errorReport:prompt" />
       <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="src\ne_207.c" />

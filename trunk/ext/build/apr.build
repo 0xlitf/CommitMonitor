@@ -31,17 +31,11 @@
     <echo file="include\apr.h" message="${configfile}" />
 
     <copy file="include\arch\unix\apr_arch_poll_private.h" tofile="include\arch\win32\apr_arch_poll_private.h" overwrite="true" />
-    <rc rcfile="libapr.rc" output="${configuration}_${platform}\libapr_tsvn.res">
-      <includedirs>
-        <include name="include" />
-      </includedirs>
-    </rc>
 
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
-      <arg value="/FD" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${configuration == 'release'}" />
       <arg value="/MTd" if="${configuration == 'debug'}" />
@@ -51,7 +45,6 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/MP" />
-      <arg value="/errorReport:prompt" />
       <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="network_io\win32\*.c" />

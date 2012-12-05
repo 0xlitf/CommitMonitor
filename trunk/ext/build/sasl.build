@@ -43,7 +43,6 @@
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
-      <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration == 'debug')}" />
@@ -53,7 +52,6 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/MP" />
-      <arg value="/errorReport:prompt" />
       <arg value="/GL" if="${configuration == 'release'}" />
       <sources>
         <include name="lib\auxprop.c" />
@@ -117,7 +115,6 @@
       <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/Gs-" if="${configuration == 'release'}" />
       <arg value="/GS-" if="${configuration == 'release'}" />
-      <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration == 'debug')}" />
@@ -127,7 +124,6 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/MP" />
-      <arg value="/errorReport:prompt" />
       <arg value="/GL" />
       <sources>
         <include name="lib\auxprop.c" />
@@ -201,7 +197,6 @@
       <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/Gs-" if="${configuration == 'release'}" />
       <arg value="/GS-" if="${configuration == 'release'}" />
-      <arg value="/FD" />
       <arg value="/EHa-" />
       <arg value="/MT" if="${(configuration == 'release')}" />
       <arg value="/MTd" if="${(configuration == 'debug')}" />
@@ -211,7 +206,6 @@
       <arg value="/c" />
       <arg value="/Zi" />
       <arg value="/MP" />
-      <arg value="/errorReport:prompt" />
       <arg value="/GL" />
       <sources>
         <include name="plugins\plugin_common.c" />
