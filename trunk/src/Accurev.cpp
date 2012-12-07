@@ -630,7 +630,7 @@ bool ACCUREV::AccuIssueList(const std::wstring& repo, const std::wstring& url, l
 
 size_t ACCUREV::ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, std::wstring& stdOut, std::wstring& stdErr)
 {
-    std::wstring fullPathToExe = (LPCTSTR)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
+    std::wstring fullPathToExe = (std::wstring)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
     //size_t iMyCounter = 0, iReturnVal = 0;
     size_t iReturnVal = 0;
     std::wstring sTempStr = L"";

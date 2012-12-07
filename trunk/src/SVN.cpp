@@ -110,18 +110,18 @@ SVN::SVN(void)
     m_pctx->client_name = apr_pstrdup(pool, namestring);
 
     //set up the SVN_SSH param
-    std::wstring tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
+    std::wstring tsvn_ssh = (std::wstring)CRegStdString(_T("Software\\TortoiseSVN\\SSH"));
     if (tsvn_ssh.empty())
     {
-        tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\SSH"), _T(""), false, HKEY_CURRENT_USER, KEY_WOW64_64KEY);
+        tsvn_ssh = (std::wstring)CRegStdString(_T("Software\\TortoiseSVN\\SSH"), _T(""), false, HKEY_CURRENT_USER, KEY_WOW64_64KEY);
         if (tsvn_ssh.empty())
         {
             // maybe the user has TortoiseSVN installed?
             // if so, try to use TortoisePlink with the default params for SSH
-            tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE);
+            tsvn_ssh = (std::wstring)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE);
             if (tsvn_ssh.empty())
             {
-                tsvn_ssh = (LPCTSTR)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
+                tsvn_ssh = (std::wstring)CRegStdString(_T("Software\\TortoiseSVN\\Directory"), _T(""), false, HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
             }
             if (!tsvn_ssh.empty())
             {
