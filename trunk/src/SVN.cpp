@@ -106,7 +106,7 @@ SVN::SVN(void)
     m_pctx->progress_baton = this;
     // create a client name string to be used for all http/https connections
     char namestring[MAX_PATH] = {0};
-    sprintf_s(namestring, MAX_PATH, "CommitMonitor-%d.%d.%d.%d", CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
+    sprintf_s(namestring, _countof(namestring), "CommitMonitor-%d.%d.%d.%d", CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
     m_pctx->client_name = apr_pstrdup(pool, namestring);
 
     //set up the SVN_SSH param

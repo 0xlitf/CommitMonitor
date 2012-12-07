@@ -174,7 +174,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             if (bStartWithWindows)
             {
                 TCHAR buf[MAX_PATH*4];
-                GetModuleFileName(NULL, buf, MAX_PATH*4);
+                GetModuleFileName(NULL, buf, _countof(buf));
                 std::wstring cmd = std::wstring(buf);
                 cmd += _T(" /hidden");
                 regStartWithWindows = cmd;
@@ -274,7 +274,7 @@ LRESULT COptionsDlg::DoCommand(int id)
                 if (GetSaveFileName(&ofn)==TRUE)
                 {
                     if (wcscmp(&szFile[wcslen(szFile)-6], L".cmprj"))
-                        wcscat_s(szFile, MAX_PATH, L".cmprj");
+                        wcscat_s(szFile, _countof(szFile), L".cmprj");
                     CPasswordDlg dlg(*this);
                     INT_PTR ret = dlg.DoModal(hResource, IDD_PASSWORD, *this);
                     if (ret == IDOK)

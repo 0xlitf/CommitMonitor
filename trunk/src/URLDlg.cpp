@@ -112,7 +112,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (info.minminutesinterval)
             {
                 TCHAR infobuf[MAX_PATH] = {0};
-                _stprintf_s(infobuf, MAX_PATH, _T("Interval for repository update checks.\nMiminum set by svnrobots.txt file to %ld minutes."), info.minminutesinterval);
+                _stprintf_s(infobuf, _countof(infobuf), _T("Interval for repository update checks.\nMiminum set by svnrobots.txt file to %ld minutes."), info.minminutesinterval);
                 AddToolTip(IDC_CHECKTIME, infobuf);
             }
             else

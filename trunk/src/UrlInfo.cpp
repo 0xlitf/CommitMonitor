@@ -387,7 +387,7 @@ bool CUrlInfos::Save(LPCWSTR filename)
         TRACE(_T("data saved\n"));
 #ifdef _DEBUG
         TCHAR timerbuf[MAX_PATH] = {0};
-        _stprintf_s(timerbuf, MAX_PATH, _T("time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+        _stprintf_s(timerbuf, _countof(timerbuf), _T("time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
         TRACE(timerbuf);
 #endif
         return true;
@@ -410,7 +410,7 @@ bool CUrlInfos::Load(LPCWSTR filename)
     TRACE(_T("data loaded\n"));
 #ifdef _DEBUG
     TCHAR timerbuf[MAX_PATH] = {0};
-    _stprintf_s(timerbuf, MAX_PATH, _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+    _stprintf_s(timerbuf, _countof(timerbuf), _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
     TRACE(timerbuf);
 #endif
     return bRet;
