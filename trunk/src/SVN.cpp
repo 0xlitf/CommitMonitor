@@ -699,13 +699,13 @@ void SVN::progress_func(apr_off_t progress, apr_off_t total, void *baton, apr_po
         pSVN->m_SVNProgressMSG.BytesPerSecond = average;
         if (average < 1024)
         {
-            _stprintf_s(formatbuf, 4096, _T("%ld Bytes/s"), (int)average);
+            _stprintf_s(formatbuf, _countof(formatbuf), _T("%ld Bytes/s"), (int)average);
             pSVN->m_SVNProgressMSG.SpeedString = formatbuf;
         }
         else
         {
             double averagekb = (double)average / 1024.0;
-            _stprintf_s(formatbuf, 4096, _T("%.2f kBytes/s"), averagekb);
+            _stprintf_s(formatbuf, _countof(formatbuf), _T("%.2f kBytes/s"), averagekb);
             pSVN->m_SVNProgressMSG.SpeedString = formatbuf;
         }
         if (pSVN->m_pProgressDlg)
@@ -715,13 +715,13 @@ void SVN::progress_func(apr_off_t progress, apr_off_t total, void *baton, apr_po
 
             std::wstring sTotal;
             if (pSVN->m_SVNProgressMSG.overall_total < 1024)
-                _stprintf_s(formatbuf, 4096, _T("%I64d Bytes transferred"), pSVN->m_SVNProgressMSG.overall_total);
+                _stprintf_s(formatbuf, _countof(formatbuf), _T("%I64d Bytes transferred"), pSVN->m_SVNProgressMSG.overall_total);
             else if (pSVN->m_SVNProgressMSG.overall_total < 1200000)
-                _stprintf_s(formatbuf, 4096, _T("%I64d kBytes transferred"), pSVN->m_SVNProgressMSG.overall_total / 1024);
+                _stprintf_s(formatbuf, _countof(formatbuf), _T("%I64d kBytes transferred"), pSVN->m_SVNProgressMSG.overall_total / 1024);
             else
-                _stprintf_s(formatbuf, 4096, _T("%.2f MBytes transferred"), (double)((double)pSVN->m_SVNProgressMSG.overall_total / 1024000.0));
+                _stprintf_s(formatbuf, _countof(formatbuf), _T("%.2f MBytes transferred"), (double)((double)pSVN->m_SVNProgressMSG.overall_total / 1024000.0));
             sTotal = formatbuf;
-            _stprintf_s(formatbuf, 4096, _T("%s, at %s"), sTotal.c_str(), pSVN->m_SVNProgressMSG.SpeedString.c_str());
+            _stprintf_s(formatbuf, _countof(formatbuf), _T("%s, at %s"), sTotal.c_str(), pSVN->m_SVNProgressMSG.SpeedString.c_str());
 
             pSVN->m_pProgressDlg->SetLine(2, formatbuf);
             if (pSVN->m_pProgressDlg->HasUserCancelled())

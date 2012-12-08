@@ -730,7 +730,7 @@ DWORD CHiddenWindow::RunThread()
             pSCCS->SetAuthInfo(it->second.username, it->second.password);
             if (m_hMainDlg)
             {
-                _stprintf_s(infotextbuf, 1024, _T("checking %s ..."), it->first.c_str());
+                _stprintf_s(infotextbuf, _countof(infotextbuf), _T("checking %s ..."), it->first.c_str());
                 SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
             }
             svn_revnum_t headrev = pSCCS->GetHEADRevision(it->second.accurevRepo, it->first);
@@ -757,7 +757,7 @@ DWORD CHiddenWindow::RunThread()
                 TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
                 if (m_hMainDlg)
                 {
-                    _stprintf_s(infotextbuf, 1024, _T("getting log for %s"), it->first.c_str());
+                    _stprintf_s(infotextbuf, _countof(infotextbuf), _T("getting log for %s"), it->first.c_str());
                     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
                 }
                 int nNewCommits = 0;        // commits without ignored ones
@@ -864,7 +864,7 @@ DWORD CHiddenWindow::RunThread()
                         {
                             TCHAR buf[4096];
                             // first, find a name where to store the diff for that revision
-                            _stprintf_s(buf, 4096, _T("%s_%ld.diff"), it->second.name.c_str(), logit->first);
+                            _stprintf_s(buf, _countof(buf), _T("%s_%ld.diff"), it->second.name.c_str(), logit->first);
                             std::wstring diffFileName = CAppUtils::GetAppDataDir();
                             diffFileName += _T("/");
                             diffFileName += std::wstring(buf);
@@ -874,7 +874,7 @@ DWORD CHiddenWindow::RunThread()
                                 // get the diff
                                 if (m_hMainDlg)
                                 {
-                                    _stprintf_s(infotextbuf, 1024, _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
+                                    _stprintf_s(infotextbuf, _countof(infotextbuf), _T("getting diff for %s, revision %ld"), it->first.c_str(), logit->first);
                                     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
                                 }
                                 if (!pSCCS->Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, std::wstring(), false, diffFileName, std::wstring()))
@@ -1001,16 +1001,16 @@ DWORD CHiddenWindow::RunThread()
                         TCHAR sTitle[1024] = {0};
                         if (!it->second.error.empty() && DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE)))
                         {
-                            _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%s\nfailed to connect!"), it->second.name.c_str());
                             sPopupText = it->second.error;
                         }
                         else
                         {
                             data.sProject = it->second.name;
                             if (nNewCommits == 1)
-                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%s\nhas %d new commit"), it->second.name.c_str(), nNewCommits);
                         else
-                            _stprintf_s(sTitle, 1024, _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%s\nhas %d new commits"), it->second.name.c_str(), nNewCommits);
                         }
                         data.sText = sPopupText;
                         data.sTitle = std::wstring(sTitle);
@@ -1059,7 +1059,7 @@ DWORD CHiddenWindow::RunThread()
                         std::wstring commandline = it->second.callcommand;
                         // prepare the revision
                         TCHAR revBuf[40] = {0};
-                        _stprintf_s(revBuf, 40, _T("%ld"), headrev);
+                        _stprintf_s(revBuf, _countof(revBuf), _T("%ld"), headrev);
                         std::wstring srev = revBuf;
                         CAppUtils::SearchReplace(commandline, tag, srev);
 
@@ -1118,7 +1118,7 @@ DWORD CHiddenWindow::RunThread()
                 m_UrlInfos.ReleaseWriteData();
                 if (m_hMainDlg)
                 {
-                    _stprintf_s(infotextbuf, 1024, _T("no new commits for %s"), it->first.c_str());
+                    _stprintf_s(infotextbuf, _countof(infotextbuf), _T("no new commits for %s"), it->first.c_str());
                     SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)infotextbuf);
                 }
             }
@@ -1139,7 +1139,7 @@ DWORD CHiddenWindow::RunThread()
                         if (!hadError)
                         {
                             TCHAR sTitle[1024] = {0};
-                            _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
                             data.sTitle = std::wstring(sTitle);
@@ -1315,7 +1315,7 @@ DWORD CHiddenWindow::RunThread()
                             {
                                 it = pUrlInfoReadOnly->begin();
                                 TCHAR popupTitle[1024] = {0};
-                                _stprintf_s(popupTitle, 1024, _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
+                                _stprintf_s(popupTitle, _countof(popupTitle), _T("%s\nhas %d new projects"), projName.c_str(), nCountNewEntries);
                                 popupData data;
                                 data.sText = popupText;
                                 data.sTitle = std::wstring(popupTitle);

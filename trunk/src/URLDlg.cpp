@@ -122,7 +122,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SetDlgItemText(*this, IDC_ACCUREVREPO, info.accurevRepo.c_str());
             SetDlgItemText(*this, IDC_URLTOMONITOR, info.url.c_str());
             WCHAR buf[20];
-            _stprintf_s(buf, 20, _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
+            _stprintf_s(buf, _countof(buf), _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
             SetDlgItemText(*this, IDC_CHECKTIME, buf);
             SetDlgItemText(*this, IDC_PROJECTNAME, info.name.c_str());
             SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
@@ -132,7 +132,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
             SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
             SetDlgItemText(*this, IDC_INCLUDEUSERS, info.includeUsers.c_str());
-            _stprintf_s(buf, 20, _T("%ld"), min(URLINFO_MAXENTRIES, info.maxentries));
+            _stprintf_s(buf, _countof(buf), _T("%ld"), min(URLINFO_MAXENTRIES, info.maxentries));
             SetDlgItemText(*this, IDC_MAXLOGENTRIES, buf);
             SetDlgItemText(*this, IDC_SCRIPT, info.callcommand.c_str());
             SetDlgItemText(*this, IDC_WEBDIFF, info.webviewer.c_str());

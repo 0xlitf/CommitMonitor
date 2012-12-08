@@ -812,7 +812,7 @@ LRESULT CMainDlg::DoCommand(int id)
                     {
                         // ask the user if he really wants to remove the url
                         TCHAR question[4096] = {0};
-                        _stprintf_s(question, 4096, _T("Do you really want to stop monitoring the project\n%s ?"), it->second.name.c_str());
+                        _stprintf_s(question, _countof(question), _T("Do you really want to stop monitoring the project\n%s ?"), it->second.name.c_str());
                         if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO)==IDYES)
                         {
                             // go through the whole list: deleting just the selected item is not enough
@@ -906,7 +906,7 @@ LRESULT CMainDlg::DoCommand(int id)
                                 {
                                     // prepare the revision
                                     TCHAR revBuf[40] = {0};
-                                    _stprintf_s(revBuf, 40, _T("%ld"), pLogEntry->revision);
+                                    _stprintf_s(revBuf, _countof(revBuf), _T("%ld"), pLogEntry->revision);
                                     std::wstring srev = revBuf;
                                     std::wstring::iterator it_end= it_begin + tag.size();
                                     commandline.replace(it_begin, it_end, srev);
@@ -1110,7 +1110,7 @@ LRESULT CMainDlg::DoCommand(int id)
                         if (pLogEntry)
                         {
                             // get the info to put on the clipboard
-                            _stprintf_s(tempBuf, 1024, _T("Revision: %ld\nAuthor: %s\nDate: %s\nMessage:\n"),
+                            _stprintf_s(tempBuf, _countof(tempBuf), _T("Revision: %ld\nAuthor: %s\nDate: %s\nMessage:\n"),
                                 pLogEntry->revision,
                                 pLogEntry->author.c_str(),
                                 CAppUtils::ConvertDate(pLogEntry->date).c_str());
@@ -1146,7 +1146,7 @@ LRESULT CMainDlg::DoCommand(int id)
                                     sClipboardData += _T("  (copied from: ");
                                     sClipboardData += it->second.copyfrom_path;
                                     sClipboardData += _T(", revision ");
-                                    _stprintf_s(tempBuf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
+                                    _stprintf_s(tempBuf, _countof(tempBuf), _T("%ld)\n"), it->second.copyfrom_revision);
                                     sClipboardData += std::wstring(tempBuf);
                                 }
                                 else
@@ -1303,10 +1303,10 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           cmd += _T("\" /startrev:");
 
                           TCHAR numBuf[100] = {0};
-                          _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision-1);
+                          _stprintf_s(numBuf, _countof(numBuf), _T("%ld"), pLogEntry->revision-1);
                           cmd += numBuf;
                           cmd += _T(" /endrev:");
-                          _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+                          _stprintf_s(numBuf, _countof(numBuf), _T("%ld"), pLogEntry->revision);
                           cmd += numBuf;
                           CAppUtils::LaunchApplication(cmd);
                       }
@@ -1868,7 +1868,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                             addEntry = std::regex_search(it->second.message, regCheck);
                             if (!addEntry)
                             {
-                                _stprintf_s(buf, 1024, _T("%ld"), it->first);
+                                _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
                                 std::wstring s = std::wstring(buf);
                                 addEntry = std::regex_search(s, regCheck);
                             }
@@ -1898,7 +1898,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                         addEntry = s.find(filterstringlower) != std::wstring::npos;
                         if (!addEntry)
                         {
-                            _stprintf_s(buf, 1024, _T("%ld"), it->first);
+                            _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
                             s = buf;
                             addEntry = s.find(filterstringlower) != std::wstring::npos;
                         }
@@ -1960,24 +1960,24 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 item.stateMask = LVIS_SELECTED;
                 item.state = LVIS_SELECTED;
             }
-            _stprintf_s(buf, 1024, _T("%ld"), it->first);
+            _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
             item.pszText = buf;
             ListView_InsertItem(m_hListControl, &item);
             if (it->second.date)
-                _tcscpy_s(buf, 1024, CAppUtils::ConvertDate(it->second.date).c_str());
+                _tcscpy_s(buf, _countof(buf), CAppUtils::ConvertDate(it->second.date).c_str());
             else
-                _tcscpy_s(buf, 1024, _T("(no date)"));
+                _tcscpy_s(buf, _countof(buf), _T("(no date)"));
             ListView_SetItemText(m_hListControl, 0, 1, buf);
             if (it->second.author.size())
-                _tcscpy_s(buf, 1024, it->second.author.c_str());
+                _tcscpy_s(buf, _countof(buf), it->second.author.c_str());
             else
-                _tcscpy_s(buf, 1024, _T("(no author)"));
+                _tcscpy_s(buf, _countof(buf), _T("(no author)"));
             ListView_SetItemText(m_hListControl, 0, 2, buf);
             std::wstring msg = it->second.message;
             std::remove(msg.begin(), msg.end(), '\r');
             std::replace(msg.begin(), msg.end(), '\n', ' ');
             std::replace(msg.begin(), msg.end(), '\t', ' ');
-            _tcsncpy_s(buf, 1024, msg.c_str(), 1023);
+            _tcsncpy_s(buf, _countof(buf), msg.c_str(), 1023);
             ListView_SetItemText(m_hListControl, 0, 3, buf);
 
             if ((iLastUnread < 0)&&(!it->second.read))
@@ -2225,7 +2225,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                     msg += _T("  (copied from: ");
                     msg += it->second.copyfrom_path;
                     msg += _T(", revision ");
-                    _stprintf_s(buf, 1024, _T("%ld)\n"), it->second.copyfrom_revision);
+                    _stprintf_s(buf, _countof(buf), _T("%ld)\n"), it->second.copyfrom_revision);
                     msg += std::wstring(buf);
                 }
                 else
@@ -2236,7 +2236,7 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
             SetWindowText(m_hLogMsgControl, msg.c_str());
 
             // find the diff name
-            _stprintf_s(buf, 1024, _T("%s_%ld.diff"), pRead->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+            _stprintf_s(buf, _countof(buf), _T("%s_%ld.diff"), pRead->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
             std::wstring diffFileName = CAppUtils::GetDataDir();
             diffFileName += _T("\\");
             diffFileName += std::wstring(buf);
@@ -2424,7 +2424,7 @@ void CMainDlg::RemoveSelectedListItems()
             {
                 SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
                 // find the diff name
-                _stprintf_s(buf, 4096, _T("%s_%ld.diff"), pWrite->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
+                _stprintf_s(buf, _countof(buf), _T("%s_%ld.diff"), pWrite->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
                 std::wstring diffFileName = CAppUtils::GetDataDir();
                 diffFileName += _T("\\");
                 diffFileName += std::wstring(buf);
@@ -3186,7 +3186,7 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                                 if (pLogEntry)
                                 {
                                     TCHAR numBuf[100] = {0};
-                                    _stprintf_s(numBuf, 100, _T("%ld"), pLogEntry->revision);
+                                    _stprintf_s(numBuf, _countof(numBuf), _T("%ld"), pLogEntry->revision);
                                     sCmd += numBuf;
                                 }
                             }

@@ -85,7 +85,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
             CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
             TCHAR numBuf[30] = {0};
-            _stprintf_s(numBuf, 30, _T("%ld"), DWORD(numlogs));
+            _stprintf_s(numBuf, _countof(numBuf), _T("%ld"), DWORD(numlogs));
             SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_AUTOSTART, BM_SETCHECK, bStartWithWindows ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_ANIMATEICON, BM_SETCHECK, bAnimateIcon ? BST_CHECKED : BST_UNCHECKED, NULL);

@@ -499,7 +499,7 @@ std::string CUrlInfos::CalcMD5(LPCWSTR s)
                     char tmpBuf[3];
                     for (int i = 0; i<16; i++)
                     {
-                        sprintf_s(tmpBuf, 3, "%02x", bHash[i]);
+                        sprintf_s(tmpBuf, _countof(tmpBuf), "%02x", bHash[i]);
                         retHash += tmpBuf;
                     }
                 }
@@ -542,17 +542,17 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         iniFile.SetValue(it->first.c_str(), L"callcommand", it->second.callcommand.c_str());
         iniFile.SetValue(it->first.c_str(), L"webviewer", it->second.webviewer.c_str());
 
-        swprintf_s(numberBuf, 1024, L"%ld", it->second.minutesinterval);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.minutesinterval);
         iniFile.SetValue(it->first.c_str(), L"minutesinterval", numberBuf);
-        swprintf_s(numberBuf, 1024, L"%ld", it->second.minminutesinterval);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.minminutesinterval);
         iniFile.SetValue(it->first.c_str(), L"minminutesinterval", numberBuf);
-        swprintf_s(numberBuf, 1024, L"%ld", (int)it->second.disallowdiffs);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", (int)it->second.disallowdiffs);
         iniFile.SetValue(it->first.c_str(), L"disallowdiffs", numberBuf);
-        swprintf_s(numberBuf, 1024, L"%ld", it->second.maxentries);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.maxentries);
         iniFile.SetValue(it->first.c_str(), L"maxentries", numberBuf);
-        swprintf_s(numberBuf, 1024, L"%ld", it->second.noexecuteignored);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.noexecuteignored);
         iniFile.SetValue(it->first.c_str(), L"noexecuteignored", numberBuf);
-        swprintf_s(numberBuf, 1024, L"%ld", it->second.monitored);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.monitored);
         iniFile.SetValue(it->first.c_str(), L"monitored", numberBuf);
 
         if (it->second.password.size())
@@ -568,7 +568,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
             std::wstring encryptedPassword;
             for (unsigned int i = 0; i < bufSize*sizeof(WCHAR); ++i)
             {
-                swprintf_s(tmpBuf, 3, L"%02x", pByteBuf[i]);
+                swprintf_s(tmpBuf, _countof(tmpBuf), L"%02x", pByteBuf[i]);
                 encryptedPassword += tmpBuf;
             }
 
@@ -626,7 +626,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             for (unsigned int i = 0; i < unencryptedPassword.size()/2; ++i)
             {
                 WCHAR tmpBuf[3];
-                wcsncpy_s(tmpBuf, 3, &pUnencryptedString[i*2], 2);
+                wcsncpy_s(tmpBuf, _countof(tmpBuf), &pUnencryptedString[i*2], 2);
                 WCHAR * stopString;
                 pPwBuf[i] = (BYTE)wcstol(tmpBuf, &stopString, 16);
             }
