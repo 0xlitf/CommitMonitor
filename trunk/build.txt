@@ -1,10 +1,10 @@
 First, you need to install the compiler package.
 
-- You need VS2010
+- You need VS2012
   If you want to build the msi make sure the "Tools for Redistributing
   Applications" are installed.
   Also, you need the MFC feature pack which contains the tr1 c-runtime
-  extensions (or the SP1 for VS2010 which contains the feature pack).
+  extensions (or the SP1 for VS2012 which contains the feature pack).
 
 Next you need to install some utilities/programs:
 - Python 2.7.3(*)   : http://www.python.org/windows/
@@ -29,7 +29,7 @@ Now you're almost ready. Only a few more steps to do:
 Building packages
 
   Hint: before you can start building CommitMonitor, you need to call the vsvars32.bat
-  file which is located in %VS100COMNTOOLS%.
+  file which is located in %VS110COMNTOOLS%.
 
   > nant
   will show you some help about the targets you can use
@@ -39,7 +39,7 @@ Building packages
 
   > nant Subversion
   will build all the libraries required. After that you can open the
-  .sln file in VS2010 and compile the CommitMonitor there.
+  .sln file in VS2012 and compile the CommitMonitor there.
   Don't forget to also build the debug versions of the libraries:
   > nant debug Subversion
 

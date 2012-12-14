@@ -103,13 +103,14 @@
         <define name="_DEBUG" if="${configuration == 'debug'}"/>
         <define name="COMPILED_FROM_DSP" />
         <define name="XML_STATIC" />
+        <define name="_USING_V110_SDK71_" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" />
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libaprutil.lib"
-      options='/NOLOGO /SUBSYSTEM:WINDOWS'>
+      options='/NOLOGO ${subsystem}'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />

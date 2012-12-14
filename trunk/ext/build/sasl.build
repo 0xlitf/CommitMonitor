@@ -86,6 +86,7 @@
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration == 'debug'}"/>
+        <define name="_USING_V110_SDK71_" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
@@ -93,7 +94,7 @@
 
     <lib
       output="${configuration}_${platform}\libsasls.lib"
-      options='/NOLOGO /SUBSYSTEM:WINDOWS ${machineoption}'>
+      options='/NOLOGO ${subsystem} ${machineoption}'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
@@ -162,13 +163,14 @@
         <define name="WIN64" if="${platform == 'x64'}" />
         <define name="NDEBUG" if="${configuration == 'release'}"/>
         <define name="_DEBUG" if="${configuration == 'debug'}"/>
+        <define name="_USING_V110_SDK71_" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <link
       output="${configuration}_${platform}\libsasl.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\libsasl.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/libsasl.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/libsasl.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:".\${configuration}_${platform}\libsasl.dll.manifest" /DEBUG /PDB:".\${configuration}_${platform}/libsasl.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/libsasl.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -249,6 +251,7 @@
         <define name="HAVE_GSS_C_NT_HOSTBASED_SERVICE" />
         <define name="SSIZE_T_DEFINED" />
         <define name="HAVE_GSSAPI_H" />
+        <define name="_USING_V110_SDK71_" />
       </defines>
     </cl>
     <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}"  />
@@ -256,7 +259,7 @@
 
     <link
       output="${configuration}_${platform}\saslANONYMOUS.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslANONYMOUS.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslANONYMOUS.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslANONYMOUS.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslANONYMOUS.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslANONYMOUS.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslANONYMOUS.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -277,7 +280,7 @@
 
     <link
       output="${configuration}_${platform}\saslCRAMMD5.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslCRAMMD5.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslCRAMMD5.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslCRAMMD5.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslCRAMMD5.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslCRAMMD5.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslCRAMMD5.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -298,7 +301,7 @@
 
     <link
       output="${configuration}_${platform}\saslDIGESTMD5.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslDIGESTMD5.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslDIGESTMD5.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslDIGESTMD5.lib" ${machineoption} ..\openssl\out${sslplat}${ssldbg}\libeay32.lib ..\openssl\out${sslplat}${ssldbg}\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslDIGESTMD5.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslDIGESTMD5.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslDIGESTMD5.lib" ${machineoption} ..\openssl\out${sslplat}${ssldbg}\libeay32.lib ..\openssl\out${sslplat}${ssldbg}\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -319,7 +322,7 @@
 
     <link
       output="${configuration}_${platform}\saslLOGIN.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslLOGIN.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslLOGIN.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslLOGIN.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslLOGIN.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslLOGIN.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslLOGIN.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -340,7 +343,7 @@
 
     <link
       output="${configuration}_${platform}\saslNTLM.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslNTLM.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslNTLM.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslNTLM.lib" ${machineoption} ..\openssl\out${sslplat}${ssldbg}\libeay32.lib ..\openssl\out${sslplat}${ssldbg}\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslNTLM.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslNTLM.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslNTLM.lib" ${machineoption} ..\openssl\out${sslplat}${ssldbg}\libeay32.lib ..\openssl\out${sslplat}${ssldbg}\ssleay32.lib ${configuration}_${platform}\libsasl.res ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />
@@ -361,7 +364,7 @@
 
     <link
       output="${configuration}_${platform}\saslPLAIN.dll"
-      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslPLAIN.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslPLAIN.pdb" /DLL /SUBSYSTEM:WINDOWS /OPT:REF /IMPLIB:"${configuration}_${platform}/saslPLAIN.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
+      options='/INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"${configuration}_${platform}\saslPLAIN.dll.manifest" /DEBUG /PDB:"${configuration}_${platform}/saslPLAIN.pdb" /DLL ${subsystem} /OPT:REF /IMPLIB:"${configuration}_${platform}/saslPLAIN.lib" ${machineoption} ${configuration}_${platform}\libsasl.res ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <arg value="/RELEASE" if="${configuration == 'release'}" />
       <arg value="/OPT:ICF" if="${configuration == 'release'}" />

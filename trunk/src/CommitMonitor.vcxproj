@@ -28,19 +28,23 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -179,6 +183,7 @@
     <ClCompile Include="..\ext\sktoolslib\BaseWindow.cpp" />
     <ClCompile Include="..\ext\sktoolslib\Callback.cpp" />
     <ClCompile Include="..\ext\sktoolslib\CmdLineParser.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\DebugOutput.cpp" />
     <ClCompile Include="..\ext\sktoolslib\DirFileEnum.cpp" />
     <ClCompile Include="..\ext\sktoolslib\hyperlink.cpp" />
     <ClCompile Include="..\ext\sktoolslib\ListCtrl.cpp" />
@@ -211,7 +216,6 @@
     <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="MappedInFile.cpp" />
     <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -226,6 +230,7 @@
     <ClInclude Include="..\ext\sktoolslib\Callback.h" />
     <ClInclude Include="..\ext\sktoolslib\ClipboardHelper.h" />
     <ClInclude Include="..\ext\sktoolslib\CmdLineParser.h" />
+    <ClInclude Include="..\ext\sktoolslib\DebugOutput.h" />
     <ClInclude Include="..\ext\sktoolslib\DirFileEnum.h" />
     <ClInclude Include="..\ext\sktoolslib\hyperlink.h" />
     <ClInclude Include="..\ext\sktoolslib\ListCtrl.h" />
@@ -256,7 +261,6 @@
     <ClInclude Include="UrlInfo.h" />
     <ClInclude Include="AppUtils.h" />
     <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
-    <ClInclude Include="Debug.h" />
     <ClInclude Include="MappedInFile.h" />
     <ClInclude Include="memdc.h" />
     <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
@@ -299,7 +303,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="..\ext\build\OpenSSL.build" />
-    <None Include="..\ext\build\sasl.build" />
+    <None Include="..\ext\build\sasl.build">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\ext\build\serf.build" />
     <None Include="..\ext\build\subversion.build" />
     <None Include="..\ext\build\zlib.build" />

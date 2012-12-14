@@ -87,9 +87,6 @@
     <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Debug.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="MappedInFile.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -139,6 +136,9 @@
       <Filter>sktoolslib</Filter>
     </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\ReaderWriterLock.cpp">
+      <Filter>sktoolslib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ext\sktoolslib\DebugOutput.cpp">
       <Filter>sktoolslib</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,9 +203,6 @@
     <ClInclude Include="..\ext\BlowFish\Blowfish.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Debug.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="MappedInFile.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -264,6 +261,9 @@
       <Filter>sktoolslib</Filter>
     </ClInclude>
     <ClInclude Include="..\ext\sktoolslib\ReaderWriterLock.h">
+      <Filter>sktoolslib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ext\sktoolslib\DebugOutput.h">
       <Filter>sktoolslib</Filter>
     </ClInclude>
   </ItemGroup>
