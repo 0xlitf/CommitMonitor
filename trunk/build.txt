@@ -11,7 +11,7 @@ Next you need to install some utilities/programs:
 - Perl              : http://strawberryperl.com/releases.html
                       or
                       http://www.activestate.com/Products/ActivePerl/
-- WiX 3.6(*)        : http://wix.sourceforge.net
+- WiX 3.7(*)        : http://wix.sourceforge.net
 - NAnt(*)           : http://nant.sourceforge.net
 
 (*) Add the paths of the binaries to the PATH environment variable.
