@@ -179,7 +179,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
     {
         bool bNew = m_SystemTray.hIcon == m_hIconNew1;
         m_SystemTray.hIcon = NULL;
-        TRACE(_T("Taskbar created!\n"));
+        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("Taskbar created!\n"));
         ShowTrayIcon(bNew);
     }
     else if (uMsg == (UINT)snarlGlobalMsg)
@@ -510,7 +510,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 
 void CHiddenWindow::DoTimer(bool bForce)
 {
-    TRACE(_T("timer fired\n"));
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("timer fired!\n"));
     // Restart the timer with 60 seconds
     ::SetTimer(*this, IDT_MONITOR, TIMER_ELAPSE, NULL);
 
@@ -605,7 +605,7 @@ void CHiddenWindow::DoTimer(bool bForce)
 
 void CHiddenWindow::ShowTrayIcon(bool newCommits)
 {
-    TRACE(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
+    CTraceToOutputDebugString::Instance()(_T("changing tray icon to %s\n"), (newCommits ? _T("\"new commits\"") : _T("\"normal\"")));
 
     DWORD msg = m_SystemTray.hIcon ? NIM_MODIFY : NIM_ADD;
     regShowTaskbarIcon.read();
@@ -693,7 +693,7 @@ DWORD CHiddenWindow::RunThread()
     m_UrlInfos.ReleaseReadOnlyData();
 
     TCHAR infotextbuf[1024];
-    TRACE(_T("monitor thread started\n"));
+    CTraceToOutputDebugString::Instance()(_T("monitor thread started\n"));
     const std::map<std::wstring,CUrlInfo> * pUrlInfoReadOnly = &urlinfoReadOnly;
     std::map<std::wstring,CUrlInfo>::const_iterator it = pUrlInfoReadOnly->begin();
     for (; (it != pUrlInfoReadOnly->end()) && m_bRun; ++it)
@@ -710,7 +710,7 @@ DWORD CHiddenWindow::RunThread()
             m_UrlToWorkOn.clear();
             if ((it->second.errNr == SVN_ERR_RA_NOT_AUTHORIZED)&&(!it->second.error.empty()))
                 continue;   // don't check if the last error was 'not authorized'
-            TRACE(_T("checking %s for updates\n"), it->first.c_str());
+            CTraceToOutputDebugString::Instance()(_T("checking %s for updates\n"), it->first.c_str());
             // get the highest revision of the repository
             SCCS *pSCCS;
             SVN svnAccess;
@@ -754,7 +754,7 @@ DWORD CHiddenWindow::RunThread()
             std::set<std::wstring> authors;
             if (headrev > it->second.lastcheckedrev)
             {
-                TRACE(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
+                CTraceToOutputDebugString::Instance()(_T("%s has updates! Last checked revision was %ld, HEAD revision is %ld\n"), it->first.c_str(), it->second.lastcheckedrev, headrev);
                 if (m_hMainDlg)
                 {
                     _stprintf_s(infotextbuf, _countof(infotextbuf), _T("getting log for %s"), it->first.c_str());
@@ -764,7 +764,7 @@ DWORD CHiddenWindow::RunThread()
                 int nTotalNewCommits = 0;   // all commits, including ignored ones
                 if (pSCCS->GetLog(it->second.accurevRepo, it->first, headrev, it->second.lastcheckedrev + 1))
                 {
-                    TRACE(_T("log fetched for %s\n"), it->first.c_str());
+                    CTraceToOutputDebugString::Instance()(_T("log fetched for %s\n"), it->first.c_str());
                     if (!m_bRun)
                         continue;
 
@@ -879,11 +879,11 @@ DWORD CHiddenWindow::RunThread()
                                 }
                                 if (!pSCCS->Diff(it->first, logit->first, logit->first-1, logit->first, true, true, false, std::wstring(), false, diffFileName, std::wstring()))
                                 {
-                                    TRACE(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
+                                    CTraceToOutputDebugString::Instance()(_T("Diff not fetched for %s, revision %ld because of an error\n"), it->first.c_str(), logit->first);
                                     DeleteFile(diffFileName.c_str());
                                 }
                                 else
-                                    TRACE(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
+                                    CTraceToOutputDebugString::Instance()(_T("Diff fetched for %s, revision %ld\n"), it->first.c_str(), logit->first);
                                 if (!m_bRun)
                                     break;
                             }
@@ -1211,7 +1211,7 @@ DWORD CHiddenWindow::RunThread()
                             const std::regex titex2(reTitle2, std::regex_constants::icase | std::regex_constants::ECMAScript);
                             if (std::regex_search(in.begin(), in.end(), titex, std::regex_constants::match_default))
                             {
-                                TRACE(_T("found repository url instead of SVNParentPathList\n"));
+                                CTraceToOutputDebugString::Instance()(_T("found repository url instead of SVNParentPathList\n"));
                                 continue;
                             }
 
@@ -1267,7 +1267,7 @@ DWORD CHiddenWindow::RunThread()
                             }
                             if (!regex_search(in.begin(), in.end(), titex2))
                             {
-                                TRACE(_T("found repository url instead of SVNParentPathList\n"));
+                                CTraceToOutputDebugString::Instance()(_T("found repository url instead of SVNParentPathList\n"));
                                 continue;
                             }
                             for (std::sregex_iterator i(in.begin(), in.end(), expression2); i != end && m_bRun; ++i)
@@ -1429,7 +1429,7 @@ DWORD CHiddenWindow::RunThread()
     if ((!bNewEntries)&&(m_bIsTask))
         ::PostQuitMessage(0);
 
-    TRACE(_T("monitor thread ended\n"));
+    CTraceToOutputDebugString::Instance()(_T("monitor thread ended\n"));
     m_bMainDlgRemovedItems = false;
     m_ThreadRunning = FALSE;
 

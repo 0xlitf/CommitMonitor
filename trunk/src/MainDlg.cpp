@@ -1360,7 +1360,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                               }
                               else
                               {
-                                  TRACE(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
+                                  CTraceToOutputDebugString::Instance()(_T("Diff fetched for %s, revision %ld\n"), pInfo->url.c_str(), pLogEntry->revision);
                                   progDlg.Stop();
                               }
                           }

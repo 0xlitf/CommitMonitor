@@ -43,7 +43,8 @@
 #include <commctrl.h>
 #include <shlwapi.h>
 
-#include "Debug.h"
+#define DEBUGOUTPUTREGPATH L"Software\\CommitMonitor\\DebugOutputString"
+#include "DebugOutput.h"
 
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "shlwapi.lib")
