@@ -8,5 +8,5 @@ OpenSSL         1.0.1c      http://www.openssl.org/
 scintilla       3.2.3       http://www.scintilla.org/
 serf            1.1.1       http://code.google.com/p/serf/
 sqlite          3.7.15      http://sqlite.org/
-Subversion      1.7.7       http://subversion.apache.org/
+Subversion      1.7.8       http://subversion.apache.org/
 zlib            1.2.7       http://www.zlib.net/

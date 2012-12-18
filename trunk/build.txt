@@ -1,10 +1,6 @@
 First, you need to install the compiler package.
 
-- You need VS2012
-  If you want to build the msi make sure the "Tools for Redistributing
-  Applications" are installed.
-  Also, you need the MFC feature pack which contains the tr1 c-runtime
-  extensions (or the SP1 for VS2012 which contains the feature pack).
+- You need VS2012 with Update 1.
 
 Next you need to install some utilities/programs:
 - Python 2.7.3(*)   : http://www.python.org/windows/
