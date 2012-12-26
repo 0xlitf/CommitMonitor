@@ -68,7 +68,7 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
     m_hIconNew2 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW2));
     m_hIconNew3 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW3));
     m_hIconNormal = LoadIcon(hInst, MAKEINTRESOURCE(IDI_COMMITMONITOR));
-    ZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
+    SecureZeroMemory(&m_SystemTray, sizeof(m_SystemTray));
 
     hiddenWindowPointer = this;
 }
