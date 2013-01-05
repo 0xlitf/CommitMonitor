@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -825,16 +825,19 @@ DWORD CHiddenWindow::RunThread()
                                     bIgnore = !bInclude;
                                 }
 
-                                std::wstring s1 = writeIt->second.ignoreUsers;
-                                std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
-                                CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
-                                std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
-                                for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
+                                if (writeIt->second.ignoreUsers.size() > 0)
                                 {
-                                    if (author1.compare(*ignoreIt) == 0)
+                                    std::wstring s1 = writeIt->second.ignoreUsers;
+                                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                                    CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
+                                    std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
+                                    for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
                                     {
-                                        bIgnore = true;
-                                        break;
+                                        if (author1.compare(*ignoreIt) == 0)
+                                        {
+                                            bIgnore = true;
+                                            break;
+                                        }
                                     }
                                 }
                                 nTotalNewCommits++;
