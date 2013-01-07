@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010, 2012 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,10 +104,11 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             AddToolTip(IDC_SCCSCOMBO, _T("Source code control system to use"));
             AddToolTip(IDC_ACCUREVREPO, _T("Accurev repository name"));
             AddToolTip(IDC_IGNORESELF, _T("If enabled, commits from you won't show a notification"));
-            AddToolTip(IDC_SCRIPT, _T("enter here a command which gets called after new revisions were detected.\n\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name\n%username gets replaced with a list of usernames\n\nExample command line:\nTortoiseProc.exe /command:update /rev:%revision /path:\"path\\to\\working\\copy\""));
+            AddToolTip(IDC_SCRIPT, _T("Enter here a command which gets called after new revisions were detected.\n\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name\n%username gets replaced with a list of usernames\n\nExample command line:\nTortoiseProc.exe /command:update /rev:%revision /path:\"path\\to\\working\\copy\""));
             AddToolTip(IDC_WEBDIFF, _T("URL to a web viewer\n%revision gets replaced with the new HEAD revision\n%url gets replaced with the url of the project\n%project gets replaced with the project name"));
             AddToolTip(IDC_IGNOREUSERS, _T("Newline separated list of usernames to ignore"));
             AddToolTip(IDC_INCLUDEUSERS, _T("Newline separated list of users to monitor"));
+            AddToolTip(IDC_IGNORELOG, _T("Enter a regular expression to match specific log messages\nfor which you don't want to show notifications for"));
 
             if (info.minminutesinterval)
             {
@@ -132,6 +133,7 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
             SetDlgItemText(*this, IDC_IGNOREUSERS, info.ignoreUsers.c_str());
             SetDlgItemText(*this, IDC_INCLUDEUSERS, info.includeUsers.c_str());
+            SetDlgItemText(*this, IDC_IGNORELOG, info.ignoreCommitLog.c_str());
             _stprintf_s(buf, _countof(buf), _T("%ld"), min(URLINFO_MAXENTRIES, info.maxentries));
             SetDlgItemText(*this, IDC_MAXLOGENTRIES, buf);
             SetDlgItemText(*this, IDC_SCRIPT, info.callcommand.c_str());
@@ -264,6 +266,27 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             buffer = GetDlgItemText(IDC_INCLUDEUSERS);
             info.includeUsers = std::wstring(buffer.get());
             CStringUtils::trim(info.includeUsers);
+
+            buffer = GetDlgItemText(IDC_IGNORELOG);
+            info.ignoreCommitLog = std::wstring(buffer.get());
+            try
+            {
+                const std::wregex ignex(info.ignoreCommitLog.c_str(), std::regex_constants::icase | std::regex_constants::ECMAScript);
+            }
+            catch (std::exception)
+            {
+                EDITBALLOONTIP ebt = {0};
+                ebt.cbStruct = sizeof(EDITBALLOONTIP);
+                ebt.pszTitle = L"Invalid Regex!";
+                ebt.pszText = L"The regular expression is invalid!";
+                ebt.ttiIcon = TTI_ERROR;
+                if (!::SendMessage(GetDlgItem(*this, IDC_IGNORELOG), EM_SHOWBALLOONTIP, 0, (LPARAM)&ebt))
+                {
+                    ::MessageBox(*this, L"The regular expression is invalid!", L"Invalid Regex!", MB_ICONERROR);
+                }
+                return 0;
+            }
+            CStringUtils::trim(info.ignoreCommitLog);
 
             buffer = GetDlgItemText(IDC_SCRIPT);
             info.callcommand = std::wstring(buffer.get());

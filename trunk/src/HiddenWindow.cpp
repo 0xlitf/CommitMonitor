@@ -840,6 +840,23 @@ DWORD CHiddenWindow::RunThread()
                                         }
                                     }
                                 }
+
+                                if (writeIt->second.ignoreCommitLog.size() > 0)
+                                {
+                                    try
+                                    {
+                                        const std::wregex ignex(writeIt->second.ignoreCommitLog.c_str(), std::regex_constants::icase | std::regex_constants::ECMAScript);
+                                        if (std::regex_search(logit->second.message.begin(), logit->second.message.end(), ignex, std::regex_constants::match_default))
+                                        {
+                                            bIgnore = true;
+                                        }
+                                    }
+                                    catch (std::exception)
+                                    {
+                                    
+                                    }
+                                }
+
                                 nTotalNewCommits++;
                                 if (!bIgnore)
                                 {

@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,7 +63,7 @@ CMainDlg::CMainDlg(HWND hParent)
     , m_xSliderPos(0)
     , m_ySliderPos(0)
     , m_bottommarg(0)
-	, m_hParent(hParent)
+    , m_hParent(hParent)
 {
     // use the default GUI font, create a copy of it and
     // change the copy to BOLD (leave the rest of the font

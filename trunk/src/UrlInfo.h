@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@
 #include "SerializeUtils.h"
 #include "ReaderWriterLock.h"
 
-#define URLINFO_VERSION     14
+#define URLINFO_VERSION     15
 #define URLINFOS_VERSION    1
 
 #define URLINFO_MAXENTRIES 100000
@@ -61,6 +61,7 @@ public:
     bool                        monitored;
     std::wstring                ignoreUsers;
     std::wstring                includeUsers;
+    std::wstring                ignoreCommitLog;
 
     std::map<svn_revnum_t,SCCSLogEntry> logentries;
     int                         maxentries;

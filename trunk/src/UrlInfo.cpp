@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,8 @@ bool CUrlInfo::Save(FILE * hFile)
     if (!CSerializeUtils::SaveString(hFile, ignoreUsers))
         return false;
     if (!CSerializeUtils::SaveString(hFile, includeUsers))
+        return false;
+    if (!CSerializeUtils::SaveString(hFile, ignoreCommitLog))
         return false;
     if (!CSerializeUtils::SaveNumber(hFile, parentpath))
         return false;
@@ -225,6 +227,11 @@ bool CUrlInfo::Load(const unsigned char *& buf)
     if (version >= 13)
     {
         if (!CSerializeUtils::LoadString(buf, includeUsers))
+            return false;
+    }
+    if (version >= 15)
+    {
+        if (!CSerializeUtils::LoadString(buf, ignoreCommitLog))
             return false;
     }
 
@@ -535,6 +542,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         std::wstring includeUsers = it->second.includeUsers;
         CAppUtils::SearchReplace(includeUsers, L"\r\n", L"\t");
         iniFile.SetValue(it->first.c_str(), L"includeUsers", includeUsers.c_str());
+        iniFile.SetValue(it->first.c_str(), L"ignoreCommitLog",it->second.ignoreCommitLog.c_str());
         iniFile.SetValue(it->first.c_str(), L"callcommand", it->second.callcommand.c_str());
         iniFile.SetValue(it->first.c_str(), L"webviewer", it->second.webviewer.c_str());
 
@@ -602,6 +610,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         CAppUtils::SearchReplace(info.ignoreUsers, L"\t", L"\r\n");
         info.includeUsers = std::wstring(iniFile.GetValue(*it, L"includeUsers", L""));
         CAppUtils::SearchReplace(info.includeUsers, L"\t", L"\r\n");
+        info.ignoreCommitLog = std::wstring(iniFile.GetValue(*it, _T("ignoreCommitLog"), _T("")));
         info.callcommand = std::wstring(iniFile.GetValue(*it, _T("callcommand"), _T("")));
         info.webviewer = std::wstring(iniFile.GetValue(*it, _T("webviewer"), _T("")));
 
@@ -639,6 +648,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             existingUrlInfo.url = info.url;
             existingUrlInfo.name = info.name;
             existingUrlInfo.ignoreUsers = info.ignoreUsers;
+            existingUrlInfo.ignoreCommitLog = info.ignoreCommitLog;
             existingUrlInfo.callcommand = info.callcommand;
             existingUrlInfo.webviewer = info.webviewer;
             existingUrlInfo.minutesinterval = info.minutesinterval;
