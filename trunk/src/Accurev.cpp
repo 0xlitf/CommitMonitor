@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in accurev repositories
 
-// Copyright (C) 2011-2012 - Stefan Kueng
+// Copyright (C) 2011-2013 - Stefan Kueng
 // Copyright (C) 2010 - Richard Sewell
 
 // This program is free software; you can redistribute it and/or
@@ -360,7 +360,7 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
           // Strip the XML tag off the back
           size_t endTagPos = commentLine.rfind(L"</comment>");
 
-          if (endTagPos >= 0) {
+          if (endTagPos != std::wstring::npos) {
             commentLine.erase(endTagPos, std::wstring::npos);
             bEndofLogComment = true;
           }
@@ -369,7 +369,7 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
           logEntry.message.append(commentLine);
           logEntry.message.append(L"\n");
 
-          if (endTagPos < 0) {
+          if (endTagPos == std::wstring::npos) {
             // Skip to the next token
             szLineToken = wcstok_s(NULL, szLineTokens, &szNextLineToken);
             iLineTokenNo++;
@@ -833,6 +833,9 @@ static inline std::wstring &ltrim(std::wstring &s) {
 // trim from end
 static inline std::wstring &rtrim(std::wstring &s) {
     size_t sSize = s.size();
+    if (sSize == 0)
+        return s;
+
     size_t i = sSize-1;
 
     while (isspace(s[i]) && (i >= 0)) i--;
