@@ -1174,7 +1174,7 @@ LRESULT CMainDlg::DoCommand(int id)
             {
                 // yes, we have TSVN installed
                 cmd = _T("\"");
-                cmd += std::wstring(tsvninstalled);
+                cmd += tsvninstalled;
                 cmd += _T("\" /command:repobrowser /path:\"");
                 cmd += url;
                 cmd += _T("\"");
@@ -1197,7 +1197,7 @@ LRESULT CMainDlg::DoCommand(int id)
             {
                 // yes, we have TSVN installed
                 cmd = _T("\"");
-                cmd += std::wstring(tsvninstalled);
+                cmd += tsvninstalled;
                 cmd += _T("\" /command:log /path:\"");
                 cmd += url;
                 cmd += _T("\"");
@@ -1297,7 +1297,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                           }
                           // call TortoiseProc to do the diff for us
                           cmd = _T("\"");
-                          cmd += std::wstring(tsvninstalled);
+                          cmd += tsvninstalled;
                           cmd += _T("\" /command:diff /path:\"");
                           cmd += diffurl;
                           cmd += _T("\" /startrev:");
@@ -3041,7 +3041,7 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
 
             UINT uItem = 0;
 
-            if ((!std::wstring(tsvninstalled).empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
+            if ((!tsvninstalled.empty()) && (!DWORD(CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE))))
                 uItem = 1;
             // set the default entry
             MENUITEMINFO iinfo = {0};
@@ -3169,7 +3169,7 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                         {
                             // call TortoiseProc to do the diff for us
                             std::wstring sCmd = _T("\"");
-                            sCmd += std::wstring(tsvninstalled);
+                            sCmd += tsvninstalled;
                             sCmd += _T("\" /command:repobrowser /path:\"");
                             sCmd += info->url;
                             sCmd += _T("\" /rev:");
