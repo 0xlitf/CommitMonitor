@@ -839,7 +839,7 @@ static inline std::wstring &rtrim(std::wstring &s) {
     size_t i = sSize-1;
 
     while (isspace(s[i]) && (i >= 0)) i--;
-    if ((i > 0) && (i < sSize-1)) s.erase(i+1, std::wstring::npos);
+    if (i < sSize-1) s.erase(i+1, std::wstring::npos);
 
     return s;
 }
