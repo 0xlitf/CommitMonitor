@@ -1396,7 +1396,6 @@ DWORD CHiddenWindow::RunThread()
                             char line[1024];
                             char * pLine = line;
                             File.getline(line, sizeof(line));
-                            std::string vertemp = line;
                             int major = 0;
                             int minor = 0;
                             int micro = 0;

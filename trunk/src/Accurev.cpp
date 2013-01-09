@@ -278,11 +278,8 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
     bool retVal = false;
 
     SCCSLogEntry logEntry;
-    std::wstring dateTemp;
-    std::wstring wDateTime;
     std::wstring wVirtualVersion, wRealVersion, wPath;
     BOOL bIssueRetrieved = FALSE;
-    std::wstring wIssueNo;
 
     int *pIssueNos = NULL;
     int issueNoCount = 0;
@@ -631,10 +628,7 @@ bool ACCUREV::AccuIssueList(const std::wstring& repo, const std::wstring& url, l
 size_t ACCUREV::ExecuteAccurev(std::wstring Parameters, size_t SecondsToWait, std::wstring& stdOut, std::wstring& stdErr)
 {
     std::wstring fullPathToExe = (std::wstring)CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
-    //size_t iMyCounter = 0, iReturnVal = 0;
     size_t iReturnVal = 0;
-    std::wstring sTempStr = L"";
-    //int msToWait = SecondsToWait * 1000;
 
     // Create a job, and add original process to it. Then set JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE so that when
     // the main process is killed, the spawned processes are also killed

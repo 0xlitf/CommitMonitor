@@ -1238,7 +1238,6 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
     std::wstring origTempPath = std::wstring(cTempPath.get());
 
     GetCurrentDirectory(32767, cTempPath.get());
-    std::wstring origCurDir = std::wstring(cTempPath.get());
 
     HTREEITEM hSelectedItem = TreeView_GetSelection(m_hTreeControl);
     // get the url this entry refers to
