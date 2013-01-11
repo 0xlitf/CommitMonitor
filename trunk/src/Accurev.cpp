@@ -19,13 +19,14 @@
 //
 
 // TODO: Implement XML parsing rather than the horribly hacky string parsing
-// TODO: Fix the reading of data from pipes to be asychronous
+// TODO: Fix the reading of data from pipes to be asynchronous
 
 #include "stdafx.h"
 #include "Accurev.h"
 #include "AppUtils.h"
 #include "version.h"
 #include "HiddenWindow.h"
+#include "StringUtils.h"
 
 #include <iostream>
 
@@ -41,9 +42,6 @@ static char THIS_FILE[] = __FILE__;
 // Local functions
 static inline void char2wchar(char *pChar, wchar_t *pwChar, int length);
 static inline std::wstring& replaceAll(std::wstring& context, const std::wstring& from, const std::wstring& to);
-static inline std::wstring &trim(std::wstring &s);
-static inline std::wstring &ltrim(std::wstring &s);
-static inline std::wstring &rtrim(std::wstring &s);
 
 ACCUREV::ACCUREV(void)
 {
@@ -295,7 +293,7 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
     while (szLineToken != NULL)
     {
       std::wstring wsLine(szLineToken);
-      wsLine = trim (wsLine);
+      wsLine = CStringUtils::trim (wsLine);
 
       // Detect transaction line
       if (wsLine.find(L"id=\"") == 0) {
@@ -347,7 +345,7 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
         while (!bEndofLogComment && (szLineToken != NULL))
         {
           std::wstring commentLine(szLineToken);
-          commentLine = rtrim (commentLine);
+          commentLine = CStringUtils::rtrim (commentLine);
 
           // Strip XML tag off the front
           if (commentLine.find(L"    <comment>") == 0) {
@@ -469,7 +467,7 @@ bool ACCUREV::issueParser(const std::wstring& rawLog, SCCSLogEntry& logEntry) {
   while (szLineToken != NULL)
   {
     std::wstring wsLine(szLineToken);
-    wsLine = trim (wsLine);
+    wsLine = CStringUtils::trim (wsLine);
 
     // Detect issue fixversion line
     if (wsLine.find(L"fid=\"21\">") == 0) {
@@ -809,31 +807,3 @@ static inline std::wstring& replaceAll(std::wstring& context, const std::wstring
     return context;
 }
 
-// trim from both ends
-static inline std::wstring &trim(std::wstring &s) {
-    return ltrim(rtrim(s));
-}
-
-// trim from start
-static inline std::wstring &ltrim(std::wstring &s) {
-    size_t sSize = s.size();
-    size_t i = 0;
-
-    while (isspace(s[i]) && (i < sSize)) i++;
-    if ((i > 0) && (i < sSize)) s.erase(0, i);
-    return s;
-}
-
-// trim from end
-static inline std::wstring &rtrim(std::wstring &s) {
-    size_t sSize = s.size();
-    if (sSize == 0)
-        return s;
-
-    size_t i = sSize-1;
-
-    while (isspace(s[i]) && (i >= 0)) i--;
-    if (i < sSize-1) s.erase(i+1, std::wstring::npos);
-
-    return s;
-}
