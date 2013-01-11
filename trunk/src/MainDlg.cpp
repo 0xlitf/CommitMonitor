@@ -1029,7 +1029,7 @@ LRESULT CMainDlg::DoCommand(int id)
         {
             std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
             std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
-            bool bUseTSVN = !(tsvninstalled.empty()) && (_tstoi(sVer.substr(3, 4).c_str()) > 4);
+            bool bUseTSVN = !(tsvninstalled.empty()) && (sVer.empty() || (_tstoi(sVer.substr(3, 4).c_str()) > 4));
             bUseTSVN = bUseTSVN && !!CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
 
             ShowDiff(bUseTSVN);
@@ -1282,7 +1282,7 @@ bool CMainDlg::ShowDiff(bool bUseTSVN)
                       std::wstring cmd;
                       std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
                       std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
-                      if ((bUseTSVN)&&(!tsvninstalled.empty())&&(_tstoi(sVer.substr(3, 4).c_str()) > 4))
+                      if ((bUseTSVN)&&(!tsvninstalled.empty())&&(sVer.empty() || (_tstoi(sVer.substr(3, 4).c_str()) > 4)))
                       {
                           // yes, we have TSVN installed
                           // first find out if there's only one file changed and if there is,

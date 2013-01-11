@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@
 COptionsDlg::COptionsDlg(HWND hParent)
     : m_pURLInfos(NULL)
     , m_hHiddenWnd(NULL)
-	, m_hParent(hParent)
+    , m_hParent(hParent)
 {
 }
 
@@ -106,7 +106,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 
             std::wstring tsvninstalled = CAppUtils::GetTSVNPath();
             std::wstring sVer = CAppUtils::GetVersionStringFromExe(tsvninstalled.c_str());
-            if (tsvninstalled.empty() || (_tstoi(sVer.substr(3, 4).c_str()) < 5))
+            if (tsvninstalled.empty() || (!sVer.empty() && (_tstoi(sVer.substr(3, 4).c_str()) < 5)))
                 DialogEnableWindow(IDC_USETSVN, FALSE);
             SetDlgItemText(*this, IDC_NUMLOGS, numBuf);
 
