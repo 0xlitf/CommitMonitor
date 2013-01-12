@@ -18,7 +18,7 @@
 //
 
 #include "stdafx.h"
-#include "resource.h"
+#include "CommitMonitor.h"
 #include "MainDlg.h"
 
 #include "URLDlg.h"
@@ -39,6 +39,10 @@
 #define FILTERBOXHEIGHT 20
 #define CHECKBOXHEIGHT  16
 #define FILTERLABELWIDTH 50
+
+const int filterboxheight = g_metrics.ScaleY(FILTERBOXHEIGHT);
+const int filterlabelwidth = g_metrics.ScaleX(FILTERLABELWIDTH);
+const int checkboxheight = g_metrics.ScaleY(CHECKBOXHEIGHT);
 
 CMainDlg::CMainDlg(HWND hParent)
     : m_nDragMode(DRAGMODE_NONE)
@@ -276,12 +280,10 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
 
             LOGFONT lf = {0};
-            HDC hDC = ::GetDC(m_hLogMsgControl);
-            lf.lfHeight = -MulDiv(8, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+            lf.lfHeight = -MulDiv(8, g_metrics.GetDPIY(), 72);
             lf.lfCharSet = DEFAULT_CHARSET;
             _tcscpy_s(lf.lfFaceName, 32, _T("Courier New"));
             m_font = ::CreateFontIndirect(&lf);
-            ReleaseDC(m_hLogMsgControl, hDC);
             ::SendMessage(m_hLogMsgControl, WM_SETFONT, (WPARAM)m_font, 1);
 
             // initialize the window position infos
@@ -291,7 +293,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             GetClientRect(m_hTreeControl, &rect);
             m_xSliderPos = rect.right+4;
             GetClientRect(m_hListControl, &rect);
-            m_ySliderPos = rect.bottom+m_topmarg;
+            m_ySliderPos = rect.bottom+m_topmarg+filterboxheight+checkboxheight;
             GetClientRect(m_hLogMsgControl, &rect);
             m_bottommarg = rect.bottom+4+m_ySliderPos;
             GetClientRect(*this, &rect);
@@ -2477,12 +2479,12 @@ void CMainDlg::DoResize(int width, int height)
     ::InvalidateRect(*this, NULL, TRUE);
     HDWP hdwp = BeginDeferWindowPos(10);
     hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, FILTERLABELWIDTH, 12, SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
-    hdwp = DeferWindowPos(hdwp, m_hFilterControl, *this, m_xSliderPos+4+FILTERLABELWIDTH, m_topmarg+1, width-m_xSliderPos-4-FILTERLABELWIDTH-4, FILTERBOXHEIGHT-1, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hCheckControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT, width-m_xSliderPos-4, CHECKBOXHEIGHT, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+FILTERBOXHEIGHT+4, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+FILTERBOXHEIGHT+CHECKBOXHEIGHT, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-CHECKBOXHEIGHT-4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, filterlabelwidth, g_metrics.ScaleY(12), SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
+    hdwp = DeferWindowPos(hdwp, m_hFilterControl, *this, m_xSliderPos+4+filterlabelwidth, m_topmarg+1, width-m_xSliderPos-4-filterlabelwidth-4, filterboxheight-1, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hCheckControl, *this, m_xSliderPos+4, m_topmarg+filterboxheight, width-m_xSliderPos-4, checkboxheight, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+filterboxheight+4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hListControl, *this, m_xSliderPos+4, m_topmarg+filterboxheight+checkboxheight, width-m_xSliderPos-4, m_ySliderPos-m_topmarg+4, SWP_NOZORDER|SWP_NOACTIVATE);
+    hdwp = DeferWindowPos(hdwp, m_hLogMsgControl, *this, m_xSliderPos+4, m_ySliderPos+8+filterboxheight+checkboxheight, width-m_xSliderPos-4, height-m_bottommarg-m_ySliderPos-checkboxheight-4, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hOK, *this, width-ok.right+ok.left-ex.right+ex.left-3, height-ex.bottom+ex.top, ex.right-ex.left, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hExit, *this, width-ok.right+ok.left, height-ok.bottom+ok.top, ok.right-ok.left, ok.bottom-ok.top, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, hLabel, *this, 2, height-label.bottom+label.top+2, width-ok.right-ex.right-8, ex.bottom-ex.top, SWP_NOZORDER|SWP_NOACTIVATE);
@@ -2697,7 +2699,7 @@ bool CMainDlg::OnLButtonUp(UINT nFlags, POINT point)
     GetClientRect(m_hTreeControl, &rect);
     m_xSliderPos = rect.right+4;
     GetClientRect(m_hListControl, &rect);
-    m_ySliderPos = rect.bottom+m_topmarg+FILTERBOXHEIGHT+CHECKBOXHEIGHT;
+    m_ySliderPos = rect.bottom+m_topmarg+filterboxheight+checkboxheight;
 
     m_nDragMode = DRAGMODE_NONE;
 
@@ -2789,15 +2791,15 @@ void CMainDlg::PositionChildWindows(POINT point, bool bHorz, bool bShowBar)
                 loglist.left, treelist.top+5, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_NOSIZE);
 
             hdwp = DeferWindowPos(hdwp, m_hFilterControl, NULL,
-                loglist.left+FILTERLABELWIDTH, treelist.top, loglist.right-FILTERLABELWIDTH, FILTERBOXHEIGHT,
+                loglist.left+filterlabelwidth, treelist.top, loglist.right-filterlabelwidth, filterboxheight,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
             hdwp = DeferWindowPos(hdwp, m_hCheckControl, NULL,
-                loglist.left, treelist.top+FILTERBOXHEIGHT, loglist.right-loglist.left, CHECKBOXHEIGHT,
+                loglist.left, treelist.top+filterboxheight, loglist.right-loglist.left, checkboxheight,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
             hdwp = DeferWindowPos(hdwp, m_hListControl, NULL,
-                loglist.left, treelist.top+FILTERBOXHEIGHT+CHECKBOXHEIGHT, loglist.right-loglist.left, loglist.bottom-treelist.top-FILTERBOXHEIGHT-CHECKBOXHEIGHT,
+                loglist.left, treelist.top+filterboxheight+checkboxheight, loglist.right-loglist.left, loglist.bottom-treelist.top-filterboxheight-checkboxheight,
                 SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
             GetWindowRect(m_hLogMsgControl, &treelist);
