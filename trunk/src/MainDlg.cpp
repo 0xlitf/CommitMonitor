@@ -295,7 +295,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             GetClientRect(m_hListControl, &rect);
             m_ySliderPos = rect.bottom+m_topmarg+filterboxheight+checkboxheight;
             GetClientRect(m_hLogMsgControl, &rect);
-            m_bottommarg = rect.bottom+4+m_ySliderPos;
+            m_bottommarg = rect.bottom+m_ySliderPos;
             GetClientRect(*this, &rect);
             m_bottommarg = rect.bottom - m_bottommarg;
 
