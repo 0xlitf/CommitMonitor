@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{920638BE-13B0-4A76-B132-B3E3A56DCB42}</ProjectGuid>
+    <RootNamespace>CommitMonitor</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\obj\$(Configuration)_$(Platform)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\obj\$(Configuration)_$(Platform)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\obj\$(Configuration)_$(Platform)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\obj\$(Configuration)_$(Platform)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MinimalRebuild>true</MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_neon.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>_WIN64;_DEBUG;_WINDOWS;SVN_DEBUG;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_neon.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_neon.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SetChecksum>true</SetChecksum>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessorDefinitions>_WIN64;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_neon.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SetChecksum>true</SetChecksum>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ext\sktoolslib\AeroControls.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\AeroGlass.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\BaseDialog.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\BaseWindow.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\Callback.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\CmdLineParser.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\DebugOutput.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\DirFileEnum.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\hyperlink.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\ListCtrl.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\ReaderWriterLock.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\Registry.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\StringUtils.cpp" />
+    <ClCompile Include="..\ext\sktoolslib\UnicodeUtils.cpp" />
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="Accurev.cpp" />
+    <ClCompile Include="CommitMonitor.cpp" />
+    <ClCompile Include="DiffViewer.cpp" />
+    <ClCompile Include="FindBar.cpp" />
+    <ClCompile Include="HiddenWindow.cpp" />
+    <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="OptionsDlg.cpp" />
+    <ClCompile Include="PasswordDlg.cpp" />
+    <ClCompile Include="ProgressDlg.cpp" />
+    <ClCompile Include="SCCS.cpp" />
+    <ClCompile Include="SerializeUtils.cpp" />
+    <ClCompile Include="StatusBarMsgWnd.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SVN.cpp" />
+    <ClCompile Include="SVNPool.cpp" />
+    <ClCompile Include="UpdateDlg.cpp" />
+    <ClCompile Include="URLDlg.cpp" />
+    <ClCompile Include="UrlInfo.cpp" />
+    <ClCompile Include="AppUtils.cpp" />
+    <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MappedInFile.cpp" />
+    <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ext\sktoolslib\AeroControls.h" />
+    <ClInclude Include="..\ext\sktoolslib\AeroGlass.h" />
+    <ClInclude Include="..\ext\sktoolslib\BaseDialog.h" />
+    <ClInclude Include="..\ext\sktoolslib\BaseWindow.h" />
+    <ClInclude Include="..\ext\sktoolslib\Callback.h" />
+    <ClInclude Include="..\ext\sktoolslib\CDPI.h" />
+    <ClInclude Include="..\ext\sktoolslib\ClipboardHelper.h" />
+    <ClInclude Include="..\ext\sktoolslib\CmdLineParser.h" />
+    <ClInclude Include="..\ext\sktoolslib\DebugOutput.h" />
+    <ClInclude Include="..\ext\sktoolslib\DirFileEnum.h" />
+    <ClInclude Include="..\ext\sktoolslib\hyperlink.h" />
+    <ClInclude Include="..\ext\sktoolslib\ListCtrl.h" />
+    <ClInclude Include="..\ext\sktoolslib\ReaderWriterLock.h" />
+    <ClInclude Include="..\ext\sktoolslib\Registry.h" />
+    <ClInclude Include="..\ext\sktoolslib\SimpleIni.h" />
+    <ClInclude Include="..\ext\sktoolslib\StringUtils.h" />
+    <ClInclude Include="..\ext\sktoolslib\UnicodeUtils.h" />
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="Accurev.h" />
+    <ClInclude Include="CommitMonitor.h" />
+    <ClInclude Include="DiffViewer.h" />
+    <ClInclude Include="FindBar.h" />
+    <ClInclude Include="HiddenWindow.h" />
+    <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="OptionsDlg.h" />
+    <ClInclude Include="PasswordDlg.h" />
+    <ClInclude Include="ProgressDlg.h" />
+    <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="SCCS.h" />
+    <ClInclude Include="SerializeUtils.h" />
+    <ClInclude Include="StatusBarMsgWnd.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SVN.h" />
+    <ClInclude Include="SVNPool.h" />
+    <ClInclude Include="UpdateDlg.h" />
+    <ClInclude Include="URLDlg.h" />
+    <ClInclude Include="UrlInfo.h" />
+    <ClInclude Include="AppUtils.h" />
+    <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
+    <ClInclude Include="MappedInFile.h" />
+    <ClInclude Include="memdc.h" />
+    <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\about.ico" />
+    <None Include="Resources\add.ico" />
+    <None Include="Resources\cancel-normal.bmp" />
+    <None Include="Resources\CommitMonitor.ico" />
+    <None Include="Resources\CommitMonitor.png" />
+    <None Include="Resources\CommitMonitor.rc2" />
+    <None Include="Resources\CommitMonitorRed0.ico" />
+    <None Include="Resources\CommitMonitorRed1.ico" />
+    <None Include="Resources\CommitMonitorRed2.ico" />
+    <None Include="Resources\CommitMonitorRed3.ico" />
+    <None Include="Resources\diff.ico" />
+    <None Include="Resources\edit.ico" />
+    <None Include="Resources\folder.ico" />
+    <None Include="Resources\folder_open.ico" />
+    <None Include="Resources\getall.ico" />
+    <None Include="Resources\mark-all-as-read.ico" />
+    <None Include="Resources\Notification.wav" />
+    <None Include="Resources\options.ico" />
+    <None Include="Resources\remove.ico" />
+    <None Include="Resources\repourl.ico" />
+    <None Include="Resources\repourl_inactive.ico" />
+    <None Include="Resources\repourl_new.ico" />
+    <None Include="Resources\repourlfail.ico" />
+    <None Include="Setup\Includes.wxi" />
+    <None Include="Setup\Setup.wxs" />
+    <None Include="Setup\Setup64.wxs" />
+    <None Include="Setup\VersionNumberInclude.in.wxi" />
+    <None Include="..\default.build" />
+    <None Include="Setup\setup.build" />
+    <None Include="..\version.build.in" />
+    <None Include="..\ext\build\apr.build" />
+    <None Include="..\ext\build\aprutil.build" />
+    <None Include="..\ext\build\default.build" />
+    <None Include="..\ext\build\neon.build">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\ext\build\OpenSSL.build" />
+    <None Include="..\ext\build\sasl.build">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\ext\build\serf.build" />
+    <None Include="..\ext\build\subversion.build" />
+    <None Include="..\ext\build\zlib.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\CommitMonitor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ext\scintilla\Scintilla.vcxproj">
+      <Project>{5877b917-512b-49f5-b514-1b4159e7a9ca}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
