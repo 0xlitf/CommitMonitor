@@ -1786,6 +1786,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
         m_bBlockListCtrlUI = true;
         std::set<svn_revnum_t> selectedRevisions;
+        svn_revnum_t selMarkRev = 0;
         if (sameProject)
         {
             int nCount = ListView_GetItemCount(m_hListControl);
@@ -1804,9 +1805,20 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                         selectedRevisions.insert(pLogEntry->revision);
                 }
             }
+            int selMark = ListView_GetSelectionMark(m_hListControl);
+            LVITEM item = {0};
+            item.mask = LVIF_PARAM;
+            item.iItem = selMark;
+            item.lParam = 0;
+            ListView_GetItem(m_hListControl, &item);
+            if (item.lParam)
+            {
+                SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
+                if (pLogEntry)
+                    selMarkRev = pLogEntry->revision;
+            }
         }
 
-        int selMark = ListView_GetSelectionMark(m_hListControl);
         DWORD exStyle = LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER;
         ListView_DeleteAllItems(m_hListControl);
 
@@ -1992,11 +2004,26 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 3, LVSCW_AUTOSIZE_USEHEADER);
         ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
-        if ((selMark >= 0) && sameProject)
+        if ((selMarkRev > 0) && sameProject)
         {
-            ListView_SetSelectionMark(m_hListControl, selMark);
-            ListView_SetItemState(m_hListControl, selMark, LVIS_SELECTED, LVIS_SELECTED);
-            ListView_EnsureVisible(m_hListControl, selMark, FALSE);
+            int nItemCount = ListView_GetItemCount(m_hListControl);
+            for (int i=0; i<nItemCount; ++i)
+            {
+                item.mask = LVIF_PARAM;
+                item.iItem = i;
+                ListView_GetItem(m_hListControl, &item);
+                if (item.lParam)
+                {
+                    SCCSLogEntry * pLogEntry = (SCCSLogEntry*)item.lParam;
+                    if (pLogEntry && (pLogEntry->revision == selMarkRev))
+                    {
+                        ListView_SetSelectionMark(m_hListControl, i);
+                        ListView_SetItemState(m_hListControl, i, LVIS_SELECTED, LVIS_SELECTED);
+                        ListView_EnsureVisible(m_hListControl, i, FALSE);
+                        break;
+                    }
+                }
+            }
         }
 
         ::InvalidateRect(m_hListControl, NULL, false);
