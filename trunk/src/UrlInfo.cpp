@@ -648,6 +648,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             existingUrlInfo.url = info.url;
             existingUrlInfo.name = info.name;
             existingUrlInfo.ignoreUsers = info.ignoreUsers;
+            existingUrlInfo.includeUsers = info.includeUsers;
             existingUrlInfo.ignoreCommitLog = info.ignoreCommitLog;
             existingUrlInfo.callcommand = info.callcommand;
             existingUrlInfo.webviewer = info.webviewer;
