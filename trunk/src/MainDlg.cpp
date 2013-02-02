@@ -2938,6 +2938,17 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
             else
                 hMenu = ::LoadMenu(hResource, MAKEINTRESOURCE(IDR_TREEPOPUPTSVN));
             hMenu = ::GetSubMenu(hMenu, 0);
+            // adjust the "Fetch next XX log messages entry
+            //ID_POPUP_FETCHNEXT
+            MENUITEMINFO mii = {0};
+            mii.cbSize = sizeof(MENUITEMINFO);
+            mii.fMask = MIIM_TYPE;
+            mii.fType = MFT_STRING;
+            WCHAR menutext[200] = {0};
+            swprintf_s(menutext, L"Fetch ne&xt %d log messages", (DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30));
+            mii.dwTypeData = menutext;
+            SetMenuItemInfo(hMenu, ID_POPUP_FETCHNEXT, MF_BYCOMMAND, &mii);
+
             TVITEMEX itemex = {0};
             itemex.hItem = hittest.hItem;
             itemex.mask = TVIF_PARAM;
@@ -2954,6 +2965,8 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                         // remove the 'mark all as read' since this is not a parent (SVNParentPath) item
                         DeleteMenu(hMenu, ID_POPUP_MARKALLASREAD, MF_BYCOMMAND);
                     }
+                    if (info->lastcheckedrev < 1)
+                        DeleteMenu(hMenu, ID_POPUP_FETCHNEXT, MF_BYCOMMAND);
                 }
             }
             m_pURLInfos->ReleaseReadOnlyData();
@@ -2992,17 +3005,39 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                 RefreshAll(hittest.hItem);
                 break;
             case ID_POPUP_ACTIVE:
-                std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-                if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
                 {
-                    CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
-                    if (info)
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
                     {
-                        info->monitored = !info->monitored;
+                        CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
+                        if (info)
+                        {
+                            info->monitored = !info->monitored;
+                        }
                     }
+                    m_pURLInfos->ReleaseWriteData();
+                    ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
                 }
-                m_pURLInfos->ReleaseWriteData();
-                ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
+                break;
+            case ID_POPUP_FETCHNEXT:
+                {
+                    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                    std::wstring url;
+                    if (pWrite->find(*(std::wstring*)itemex.lParam) != pWrite->end())
+                    {
+                        CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
+                        if (info)
+                        {
+                            // get the last shown entry
+                            svn_revnum_t rev = info->logentries.cbegin()->second.revision;
+                            info->lastcheckedrev = max(1, rev - (svn_revnum_t)(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30));
+                            url = info->url;
+                        }
+                    }
+                    m_pURLInfos->ReleaseWriteData();
+                    m_refreshNeeded = true;
+                    SendMessage(m_hParent, COMMITMONITOR_GETALL, 0, (LPARAM)url.c_str());
+                }
                 break;
             }
         }
