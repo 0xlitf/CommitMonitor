@@ -101,7 +101,8 @@ bool CHiddenWindow::RegisterAndCreateWindow()
     wcx.cbWndExtra = 0;
     wcx.hInstance = hResource;
     wcx.hCursor = LoadCursor(NULL, IDC_SIZEWE);
-    wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
+    ResString clsname(hResource, IDS_APP_TITLE);
+    wcx.lpszClassName = clsname;
     wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_COMMITMONITOR));
     wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
     wcx.lpszMenuName = MAKEINTRESOURCE(IDC_COMMITMONITOR);

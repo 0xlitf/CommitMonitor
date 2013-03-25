@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009, 2012 - Stefan Kueng
+// Copyright (C) 2007-2009, 2012-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,7 +55,8 @@ bool CDiffViewer::RegisterAndCreateWindow()
     wcx.cbWndExtra = 0;
     wcx.hInstance = hResource;
     wcx.hCursor = NULL;
-    wcx.lpszClassName = ResString(hResource, IDS_APP_TITLE);
+    ResString clsname(hResource, IDS_APP_TITLE);
+    wcx.lpszClassName = clsname;
     wcx.hIcon = LoadIcon(hResource, MAKEINTRESOURCE(IDI_DIFF));
     wcx.hbrBackground = (HBRUSH)(COLOR_3DFACE+1);
     wcx.lpszMenuName = NULL;
