@@ -133,8 +133,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <OmitFramePointers>true</OmitFramePointers>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -163,7 +163,6 @@
       <AdditionalIncludeDirectories>.\Resources;..\ext\sktoolslib;..\ext\apr\include;..\ext\Subversion\Subversion\include;..\ext\apr-util\include;..\ext\scintilla\include;..\ext\cyrus-sasl\include;..\ext\snarl;..\ext\BlowFish</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <OmitFramePointers>true</OmitFramePointers>
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>_WIN64;NDEBUG;_WINDOWS;APR_DECLARE_STATIC;APU_DECLARE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -189,6 +188,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\AeroControls.cpp" />
     <ClCompile Include="..\ext\sktoolslib\AeroGlass.cpp" />
     <ClCompile Include="..\ext\sktoolslib\BaseDialog.cpp" />
@@ -203,13 +205,19 @@
     <ClCompile Include="..\ext\sktoolslib\Registry.cpp" />
     <ClCompile Include="..\ext\sktoolslib\StringUtils.cpp" />
     <ClCompile Include="..\ext\sktoolslib\UnicodeUtils.cpp" />
+    <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="Accurev.cpp" />
+    <ClCompile Include="AppUtils.cpp" />
     <ClCompile Include="CommitMonitor.cpp" />
     <ClCompile Include="DiffViewer.cpp" />
     <ClCompile Include="FindBar.cpp" />
     <ClCompile Include="HiddenWindow.cpp" />
     <ClCompile Include="MainDlg.cpp" />
+    <ClCompile Include="MappedInFile.cpp" />
     <ClCompile Include="OptionsDlg.cpp" />
     <ClCompile Include="PasswordDlg.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
@@ -224,17 +232,9 @@
     <ClCompile Include="UpdateDlg.cpp" />
     <ClCompile Include="URLDlg.cpp" />
     <ClCompile Include="UrlInfo.cpp" />
-    <ClCompile Include="AppUtils.cpp" />
-    <ClCompile Include="..\ext\BlowFish\BlowFish.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="MappedInFile.cpp" />
-    <ClCompile Include="..\ext\snarl\SnarlInterface.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
     <ClInclude Include="..\ext\sktoolslib\AeroControls.h" />
     <ClInclude Include="..\ext\sktoolslib\AeroGlass.h" />
     <ClInclude Include="..\ext\sktoolslib\BaseDialog.h" />
@@ -252,13 +252,17 @@
     <ClInclude Include="..\ext\sktoolslib\SimpleIni.h" />
     <ClInclude Include="..\ext\sktoolslib\StringUtils.h" />
     <ClInclude Include="..\ext\sktoolslib\UnicodeUtils.h" />
+    <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="Accurev.h" />
+    <ClInclude Include="AppUtils.h" />
     <ClInclude Include="CommitMonitor.h" />
     <ClInclude Include="DiffViewer.h" />
     <ClInclude Include="FindBar.h" />
     <ClInclude Include="HiddenWindow.h" />
     <ClInclude Include="MainDlg.h" />
+    <ClInclude Include="MappedInFile.h" />
+    <ClInclude Include="memdc.h" />
     <ClInclude Include="OptionsDlg.h" />
     <ClInclude Include="PasswordDlg.h" />
     <ClInclude Include="ProgressDlg.h" />
@@ -272,13 +276,19 @@
     <ClInclude Include="UpdateDlg.h" />
     <ClInclude Include="URLDlg.h" />
     <ClInclude Include="UrlInfo.h" />
-    <ClInclude Include="AppUtils.h" />
-    <ClInclude Include="..\ext\BlowFish\Blowfish.h" />
-    <ClInclude Include="MappedInFile.h" />
-    <ClInclude Include="memdc.h" />
-    <ClInclude Include="..\ext\snarl\SnarlInterface.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\default.build" />
+    <None Include="..\ext\build\apr.build" />
+    <None Include="..\ext\build\aprutil.build" />
+    <None Include="..\ext\build\default.build" />
+    <None Include="..\ext\build\neon.build" />
+    <None Include="..\ext\build\OpenSSL.build" />
+    <None Include="..\ext\build\sasl.build" />
+    <None Include="..\ext\build\serf.build" />
+    <None Include="..\ext\build\subversion.build" />
+    <None Include="..\ext\build\zlib.build" />
+    <None Include="..\version.build.in" />
     <None Include="Resources\about.ico" />
     <None Include="Resources\add.ico" />
     <None Include="Resources\cancel-normal.bmp" />
@@ -303,25 +313,10 @@
     <None Include="Resources\repourl_new.ico" />
     <None Include="Resources\repourlfail.ico" />
     <None Include="Setup\Includes.wxi" />
+    <None Include="Setup\setup.build" />
     <None Include="Setup\Setup.wxs" />
     <None Include="Setup\Setup64.wxs" />
     <None Include="Setup\VersionNumberInclude.in.wxi" />
-    <None Include="..\default.build" />
-    <None Include="Setup\setup.build" />
-    <None Include="..\version.build.in" />
-    <None Include="..\ext\build\apr.build" />
-    <None Include="..\ext\build\aprutil.build" />
-    <None Include="..\ext\build\default.build" />
-    <None Include="..\ext\build\neon.build">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\ext\build\OpenSSL.build" />
-    <None Include="..\ext\build\sasl.build">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\ext\build\serf.build" />
-    <None Include="..\ext\build\subversion.build" />
-    <None Include="..\ext\build\zlib.build" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources\CommitMonitor.rc" />
