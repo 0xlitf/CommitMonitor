@@ -7,6 +7,6 @@ neon            0.29.6      http://www.webdav.org/neon/
 OpenSSL         1.0.1e      http://www.openssl.org/
 scintilla       3.2.4       http://www.scintilla.org/
 serf            1.2.0       http://code.google.com/p/serf/
-sqlite          3.7.16      http://sqlite.org/
+sqlite          3.7.16.1    http://sqlite.org/
 Subversion      1.7.8       http://subversion.apache.org/
 zlib            1.2.7       http://www.zlib.net/
