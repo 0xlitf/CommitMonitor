@@ -170,6 +170,9 @@
     <ClInclude Include="lexlib\StyleContext.h">
       <Filter>lexlib</Filter>
     </ClInclude>
+    <ClInclude Include="lexlib\SubStyles.h">
+      <Filter>lexlib</Filter>
+    </ClInclude>
     <ClInclude Include="lexlib\WordList.h">
       <Filter>lexlib</Filter>
     </ClInclude>
