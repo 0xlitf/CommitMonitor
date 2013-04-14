@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 SVN::SVN(void)
 {
     parentpool = svn_pool_create(NULL);
-    svn_error_clear(svn_client_create_context(&m_pctx, parentpool));
+    svn_error_clear(svn_client_create_context2(&m_pctx, NULL, parentpool));
 
     Err = svn_config_ensure(NULL, parentpool);
     pool = svn_pool_create (parentpool);
@@ -416,7 +416,7 @@ svn_revnum_t SVN::GetHEADRevision(const std::wstring& repo, const std::wstring& 
     if (urla == NULL)
         return rev;
 
-    Err = svn_client_open_ra_session (&ra_session, urla, m_pctx, localpool);
+    Err = svn_client_open_ra_session2 (&ra_session, urla, NULL, m_pctx, localpool, localpool);
     if (Err)
         return rev;
 
@@ -617,25 +617,30 @@ bool SVN::Diff(const std::wstring& url1, svn_revnum_t pegrevision, svn_revnum_t 
     peg.kind = svn_opt_revision_number;
     peg.value.number = pegrevision;
 
+    svn_stream_t * outstream = svn_stream_from_aprfile2(outfile, false, localpool);
+    svn_stream_t * errstream = svn_stream_from_aprfile2(errfile, false, localpool);
 
-    Err = svn_client_diff_peg5 (opts,
-        svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url1)).c_str(), localpool),
-        &peg,
-        &rev1,
-        &rev2,
-        NULL,
-        svn_depth_infinity,
-        ignoreancestry,
-        nodiffdeleted,
-        true,   // show copies as adds
-        ignorecontenttype,
-        false,  // use git diff format
-        APR_LOCALE_CHARSET,
-        outfile,
-        errfile,
-        NULL,
-        m_pctx,
-        localpool);
+    Err = svn_client_diff_peg6 (opts,
+                                svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(url1)).c_str(), localpool),
+                                &peg,
+                                &rev1,
+                                &rev2,
+                                NULL,
+                                svn_depth_infinity,
+                                ignoreancestry,
+                                false,  // no_diff_added
+                                nodiffdeleted,
+                                true,   // show copies as adds
+                                ignorecontenttype,
+                                false,  // ignore_properties
+                                false,  // properties_only
+                                false,  // use git diff format
+                                APR_LOCALE_CHARSET,
+                                outstream,
+                                errstream,
+                                NULL,
+                                m_pctx,
+                                localpool);
     if (Err)
     {
         return false;

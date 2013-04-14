@@ -27,7 +27,6 @@
       <filterchain>
         <replacestring from="#define SVN_LIBSVN_FS_LINKS_FS_FS" to="/* #define SVN_LIBSVN_FS_LINKS_FS_FS */" />
         <replacestring from="#define SVN_LIBSVN_CLIENT_LINKS_RA_LOCAL" to="/* #define SVN_LIBSVN_CLIENT_LINKS_RA_LOCAL */" />
-        <replacestring from='#define DEFAULT_HTTP_LIBRARY "serf"' to='#define DEFAULT_HTTP_LIBRARY "neon"' />
       </filterchain>
     </loadfile>
     <echo file="subversion\svn_private_config.h" message="${configfile}" />
@@ -118,14 +117,7 @@
           <defines>
             <define name="APR_DECLARE_STATIC" />
             <define name="APU_DECLARE_STATIC" />
-            <define name="SVN_LIBSVN_CLIENT_LINKS_RA_NEON=1" />
             <define name="SVN_LIBSVN_CLIENT_LINKS_RA_SERF=1" />
-            <define name="SVN_NEON_0_25=1" />
-            <define name="SVN_NEON_0_26=1" />
-            <define name="SVN_NEON_0_27=1" />
-            <define name="SVN_NEON_0_28=1" />
-            <define name="SVN_NEON_0_29=1" />
-            <define name="SVN_HAVE_NEON" />
             <define name="SVN_HAVE_SERF" />
             <define name="SVN_LIBSVN_CLIENT_LINKS_RA_DAV=1" />
             <define name="SVN_DEBUG" if="${configuration == 'debug'}" />
@@ -142,6 +134,7 @@
             <define name="_DEBUG" if="${configuration == 'debug'}"/>
             <define name="XML_STATIC" />
             <define name="_USING_V110_SDK71_" />
+            <define name="PSAPI_VERSION=1" />
           </defines>
         </cl>
         <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
