@@ -107,7 +107,6 @@
             <include name="..\apr-util\include" />
             <include name="..\apr-util\xml\expat\lib" />
             <include name="..\svn-win32-libintl\inc" />
-            <include name="..\neon\src" />
             <include name="..\serf" />
             <include name="..\zlib" />
             <include name="..\sqlite" />
@@ -153,7 +152,6 @@
           </sources>
           <libdirs>
             <include name="..\openssl\outsslplat${ssldbg}" />
-            <include name="..\neon\${configuration}_${platform}" />
           </libdirs>
         </lib>
       </do>

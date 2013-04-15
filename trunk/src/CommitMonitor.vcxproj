@@ -93,8 +93,8 @@
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib; libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform); ..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -119,8 +119,8 @@
       <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib; libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform); ..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
@@ -145,8 +145,8 @@
       <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib; libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform); ..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
@@ -174,8 +174,8 @@
       <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib;libneon.lib;libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform);..\ext\neon\$(Configuration)_$(Platform);..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Ws2_32.lib;Mswsock.lib;Rpcrt4.lib;Imm32.lib;Secur32.lib;Crypt32.lib;Psapi.lib;libapr.lib;libaprutil.lib; libsvn_client.lib;libsvn_delta.lib;libsvn_diff.lib;libsvn_ra.lib;libsvn_ra_serf.lib;libsvn_ra_svn.lib;libsvn_repos.lib;libsvn_subr.lib;libsvn_wc.lib;libsasls.lib;libserf.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\ext\apr\$(Configuration)_$(Platform);..\ext\apr-util\$(Configuration)_$(Platform); ..\ext\Subversion\$(Configuration)_$(Platform);..\ext\cyrus-sasl\$(Configuration)_$(Platform);..\ext\serf\$(Configuration)_$(Platform);..\ext\sqlite\$(Configuration)_$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
@@ -282,7 +282,6 @@
     <None Include="..\ext\build\apr.build" />
     <None Include="..\ext\build\aprutil.build" />
     <None Include="..\ext\build\default.build" />
-    <None Include="..\ext\build\neon.build" />
     <None Include="..\ext\build\OpenSSL.build" />
     <None Include="..\ext\build\sasl.build" />
     <None Include="..\ext\build\serf.build" />

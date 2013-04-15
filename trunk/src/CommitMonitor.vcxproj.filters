@@ -367,9 +367,6 @@
     <None Include="..\ext\build\default.build">
       <Filter>Build Scripts\ext</Filter>
     </None>
-    <None Include="..\ext\build\neon.build">
-      <Filter>Build Scripts\ext</Filter>
-    </None>
     <None Include="..\ext\build\OpenSSL.build">
       <Filter>Build Scripts\ext</Filter>
     </None>
