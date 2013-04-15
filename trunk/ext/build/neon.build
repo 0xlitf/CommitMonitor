@@ -46,7 +46,6 @@
     <echo file="config.h" message="${configfile}" unless="${file::exists('config.h')}" />
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
-      <arg value="/Oy" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/EHsc" />
       <arg value="/MT" if="${configuration == 'release'}" />
