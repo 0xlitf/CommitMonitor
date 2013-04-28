@@ -16,8 +16,6 @@
   <property name="crosscompile" value="" />
   <!-- default: we don't clean first -->
   <property name="cleanup" value="" />
-  <!-- default: we build with VS2010 -->
-  <property name="studioversion" value="2010"/>
   <!-- default: we build in a user session -->
   <property name="solutionname" value="CommitMonitor.sln" />
   <!-- the ${subsystem} to use -->
