@@ -8,4 +8,4 @@ scintilla       3.3.1       http://www.scintilla.org/
 serf            1.2.0       http://code.google.com/p/serf/
 sqlite          3.7.16.2    http://sqlite.org/
 Subversion      1.8.x       http://subversion.apache.org/
-zlib            1.2.7       http://www.zlib.net/
+zlib            1.2.8       http://www.zlib.net/
