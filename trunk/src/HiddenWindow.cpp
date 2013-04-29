@@ -255,7 +255,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                         {
                             // only show one popup for all the notifications
                             TCHAR sTitle[1024] = {0};
-                            _stprintf_s(sTitle, 1024, _T("%d projects have updates"), m_popupData.size());
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%d projects have updates"), m_popupData.size());
                             std::wstring sText;
                             for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
                             {
@@ -1126,7 +1126,7 @@ DWORD CHiddenWindow::RunThread()
                         if (!hadError)
                         {
                             TCHAR sTitle[1024] = {0};
-                            _stprintf_s(sTitle, 1024, _T("%s\nfailed to connect!"), it->second.name.c_str());
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%s\nfailed to connect!"), it->second.name.c_str());
                             popupData data;
                             data.sText = pSCCS->GetLastErrorMsg();
                             data.sTitle = std::wstring(sTitle);
