@@ -4,11 +4,9 @@
   <!-- default configuration is release -->
   <property name="configuration" value="release" />
   <!-- default builds are dev builds -->
-  <property name="devrelease" value="-dev" unless="${property::exists('devrelease')}"/>
+  <property name="devrelease" value="-dev" unless="${property::exists('devrelease')}" />
   <!-- default build for win32 platform -->
   <property name="platform" value="win32" />
-  <!-- default build tool is VS.NET2005 -->
-  <property name="buildtool" value="devenv.com" />
   <!-- default: don't add a platform specific extension
        to the bin folders 'release' / 'debug' -->
   <property name="bindirextension" value="" />
@@ -27,7 +25,7 @@
        for example:
        /t "url/to/timestamp/server" /q
   -->
-  <loadfile file="signinfo.txt" property="signinfo" failonerror="false" if="${file::exists('signinfo.txt')}"/>
+  <loadfile file="signinfo.txt" property="signinfo" failonerror="false" if="${file::exists('signinfo.txt')}" />
 
   <!-- ====================================================================== -->
   <!-- Configuration targets                                                  -->
@@ -60,8 +58,8 @@
     <description>
       Cross-compiles on win32 for a different platform.
     </description>
-    <property name="crosscompile" value="yes" if="${platform == 'x64'}"/>
-    <echo message="ignore cross-compiling (only supported for x64)" level="Warning" if="${platform != 'x64'}"/>
+    <property name="crosscompile" value="yes" if="${platform == 'x64'}" />
+    <echo message="ignore cross-compiling (only supported for x64)" level="Warning" if="${platform != 'x64'}" />
   </target>
 
   <!-- ====================================================================== -->
@@ -99,7 +97,7 @@
         <include name="ext/build/default.build" />
       </buildfiles>
     </nant>
-    <exec program="devenv.com" >
+    <exec program="devenv.com">
       <arg value="${solutionname}" />
       <arg value="/clean" />
       <arg value="${configuration}|${platform}" />
@@ -165,7 +163,7 @@
       Builds CommitMonitor. The libraries must have been built
       before.
     </description>
-    <exec program="devenv.com" >
+    <exec program="devenv.com">
       <arg value="${solutionname}" />
       <arg value="/rebuild" />
       <arg value="${configuration}|${platform}" />
