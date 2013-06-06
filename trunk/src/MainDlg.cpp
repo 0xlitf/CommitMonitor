@@ -2234,16 +2234,24 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
                 }
                 if (mods)
                     msg += L"(";
+                else
+                    msg += L" ";
+
                 if (it->second.text_modified == svn_tristate_true)
                     msg += L"T";
-                else if (mods)
+                else
                     msg += L" ";
+
                 if (it->second.props_modified == svn_tristate_true)
                     msg += L"P";
-                else if (mods)
+                else
                     msg += L" ";
+
                 if (mods)
                     msg += L")";
+                else
+                    msg += L" ";
+
                 msg += _T(" : ");
                 msg += it->first;
                 if (!it->second.copyfrom_path.empty())
