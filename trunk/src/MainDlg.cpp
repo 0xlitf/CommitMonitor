@@ -26,6 +26,7 @@
 #include "AboutDlg.h"
 #include "UpdateDlg.h"
 #include "AppUtils.h"
+#include "StringUtils.h"
 #include "DirFileEnum.h"
 #include <uxtheme.h>
 #include <algorithm>
@@ -1859,13 +1860,20 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
 
         bool bShowIgnored = !!SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL);
+        bool useFilter = filterstringlower.size() != 0;
+        bool bUseRegex = (filterstring.size() > 1)&&(filterstring[0] == '\\');
+
+        std::vector<std::wstring> filters;
+
+        if (!bUseRegex)
+        {
+            stringtok(filters, filterstringlower, true, L" ");
+        }
 
         for (auto it = info->logentries.cbegin(); it != info->logentries.cend(); ++it)
         {
             // only add entries that match the filter string
             bool addEntry = true;
-            bool useFilter = filterstringlower.size() != 0;
-            bool bUseRegex = (filterstring.size() > 1)&&(filterstring[0] == '\\');
 
             if (useFilter)
             {
@@ -1884,6 +1892,15 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                                 _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
                                 std::wstring s = std::wstring(buf);
                                 addEntry = std::regex_search(s, regCheck);
+                                if (!addEntry)
+                                {
+                                    for (const auto& cpit : it->second.m_changedPaths)
+                                    {
+                                        addEntry = std::regex_search(cpit.first, regCheck);
+                                        if (addEntry)
+                                            break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -1900,24 +1917,40 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                     // note: \Q...\E doesn't seem to work with tr1 - it still
                     // throws an exception if the regex in between is not a valid regex :(
 
-                    std::wstring s = it->second.author;
-                    std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                    addEntry = s.find(filterstringlower) != std::wstring::npos;
-
-                    if (!addEntry)
+                    for (const auto& sSearch : filters)
                     {
-                        s = it->second.message;
+                        std::wstring s = it->second.author;
                         std::transform(s.begin(), s.end(), s.begin(), std::tolower);
-                        addEntry = s.find(filterstringlower) != std::wstring::npos;
+                        addEntry = s.find(sSearch) != std::wstring::npos;
+
                         if (!addEntry)
                         {
-                            _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
-                            s = buf;
-                            addEntry = s.find(filterstringlower) != std::wstring::npos;
+                            s = it->second.message;
+                            std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                            addEntry = s.find(sSearch) != std::wstring::npos;
+                            if (!addEntry)
+                            {
+                                _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
+                                s = buf;
+                                addEntry = s.find(sSearch) != std::wstring::npos;
+                                if (!addEntry)
+                                {
+                                    for (const auto& cpit : it->second.m_changedPaths)
+                                    {
+                                        s = cpit.first;
+                                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                                        addEntry = s.find(sSearch) != std::wstring::npos;
+                                        if (addEntry)
+                                            break;
+                                    }
+                                }
+                            }
                         }
+                        if (bNegateFilter)
+                            addEntry = !addEntry;
+                        if (!addEntry)
+                            break;
                     }
-                    if (bNegateFilter)
-                        addEntry = !addEntry;
                 }
             }
 
