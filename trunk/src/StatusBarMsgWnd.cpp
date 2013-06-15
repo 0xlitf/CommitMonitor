@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009, 2012 - Stefan Kueng
+// Copyright (C) 2007, 2009, 2012-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,10 @@ LRESULT CALLBACK CStatusBarMsgWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wP
     case WM_LBUTTONUP:
         // user clicked on the popup window
         ::PostMessage(m_hParentWnd, m_messageOnClick, wParam, lParam);
+        break;
+    case WM_RBUTTONUP:
+        ::KillTimer(*this, STATUSBARMSGWND_SHOWTIMER);
+        DestroyWindow(*this);
         break;
     case WM_ERASEBKGND:
         return TRUE;
