@@ -282,7 +282,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             LOGFONT lf = {0};
             lf.lfHeight = -MulDiv(8, g_metrics.GetDPIY(), 72);
             lf.lfCharSet = DEFAULT_CHARSET;
-            _tcscpy_s(lf.lfFaceName, 32, _T("Courier New"));
+            // set pitch and family but leave font name empty: let the system chose the best font
+            lf.lfPitchAndFamily = FIXED_PITCH|FF_MODERN;
+            _tcscpy_s(lf.lfFaceName, 32, L"");
             m_font = ::CreateFontIndirect(&lf);
             ::SendMessage(m_hLogMsgControl, WM_SETFONT, (WPARAM)m_font, 1);
 
