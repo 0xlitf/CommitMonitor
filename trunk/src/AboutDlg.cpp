@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2012 - Stefan Kueng
+// Copyright (C) 2007, 2012-2013 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,7 +45,7 @@ LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
         {
             InitDialog(hwndDlg, IDI_COMMITMONITOR);
             // initialize the controls
-            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, _T("http://tools.tortoisesvn.net"));
+            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, _T("http://stefanstools.sourceforge.net"));
             TCHAR verbuf[1024] = {0};
 #ifdef _WIN64
             _stprintf_s(verbuf, _countof(verbuf), _T("CommitMonitor version %d.%d.%d.%d (64-bit)"), CM_VERMAJOR, CM_VERMINOR, CM_VERMICRO, CM_VERBUILD);
