@@ -854,7 +854,7 @@ DWORD CHiddenWindow::RunThread()
                                     }
                                     catch (std::exception)
                                     {
-                                    
+
                                     }
                                 }
 
