@@ -151,7 +151,7 @@
             <include name="..\sqlite\${configuration}_${platform}\sqlite.lib" if="${fname == 'libsvn_fs_fs'}" />
           </sources>
           <libdirs>
-            <include name="..\openssl\outsslplat${ssldbg}" />
+            <include name="..\openssl\out${sslplat}${ssldbg}" />
           </libdirs>
         </lib>
       </do>
