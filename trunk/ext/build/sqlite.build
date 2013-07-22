@@ -26,8 +26,8 @@
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/EHsc" />
-      <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration == 'debug')}" />
+      <arg value="/MT" if="${configuration == 'release'}" />
+      <arg value="/MTd" if="${configuration == 'debug'}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />

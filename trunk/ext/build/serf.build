@@ -21,8 +21,8 @@
   </target>
 
   <target name="build" depends="clean">
-    <property name="ssldbg" value="" if="${(configuration == 'release')}" />
-    <property name="ssldbg" value=".dbg" if="${(configuration == 'debug')}" />
+    <property name="ssldbg" value="" if="${configuration == 'release'}" />
+    <property name="ssldbg" value=".dbg" if="${configuration == 'debug'}" />
     <property name="sslplat" value="32" if="${platform == 'win32'}" />
     <property name="sslplat" value="64" if="${platform == 'x64'}" />
     <mkdir dir="${configuration}_${platform}" />
@@ -30,8 +30,8 @@
       <arg value="/O2" if="${configuration == 'release'}" />
       <arg value="/Od" if="${configuration == 'debug'}" />
       <arg value="/EHsc" />
-      <arg value="/MT" if="${(configuration == 'release')}" />
-      <arg value="/MTd" if="${(configuration == 'debug')}" />
+      <arg value="/MT" if="${configuration == 'release'}" />
+      <arg value="/MTd" if="${configuration == 'debug'}" />
       <arg value="/Gy" />
       <arg value="/W0" />
       <arg value="/nologo" />
