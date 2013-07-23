@@ -34,6 +34,15 @@
       </filterchain>
     </loadfile>
     <echo file="include\prop.h" message="${propfile}" />
+
+    <copy file="lib\saslutil.c" tofile="lib\orig_saslutil.c" overwrite="true" />
+    <loadfile file="lib\saslutil.c" property="saslutilfile">
+      <filterchain>
+        <replacestring from="__declspec(dllexport)" to="LIBSASL_API" />
+      </filterchain>
+    </loadfile>
+    <echo file="lib\saslutil.c" message="${saslutilfile}" />
+
     <rc rcfile="win32\include\CyrusSasl.rc" output="${configuration}_${platform}\libsasl.res">
       <includedirs>
         <include name="include" />
@@ -110,6 +119,7 @@
       </fileset>
     </delete>
     <copy file="include\orig_prop.h" tofile="include\prop.h" overwrite="true" />
+    <copy file="lib\orig_saslutil.c" tofile="lib\saslutil.c" overwrite="true" />
 
     <cl outputdir="${configuration}_${platform}">
       <arg value="/O2" if="${configuration == 'release'}" />
