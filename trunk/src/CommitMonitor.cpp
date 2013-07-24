@@ -30,7 +30,8 @@
 
 #include "apr_general.h"
 #include "svn_ra.h"
-#define STRUCT_IOVEC_DEFINED
+#define STRUCT_IOVEC_DEFINED    /* iovec is already defined in apr_want.h */
+#define LIBSASL_EXPORTS         /* sasl defaults to dllimport if LIBSASL_EXPORTS is not defined */
 #include "sasl.h"
 
 // Global Variables:
