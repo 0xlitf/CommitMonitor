@@ -52,6 +52,7 @@ public:
     std::wstring                name;
     __time64_t                  lastchecked;
     svn_revnum_t                lastcheckedrev;
+    svn_revnum_t                startfromrev;       // not saved to disk, only for runtime
     __time64_t                  lastcheckedrobots;
 
     int                         minutesinterval;

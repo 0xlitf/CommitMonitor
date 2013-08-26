@@ -29,6 +29,7 @@
 
 CUrlInfo::CUrlInfo(void) : lastchecked(0)
     , lastcheckedrev(0)
+    , startfromrev(0)
     , minutesinterval(90)
     , minminutesinterval(0)
     , fetchdiffs(false)

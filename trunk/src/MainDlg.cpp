@@ -3096,9 +3096,11 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                         CUrlInfo * info = &pWrite->find(*(std::wstring*)itemex.lParam)->second;
                         if (info)
                         {
-                            // get the last shown entry
+                            // set the last checked revision to 1 so the next fetch
+                            // fetches the log with limit = NumLogs
                             svn_revnum_t rev = info->logentries.cbegin()->second.revision;
-                            info->lastcheckedrev = max(1, rev - (svn_revnum_t)(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30));
+                            info->startfromrev = rev;
+                            info->lastcheckedrev = 0;
                             url = info->url;
                         }
                     }

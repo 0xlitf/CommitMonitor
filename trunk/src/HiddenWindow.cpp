@@ -763,7 +763,7 @@ DWORD CHiddenWindow::RunThread()
                 }
                 int nNewCommits = 0;        // commits without ignored ones
                 int nTotalNewCommits = 0;   // all commits, including ignored ones
-                if (pSCCS->GetLog(it->second.accurevRepo, it->first, headrev, it->second.lastcheckedrev + 1))
+                if (pSCCS->GetLog(it->second.accurevRepo, it->first, it->second.startfromrev ? it->second.startfromrev : headrev, it->second.lastcheckedrev + 1))
                 {
                     CTraceToOutputDebugString::Instance()(_T("log fetched for %s\n"), it->first.c_str());
                     if (!m_bRun)
@@ -776,6 +776,7 @@ DWORD CHiddenWindow::RunThread()
                     {
                         writeIt->second.lastcheckedrev = headrev;
                         writeIt->second.lastchecked = currenttime;
+                        writeIt->second.startfromrev = 0;
                         // no need to save just for this
                     }
                     m_UrlInfos.ReleaseWriteData();
