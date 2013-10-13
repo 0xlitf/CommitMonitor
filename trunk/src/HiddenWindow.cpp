@@ -255,7 +255,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                         {
                             // only show one popup for all the notifications
                             TCHAR sTitle[1024] = {0};
-                            _stprintf_s(sTitle, _countof(sTitle), _T("%d projects have updates"), m_popupData.size());
+                            _stprintf_s(sTitle, _countof(sTitle), _T("%Iu projects have updates"), m_popupData.size());
                             std::wstring sText;
                             for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
                             {
