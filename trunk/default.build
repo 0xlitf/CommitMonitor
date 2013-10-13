@@ -168,7 +168,7 @@
       <arg value="/rebuild" />
       <arg value="${configuration}|${platform}" />
     </exec>
-    <exec program="Tools\upx.exe" if="${platform == 'win32'}" >
+    <exec program="Tools\upx.exe">
       <arg value="-q" />
       <arg value="bin\${configuration}_${platform}\CommitMonitor.exe" />
     </exec>
