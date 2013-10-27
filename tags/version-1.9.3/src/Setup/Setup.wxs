@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include Includes.wxi?>
+  <Product
+  UpgradeCode="B49D2664-0941-465d-A704-CAC63D1D0789"
+  Name="$(var.ProductName) $(var.VersionNumberUserVisible)"
+  Id="*"
+  Language="1033"
+  Codepage="1252"
+  Version="$(var.VersionNumberInternal)"
+  Manufacturer="Stefans Tools">
+
+    <Package Id="*" Keywords="Installer"
+      Description="Subversion Commit Monitor"
+      Comments="http://stefanstools.sourceforge.net" Manufacturer="Stefans Tools"
+      InstallerVersion="200" Languages="1033" Compressed="yes" SummaryCodepage="1252" />
+
+    <Upgrade Id="B49D2664-0941-465d-A704-CAC63D1D0789" >
+      <!-- flag is set if the install will trigger an upgrade of an existing install -->
+      <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" Maximum="$(var.VersionNumberInternal)" IncludeMaximum="no" />
+    </Upgrade>
+
+    <Media Id="1" Cabinet="cmtmonitor.cab" EmbedCab="yes" CompressionLevel="high" />
+    <Icon Id="CMIcon" SourceFile="..\Resources\CommitMonitor.ico" />
+    <Property Id="ARPPRODUCTICON">CMIcon</Property>
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+    <Condition Message="This application only runs on Windows XP with Service Pack 3 and later.">
+      <![CDATA[Installed OR ((VersionNT > 501) OR ((VersionNT = 501) AND (ServicePackLevel >= 3)))]]>
+    </Condition>
+    <Property Id="INSTALLDIR">
+      <RegistrySearch Id="PreviousInstallLocationRegistrySearch" Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Type="raw" />
+    </Property>
+
+    <!-- define directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="INSTALLDIR" Name="CommitMonitor"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="CommitMonitor" />
+      </Directory>
+    </Directory>
+
+    <!-- set up the components in the directory structure -->
+    <DirectoryRef Id="INSTALLDIR">
+      <Component Id="CommitMonitor.EXE" Guid="325E1EEF-97EE-4b0e-8FCB-7A0CADE42934">
+        <File Id="CommitMonitor.EXE" Name="CommitMonitor.exe" DiskId="1" Source="../../bin/release_win32/CommitMonitor.exe" Vital="yes" />
+      </Component>
+      <Component Id="MainReg" Guid="D94F1BA0-DC23-445B-96D0-E9E090451DC2">
+        <RegistryValue Root="HKLM" Key="Software\CommitMonitor" Name="installDir" Value="[INSTALLDIR]" Type="string" />
+      </Component>
+      <Component Id="C__sasl" Guid="44E0376D-ACFF-422f-A372-0AB08A1F7EE1" >
+        <File Id="F__libsasl" Name="libsasl.dll" DiskId="1" Source="../../bin/release_win32/libsasl.dll" KeyPath="yes" />
+        <File Id="F__saslANONYMOUS" Name="saslANONYMOUS.dll" DiskId="1" Source="../../bin/release_win32/saslANONYMOUS.dll" />
+        <File Id="F__saslCRAMMD5" Name="saslCRAMMD5.dll" DiskId="1" Source="../../bin/release_win32/saslCRAMMD5.dll" />
+        <File Id="F__saslDIGESTMD5" Name="saslDIGESTMD5.dll" DiskId="1" Source="../../bin/release_win32/saslDIGESTMD5.dll" />
+        <File Id="F__saslLOGIN" Name="saslLOGIN.dll" DiskId="1" Source="../../bin/release_win32/saslLOGIN.dll" />
+        <File Id="F__saslNTLM" Name="saslNTLM.dll" DiskId="1" Source="../../bin/release_win32/saslNTLM.dll" />
+        <File Id="F__saslPLAIN" Name="saslPLAIN.dll" DiskId="1" Source="../../bin/release_win32/saslPLAIN.dll" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ProgramMenuDir">
+      <Component Id="StartMenuShortCut" Guid="CD0F0582-4A66-4904-9DB1-800D60AB07C9">
+        <Shortcut Id="startMenuCommitMonitor" Directory="ProgramMenuDir" Name="CommitMonitor" Target="[INSTALLDIR]CommitMonitor.exe" Description="Subversion Commit Monitor" />
+        <RemoveFolder Id="ProgramMenuDir" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\CommitMonitor" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <IniFile Id="WebsiteUrl" Action="addLine" Name="Website.url" Directory="INSTALLDIR" Section="InternetShortcut" Key="URL" Value="http://stefanstools.sourceforge.net" />
+        <Shortcut Id="WebsiteUrlShortCut" Directory="ProgramMenuDir" Name="Website" Target="[INSTALLDIR]Website.url" Description="http://stefanstools.sourceforge.net" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="Complete" Title="CommitMonitor" Description="The complete package."
+      Display="expand" Level="1" ConfigurableDirectory="INSTALLDIR">
+      <Feature Id="MainEXE" Title="Program" Description="The main executable." Level="1">
+        <ComponentRef Id="CommitMonitor.EXE" />
+        <ComponentRef Id="MainReg" />
+        <ComponentRef Id="StartMenuShortCut" />
+        <ComponentRef Id="C__sasl" />
+      </Feature>
+    </Feature>
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <Publish Dialog="ExitDialog"
+                  Control="Finish"
+                  Event="DoAction"
+                  Value="LaunchApplication">NOT Installed</Publish>
+    </UI>
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="include\Banner.jpg" />
+    <WixVariable Id="WixUIDialogBmp" Value="include\Dialog.jpg" />
+    <Property Id="WixShellExecTarget" Value="[#CommitMonitor.EXE]" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <AppSearch Sequence="1"></AppSearch>
+      <LaunchConditions After="AppSearch" />
+      <RemoveExistingProducts After="InstallValidate"><![CDATA[PREVIOUSVERSIONSINSTALLED]]></RemoveExistingProducts>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
