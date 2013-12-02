@@ -1,14 +1,14 @@
 First, you need to install the compiler package.
 
-- You need VS2012 with Update 1.
+- You need VS2012 with Update 4.
 
 Next you need to install some utilities/programs:
-- Python 2.7.3(*)   : http://www.python.org/windows/
+- Python 2.7(*)     : http://www.python.org/windows/
 - Perl              : http://strawberryperl.com/releases.html
                       or
                       http://www.activestate.com/Products/ActivePerl/
-- WiX 3.7(*)        : http://wixtoolset.org/
-- NAnt(*)           : http://nant.sourceforge.net
+- WiX 3.8(*)        : http://wixtoolset.org/
+- NAnt 0.92(*)      : http://nant.sourceforge.net
 
 (*) Add the paths of the binaries to the PATH environment variable.
     You may have to logoff/logon for the new environment variables take effect!
