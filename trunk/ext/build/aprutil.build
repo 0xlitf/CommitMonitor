@@ -110,7 +110,7 @@
     <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libaprutil.lib"
-      options='/NOLOGO ${subsystem}'>
+      options='/NOLOGO ${subsystem} ${machineoption}'>
       <arg value="/LTCG" if="${configuration == 'release'}" />
       <sources>
         <include name="${configuration}_${platform}\*.obj" />
