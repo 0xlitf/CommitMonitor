@@ -1,6 +1,6 @@
 First, you need to install the compiler package.
 
-- You need VS2012 with Update 4.
+- You need VS2013.
 
 Next you need to install some utilities/programs:
 - Python 2.7(*)     : http://www.python.org/windows/
@@ -25,7 +25,7 @@ Now you're almost ready. Only a few more steps to do:
 Building packages
 
   Hint: before you can start building CommitMonitor, you need to call the vsvars32.bat
-  file which is located in %VS110COMNTOOLS%.
+  file which is located in %VS120COMNTOOLS%.
 
   > nant
   will show you some help about the targets you can use
@@ -35,7 +35,7 @@ Building packages
 
   > nant Subversion
   will build all the libraries required. After that you can open the
-  .sln file in VS2012 and compile the CommitMonitor there.
+  .sln file in VS2013 and compile the CommitMonitor there.
   Don't forget to also build the debug versions of the libraries:
   > nant debug Subversion
 

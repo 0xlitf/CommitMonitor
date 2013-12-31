@@ -1,7 +1,7 @@
 Name            Version     Website
 -----           -------     -------
-apr             1.4.8       http://apr.apache.org/
-apr-util        1.5.2       http://apr.apache.org/
+apr             1.5.0       http://apr.apache.org/
+apr-util        1.5.3       http://apr.apache.org/
 cyrus-sasl      2.1.24rc1   http://ftp.andrew.cmu.edu/pub/cyrus-mail/
 OpenSSL         1.0.1e      http://www.openssl.org/
 scintilla       3.3.7       http://www.scintilla.org/
