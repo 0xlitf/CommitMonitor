@@ -66,19 +66,6 @@
   <!-- Project targets                                                        -->
   <!-- ====================================================================== -->
 
-  <target name="xp">
-    <!--
-      To target Windows XP with VS2012 as well, we have to set a few
-      environment variables up.
-    -->
-    <setenv>
-      <variable name="INCLUDE" value="%ProgramFiles(x86)%\Microsoft SDKs\Windows\7.1A\Include;%INCLUDE%" />
-      <variable name="PATH" value="%ProgramFiles(x86)%\Microsoft SDKs\Windows\7.1A\Bin;%PATH%" />
-      <variable name="LIB" value="%ProgramFiles(x86)%\Microsoft SDKs\Windows\7.1A\Lib;%LIB%" if="${platform == 'win32'}" />
-      <variable name="LIB" value="%ProgramFiles(x86)%\Microsoft SDKs\Windows\7.1A\Lib\x64;%LIB%" if="${platform == 'x64'}" />
-    </setenv>
-  </target>
-
   <target name="clean" depends="VSNET">
     <description>
       Cleans before building the target
