@@ -17,7 +17,7 @@
   <!-- default: we build in a user session -->
   <property name="solutionname" value="CommitMonitor.sln" />
   <!-- the ${subsystem} to use -->
-  <property name="subsystem" value="/SUBSYSTEM:WINDOWS,5.01" />
+  <property name="subsystem" value="/SUBSYSTEM:WINDOWS" />
 
   <include buildfile="default.build.user" />
 
@@ -51,7 +51,7 @@
     </description>
     <property name="platform" value="x64" />
     <property name="bindirextension" value="64" />
-    <property name="subsystem" value="/SUBSYSTEM:WINDOWS,5.02" />
+    <property name="subsystem" value="/SUBSYSTEM:WINDOWS" />
   </target>
 
   <target name="cross" depends="x64">
