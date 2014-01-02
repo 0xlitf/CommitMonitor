@@ -263,7 +263,7 @@
     <ClInclude Include="..\ext\sktoolslib\DebugOutput.h">
       <Filter>sktoolslib</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\resource.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ext\sktoolslib\CDPI.h">
@@ -387,7 +387,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources\CommitMonitor.rc">
+    <ResourceCompile Include="CommitMonitor.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

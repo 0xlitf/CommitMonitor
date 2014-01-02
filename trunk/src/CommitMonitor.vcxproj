@@ -266,7 +266,7 @@
     <ClInclude Include="OptionsDlg.h" />
     <ClInclude Include="PasswordDlg.h" />
     <ClInclude Include="ProgressDlg.h" />
-    <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SCCS.h" />
     <ClInclude Include="SerializeUtils.h" />
     <ClInclude Include="StatusBarMsgWnd.h" />
@@ -324,7 +324,7 @@
     <None Include="Setup\VersionNumberInclude.in.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources\CommitMonitor.rc" />
+    <ResourceCompile Include="CommitMonitor.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ext\scintilla\Scintilla.vcxproj">
