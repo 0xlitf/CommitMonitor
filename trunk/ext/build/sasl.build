@@ -43,7 +43,7 @@
     </loadfile>
     <echo file="lib\saslutil.c" message="${saslutilfile}" />
 
-    <rc rcfile="win32\include\CyrusSasl.rc" output="${configuration}_${platform}\libsasl.res">
+    <rc rcfile="win32\include\CyrusSasl.rc" output="${configuration}_${platform}\libsasl.res" options="/nologo">
       <includedirs>
         <include name="include" />
       </includedirs>
