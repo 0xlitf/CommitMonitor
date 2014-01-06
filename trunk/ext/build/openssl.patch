@@ -1,6 +1,6 @@
 Index: engines/e_capi.c
 ===================================================================
---- engines/e_capi.c	(revision 839)
+--- engines/e_capi.c	(revision 945)
 +++ engines/e_capi.c	(working copy)
 @@ -57,7 +57,10 @@
  #include <openssl/crypto.h>
