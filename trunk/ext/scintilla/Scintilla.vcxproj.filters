@@ -176,6 +176,9 @@
     <ClInclude Include="lexlib\SparseState.h">
       <Filter>lexlib</Filter>
     </ClInclude>
+    <ClInclude Include="lexlib\StringCopy.h">
+      <Filter>lexlib</Filter>
+    </ClInclude>
     <ClInclude Include="lexlib\StyleContext.h">
       <Filter>lexlib</Filter>
     </ClInclude>
