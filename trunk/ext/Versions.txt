@@ -4,7 +4,7 @@ apr             1.5.0       http://apr.apache.org/
 apr-util        1.5.3       http://apr.apache.org/
 cyrus-sasl      2.1.24rc1   http://ftp.andrew.cmu.edu/pub/cyrus-mail/
 OpenSSL         1.0.1f      http://www.openssl.org/
-scintilla       3.3.8       http://www.scintilla.org/
+scintilla       3.3.9       http://www.scintilla.org/
 serf            1.3.3       http://code.google.com/p/serf/
 sqlite          3.8.2       http://sqlite.org/
 Subversion      1.8.5       http://subversion.apache.org/
