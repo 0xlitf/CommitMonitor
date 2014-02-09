@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2013 - Stefan Kueng
+// Copyright (C) 2007-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,7 +69,11 @@ SVN::SVN(void)
     svn_auth_get_platform_specific_provider (&provider, "windows", "ssl_server_trust", pool);
     if (provider)
         APR_ARRAY_PUSH(providers, svn_auth_provider_object_t *) = provider;
-    svn_auth_get_ssl_server_trust_file_provider (&provider, pool);
+    // The windows ssl authority certificate CRYPTOAPI provider.
+    svn_auth_get_platform_specific_provider(&provider, "windows", "ssl_server_authority", pool);
+    if (provider)
+        APR_ARRAY_PUSH(providers, svn_auth_provider_object_t *) = provider;
+    svn_auth_get_ssl_server_trust_file_provider(&provider, pool);
     APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
     svn_auth_get_ssl_client_cert_file_provider (&provider, pool);
     APR_ARRAY_PUSH (providers, svn_auth_provider_object_t *) = provider;
