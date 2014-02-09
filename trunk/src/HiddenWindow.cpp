@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2013 - Stefan Kueng
+// Copyright (C) 2007-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -1386,7 +1386,7 @@ DWORD CHiddenWindow::RunThread()
                     {
                         sCheckURL = (std::wstring)checkurlmachine;
                         if (sCheckURL.empty())
-                            sCheckURL = _T("http://commitmonitor.googlecode.com/svn/trunk/version.txt");
+                            sCheckURL = _T("http://commitmonitor.googlecode.com/svn/trunk/version6.txt");
                     }
                     HRESULT res = URLDownloadToFile(NULL, sCheckURL.c_str(), tempfile.c_str(), 0, NULL);
                     if (res == S_OK)
