@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2013 - Stefan Kueng
+// Copyright (C) 2007-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -1749,6 +1749,7 @@ void CMainDlg::OnSelectTreeItem(LPNMTREEVIEW lpNMTreeView)
 
 void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 {
+    bool bScrollToLastUnread = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\ScrollToLastUnread"), TRUE);
     // get the url this entry refers to
     TVITEMEX itemex = {0};
     itemex.hItem = hSelectedItem;
@@ -2038,7 +2039,10 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 3, LVSCW_AUTOSIZE_USEHEADER);
-        ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
+        if (bScrollToLastUnread)
+            ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
+        else
+            ListView_EnsureVisible(m_hListControl, 0, FALSE);
         if ((selMarkRev > 0) && sameProject)
         {
             int nItemCount = ListView_GetItemCount(m_hListControl);

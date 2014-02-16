@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2013 - Stefan Kueng
+// Copyright (C) 2007-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             AddToolTip(IDC_IGNORESPACES, _T("Ignores changes in whitespaces in the middle of lines"));
             AddToolTip(IDC_IGNOREALLSPACES, _T("Ignores all whitespace changes"));
             AddToolTip(IDC_SHOWPOPUPS, L"Shows new commits with a popup window");
+            AddToolTip(IDC_SCROLLTOLASTUNREAD, L"If not selected commits are always scrolled to the top when project is selected");
 
             // initialize the controls
             bool bShowTaskbarIcon = !!(DWORD)CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
@@ -75,6 +76,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             bool bIndicateConnectErrors = !!CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
             bool bLeftMenu = !!CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
             bool bLastUnread = !!CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
+            bool bScrollToLastUnread = !!CRegStdDWORD(_T("Software\\CommitMonitor\\ScrollToLastUnread"), TRUE);
             bool bWebViewer = !!CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
             bool bShowPopups = !!CRegStdDWORD(L"Software\\CommitMonitor\\ShowPopups", TRUE);
 
@@ -101,6 +103,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_SETCHECK, bIndicateConnectErrors ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_LEFTMENU, BM_SETCHECK, bLeftMenu ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_SETCHECK, bLastUnread ? BST_CHECKED : BST_UNCHECKED, NULL);
+            SendDlgItemMessage(*this, IDC_SCROLLTOLASTUNREAD, BM_SETCHECK, bScrollToLastUnread ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_SETCHECK, bWebViewer ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_SHOWPOPUPS, BM_SETCHECK, bShowPopups ? BST_CHECKED : BST_UNCHECKED, NULL);
 
@@ -145,6 +148,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
             CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
             CRegStdDWORD regLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
+            CRegStdDWORD regScrollToLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ScrollToLastUnread"), TRUE);
             CRegStdDWORD regWebViewer = CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
             CRegStdDWORD regShowPopups = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowPopups"), TRUE);
 
@@ -157,6 +161,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             bool bIndicateConnectErrors = !!SendDlgItemMessage(*this, IDC_NOTIFYCONNECTERROR, BM_GETCHECK, 0, NULL);
             bool bLeftMenu = !!SendDlgItemMessage(*this, IDC_LEFTMENU, BM_GETCHECK, 0, NULL);
             bool bLastUnread = !!SendDlgItemMessage(*this, IDC_SHOWLASTUNREAD, BM_GETCHECK, 0, NULL);
+            bool bScrollToLastUnread = !!SendDlgItemMessage(*this, IDC_SCROLLTOLASTUNREAD, BM_GETCHECK, 0, NULL);
             bool bWebViewer = !!SendDlgItemMessage(*this, IDC_WEBVIEWER, BM_GETCHECK, 0, NULL);
             bool bShowPopups = !!SendDlgItemMessage(*this, IDC_SHOWPOPUPS, BM_GETCHECK, 0, NULL);
             regShowTaskbarIcon = bShowTaskbarIcon;
@@ -167,6 +172,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             regIndicateErrors = bIndicateConnectErrors;
             regLeftMenu = bLeftMenu;
             regLastUnread = bLastUnread;
+            regScrollToLastUnread = bScrollToLastUnread;
             regWebViewer = bWebViewer;
             regShowPopups = bShowPopups;
             ::SendMessage(m_hHiddenWnd, COMMITMONITOR_CHANGEDINFO, 0, 0);
