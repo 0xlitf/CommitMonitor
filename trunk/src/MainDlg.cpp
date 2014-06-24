@@ -69,6 +69,8 @@ CMainDlg::CMainDlg(HWND hParent)
     , m_ySliderPos(0)
     , m_bottommarg(0)
     , m_hParent(hParent)
+    , m_oldTreeWndProc(NULL)
+    , m_oldFilterWndProc(NULL)
 {
     // use the default GUI font, create a copy of it and
     // change the copy to BOLD (leave the rest of the font

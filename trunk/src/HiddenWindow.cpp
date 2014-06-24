@@ -62,6 +62,9 @@ CHiddenWindow::CHiddenWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = NULL*/)
     , m_regLastSelectedProject(_T("Software\\CommitMonitor\\LastSelectedProject"))
     , m_bIsTask(false)
     , m_bNewerVersionAvailable(false)
+    , COMMITMONITOR_SHOWDLGMSG(0)
+    , WM_TASKBARCREATED(0)
+    , snarlGlobalMsg(0)
 {
     m_hIconNew0 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW0));
     m_hIconNew1 = LoadIcon(hInst, MAKEINTRESOURCE(IDI_NOTIFYNEW1));
@@ -130,6 +133,7 @@ bool CHiddenWindow::RegisterAndCreateWindow()
             m_UrlInfos.Load();
             Snarl::SnarlInterface snarlIface;
             snarlGlobalMsg = snarlIface.GetGlobalMsg();
+            FreeLibrary(hLib);
             return true;
         }
     }

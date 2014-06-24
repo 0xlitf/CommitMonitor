@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2010-2012 - Stefan Kueng
+// Copyright (C) 2010-2012, 2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@ public:
         : action(0)
         , text_modified(svn_tristate_unknown)
         , props_modified(svn_tristate_unknown)
+        , copyfrom_revision(0)
         , kind(svn_node_unknown)
     {
 

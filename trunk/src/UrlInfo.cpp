@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2013 - Stefan Kueng
+// Copyright (C) 2007-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -27,7 +27,8 @@
 
 #pragma comment(lib, "Crypt32.lib")
 
-CUrlInfo::CUrlInfo(void) : lastchecked(0)
+CUrlInfo::CUrlInfo(void)
+    : lastchecked(0)
     , lastcheckedrev(0)
     , startfromrev(0)
     , minutesinterval(90)
@@ -40,6 +41,7 @@ CUrlInfo::CUrlInfo(void) : lastchecked(0)
     , maxentries(1000)
     , sccs(SCCS_SVN)
     , noexecuteignored(false)
+    , lastcheckedrobots(0)
 {
 }
 
