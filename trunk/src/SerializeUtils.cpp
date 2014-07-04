@@ -81,10 +81,10 @@ bool CSerializeUtils::SaveString(FILE * hFile, std::string str)
     SerializeTypes type = SerializeType_String;
     if (fwrite(&type, sizeof(type), 1, hFile))
     {
-        size_t length = str.size();
+        int length = (int)str.size();
         if (fwrite(&length, sizeof(length), 1, hFile))
         {
-            if (fwrite(str.c_str(), sizeof(char), length, hFile)>=length)
+            if (fwrite(str.c_str(), sizeof(char), length, hFile)>=(size_t)length)
                 return true;
         }
     }
