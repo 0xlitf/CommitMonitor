@@ -851,6 +851,15 @@ int capi_rsa_sign(int dtype, const unsigned char *m, unsigned int m_len,
 	case NID_md5_sha1:
 		alg = CALG_SSL3_SHAMD5;
 		break;
+	case NID_sha256:
+		alg = CALG_SHA_256;
+		break;
+	case NID_sha384:
+		alg = CALG_SHA_384;
+		break;
+	case NID_sha512:
+		alg = CALG_SHA_512;
+		break;
 	default:
 		{
 		char algstr[10];
@@ -1462,11 +1471,15 @@ static CAPI_KEY *capi_get_key(CAPI_CTX *ctx, const char *contname, char *provnam
 						contname, provname, ptype);
     if(ctx->store_flags & CERT_SYSTEM_STORE_LOCAL_MACHINE)
         dwFlags = CRYPT_MACHINE_KEYSET;
-    if (!CryptAcquireContextA(&key->hprov, contname, provname, ptype, dwFlags)) 
+	// first try enhanced version
+	if(!CryptAcquireContextA(&key->hprov, contname, MS_ENH_RSA_AES_PROV_A, PROV_RSA_AES, dwFlags))
 		{
-		CAPIerr(CAPI_F_CAPI_GET_KEY, CAPI_R_CRYPTACQUIRECONTEXT_ERROR);
-		capi_addlasterror();
-		goto err;
+			if (!CryptAcquireContextA(&key->hprov, contname, provname, ptype, dwFlags))
+				{
+				CAPIerr(CAPI_F_CAPI_GET_KEY, CAPI_R_CRYPTACQUIRECONTEXT_ERROR);
+				capi_addlasterror();
+				goto err;
+				}
 		}
 	if (!CryptGetUserKey(key->hprov, keyspec, &key->key))
 		{
