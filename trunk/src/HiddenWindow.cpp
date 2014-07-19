@@ -133,7 +133,7 @@ bool CHiddenWindow::RegisterAndCreateWindow()
             m_UrlInfos.Load();
             Snarl::SnarlInterface snarlIface;
             snarlGlobalMsg = snarlIface.GetGlobalMsg();
-            FreeLibrary(hLib);
+            if (hLib) FreeLibrary(hLib);
             return true;
         }
     }
