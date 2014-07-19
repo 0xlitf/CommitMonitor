@@ -2312,9 +2312,6 @@ void CMainDlg::OnSelectListItem(LPNMLISTVIEW lpNMListView)
 
             // find the diff name
             _stprintf_s(buf, _countof(buf), _T("%s_%ld.diff"), pRead->find(*(std::wstring*)itemex.lParam)->second.name.c_str(), pLogEntry->revision);
-            std::wstring diffFileName = CAppUtils::GetDataDir();
-            diffFileName += _T("\\");
-            diffFileName += std::wstring(buf);
             SendMessage(m_hwndToolbar, TB_ENABLEBUTTON, ID_MAIN_SHOWDIFFCHOOSE, MAKELONG(ListView_GetSelectedCount(m_hListControl)!=0, 0));
         }
 

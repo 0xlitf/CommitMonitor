@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010, 2012-2013 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -481,9 +481,6 @@ bool CAppUtils::ExtractBinResource(const std::wstring& strCustomResName, int nRe
     HRSRC hRes;                     // handle/ptr. to res. info.
     char *lpResLock;                // pointer to resource data
     DWORD dwSizeRes;
-    std::wstring strAppLocation;
-
-    strAppLocation = CAppUtils::GetAppDirectory();
 
     // find location of the resource and get handle to it
     hRes = FindResource(NULL, MAKEINTRESOURCE(nResourceId), strCustomResName.c_str());
