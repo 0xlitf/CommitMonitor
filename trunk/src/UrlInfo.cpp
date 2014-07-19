@@ -473,9 +473,8 @@ bool CUrlInfos::Load(const unsigned char *& buf)
 
 bool CUrlInfos::IsEmpty()
 {
-    bool bIsEmpty = true;
+    bool bIsEmpty = infos.empty();
     guard.AcquireReaderLock();
-    bIsEmpty = (infos.empty());
     guard.ReleaseReaderLock();
     return bIsEmpty;
 }
