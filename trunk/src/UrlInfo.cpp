@@ -562,7 +562,7 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.monitored);
         iniFile.SetValue(it->first.c_str(), L"monitored", numberBuf);
 
-        if (it->second.password.size())
+        if (!it->second.password.empty())
         {
             // encrypt the password
             size_t bufSize = ((it->second.password.size() / 8) + 1) * 8;
@@ -625,7 +625,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         info.monitored = !!_wtol(iniFile.GetValue(*it, L"monitored", L"1"));
 
         std::wstring unencryptedPassword = std::wstring(iniFile.GetValue(*it, _T("password"), _T("")));
-        if (unencryptedPassword.size())
+        if (!unencryptedPassword.empty())
         {
             // decrypt the password
             std::unique_ptr<BYTE[]> pPwBuf(new BYTE[unencryptedPassword.size()/2]);
@@ -644,7 +644,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
             info.password = plainPw;
         }
 
-        if ((infos.size())&&(infos.find(info.url) != infos.end()))
+        if (!infos.empty() && (infos.find(info.url) != infos.end()))
         {
             CUrlInfo existingUrlInfo = infos.find(info.url)->second;
             existingUrlInfo.username = info.username;

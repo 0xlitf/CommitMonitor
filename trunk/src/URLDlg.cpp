@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010, 2012-2013 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,7 +214,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             auto buffer = GetDlgItemText(IDC_PROJECTNAME);
             info.name = std::wstring(buffer.get());
             CStringUtils::trim(info.name);
-            if (info.name.size()==0)
+            if (info.name.empty())
             {
                 EDITBALLOONTIP ebt = {0};
                 ebt.cbStruct = sizeof(EDITBALLOONTIP);

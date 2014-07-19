@@ -224,13 +224,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // Set defaults for the registry values is nothing exists
             CRegStdString regAccurevExe = CRegStdString(_T("Software\\CommitMonitor\\AccurevExe"));
             std::wstring sAccurevExe(regAccurevExe);
-            if (sAccurevExe.size() == 0)
+            if (sAccurevExe.empty())
             {
               regAccurevExe = _T("C:\\Program Files\\AccuRev\\bin\\accurev.EXE");              // Writes value to registry
             }
             CRegStdString regAccurevDiffCmd = CRegStdString(_T("Software\\CommitMonitor\\AccurevDiffCmd"));
             std::wstring sAccurevDiffCmd(regAccurevDiffCmd);
-            if (sAccurevDiffCmd.size() == 0)
+            if (sAccurevDiffCmd.empty())
             {
               regAccurevDiffCmd = _T("\"C:\\Program Files\\WinMerge\\WinMergeU.exe\" /e /u /r /dl \"%OLD\" /dr \"%NEW\" \"%1\" \"%2\"");
             }
@@ -1863,7 +1863,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
 
         bool bShowIgnored = !!SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL);
-        bool useFilter = filterstringlower.size() != 0;
+        bool useFilter = !filterstringlower.empty();
         bool bUseRegex = (filterstring.size() > 1)&&(filterstring[0] == '\\');
 
         std::vector<std::wstring> filters;
@@ -1962,7 +1962,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 std::wstring author1 = it->second.author;
                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
 
-                if (info->includeUsers.size() > 0)
+                if (!info->includeUsers.empty())
                 {
                     std::wstring s1 = info->includeUsers;
                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
@@ -2017,7 +2017,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             else
                 _tcscpy_s(buf, _countof(buf), _T("(no date)"));
             ListView_SetItemText(m_hListControl, 0, 1, buf);
-            if (it->second.author.size())
+            if (!it->second.author.empty())
                 _tcscpy_s(buf, _countof(buf), it->second.author.c_str());
             else
                 _tcscpy_s(buf, _countof(buf), _T("(no author)"));

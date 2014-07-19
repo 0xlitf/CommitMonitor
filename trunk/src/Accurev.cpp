@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in accurev repositories
 
-// Copyright (C) 2011-2013 - Stefan Kueng
+// Copyright (C) 2011-2014 - Stefan Kueng
 // Copyright (C) 2010 - Richard Sewell
 
 // This program is free software; you can redistribute it and/or
@@ -479,7 +479,7 @@ bool ACCUREV::issueParser(const std::wstring& rawLog, SCCSLogEntry& logEntry) {
     else if (wsLine.find(L"fid=\"34\">") == 0) {
       wsLine.erase(wsLine.size() - 11, std::wstring::npos);
       wsLine.erase(0, 9);
-      if (wsJiraSummary.size() == 0) {
+      if (wsJiraSummary.empty()) {
         wsJiraSummary = wsLine + L" ";
       }
       else {
@@ -520,7 +520,7 @@ bool ACCUREV::AccuLogin(const std::wstring& username, const std::wstring& passwo
   retVal = (ExecuteAccurev(L"login \"" + username + L"\" \"" + password + L"\"", 60, stdOut, stdErr) == 0);
 
   if (retVal) {
-    if (stdErr.size() > 0) retVal = false;
+    if (!stdErr.empty()) retVal = false;
   }
 
   return retVal;
@@ -537,7 +537,7 @@ bool ACCUREV::AccuGetLastPromote(const std::wstring& repo, const std::wstring& u
   if (retVal) {
     retVal = false;
 
-    if ((stdOut.size() > 0) && (stdErr.size() == 0)) {
+    if (!stdOut.empty() && stdErr.empty()) {
       // Parse out the transaction number
       int iTokenNo = 0;
       const LPWSTR szTokens = L" ;";
@@ -583,7 +583,7 @@ bool ACCUREV::AccuGetHistory(const std::wstring& repo, const std::wstring& url, 
   if (retVal) {
     retVal = false;
 
-    if ((rawLog.size() > 0) && (stdErr.size() == 0)) {
+    if (!rawLog.empty() && stdErr.empty()) {
       retVal = true;
     }
 
@@ -610,7 +610,7 @@ bool ACCUREV::AccuIssueList(const std::wstring& repo, const std::wstring& url, l
   if (retVal) {
     retVal = false;
 
-    if ((rawLog.size() > 0) && (stdErr.size() == 0)) {
+    if (!rawLog.empty() && stdErr.empty()) {
       retVal = true;
     }
 

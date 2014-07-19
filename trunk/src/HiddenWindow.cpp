@@ -263,7 +263,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                             std::wstring sText;
                             for (std::vector<popupData>::const_iterator it = m_popupData.begin(); it != m_popupData.end(); ++it)
                             {
-                                if (sText.size())
+                                if (!sText.empty())
                                     sText += _T(", ");
                                 sText += it->sProject;
                             }
@@ -543,7 +543,7 @@ void CHiddenWindow::DoTimer(bool bForce)
         std::map<std::wstring,CUrlInfo> * pInfos = m_UrlInfos.GetWriteData();
         for (auto it = pInfos->begin(); it != pInfos->end(); ++it)
         {
-            if (m_UrlToWorkOn.size())
+            if (!m_UrlToWorkOn.empty())
             {
                 if (it->second.url.compare(m_UrlToWorkOn) == 0)
                     it->second.lastchecked = 0;
@@ -705,12 +705,12 @@ DWORD CHiddenWindow::RunThread()
     {
         int mit = max(it->second.minutesinterval, it->second.minminutesinterval);
         SendMessage(*this, COMMITMONITOR_INFOTEXT, 0, (LPARAM)_T(""));
-        if (m_UrlToWorkOn.size())
+        if (!m_UrlToWorkOn.empty())
         {
             if (it->second.url.compare(m_UrlToWorkOn))
                 continue;
         }
-        if (((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))||(m_UrlToWorkOn.size()))
+        if (((it->second.monitored)&&((it->second.lastchecked + (mit*60)) < currenttime))||(!m_UrlToWorkOn.empty()))
         {
             m_UrlToWorkOn.clear();
             if ((it->second.errNr == SVN_ERR_RA_NOT_AUTHORIZED)&&(!it->second.error.empty()))
@@ -813,7 +813,7 @@ DWORD CHiddenWindow::RunThread()
                                 std::wstring author1 = logit->second.author;
                                 std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
                                 authors.insert(author1);
-                                if (writeIt->second.includeUsers.size() > 0)
+                                if (!writeIt->second.includeUsers.empty())
                                 {
                                     std::wstring s1 = writeIt->second.includeUsers;
                                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
@@ -831,7 +831,7 @@ DWORD CHiddenWindow::RunThread()
                                     bIgnore = !bInclude;
                                 }
 
-                                if (writeIt->second.ignoreUsers.size() > 0)
+                                if (!writeIt->second.ignoreUsers.empty())
                                 {
                                     std::wstring s1 = writeIt->second.ignoreUsers;
                                     std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
@@ -847,7 +847,7 @@ DWORD CHiddenWindow::RunThread()
                                     }
                                 }
 
-                                if (writeIt->second.ignoreCommitLog.size() > 0)
+                                if (!writeIt->second.ignoreCommitLog.empty())
                                 {
                                     try
                                     {
@@ -1180,7 +1180,7 @@ DWORD CHiddenWindow::RunThread()
                 // check whether the url points to an SVNParentPath: it points
                 // to a repository, but we got an error for some reason when
                 // trying to find the HEAD revision
-                if (pSCCS->Err && (it->second.logentries.size() == 0)&&(it->second.lastcheckedrev == 0)&&((pSCCS->Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_MALFORMED_DATA)))
+                if (pSCCS->Err && it->second.logentries.empty() &&(it->second.lastcheckedrev == 0)&&((pSCCS->Err->apr_err == SVN_ERR_RA_DAV_RELOCATED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_REQUEST_FAILED)||(pSCCS->Err->apr_err == SVN_ERR_RA_DAV_MALFORMED_DATA)))
                 {
                     // if we can't fetch the HEAD revision, it might be because the URL points to an SVNParentPath
                     // instead of pointing to an actual repository.
