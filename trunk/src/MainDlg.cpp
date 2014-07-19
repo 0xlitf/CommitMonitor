@@ -969,22 +969,25 @@ LRESULT CMainDlg::DoCommand(int id)
                     if (dlg.DoModal(hResource, IDD_URLCONFIG, *this) == IDOK)
                     {
                         CUrlInfo * inf = dlg.GetInfo();
-                        if ((inf)&&inf->name.size())
+                        if (inf)
                         {
-                            inf->errNr = 0;
-                            inf->error.clear();
-                            std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-                            if ((inf) && (inf->url.size()) && ((origurl.compare(inf->url)) || (id == ID_MAIN_EDIT)))
+                            if (!inf->name.empty())
                             {
-                                if (id == ID_MAIN_EDIT)
-                                    pWrite->erase(*(std::wstring*)itemex.lParam);
-                                (*pWrite)[inf->url] = *inf;
+                                inf->errNr = 0;
+                                inf->error.clear();
+                                std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                                if (!inf->url.empty() && ((origurl.compare(inf->url)) || (id == ID_MAIN_EDIT)))
+                                {
+                                    if (id == ID_MAIN_EDIT)
+                                        pWrite->erase(*(std::wstring*)itemex.lParam);
+                                    (*pWrite)[inf->url] = *inf;
+                                }
+                                m_pURLInfos->Save();
+                                m_pURLInfos->ReleaseWriteData();
+                                SetWindowRedraw(m_hTreeControl, FALSE);
+                                TreeView_SelectItem(m_hTreeControl, NULL);
+                                RefreshURLTree(false, inf->url);
                             }
-                            m_pURLInfos->Save();
-                            m_pURLInfos->ReleaseWriteData();
-                            SetWindowRedraw(m_hTreeControl, FALSE);
-                            TreeView_SelectItem(m_hTreeControl, NULL);
-                            RefreshURLTree(false, inf->url);
                         }
                     }
                 }
@@ -1002,16 +1005,19 @@ LRESULT CMainDlg::DoCommand(int id)
             if (dlg.DoModal(hResource, IDD_URLCONFIG, *this)==IDOK)
             {
                 CUrlInfo * inf = dlg.GetInfo();
-                if ((inf)&&inf->url.size())
+                if (inf)
                 {
-                    std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
-                    if ((inf)&&inf->url.size())
+                    if (!inf->url.empty())
                     {
-                        (*pWrite)[inf->url] = *inf;
+                        std::map<std::wstring,CUrlInfo> * pWrite = m_pURLInfos->GetWriteData();
+                        if (!inf->url.empty())
+                        {
+                            (*pWrite)[inf->url] = *inf;
+                        }
+                        m_pURLInfos->ReleaseWriteData();
+                        m_pURLInfos->Save();
+                        RefreshURLTree(false, inf->url);
                     }
-                    m_pURLInfos->ReleaseWriteData();
-                    m_pURLInfos->Save();
-                    RefreshURLTree(false, inf->url);
                 }
                 else
                 {
