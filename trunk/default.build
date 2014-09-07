@@ -84,10 +84,13 @@
         <include name="ext/build/default.build" />
       </buildfiles>
     </nant>
-    <exec program="devenv.com">
+    <exec program="msbuild.exe" >
       <arg value="${solutionname}" />
-      <arg value="/clean" />
-      <arg value="${configuration}|${platform}" />
+      <arg value="/t:clean" />
+      <arg value="/p:Configuration=${configuration}" />
+      <arg value="/p:Platform=${platform}" />
+      <arg value="/verbosity:minimal" />
+      <arg value="/maxcpucount" />
     </exec>
   </target>
 
@@ -150,10 +153,13 @@
       Builds CommitMonitor. The libraries must have been built
       before.
     </description>
-    <exec program="devenv.com">
+    <exec program="msbuild.exe" >
       <arg value="${solutionname}" />
-      <arg value="/rebuild" />
-      <arg value="${configuration}|${platform}" />
+      <arg value="/t:rebuild" />
+      <arg value="/p:Configuration=${configuration}" />
+      <arg value="/p:Platform=${platform}" />
+      <arg value="/verbosity:minimal" />
+      <arg value="/maxcpucount" />
     </exec>
     <exec program="Tools\upx.exe">
       <arg value="-q" />
