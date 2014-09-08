@@ -240,7 +240,6 @@
     <ClInclude Include="..\ext\sktoolslib\BaseDialog.h" />
     <ClInclude Include="..\ext\sktoolslib\BaseWindow.h" />
     <ClInclude Include="..\ext\sktoolslib\Callback.h" />
-    <ClInclude Include="..\ext\sktoolslib\CDPI.h" />
     <ClInclude Include="..\ext\sktoolslib\ClipboardHelper.h" />
     <ClInclude Include="..\ext\sktoolslib\CmdLineParser.h" />
     <ClInclude Include="..\ext\sktoolslib\DebugOutput.h" />

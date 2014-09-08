@@ -28,6 +28,7 @@
 #include "AppUtils.h"
 #include "StringUtils.h"
 #include "DirFileEnum.h"
+#include "DPIAware.h"
 #include <uxtheme.h>
 #include <algorithm>
 #include <set>
@@ -41,9 +42,9 @@
 #define CHECKBOXHEIGHT  16
 #define FILTERLABELWIDTH 50
 
-const int filterboxheight = g_metrics.ScaleY(FILTERBOXHEIGHT);
-const int filterlabelwidth = g_metrics.ScaleX(FILTERLABELWIDTH);
-const int checkboxheight = g_metrics.ScaleY(CHECKBOXHEIGHT);
+const int filterboxheight = CDPIAware::Instance().ScaleY(FILTERBOXHEIGHT);
+const int filterlabelwidth = CDPIAware::Instance().ScaleX(FILTERLABELWIDTH);
+const int checkboxheight = CDPIAware::Instance().ScaleY(CHECKBOXHEIGHT);
 
 CMainDlg::CMainDlg(HWND hParent)
     : m_nDragMode(DRAGMODE_NONE)
@@ -283,7 +284,7 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
 
             LOGFONT lf = {0};
-            lf.lfHeight = -MulDiv(8, g_metrics.GetDPIY(), 72);
+            lf.lfHeight = -MulDiv(8, CDPIAware::Instance().GetDPIY(), 72);
             lf.lfCharSet = DEFAULT_CHARSET;
             // set pitch and family but leave font name empty: let the system chose the best font
             lf.lfPitchAndFamily = FIXED_PITCH|FF_MODERN;
@@ -2556,7 +2557,7 @@ void CMainDlg::DoResize(int width, int height)
     ::InvalidateRect(*this, NULL, TRUE);
     HDWP hdwp = BeginDeferWindowPos(10);
     hdwp = DeferWindowPos(hdwp, m_hwndToolbar, *this, 0, 0, width, m_topmarg, SWP_NOZORDER|SWP_NOACTIVATE);
-    hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos+4, m_topmarg+5, filterlabelwidth, g_metrics.ScaleY(12), SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
+    hdwp = DeferWindowPos(hdwp, hFilterLabel, *this, m_xSliderPos + 4, m_topmarg + 5, filterlabelwidth, CDPIAware::Instance().ScaleY(12), SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     hdwp = DeferWindowPos(hdwp, m_hFilterControl, *this, m_xSliderPos+4+filterlabelwidth, m_topmarg+1, width-m_xSliderPos-4-filterlabelwidth-4, filterboxheight-1, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, m_hCheckControl, *this, m_xSliderPos+4, m_topmarg+filterboxheight, width-m_xSliderPos-4, checkboxheight, SWP_NOZORDER|SWP_NOACTIVATE);
     hdwp = DeferWindowPos(hdwp, m_hTreeControl, *this, 0, m_topmarg, m_xSliderPos, height-m_topmarg-m_bottommarg+filterboxheight+4, SWP_NOZORDER|SWP_NOACTIVATE);

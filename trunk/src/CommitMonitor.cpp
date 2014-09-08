@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007,2009-2013 - Stefan Kueng
+// Copyright (C) 2007,2009-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,7 +37,6 @@
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 HANDLE g_mutex = 0;
-CDPI g_metrics;
 
 #define APPNAME_MUTEX _T("CommitMonitor_{3802F59C-BEBD-49b9-A345-F99CBA2FBD0D}")
 
