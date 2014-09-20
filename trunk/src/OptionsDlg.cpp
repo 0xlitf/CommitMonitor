@@ -138,19 +138,19 @@ LRESULT COptionsDlg::DoCommand(int id)
     {
     case IDOK:
         {
-            CRegStdDWORD regShowTaskbarIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
-            CRegStdString regStartWithWindows = CRegStdString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
-            CRegStdDWORD regAnimateIcon = CRegStdDWORD(_T("Software\\CommitMonitor\\Animate"), TRUE);
-            CRegStdDWORD regPlaySound = CRegStdDWORD(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
-            CRegStdDWORD regUseTSVN = CRegStdDWORD(_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
-            CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
-            CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
-            CRegStdDWORD regIndicateErrors = CRegStdDWORD(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
-            CRegStdDWORD regLeftMenu = CRegStdDWORD(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
-            CRegStdDWORD regLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
-            CRegStdDWORD regScrollToLastUnread = CRegStdDWORD(_T("Software\\CommitMonitor\\ScrollToLastUnread"), TRUE);
-            CRegStdDWORD regWebViewer = CRegStdDWORD(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
-            CRegStdDWORD regShowPopups = CRegStdDWORD(_T("Software\\CommitMonitor\\ShowPopups"), TRUE);
+            CRegStdDWORD regShowTaskbarIcon(_T("Software\\CommitMonitor\\TaskBarIcon"), TRUE);
+            CRegStdString regStartWithWindows(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CommitMonitor"));
+            CRegStdDWORD regAnimateIcon(_T("Software\\CommitMonitor\\Animate"), TRUE);
+            CRegStdDWORD regPlaySound(_T("Software\\CommitMonitor\\PlaySound"), TRUE);
+            CRegStdDWORD regUseTSVN (_T("Software\\CommitMonitor\\UseTSVN"), TRUE);
+            CRegStdDWORD updatecheck(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
+            CRegStdDWORD numlogs(_T("Software\\CommitMonitor\\NumLogs"), 30);
+            CRegStdDWORD regIndicateErrors(_T("Software\\CommitMonitor\\IndicateConnectErrors"), TRUE);
+            CRegStdDWORD regLeftMenu(_T("Software\\CommitMonitor\\LeftClickMenu"), FALSE);
+            CRegStdDWORD regLastUnread(_T("Software\\CommitMonitor\\ShowLastUnread"), FALSE);
+            CRegStdDWORD regScrollToLastUnread(_T("Software\\CommitMonitor\\ScrollToLastUnread"), TRUE);
+            CRegStdDWORD regWebViewer(_T("Software\\CommitMonitor\\DblClickWebViewer"), FALSE);
+            CRegStdDWORD regShowPopups(_T("Software\\CommitMonitor\\ShowPopups"), TRUE);
 
             bool bShowTaskbarIcon = !!SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_GETCHECK, 0, NULL);
             bool bStartWithWindows = !!SendDlgItemMessage(*this, IDC_AUTOSTART, BM_GETCHECK, 0, NULL);
@@ -236,7 +236,7 @@ LRESULT COptionsDlg::DoCommand(int id)
             DWORD nLogs = _ttol(divi.get());
             numlogs = nLogs;
 
-            CRegStdString diffParams = CRegStdString(_T("Software\\CommitMonitor\\DiffParameters"));
+            CRegStdString diffParams(_T("Software\\CommitMonitor\\DiffParameters"));
             bool ignoreeol = !!SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_GETCHECK, 0, NULL);
             bool ignorewhitespaces = !!SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_GETCHECK, 0, NULL);
             bool ignoreallwhitespaces = !!SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_GETCHECK, 0, NULL);

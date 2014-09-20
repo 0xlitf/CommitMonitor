@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2009, 2012-2013 - Stefan Kueng
+// Copyright (C) 2007-2009, 2012-2014 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,9 +139,9 @@ LRESULT CALLBACK CDiffViewer::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         break;
     case WM_CLOSE:
         {
-            CRegStdDWORD w = CRegStdDWORD(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)CW_USEDEFAULT);
-            CRegStdDWORD h = CRegStdDWORD(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)CW_USEDEFAULT);
-            CRegStdDWORD p = CRegStdDWORD(_T("Software\\CommitMonitor\\DiffViewerPos"), 0);
+            CRegStdDWORD w(_T("Software\\CommitMonitor\\DiffViewerWidth"), (DWORD)CW_USEDEFAULT);
+            CRegStdDWORD h(_T("Software\\CommitMonitor\\DiffViewerHeight"), (DWORD)CW_USEDEFAULT);
+            CRegStdDWORD p(_T("Software\\CommitMonitor\\DiffViewerPos"), 0);
             RECT rect;
             ::GetWindowRect(*this, &rect);
             w = rect.right-rect.left;
