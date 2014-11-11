@@ -490,21 +490,23 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
             SendMessage(m_hMainDlg, COMMITMONITOR_INFOTEXT, 0, lParam);
         break;
     case WM_DESTROY:
-        if (!StopThread(2000))
+        if (!StopThread(4000))
         {
             TerminateProcess(GetCurrentProcess(), 0);
         }
-        PostQuitMessage(0);
+        else
+            PostQuitMessage(0);
         break;
     case WM_CLOSE:
         ::DestroyWindow(m_hwnd);
         break;
     case WM_QUERYENDSESSION:
-        if (!StopThread(2000))
+        if (!StopThread(4000))
         {
             TerminateProcess(GetCurrentProcess(), 0);
         }
-        PostQuitMessage(0);
+        else
+            PostQuitMessage(0);
         break;
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
