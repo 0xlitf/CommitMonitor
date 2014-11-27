@@ -507,6 +507,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
         }
         else
             PostQuitMessage(0);
+        return TRUE;
         break;
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);

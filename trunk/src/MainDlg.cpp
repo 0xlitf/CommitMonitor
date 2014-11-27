@@ -729,6 +729,9 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             OnContextMenu(wParam, lParam);
         }
         break;
+    case WM_QUERYENDSESSION:
+        EndDialog(*this, IDCANCEL);
+        break;
     case COMMITMONITOR_INFOTEXT:
         {
             if (lParam)
