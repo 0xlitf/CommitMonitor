@@ -381,7 +381,7 @@ bool CUrlInfos::Save(LPCWSTR filename)
     DWORD dwStartTicks = GetTickCount();
 #endif
     FILE * hFile = NULL;
-    _tfopen_s(&hFile, filename, _T("w+b"));
+    _tfopen_s(&hFile, filename, _T("w+bS"));
     if (hFile == NULL)
         return false;
     char filebuffer[4096] = {0};
