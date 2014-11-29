@@ -178,7 +178,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
             hiddenWindow.RemoveTrayIcon();
             TerminateProcess(GetCurrentProcess(), 0);
         }
-        hiddenWindow.Save();
     }
 
     ::OleUninitialize();
