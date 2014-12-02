@@ -795,6 +795,7 @@ LRESULT CMainDlg::DoCommand(int id)
                 _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2);
             if (res != IDYES)
                 break;
+            ::SendMessage(m_hParent, COMMITMONITOR_SAVEINFO, (WPARAM)true, (LPARAM)0);
             EndDialog(*this, IDCANCEL);
             PostQuitMessage(IDOK);
         }
