@@ -444,6 +444,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                     switch( cmd )
                     {
                     case IDM_EXIT:
+                        Save();
                         ::PostQuitMessage(0);
                         break;
                     case ID_POPUP_OPENCOMMITMONITOR:
@@ -473,6 +474,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                             }
                             m_UrlInfos.ReleaseWriteData();
                             ShowTrayIcon(false);
+                            Save();
                         }
                         break;
                     }
