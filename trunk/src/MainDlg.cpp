@@ -1795,9 +1795,9 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         if (_localtime64_s(&upTime, &info->lastchecked) == 0)
         {
             if (info->lastchecked == 0)
-                wcscpy_s(updateTime, L" last checked: N/A");
+                wcscpy_s(updateTime, L"last checked: N/A");
             else
-                _tcsftime(updateTime, 1000, _T(" last checked: %x %X"), &upTime);
+                _tcsftime(updateTime, 1000, _T("last checked: %x - %X"), &upTime);
             SetDlgItemText(*this, IDC_INFOLABEL, updateTime);
         }
 
