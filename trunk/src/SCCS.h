@@ -49,8 +49,13 @@ class SCCSInfoData
 {
 public:
     SCCSInfoData()
-        : lock_davcomment(false)
+        : kind(svn_node_none)
+        , lastchangedrev(0)
+        , lastchangedtime(0)
+        , lock_davcomment(false)
         , hasWCInfo(false)
+        , schedule(svn_wc_schedule_normal)
+        , copyfromrev(0)
     {}
 
     std::wstring        url;
