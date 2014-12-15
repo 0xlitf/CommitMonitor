@@ -202,12 +202,14 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
                     snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWPROJECTS);
                     snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_NEWCOMMITS);
                     snarlIface.RegisterAlert(_T("CommitMonitor"), ALERTTYPE_FAILEDCONNECT);
+                    return TRUE;
                 }
             }
         }
         if (wParam == Snarl::SNARL_SHOW_APP_UI)
         {
             SendMessage(*this, COMMITMONITOR_SHOWDLGMSG, 0, 0);
+            return TRUE;
         }
     }
     return 0L;
