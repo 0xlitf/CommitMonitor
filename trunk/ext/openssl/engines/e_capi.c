@@ -72,9 +72,11 @@
 #  include <windows.h>
 #  include <wincrypt.h>
 #  include <malloc.h>
+#  include <shlwapi.h>
 #  ifndef alloca
 #   define alloca _alloca
 #  endif
+#  pragma comment(lib, "shlwapi.lib")
 
 /*
  * This module uses several "new" interfaces, among which is
@@ -571,6 +573,26 @@ static ENGINE *engine_capi(void)
 
 void ENGINE_load_capi(void)
 {
+    DWORD dwType = 0;
+    DWORD dwData = 0;
+    DWORD dwDataSize = 4;
+    int bLoad = 1;
+#ifdef _WIN64
+    if (SHGetValue(HKEY_CURRENT_USER, L"Software\\TortoiseSVN", L"OpenSSLCapi", &dwType, &dwData, &dwDataSize) == ERROR_SUCCESS)
+#else
+    if (SHGetValue(HKEY_CURRENT_USER, "Software\\TortoiseSVN", "OpenSSLCapi", &dwType, &dwData, &dwDataSize) == ERROR_SUCCESS)
+#endif
+    {
+        if (dwType == REG_DWORD)
+        {
+            if (dwData == 0)
+            {
+                bLoad = 0;
+            }
+        }
+    }
+    if (bLoad)
+    {
     /* Copied from eng_[openssl|dyn].c */
     ENGINE *toadd = engine_capi();
     if (!toadd)
@@ -578,6 +600,7 @@ void ENGINE_load_capi(void)
     ENGINE_add(toadd);
     ENGINE_free(toadd);
     ERR_clear_error();
+    }
 }
 # endif
 
@@ -1739,7 +1762,9 @@ static int capi_load_ssl_client_cert(ENGINE *e, SSL *ssl,
 
 static int cert_select_simple(ENGINE *e, SSL *ssl, STACK_OF(X509) *certs)
 {
-    return 0;
+        if (sk_X509_num(certs) == 1)
+            return 0;
+        return -1; /* let TSVN decide which certificate to use */
 }
 
 # ifdef OPENSSL_CAPIENG_DIALOG
