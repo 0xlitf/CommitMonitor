@@ -21,7 +21,6 @@
         <arg value="no-asm" />
         <arg value="no-gost" />
         <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
-        <arg value="-Dcflags=CFLAGS" /> <!-- bug in OpenSSL 1.0.1k in crypto\cversion.c -->
       </exec>
       <exec program="cmd" workingdir="..\openssl">
         <arg value="/c" />
@@ -45,7 +44,6 @@
         <arg value="no-asm" />
         <arg value="no-gost" />
         <arg value="-DOPENSSL_SSL_CLIENT_ENGINE_AUTO=capi" />
-        <arg value="-Dcflags=CFLAGS" /> <!-- bug in OpenSSL 1.0.1k in crypto\cversion.c -->
       </exec>
       <exec program="cmd" workingdir="..\openssl">
         <arg value="/c" />
