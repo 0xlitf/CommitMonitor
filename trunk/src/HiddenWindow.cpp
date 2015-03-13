@@ -229,7 +229,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
             // we wait a minute before starting the initial monitoring
             // to avoid problems after booting up
             // See issue #63 for details:
-            // http://code.google.com/p/commitmonitor/issues/detail?id=63
+            // https://sourceforge.net/p/commitmonitor/tickets/63/
             ::SetTimer(*this, IDT_MONITOR, 60000, NULL);
         }
         break;
@@ -290,7 +290,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 // we wait a minute before starting the initial monitoring
                 // to avoid problems after booting up
                 // See issue #63 for details:
-                // http://code.google.com/p/commitmonitor/issues/detail?id=63
+                // https://sourceforge.net/p/commitmonitor/tickets/63/
                 ::SetTimer(*this, IDT_MONITOR, 60000, NULL);
                 break;
             case PBT_APMSUSPEND:
@@ -1397,7 +1397,7 @@ DWORD CHiddenWindow::RunThread()
                     {
                         sCheckURL = (std::wstring)checkurlmachine;
                         if (sCheckURL.empty())
-                            sCheckURL = _T("http://commitmonitor.googlecode.com/svn/trunk/version6.txt");
+                            sCheckURL = L"https://svn.code.sf.net/p/commitmonitor/code/trunk/version.txt";
                     }
                     HRESULT res = URLDownloadToFile(NULL, sCheckURL.c_str(), tempfile.c_str(), 0, NULL);
                     if (res == S_OK)

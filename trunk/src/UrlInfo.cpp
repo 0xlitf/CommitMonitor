@@ -359,7 +359,7 @@ void CUrlInfos::Save()
     if (pInfos->empty())
     {
         // empty project list: don't save it!
-        // See issue #267 for why: http://code.google.com/p/commitmonitor/issues/detail?id=267
+        // See issue #267 for why: https://sourceforge.net/p/commitmonitor/tickets/267/
         bExit = true;
     }
     ReleaseReadOnlyData();
