@@ -22,11 +22,42 @@
 
   <target name="build" depends="clean">
     <mkdir dir="${configuration}_${platform}" />
-    <!-- patch apr to fix an issue when _WIN32_WINNT is >= 0x0502 in the latest (8.1) Windows SDK.
-         TODO: this fix is required for apr 1.5.0 at least, check this requirement for every
-         new apr release and remove it once apr has this fixed. -->
-    <move file="atomic\win32\apr_atomic.c" tofile="atomic\win32\apr_atomic.save" overwrite="true" />
-    <copy file="..\build\apr_atomic.c" tofile="atomic\win32\apr_atomic.c" overwrite="true" />
+    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
+    <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
+    <!-- first build the gen_test_char.exe tool and generate the header with it -->
+    <cl outputdir="${configuration}_${platform}">
+      <arg value="/MD" if="${configuration == 'release'}" />
+      <arg value="/MDd" if="${configuration == 'debug'}" />
+      <arg value="/nologo" />
+      <arg value="/c" />
+      <arg value="/arch:IA32" if="${configuration == 'release' and platform == 'win32'}" />
+      <sources>
+        <include name="tools\gen_test_char.c" />
+      </sources>
+      <defines>
+        <define name="WIN32" />
+        <define name="_WINDOWS" />
+        <define name="_WIN32" />
+        <define name="WINNT" />
+        <define name="_WIN32_WINNT" value="0x0600" />
+        <define name="WIN64" if="${platform == 'x64'}" />
+        <define name="NDEBUG" if="${configuration == 'release'}" />
+        <define name="_DEBUG" if="${configuration == 'debug'}" />
+      </defines>
+    </cl>
+    <link
+      output="${configuration}_${platform}\gen_test_char.exe"
+      options='/INCREMENTAL:NO /NOLOGO /DYNAMICBASE /NXCOMPAT /DEBUG /PDB:"${configuration}_${platform}\gen_test_char.pdb" ws2_32.lib mswsock.lib rpcrt4.lib kernel32.lib advapi32.lib gdi32.lib user32.lib shell32.lib ole32.lib Secur32.lib Crypt32.lib Psapi.lib Version.lib'>
+      <arg line="/LTCG /RELEASE /OPT:REF /OPT:ICF" if="${configuration == 'release'}" />
+      <sources>
+        <include name="${configuration}_${platform}\gen_test_char.obj" />
+      </sources>
+    </link>
+    <exec program="${configuration}_${platform}\gen_test_char.exe"
+          output="include\private\apr_escape_test_char.h">
+    </exec>
+
+    <!-- now build the apr dll -->
     <copy file="include\apr.hw" tofile="include\apr.h" overwrite="true" />
     <loadfile file="include\apr.hw" property="configfile">
       <filterchain>
@@ -59,6 +90,7 @@
         <include name="network_io\unix\sockaddr.c" />
         <include name="atomic\win32\apr_atomic.c" />
         <include name="dso\win32\dso.c" />
+        <include name="encoding\*.c" />
         <include name="file_io\win32\*.c" />
         <include name="file_io\unix\copy.c" />
         <include name="file_io\unix\fileacc.c" />
@@ -91,6 +123,7 @@
         <include name="include" />
         <include name="include\arch" />
         <include name="include\arch\win32" />
+        <include name="include\private" />
       </includedirs>
       <defines>
         <define name="APR_DECLARE_STATIC" />
@@ -105,8 +138,6 @@
         <define name="_DEBUG" if="${configuration == 'debug'}" />
       </defines>
     </cl>
-    <property name="machineoption" value="/MACHINE:X86" if="${platform == 'win32'}" />
-    <property name="machineoption" value="/MACHINE:X64" if="${platform == 'x64'}" />
     <lib
       output="${configuration}_${platform}\libapr.lib"
       options='/NOLOGO ${subsystem} ${machineoption}'>
@@ -115,7 +146,6 @@
         <include name="${configuration}_${platform}\*.obj" />
       </sources>
     </lib>
-    <move file="atomic\win32\apr_atomic.save" tofile="atomic\win32\apr_atomic.c" overwrite="true" />
   </target>
 
 </project>
