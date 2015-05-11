@@ -858,7 +858,7 @@ LRESULT CMainDlg::DoCommand(int id)
                                 }
                             }
                             m_pURLInfos->ReleaseWriteData();
-                            m_pURLInfos->Save();
+                            m_pURLInfos->Save(pWrite->empty());
                             ::SendMessage(m_hParent, COMMITMONITOR_CHANGEDINFO, (WPARAM)false, (LPARAM)0);
                             ::SendMessage(m_hParent, COMMITMONITOR_REMOVEDURL, 0, 0);
                             if (hPrev == NULL)
@@ -989,7 +989,7 @@ LRESULT CMainDlg::DoCommand(int id)
                                         pWrite->erase(*(std::wstring*)itemex.lParam);
                                     (*pWrite)[inf->url] = *inf;
                                 }
-                                m_pURLInfos->Save();
+                                m_pURLInfos->Save(false);
                                 m_pURLInfos->ReleaseWriteData();
                                 SetWindowRedraw(m_hTreeControl, FALSE);
                                 TreeView_SelectItem(m_hTreeControl, NULL);
@@ -1022,7 +1022,7 @@ LRESULT CMainDlg::DoCommand(int id)
                             (*pWrite)[inf->url] = *inf;
                         }
                         m_pURLInfos->ReleaseWriteData();
-                        m_pURLInfos->Save();
+                        m_pURLInfos->Save(false);
                         RefreshURLTree(false, inf->url);
                     }
                 }

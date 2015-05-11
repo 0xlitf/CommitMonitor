@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2014 - Stefan Kueng
+// Copyright (C) 2007-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -352,11 +352,11 @@ bool CUrlInfos::Load()
     }
 }
 
-void CUrlInfos::Save()
+void CUrlInfos::Save(bool bForce)
 {
     bool bExit = false;
     const std::map<std::wstring,CUrlInfo> * pInfos = GetReadOnlyData();
-    if (pInfos->empty())
+    if (pInfos->empty() && !bForce)
     {
         // empty project list: don't save it!
         // See issue #267 for why: https://sourceforge.net/p/commitmonitor/tickets/267/

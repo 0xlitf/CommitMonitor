@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2012 - Stefan Kueng
+// Copyright (C) 2007-2012, 2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,7 +70,7 @@ public:
 
     void                ShowPopup(std::wstring& title, std::wstring& text, const wchar_t *alertType);
 
-    void                Save() { m_UrlInfos.Save(); }
+    void                Save() { m_UrlInfos.Save(false); }
 protected:
     /// the message handler for this window
     LRESULT CALLBACK    WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
