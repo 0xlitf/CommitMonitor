@@ -49,13 +49,8 @@
     </exec>
     <exec program="python.exe">
       <arg value="build\transform_sql.py" />
-      <arg value="subversion\libsvn_wc\wc-metadata.sql" />
-      <arg value="subversion\libsvn_wc\wc-metadata.h" />
-    </exec>
-    <exec program="python.exe">
-      <arg value="build\transform_sql.py" />
-      <arg value="subversion\libsvn_wc\wc-checks.sql" />
-      <arg value="subversion\libsvn_wc\wc-checks.h" />
+      <arg value="subversion\libsvn_fs_x\rep-cache-db.sql" />
+      <arg value="subversion\libsvn_fs_x\rep-cache-db.h" />
     </exec>
     <exec program="python.exe">
       <arg value="build\transform_sql.py" />
@@ -67,12 +62,14 @@
       <arg value="subversion\libsvn_subr\internal_statements.sql" />
       <arg value="subversion\libsvn_subr\internal_statements.h" />
     </exec>
+    <copy file="..\build\errorcode.inc" tofile="subversion\libsvn_subr\errorcode.inc" overwrite="true" />
+    <copy file="..\build\config_keys.inc" tofile="subversion\libsvn_subr\config_keys.inc" overwrite="true" />
 
     <foreach item="Folder" property="foldername">
       <in>
         <items>
           <include name="subversion\libsvn*" />
-          <exclude name="subversion\libsvn_fs*" />
+          <exclude name="subversion\libsvn_fs_base" />
           <exclude name="subversion\libsvn_auth_gnome_keyring" />
           <exclude name="subversion\libsvn_auth_kwallet" />
         </items>
@@ -99,6 +96,7 @@
           <sources>
             <include name="subversion\${fname}\**.c" />
             <exclude name="subversion\libsvn_subr\win32_crash**.c" />
+            <exclude name="subversion\libsvn_subr\utf8proc\utf8proc_data.c" />
           </sources>
           <includedirs>
             <include name="subversion" />

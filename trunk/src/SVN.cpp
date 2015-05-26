@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2014 - Stefan Kueng
+// Copyright (C) 2007-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 #pragma warning(push)
 #include "svn.h"
 #include "svn_sorts.h"
+#include "private/svn_sorts_private.h"
 #pragma warning(pop)
 
 #include "AppUtils.h"
@@ -326,8 +327,7 @@ bool SVN::GetFile(std::wstring sUrl, std::wstring sFile)
     rev.kind = svn_opt_revision_head;
 
     const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(sUrl)).c_str(), localpool);
-    Err = svn_client_cat2(stream, urla,
-        &pegrev, &rev, m_pctx, localpool);
+    Err = svn_client_cat3(NULL, stream, urla, &pegrev, &rev, true, m_pctx, localpool, localpool);
 
     apr_file_close(file);
 
@@ -348,7 +348,7 @@ std::wstring SVN::GetRootUrl(const std::wstring& path)
 
     const char * urla = svn_uri_canonicalize (CAppUtils::PathEscape(CUnicodeUtils::StdGetUTF8(path)).c_str(), localpool);
 
-    Err = svn_client_info3 (urla, &peg, &rev, svn_depth_empty, false, false, NULL, infoReceiver, this, m_pctx, localpool);
+    Err = svn_client_info4 (urla, &peg, &rev, svn_depth_empty, false, false, false, NULL, infoReceiver, this, m_pctx, localpool);
     if (Err != NULL)
         return NULL;
     if (m_arInfo.empty())
