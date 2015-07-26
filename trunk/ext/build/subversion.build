@@ -121,7 +121,6 @@
             <define name="SVN_HAVE_SASL=1" />
             <define name="APR_HAVE_IPV6" />
             <define name="alloca=_alloca" />
-            <define name="snprintf=_snprintf" />
             <define name="WIN32" />
             <define name="_WINDOWS" />
             <define name="_WIN32" />
