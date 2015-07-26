@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010, 2012-2014 - Stefan Kueng
+// Copyright (C) 2007-2010, 2012-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -188,7 +188,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
                     CStringUtils::trim(info.url);
 
                     tempurl = info.url.substr(0, 7);
-                    std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), std::tolower);
+                    std::transform(tempurl.begin(), tempurl.end(), tempurl.begin(), ::tolower);
 
                     if (tempurl.compare(_T("file://")) == 0)
                     {

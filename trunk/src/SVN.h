@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009-2012 - Stefan Kueng
+// Copyright (C) 2007, 2009-2012, 2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ public:
     SVN(void);
     ~SVN(void);
 
-    void SetAuthInfo(const std::wstring& username, const std::wstring& password);
+    void SetAuthInfo(const std::wstring& username, const std::wstring& pwd);
 
     bool GetFile(std::wstring sUrl, std::wstring sFile);
 

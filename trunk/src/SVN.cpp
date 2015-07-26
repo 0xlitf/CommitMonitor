@@ -285,9 +285,9 @@ std::wstring SVN::GetLastErrorMsg()
     return msg;
 }
 
-void SVN::SetAuthInfo(const std::wstring& username, const std::wstring& password)
+void SVN::SetAuthInfo(const std::wstring& username, const std::wstring& pwd)
 {
-    this->password = password;
+    password = pwd;
     if (m_pctx)
     {
         if (!username.empty())

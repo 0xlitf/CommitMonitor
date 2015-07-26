@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2015§ - Stefan Kueng
+// Copyright (C) 2007-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -818,12 +818,12 @@ DWORD CHiddenWindow::RunThread()
                             if (!bEntryExists)
                             {
                                 std::wstring author1 = logit->second.author;
-                                std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
+                                std::transform(author1.begin(), author1.end(), author1.begin(), ::tolower);
                                 authors.insert(author1);
                                 if (!writeIt->second.includeUsers.empty())
                                 {
                                     std::wstring s1 = writeIt->second.includeUsers;
-                                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                                    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
                                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                                     std::vector<std::wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
                                     bool bInclude = false;
@@ -841,7 +841,7 @@ DWORD CHiddenWindow::RunThread()
                                 if (!writeIt->second.ignoreUsers.empty())
                                 {
                                     std::wstring s1 = writeIt->second.ignoreUsers;
-                                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                                    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
                                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                                     std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
                                     for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)

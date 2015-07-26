@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in accurev repositories
 
-// Copyright (C) 2011-2014 - Stefan Kueng
+// Copyright (C) 2011-2015 - Stefan Kueng
 // Copyright (C) 2010 - Richard Sewell
 
 // This program is free software; you can redistribute it and/or
@@ -778,8 +778,8 @@ void ACCUREV::ClearErrors() {
   pErrorString = ACCU_NO_ERROR;
 }
 
-void ACCUREV::SetError(const wchar_t *pErrorString) {
-  this->pErrorString = pErrorString;
+void ACCUREV::SetError(const wchar_t *pErrString) {
+  pErrorString = pErrString;
 }
 
 static inline void char2wchar(char *pChar, wchar_t *pwChar, int length)

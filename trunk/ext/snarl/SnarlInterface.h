@@ -32,7 +32,7 @@ namespace Snarl {
 
     // --------------------------------------------------------------------
     
-    typedef enum M_RESULT {
+    enum M_RESULT {
         M_ABORTED         = 0x80000007,
         M_ACCESS_DENIED   = 0x80000009,
         M_ALREADY_EXISTS  = 0x8000000C,
@@ -78,7 +78,7 @@ namespace Snarl {
     
     static const SNARL_COMMANDS SNARL_GET_REVISION = SNARL_REVOKE_ALERT;
     
-    typedef enum SNARL_APP_FLAGS {
+    enum SNARL_APP_FLAGS {
         SNARL_APP_HAS_PREFS = 1,
         SNARL_APP_HAS_ABOUT = 2
     };
@@ -98,7 +98,7 @@ namespace Snarl {
     };
 
     /* Class attributes */
-    typedef enum SNARL_ATTRIBUTES {
+    enum SNARL_ATTRIBUTES {
         SNARL_ATTRIBUTE_TITLE = 1,
         SNARL_ATTRIBUTE_TEXT,
         SNARL_ATTRIBUTE_ICON,

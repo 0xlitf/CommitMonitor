@@ -1873,7 +1873,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             filterstring = filterstring.substr(1);
         }
         std::wstring filterstringlower = filterstring;
-        std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), std::tolower);
+        std::transform(filterstringlower.begin(), filterstringlower.end(), filterstringlower.begin(), ::tolower);
 
         bool bShowIgnored = !!SendDlgItemMessage(*this, IDC_SHOWIGNORED, BM_GETCHECK, 0, NULL);
         bool useFilter = !filterstringlower.empty();
@@ -1936,13 +1936,13 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                     for (const auto& sSearch : filters)
                     {
                         std::wstring s = it->second.author;
-                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
                         addEntry = s.find(sSearch) != std::wstring::npos;
 
                         if (!addEntry)
                         {
                             s = it->second.message;
-                            std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                            std::transform(s.begin(), s.end(), s.begin(), ::tolower);
                             addEntry = s.find(sSearch) != std::wstring::npos;
                             if (!addEntry)
                             {
@@ -1954,7 +1954,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                                     for (const auto& cpit : it->second.m_changedPaths)
                                     {
                                         s = cpit.first;
-                                        std::transform(s.begin(), s.end(), s.begin(), std::tolower);
+                                        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
                                         addEntry = s.find(sSearch) != std::wstring::npos;
                                         if (addEntry)
                                             break;
@@ -1973,12 +1973,12 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             if ((!bShowIgnored)&&(addEntry))
             {
                 std::wstring author1 = it->second.author;
-                std::transform(author1.begin(), author1.end(), author1.begin(), std::tolower);
+                std::transform(author1.begin(), author1.end(), author1.begin(), ::tolower);
 
                 if (!info->includeUsers.empty())
                 {
                     std::wstring s1 = info->includeUsers;
-                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
 
                     std::vector<std::wstring> includeVector = CAppUtils::tokenize_str(s1, _T("\n"));
@@ -1997,7 +1997,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 if (addEntry)
                 {
                     std::wstring s1 = info->ignoreUsers;
-                    std::transform(s1.begin(), s1.end(), s1.begin(), std::tolower);
+                    std::transform(s1.begin(), s1.end(), s1.begin(), ::tolower);
                     CAppUtils::SearchReplace(s1, _T("\r\n"), _T("\n"));
                     std::vector<std::wstring> ignoreVector = CAppUtils::tokenize_str(s1, _T("\n"));
                     for (auto ignoreIt = ignoreVector.begin(); ignoreIt != ignoreVector.end(); ++ignoreIt)
@@ -2600,7 +2600,7 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
                 ::GetWindowRect(m_hListControl, &rect);
                 if (pt.x < rect.left)
                 {
-                    HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
+                    HCURSOR hCur = LoadCursor(NULL, IDC_SIZEWE);
                     SetCursor(hCur);
                     return TRUE;
                 }
@@ -2611,7 +2611,7 @@ bool CMainDlg::OnSetCursor(HWND hWnd, UINT nHitTest, UINT message)
                     ::GetWindowRect(m_hLogMsgControl, &rect);
                     if (pt.y < rect.top)
                     {
-                        HCURSOR hCur = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS));
+                        HCURSOR hCur = LoadCursor(NULL, IDC_SIZENS);
                         SetCursor(hCur);
                         return TRUE;
                     }
@@ -3279,14 +3279,14 @@ void CMainDlg::OnContextMenu(WPARAM wParam, LPARAM lParam)
                 break;
             case ID_POPUP_OPENREPOSITORYBROWSER:
                 {
-                    TVITEMEX itemex = {0};
-                    itemex.hItem = TreeView_GetSelection(m_hTreeControl);
-                    itemex.mask = TVIF_PARAM;
-                    TreeView_GetItem(m_hTreeControl, &itemex);
-                    const std::map<std::wstring,CUrlInfo> * pRead = m_pURLInfos->GetReadOnlyData();
-                    if (pRead->find(*(std::wstring*)itemex.lParam) != pRead->end())
+                    TVITEMEX itex = {0};
+                    itex.hItem = TreeView_GetSelection(m_hTreeControl);
+                    itex.mask = TVIF_PARAM;
+                    TreeView_GetItem(m_hTreeControl, &itex);
+                    const std::map<std::wstring,CUrlInfo> * pReadData = m_pURLInfos->GetReadOnlyData();
+                    if (pReadData->find(*(std::wstring*)itex.lParam) != pReadData->end())
                     {
-                        const CUrlInfo * info = &pRead->find(*(std::wstring*)itemex.lParam)->second;
+                        const CUrlInfo * info = &pReadData->find(*(std::wstring*)itex.lParam)->second;
                         if (info)
                         {
                             // call TortoiseProc to do the diff for us
