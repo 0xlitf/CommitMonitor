@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007,2009-2014 - Stefan Kueng
+// Copyright (C) 2007,2009-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,9 +60,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         |ICC_UPDOWN_CLASS|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
     InitCommonControlsEx(&icex);
 
-    int argc = 0;
-    const char* const * argv = NULL;
-    apr_app_initialize(&argc, &argv, NULL);
+    apr_initialize();
     setlocale(LC_ALL, "");
     // to avoid that SASL will look for and load its plugin dlls all around the
     // system, we set the path here.
