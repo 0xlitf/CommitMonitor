@@ -35,6 +35,7 @@
 #include <assert.h>
 #include <cctype>
 #include <regex>
+#include <VersionHelpers.h>
 
 #pragma comment(lib, "uxtheme.lib")
 
@@ -48,6 +49,11 @@ const int checkboxheight = CDPIAware::Instance().ScaleY(CHECKBOXHEIGHT);
 
 const std::wstring g_nodate(L"(no date)");
 const std::wstring g_noauthor(L"(no author)");
+
+#ifndef _WIN32_WINNT_WIN10
+#define _WIN32_WINNT_WIN10 0x0A00
+#endif
+
 
 CMainDlg::CMainDlg(HWND hParent)
     : m_nDragMode(DRAGMODE_NONE)
@@ -394,10 +400,13 @@ LRESULT CMainDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             RefreshURLTree(true, L"");
 
-            ExtendFrameIntoClientArea(0, 0, 0, IDC_URLTREE);
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_EXIT));
+            if (!IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0))
+            {
+                ExtendFrameIntoClientArea(0, 0, 0, IDC_URLTREE);
+                m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_INFOLABEL));
+                m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
+                m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_EXIT));
+            }
 
             if (m_bNewerVersionAvailable)
             {
