@@ -46,6 +46,9 @@ const int filterboxheight = CDPIAware::Instance().ScaleY(FILTERBOXHEIGHT);
 const int filterlabelwidth = CDPIAware::Instance().ScaleX(FILTERLABELWIDTH);
 const int checkboxheight = CDPIAware::Instance().ScaleY(CHECKBOXHEIGHT);
 
+const std::wstring g_nodate(L"(no date)");
+const std::wstring g_noauthor(L"(no author)");
+
 CMainDlg::CMainDlg(HWND hParent)
     : m_nDragMode(DRAGMODE_NONE)
     , m_oldx(-1)
@@ -1899,7 +1902,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                     {
                         const std::wregex regCheck(filterstring.substr(1), std::regex_constants::icase | std::regex_constants::ECMAScript);
 
-                        addEntry = std::regex_search(it->second.author, regCheck);
+                        addEntry = std::regex_search(it->second.author.empty() ? g_noauthor : it->second.author, regCheck);
                         if (!addEntry)
                         {
                             addEntry = std::regex_search(it->second.message, regCheck);
@@ -1935,7 +1938,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
                     for (const auto& sSearch : filters)
                     {
-                        std::wstring s = it->second.author;
+                        std::wstring s = it->second.author.empty() ? g_noauthor : it->second.author;
                         std::transform(s.begin(), s.end(), s.begin(), ::tolower);
                         addEntry = s.find(sSearch) != std::wstring::npos;
 
@@ -1972,7 +1975,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
             if ((!bShowIgnored)&&(addEntry))
             {
-                std::wstring author1 = it->second.author;
+                std::wstring author1 = it->second.author.empty() ? g_noauthor : it->second.author;
                 std::transform(author1.begin(), author1.end(), author1.begin(), ::tolower);
 
                 if (!info->includeUsers.empty())
@@ -2028,12 +2031,12 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             if (it->second.date)
                 _tcscpy_s(buf, _countof(buf), CAppUtils::ConvertDate(it->second.date).c_str());
             else
-                _tcscpy_s(buf, _countof(buf), _T("(no date)"));
+                _tcscpy_s(buf, _countof(buf), g_nodate.c_str());
             ListView_SetItemText(m_hListControl, 0, 1, buf);
             if (!it->second.author.empty())
                 _tcscpy_s(buf, _countof(buf), it->second.author.c_str());
             else
-                _tcscpy_s(buf, _countof(buf), _T("(no author)"));
+                _tcscpy_s(buf, _countof(buf), g_noauthor.c_str());
             ListView_SetItemText(m_hListControl, 0, 2, buf);
             std::wstring msg = it->second.message;
             std::remove(msg.begin(), msg.end(), '\r');
