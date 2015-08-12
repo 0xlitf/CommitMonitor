@@ -27,7 +27,7 @@ if exist "CommitMonitor.tgz"  del "CommitMonitor.tgz"
 
 :main
 rem Win32
-call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" x86
+call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" x86
 if %ERRORLEVEL% neq 0 (
   echo vcvarsall.bat call failed.
   goto End
@@ -43,7 +43,7 @@ title "%COVDIR%\bin\cov-build.exe" --dir "cov-int" nant -buildfile:../default.bu
 
 
 rem x64
-call "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" x86_amd64
 if %ERRORLEVEL% neq 0 (
   echo vcvarsall.bat call failed.
   goto End
