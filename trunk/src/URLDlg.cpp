@@ -271,7 +271,7 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             info.ignoreCommitLog = std::wstring(buffer.get());
             try
             {
-                const std::wregex ignex(info.ignoreCommitLog.c_str(), std::regex_constants::icase | std::regex_constants::ECMAScript);
+                volatile const std::wregex ignex(info.ignoreCommitLog.c_str(), std::regex_constants::icase | std::regex_constants::ECMAScript);
             }
             catch (std::exception)
             {
