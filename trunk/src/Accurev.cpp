@@ -447,7 +447,7 @@ bool ACCUREV::logParser(const std::wstring& repo, const std::wstring& url, const
     }
 #else
     // Free allocated memory
-    if (pIssueNos) free(pIssueNos);
+    free(pIssueNos);
 #endif
 
     return retVal;
