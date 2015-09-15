@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lexers\LexOthers.cxx">
-      <Filter>lexers</Filter>
-    </ClCompile>
     <ClCompile Include="lexlib\Accessor.cxx">
       <Filter>lexlib</Filter>
     </ClCompile>
@@ -143,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="win32\HanjaDic.cxx">
       <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="lexers\LexDiff.cxx">
+      <Filter>lexers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +304,12 @@
     </ClInclude>
     <ClInclude Include="win32\HanjaDic.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Sci_Position.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Position.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
