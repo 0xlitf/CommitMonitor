@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2010, 2012 - Stefan Kueng
+// Copyright (C) 2007-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,7 @@ private:
     void                    SortItems(int col);
     void                    SaveWndPosition();
     void                    OnContextMenu(WPARAM wParam, LPARAM lParam);
+    void                    InitAliases();
 
     /// window procedure of the sub classed tree view control
     static LRESULT CALLBACK TreeProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
@@ -95,6 +96,7 @@ private:
     static LRESULT CALLBACK FilterProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
     WNDPROC                 m_oldFilterWndProc; ///< pointer to the original window proc of the filter control
     static int CALLBACK     CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+
 private:
     HWND                    m_hTreeControl;
     HWND                    m_hListControl;
@@ -128,4 +130,7 @@ private:
     size_t                  m_listviewUnfilteredCount;
 
     AeroControlBase         m_aerocontrols;
+
+    // key=author, value=alias
+    std::map<std::wstring, std::wstring> m_aliases;
 };

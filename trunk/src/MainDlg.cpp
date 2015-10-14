@@ -36,6 +36,7 @@
 #include <cctype>
 #include <regex>
 #include <VersionHelpers.h>
+#include <fstream>
 
 #pragma comment(lib, "uxtheme.lib")
 
@@ -49,6 +50,7 @@ const int checkboxheight = CDPIAware::Instance().ScaleY(CHECKBOXHEIGHT);
 
 const std::wstring g_nodate(L"(no date)");
 const std::wstring g_noauthor(L"(no author)");
+const std::wstring g_noalias(L"");
 
 #ifndef _WIN32_WINNT_WIN10
 #define _WIN32_WINNT_WIN10 0x0A00
@@ -90,6 +92,9 @@ CMainDlg::CMainDlg(HWND hParent)
     GetObject(hFont, sizeof(LOGFONT), &lf);
     lf.lfWeight = FW_BOLD;
     m_boldFont = CreateFontIndirect(&lf);
+
+    // load author=alias mapping
+    InitAliases();
 }
 
 CMainDlg::~CMainDlg(void)
@@ -1868,8 +1873,10 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         ListView_InsertColumn(m_hListControl, 1, &lvc);
         lvc.pszText = _T("author");
         ListView_InsertColumn(m_hListControl, 2, &lvc);
-        lvc.pszText = _T("log message");
+        lvc.pszText = _T("alias");
         ListView_InsertColumn(m_hListControl, 3, &lvc);
+        lvc.pszText = _T("log message");
+        ListView_InsertColumn(m_hListControl, 4, &lvc);
 
         LVITEM item = {0};
         TCHAR buf[1024];
@@ -2034,25 +2041,41 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 item.stateMask = LVIS_SELECTED;
                 item.state = LVIS_SELECTED;
             }
+            // set revision
             _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
             item.pszText = buf;
             ListView_InsertItem(m_hListControl, &item);
+
+            // set date
             if (it->second.date)
                 _tcscpy_s(buf, _countof(buf), CAppUtils::ConvertDate(it->second.date).c_str());
             else
                 _tcscpy_s(buf, _countof(buf), g_nodate.c_str());
             ListView_SetItemText(m_hListControl, 0, 1, buf);
+
+            // set author
             if (!it->second.author.empty())
                 _tcscpy_s(buf, _countof(buf), it->second.author.c_str());
             else
                 _tcscpy_s(buf, _countof(buf), g_noauthor.c_str());
             ListView_SetItemText(m_hListControl, 0, 2, buf);
+
+            // set alias
+            // lookup alias for author from map
+            auto result = m_aliases.find(it->second.author);
+            if (result != m_aliases.end())
+                _tcscpy_s(buf, _countof(buf), result->second.c_str());
+            else
+                _tcscpy_s(buf, _countof(buf), g_noalias.c_str());
+            ListView_SetItemText(m_hListControl, 0, 3, buf);
+
+            // set log message
             std::wstring msg = it->second.message;
             std::remove(msg.begin(), msg.end(), '\r');
             std::replace(msg.begin(), msg.end(), '\n', ' ');
             std::replace(msg.begin(), msg.end(), '\t', ' ');
             _tcsncpy_s(buf, _countof(buf), msg.c_str(), 1023);
-            ListView_SetItemText(m_hListControl, 0, 3, buf);
+            ListView_SetItemText(m_hListControl, 0, 4, buf);
 
             if ((iLastUnread < 0)&&(!it->second.read))
             {
@@ -2061,11 +2084,15 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             if (iLastUnread >= 0)
                 iLastUnread++;
         }
+            
         m_bBlockListCtrlUI = false;
         ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
         ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
-        ListView_SetColumnWidth(m_hListControl, 3, LVSCW_AUTOSIZE_USEHEADER);
+        // show alias column only when some aliases are loaded
+        ListView_SetColumnWidth(m_hListControl, 3, m_aliases.size()>0 ? LVSCW_AUTOSIZE_USEHEADER : 0);
+        ListView_SetColumnWidth(m_hListControl, 4, LVSCW_AUTOSIZE_USEHEADER);
+        
         if (bScrollToLastUnread)
             ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
         else
@@ -3439,5 +3466,47 @@ int CALLBACK CMainDlg::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     if (!SortUp)
         ret = -ret;
     return ret;
+}
 
+void CMainDlg::InitAliases()
+{
+#ifdef _DEBUG
+    // where to put local file? - determine working dir..
+    DWORD nBufferLength = 1024;
+    TCHAR Buffer[1024];
+    GetCurrentDirectory(nBufferLength, Buffer);
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" current working dir: %s \n"), Buffer);
+#endif
+
+    // load author=alias mapping from file
+    std::wifstream input("who-is-who.txt");
+#ifdef _DEBUG
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" file 'who-is-who.txt' %s found \n"), input.is_open() ? _T("") : _T("not") );
+#endif
+    for (std::wstring line; getline(input, line); )
+    {
+        // skip empty lines and comment lines
+        if (line.empty() || line.find('#') == 0) continue;
+
+        // parse line: author=alias
+        size_t pos = line.find('=');
+        if (pos != std::string::npos) {
+            // populate aliases map
+            m_aliases[line.substr(0, pos)] = line.substr(pos + 1);
+        }
+    }
+
+#ifdef _DEBUG
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" loaded author=alias pairs: %d \n"), m_aliases.size());
+#endif
+
+    if (m_aliases.size() > 0) {
+        // inform user
+        TCHAR info[4096] = { 0 };
+        _stprintf_s(info, _countof(info), _T("Loaded author-alias mapping from who-is-who.txt success!\nAliases loaded: %d"), m_aliases.size());
+        ::MessageBox(*this, info, _T("CommitMonitor"), MB_ICONINFORMATION | MB_OK);
+    }
+    else {
+        // silently hide alias column (set width=0), no benefit for user!
+    }
 }
