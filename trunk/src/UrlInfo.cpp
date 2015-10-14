@@ -394,9 +394,9 @@ bool CUrlInfos::Save(LPCWSTR filename)
     if (bSuccess)
     {
         // rename the file to the original requested name
-        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("data saved\n"));
+        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" data saved\n"));
 #ifdef _DEBUG
-        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" time needed for saving all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
 #endif
         return true;
     }
@@ -415,9 +415,9 @@ bool CUrlInfos::Load(LPCWSTR filename)
     if (buf)
         bRet = Load(buf);
     guard.ReleaseWriterLock();
-    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("data loaded\n"));
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" data loaded\n"));
 #ifdef _DEBUG
-    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" time needed for loading all url info: %ld ms\n"), GetTickCount()-dwStartTicks);
 #endif
     return bRet;
 }

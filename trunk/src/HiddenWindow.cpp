@@ -184,7 +184,7 @@ LRESULT CHiddenWindow::HandleCustomMessages(HWND /*hwnd*/, UINT uMsg, WPARAM wPa
     {
         bool bNew = m_SystemTray.hIcon == m_hIconNew1;
         m_SystemTray.hIcon = NULL;
-        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("Taskbar created!\n"));
+        CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" Taskbar created!\n"));
         ShowTrayIcon(bNew);
     }
     else if (uMsg == (UINT)snarlGlobalMsg)
@@ -522,7 +522,7 @@ LRESULT CALLBACK CHiddenWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
 
 void CHiddenWindow::DoTimer(bool bForce)
 {
-    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T("timer fired!\n"));
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" timer fired!\n"));
     // Restart the timer with 60 seconds
     ::SetTimer(*this, IDT_MONITOR, TIMER_ELAPSE, NULL);
 
