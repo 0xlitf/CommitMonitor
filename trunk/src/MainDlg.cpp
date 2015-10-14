@@ -3468,6 +3468,16 @@ int CALLBACK CMainDlg::CompareFunc( LPARAM lParam1, LPARAM lParam2, LPARAM lPara
     return ret;
 }
 
+// local helper to trim whitespace from string
+std::wstring trim(const std::wstring& str)
+{
+    size_t first = str.find_first_not_of(' ');
+    if (first == std::wstring::npos)
+        return _T("");
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
+
 void CMainDlg::InitAliases()
 {
 #ifdef _DEBUG
@@ -3492,7 +3502,7 @@ void CMainDlg::InitAliases()
         size_t pos = line.find('=');
         if (pos != std::string::npos) {
             // populate aliases map
-            m_aliases[line.substr(0, pos)] = line.substr(pos + 1);
+            m_aliases[trim(line.substr(0, pos))] = trim(line.substr(pos + 1));
         }
     }
 
