@@ -19,7 +19,8 @@ Now you're almost ready. Only a few more steps to do:
   SVN\CommitMonitor
 - Make a copy of the file default.build.user.tmpl in the CommitMonitor root folder and
   rename that copy to default.build.user. Then adjust the paths as mentioned
-  in that file.
+  in that file. 
+- Likewise, you may find init-devenv.bat.tmpl helpful!
 
 
 Building packages
