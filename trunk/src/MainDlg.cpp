@@ -3484,43 +3484,25 @@ std::wstring trim(const std::wstring& str)
 
 void CMainDlg::InitAliases()
 {
-#ifdef _DEBUG
-    // where to put local file? - determine working dir..
-    DWORD nBufferLength = 1024;
-    TCHAR Buffer[1024];
-    GetCurrentDirectory(nBufferLength, Buffer);
-    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" current working dir: %s \n"), Buffer);
-#endif
-
+    auto datafile = CAppUtils::GetDataDir();
+    datafile += L"\\who-is-who.txt";
     // load author=alias mapping from file
-    std::wifstream input("who-is-who.txt");
-#ifdef _DEBUG
+    std::wifstream input(datafile);
     CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" file 'who-is-who.txt' %s found \n"), input.is_open() ? _T("") : _T("not") );
-#endif
     for (std::wstring line; getline(input, line); )
     {
         // skip empty lines and comment lines
-        if (line.empty() || line.find('#') == 0) continue;
+        if (line.empty() || line.find('#') == 0)
+            continue;
 
         // parse line: author=alias
         size_t pos = line.find('=');
-        if (pos != std::string::npos) {
+        if (pos != std::string::npos)
+        {
             // populate aliases map
             m_aliases[trim(line.substr(0, pos))] = trim(line.substr(pos + 1));
         }
     }
 
-#ifdef _DEBUG
-    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" loaded author=alias pairs: %d \n"), m_aliases.size());
-#endif
-
-    if (m_aliases.size() > 0) {
-        // inform user
-        TCHAR info[4096] = { 0 };
-        _stprintf_s(info, _countof(info), _T("Loaded author-alias mapping from who-is-who.txt success!\nAliases loaded: %d"), m_aliases.size());
-        ::MessageBox(*this, info, _T("CommitMonitor"), MB_ICONINFORMATION | MB_OK);
-    }
-    else {
-        // silently hide alias column (set width=0), no benefit for user!
-    }
+    CTraceToOutputDebugString::Instance()(_T(__FUNCTION__) _T(" loaded author=alias pairs: %Id \n"), m_aliases.size());
 }
