@@ -1868,15 +1868,19 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         lvc.fmt = LVCFMT_LEFT;
         lvc.cx = -1;
         lvc.pszText = _T("revision");
-        ListView_InsertColumn(m_hListControl, 0, &lvc);
+        int col = 0;
+        ListView_InsertColumn(m_hListControl, col++, &lvc);
         lvc.pszText = _T("date");
-        ListView_InsertColumn(m_hListControl, 1, &lvc);
+        ListView_InsertColumn(m_hListControl, col++, &lvc);
         lvc.pszText = _T("author");
-        ListView_InsertColumn(m_hListControl, 2, &lvc);
-        lvc.pszText = _T("alias");
-        ListView_InsertColumn(m_hListControl, 3, &lvc);
+        ListView_InsertColumn(m_hListControl, col++, &lvc);
+        if (!m_aliases.empty())
+        {
+            lvc.pszText = _T("alias");
+            ListView_InsertColumn(m_hListControl, col++, &lvc);
+        }
         lvc.pszText = _T("log message");
-        ListView_InsertColumn(m_hListControl, 4, &lvc);
+        ListView_InsertColumn(m_hListControl, col++, &lvc);
 
         LVITEM item = {0};
         TCHAR buf[1024];
@@ -2051,23 +2055,27 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                 _tcscpy_s(buf, _countof(buf), CAppUtils::ConvertDate(it->second.date).c_str());
             else
                 _tcscpy_s(buf, _countof(buf), g_nodate.c_str());
-            ListView_SetItemText(m_hListControl, 0, 1, buf);
+            col = 1;
+            ListView_SetItemText(m_hListControl, 0, col++, buf);
 
             // set author
             if (!it->second.author.empty())
                 _tcscpy_s(buf, _countof(buf), it->second.author.c_str());
             else
                 _tcscpy_s(buf, _countof(buf), g_noauthor.c_str());
-            ListView_SetItemText(m_hListControl, 0, 2, buf);
+            ListView_SetItemText(m_hListControl, 0, col++, buf);
 
-            // set alias
-            // lookup alias for author from map
-            auto result = m_aliases.find(it->second.author);
-            if (result != m_aliases.end())
-                _tcscpy_s(buf, _countof(buf), result->second.c_str());
-            else
-                _tcscpy_s(buf, _countof(buf), g_noalias.c_str());
-            ListView_SetItemText(m_hListControl, 0, 3, buf);
+            if (!m_aliases.empty())
+            {
+                // set alias
+                // lookup alias for author from map
+                auto result = m_aliases.find(it->second.author);
+                if (result != m_aliases.end())
+                    _tcscpy_s(buf, _countof(buf), result->second.c_str());
+                else
+                    _tcscpy_s(buf, _countof(buf), g_noalias.c_str());
+                ListView_SetItemText(m_hListControl, 0, col++, buf);
+            }
 
             // set log message
             std::wstring msg = it->second.message;
@@ -2075,7 +2083,7 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
             std::replace(msg.begin(), msg.end(), '\n', ' ');
             std::replace(msg.begin(), msg.end(), '\t', ' ');
             _tcsncpy_s(buf, _countof(buf), msg.c_str(), 1023);
-            ListView_SetItemText(m_hListControl, 0, 4, buf);
+            ListView_SetItemText(m_hListControl, 0, col++, buf);
 
             if ((iLastUnread < 0)&&(!it->second.read))
             {
@@ -2086,12 +2094,8 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
         }
             
         m_bBlockListCtrlUI = false;
-        ListView_SetColumnWidth(m_hListControl, 0, LVSCW_AUTOSIZE_USEHEADER);
-        ListView_SetColumnWidth(m_hListControl, 1, LVSCW_AUTOSIZE_USEHEADER);
-        ListView_SetColumnWidth(m_hListControl, 2, LVSCW_AUTOSIZE_USEHEADER);
-        // show alias column only when some aliases are loaded
-        ListView_SetColumnWidth(m_hListControl, 3, m_aliases.size()>0 ? LVSCW_AUTOSIZE_USEHEADER : 0);
-        ListView_SetColumnWidth(m_hListControl, 4, LVSCW_AUTOSIZE_USEHEADER);
+        for (int column = 0; column <= (m_aliases.empty() ? 3 : 4); ++column)
+            ListView_SetColumnWidth(m_hListControl, column, LVSCW_AUTOSIZE_USEHEADER);
         
         if (bScrollToLastUnread)
             ListView_EnsureVisible(m_hListControl, iLastUnread-1, FALSE);
