@@ -1,6 +1,5 @@
 # who-is-who.txt
-# author to alias mapping for CommitMonitor, put next to CommitMonitor.exe, loaded on startup
+# author to alias mapping for CommitMonitor
 # line syntax: author=alias
-steveking=your alias
-thilo20=my alias
-dummy=any other alias!
+# example:
+myname=myrealname

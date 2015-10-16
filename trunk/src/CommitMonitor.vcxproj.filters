@@ -382,6 +382,9 @@
     <None Include="Setup\Setup64.wxs">
       <Filter>WiX</Filter>
     </None>
+    <None Include="who-is-who.example">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommitMonitor.rc">
@@ -389,6 +392,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="compatibility.manifest" />
+    <Manifest Include="compatibility.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
   </ItemGroup>
 </Project>

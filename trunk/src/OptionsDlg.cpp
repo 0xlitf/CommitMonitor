@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007-2014 - Stefan Kueng
+// Copyright (C) 2007-2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 #include "PasswordDlg.h"
 #include "Registry.h"
 #include "AppUtils.h"
+#include "SmartHandle.h"
 #include <string>
 #include <Commdlg.h>
 
@@ -123,6 +124,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             ExtendFrameIntoClientArea(0, 0, 0, IDC_AEROLABEL);
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
             m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
+            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_SETUP_ALIASES));
         }
         return TRUE;
     case WM_COMMAND:
@@ -352,6 +354,37 @@ LRESULT COptionsDlg::DoCommand(int id)
             {
                 SetDlgItemText(*this, IDC_NOTIFICATIONSOUNDPATH, szFile);
             }
+        }
+        break;
+    case IDC_SETUP_ALIASES:
+        {
+            auto whoswhopath = CAppUtils::GetDataDir();
+            whoswhopath += L"\\who-is-who.txt";
+            if (!PathFileExists(whoswhopath.c_str()))
+            {
+                // file does not exist:
+                // get the example file from the resources and write that file
+                HRSRC hWhosResource = FindResource(nullptr, MAKEINTRESOURCE(IDR_WHOSWHO), L"whoswho");
+                if (hWhosResource)
+                {
+                    HGLOBAL hResourceLoaded = LoadResource(nullptr, hWhosResource);
+                    if (hResourceLoaded)
+                    {
+                        const char * lpResLock = (const char *)LockResource(hResourceLoaded);
+                        DWORD dwSizeRes = SizeofResource(nullptr, hWhosResource);
+                        if (lpResLock)
+                        {
+                            CAutoFile hFile = CreateFile(whoswhopath.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                            if (hFile)
+                            {
+                                DWORD dwWritten = 0;
+                                WriteFile(hFile, lpResLock, dwSizeRes, &dwWritten, NULL);
+                            }
+                        }
+                    }
+                }
+            }
+            ShellExecute(*this, _T("edit"), whoswhopath.c_str(), NULL, NULL, SW_SHOWNORMAL);
         }
         break;
     }

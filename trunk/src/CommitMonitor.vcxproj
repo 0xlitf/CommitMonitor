@@ -321,6 +321,7 @@
     <None Include="Setup\Setup.wxs" />
     <None Include="Setup\Setup64.wxs" />
     <None Include="Setup\VersionNumberInclude.in.wxi" />
+    <None Include="who-is-who.example" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CommitMonitor.rc" />
