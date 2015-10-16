@@ -1925,19 +1925,26 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                         addEntry = std::regex_search(it->second.author.empty() ? g_noauthor : it->second.author, regCheck);
                         if (!addEntry)
                         {
-                            addEntry = std::regex_search(it->second.message, regCheck);
+                            auto aliasresult = m_aliases.find(it->second.author);
+                            if (aliasresult != m_aliases.end())
+                                addEntry = std::regex_search(aliasresult->second, regCheck);
                             if (!addEntry)
                             {
-                                _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
-                                std::wstring s = std::wstring(buf);
-                                addEntry = std::regex_search(s, regCheck);
+
+                                addEntry = std::regex_search(it->second.message, regCheck);
                                 if (!addEntry)
                                 {
-                                    for (const auto& cpit : it->second.m_changedPaths)
+                                    _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
+                                    std::wstring s = std::wstring(buf);
+                                    addEntry = std::regex_search(s, regCheck);
+                                    if (!addEntry)
                                     {
-                                        addEntry = std::regex_search(cpit.first, regCheck);
-                                        if (addEntry)
-                                            break;
+                                        for (const auto& cpit : it->second.m_changedPaths)
+                                        {
+                                            addEntry = std::regex_search(cpit.first, regCheck);
+                                            if (addEntry)
+                                                break;
+                                        }
                                     }
                                 }
                             }
@@ -1964,23 +1971,29 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
 
                         if (!addEntry)
                         {
-                            s = it->second.message;
-                            std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-                            addEntry = s.find(sSearch) != std::wstring::npos;
+                            auto aliasresult = m_aliases.find(it->second.author);
+                            if (aliasresult != m_aliases.end())
+                                addEntry = aliasresult->second.find(sSearch) != std::wstring::npos;
                             if (!addEntry)
                             {
-                                _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
-                                s = buf;
+                                s = it->second.message;
+                                std::transform(s.begin(), s.end(), s.begin(), ::tolower);
                                 addEntry = s.find(sSearch) != std::wstring::npos;
                                 if (!addEntry)
                                 {
-                                    for (const auto& cpit : it->second.m_changedPaths)
+                                    _stprintf_s(buf, _countof(buf), _T("%ld"), it->first);
+                                    s = buf;
+                                    addEntry = s.find(sSearch) != std::wstring::npos;
+                                    if (!addEntry)
                                     {
-                                        s = cpit.first;
-                                        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-                                        addEntry = s.find(sSearch) != std::wstring::npos;
-                                        if (addEntry)
-                                            break;
+                                        for (const auto& cpit : it->second.m_changedPaths)
+                                        {
+                                            s = cpit.first;
+                                            std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+                                            addEntry = s.find(sSearch) != std::wstring::npos;
+                                            if (addEntry)
+                                                break;
+                                        }
                                     }
                                 }
                             }
