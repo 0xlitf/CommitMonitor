@@ -1973,7 +1973,11 @@ void CMainDlg::TreeItemSelected(HWND hTreeControl, HTREEITEM hSelectedItem)
                         {
                             auto aliasresult = m_aliases.find(it->second.author);
                             if (aliasresult != m_aliases.end())
-                                addEntry = aliasresult->second.find(sSearch) != std::wstring::npos;
+                            {
+                                s = aliasresult->second;
+                                std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+                                addEntry = s.find(sSearch) != std::wstring::npos;
+                            }
                             if (!addEntry)
                             {
                                 s = it->second.message;
