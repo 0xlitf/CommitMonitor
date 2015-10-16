@@ -23,6 +23,7 @@
 #include "ListCtrl.h"
 #include "UrlInfo.h"
 #include "AeroControls.h"
+#include "StringUtils.h"
 
 #define REPOBROWSER_CTRL_MIN_WIDTH 50
 #define REPOBROWSER_CTRL_MIN_HEIGHT 40
@@ -132,5 +133,5 @@ private:
     AeroControlBase         m_aerocontrols;
 
     // key=author, value=alias
-    std::map<std::wstring, std::wstring> m_aliases;
+    std::map<std::wstring, std::wstring, ci_lessW> m_aliases;
 };
