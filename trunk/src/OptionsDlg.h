@@ -1,6 +1,6 @@
 // CommitMonitor - simple checker for new commits in svn repositories
 
-// Copyright (C) 2007, 2009 - Stefan Kueng
+// Copyright (C) 2007, 2009, 2015 - Stefan Kueng
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@
 #pragma once
 #include "BaseDialog.h"
 #include "UrlInfo.h"
-#include "AeroControls.h"
 
 /**
  * options dialog.
@@ -41,5 +40,4 @@ private:
     HWND                    m_hParent;
     HWND                    m_hHiddenWnd;
     CUrlInfos *             m_pURLInfos;
-    AeroControlBase         m_aerocontrols;
 };

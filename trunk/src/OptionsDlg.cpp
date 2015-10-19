@@ -120,11 +120,6 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_SETCHECK, ignoreeol ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, ignorewhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, ignoreallwhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
-
-            ExtendFrameIntoClientArea(0, 0, 0, IDC_AEROLABEL);
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDOK));
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDCANCEL));
-            m_aerocontrols.SubclassControl(GetDlgItem(*this, IDC_SETUP_ALIASES));
         }
         return TRUE;
     case WM_COMMAND:
