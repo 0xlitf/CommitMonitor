@@ -842,7 +842,7 @@ LRESULT CMainDlg::DoCommand(int id)
                         // ask the user if he really wants to remove the url
                         TCHAR question[4096] = {0};
                         _stprintf_s(question, _countof(question), _T("Do you really want to stop monitoring the project\n%s ?"), it->second.name.c_str());
-                        if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION|MB_YESNO)==IDYES)
+                        if (::MessageBox(*this, question, _T("CommitMonitor"), MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON2) == IDYES)
                         {
                             // go through the whole list: deleting just the selected item is not enough
                             // we also have to remove all sub-projects as well.
