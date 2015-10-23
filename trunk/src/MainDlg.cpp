@@ -1078,6 +1078,7 @@ LRESULT CMainDlg::DoCommand(int id)
             dlg.SetUrlInfos(m_pURLInfos);
             dlg.DoModal(hResource, IDD_OPTIONS, *this);
             RefreshURLTree(false, L"");
+            m_pURLInfos->UpdateAuth();
         }
         break;
     case ID_MISC_ABOUT:

@@ -42,6 +42,7 @@ CUrlInfo::CUrlInfo(void)
     , sccs(SCCS_SVN)
     , noexecuteignored(false)
     , lastcheckedrobots(0)
+    , useDefaultAuth(false)
 {
 }
 
@@ -670,6 +671,29 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
 
     guard.ReleaseWriterLock();
     return true;
+}
+
+void CUrlInfos::UpdateAuth()
+{
+    // get defaults
+    CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
+    CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+
+    guard.AcquireWriterLock();
+
+    // iterate URLs, apply defaults if useDefaultAuth=true
+    std::map<std::wstring, CUrlInfo>::iterator it = infos.begin();
+    while (it != infos.end())
+    {
+        if (it->second.useDefaultAuth)
+        {
+            it->second.username = defaultUsername;
+            it->second.password = defaultPassword;
+        }
+        it++;
+    }
+
+    guard.ReleaseWriterLock();
 }
 
 const std::map<std::wstring,CUrlInfo> * CUrlInfos::GetReadOnlyData()

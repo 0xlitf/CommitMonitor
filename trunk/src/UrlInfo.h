@@ -45,6 +45,7 @@ public:
 
     std::wstring                username;
     std::wstring                password;
+    bool                        useDefaultAuth;
 
     SCCS_TYPE                   sccs;
     std::wstring                accurevRepo;
@@ -90,8 +91,9 @@ public:
     bool                        Load(LPCWSTR filename);
     bool                        IsEmpty();
     bool                        Export(LPCWSTR filename, LPCWSTR password);
-    bool                        CheckPassword(LPCWSTR filename, LPCWSTR password);
+//unused?    bool                        CheckPassword(LPCWSTR filename, LPCWSTR password);
     bool                        Import(LPCWSTR filename, LPCWSTR password);
+    void                        UpdateAuth();
 
     const std::map<std::wstring,CUrlInfo> *   GetReadOnlyData();
     std::map<std::wstring,CUrlInfo> *     GetWriteData();

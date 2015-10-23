@@ -87,6 +87,7 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             CRegStdString notifySound = CRegStdString(_T("Software\\CommitMonitor\\NotificationSound"));
             CRegStdDWORD updatecheck = CRegStdDWORD(_T("Software\\CommitMonitor\\CheckNewer"), FALSE);
             CRegStdDWORD numlogs = CRegStdDWORD(_T("Software\\CommitMonitor\\NumLogs"), 30);
+
             TCHAR numBuf[30] = {0};
             _stprintf_s(numBuf, _countof(numBuf), _T("%ld"), DWORD(numlogs));
             SendDlgItemMessage(*this, IDC_TASKBAR_ALWAYSON, BM_SETCHECK, bShowTaskbarIcon ? BST_CHECKED : BST_UNCHECKED, NULL);
@@ -120,7 +121,12 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_IGNOREEOL, BM_SETCHECK, ignoreeol ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, ignorewhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, ignoreallwhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
-        }
+
+            CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
+            CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+            SetDlgItemText(*this, IDC_USERNAME, std::wstring(defaultUsername).c_str());
+            SetDlgItemText(*this, IDC_PASSWORD, std::wstring(defaultPassword).c_str());
+    }
         return TRUE;
     case WM_COMMAND:
         return DoCommand(LOWORD(wParam));
@@ -238,6 +244,20 @@ LRESULT COptionsDlg::DoCommand(int id)
             bool ignorewhitespaces = !!SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_GETCHECK, 0, NULL);
             bool ignoreallwhitespaces = !!SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_GETCHECK, 0, NULL);
             diffParams = SVN::GetOptionsString(ignoreeol, ignorewhitespaces, ignoreallwhitespaces);
+
+            // store default auth
+            //TODO: detect if username or password have been changed at all - no need to update UrlInfos
+            len = ::GetWindowTextLength(GetDlgItem(*this, IDC_USERNAME));
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len + 1]);
+            ::GetDlgItemText(*this, IDC_USERNAME, divi.get(), len+1);
+            CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
+            defaultUsername = divi.get();
+
+            len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PASSWORD));
+            divi = std::unique_ptr<WCHAR[]>(new TCHAR[len + 1]);
+            ::GetDlgItemText(*this, IDC_PASSWORD, divi.get(), len+1);
+            CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+            defaultPassword = divi.get();
         }
         // fall through
     case IDCANCEL:

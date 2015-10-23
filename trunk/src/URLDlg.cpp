@@ -126,8 +126,11 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             _stprintf_s(buf, _countof(buf), _T("%ld"), max(info.minutesinterval, info.minminutesinterval));
             SetDlgItemText(*this, IDC_CHECKTIME, buf);
             SetDlgItemText(*this, IDC_PROJECTNAME, info.name.c_str());
+
+            SendMessage(GetDlgItem(*this, IDC_USE_DEFAULT_AUTH), BM_SETCHECK, info.useDefaultAuth ? BST_CHECKED : BST_UNCHECKED, NULL);
             SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
             SetDlgItemText(*this, IDC_PASSWORD, info.password.c_str());
+
             SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
             if (info.disallowdiffs)
                 EnableWindow(GetDlgItem(*this, IDC_CREATEDIFFS), FALSE);
@@ -233,12 +236,25 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             if ((info.minminutesinterval)&&(info.minminutesinterval > info.minutesinterval))
                 info.minutesinterval = info.minminutesinterval;
 
-            buffer = GetDlgItemText(IDC_USERNAME);
-            info.username = std::wstring(buffer.get());
-            CStringUtils::trim(info.username);
+            info.useDefaultAuth = (SendMessage(GetDlgItem(*this, IDC_USE_DEFAULT_AUTH), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            if (info.useDefaultAuth)
+            {
+                // apply defaults
+                CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
+                CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+                info.username = defaultUsername;
+                info.password = defaultPassword;
+            }
+            else 
+            {
+                // use text controls
+                buffer = GetDlgItemText(IDC_USERNAME);
+                info.username = std::wstring(buffer.get());
+                CStringUtils::trim(info.username);
+                buffer = GetDlgItemText(IDC_PASSWORD);
+                info.password = std::wstring(buffer.get());
+            }
 
-            buffer = GetDlgItemText(IDC_PASSWORD);
-            info.password = std::wstring(buffer.get());
             info.fetchdiffs = (SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_GETCHECK, 0, 0) == BST_CHECKED);
 
             buffer = GetDlgItemText(IDC_MAXLOGENTRIES);
@@ -312,6 +328,24 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
         case CBN_SELCHANGE: // This means that list item has changed
             info.sccs = (CUrlInfo::SCCS_TYPE)SendMessage(GetDlgItem(*this, IDC_SCCSCOMBO), CB_GETCURSEL, 0, 0);
             SetSCCS(info.sccs);
+            break;
+        }
+        break;
+
+    case IDC_USE_DEFAULT_AUTH:
+        switch (cmd)
+        {
+        case BN_CLICKED: // check box toggle
+            //note: changes only get applied in case IDOK!
+            bool useDefaultAuth = (SendMessage(GetDlgItem(*this, IDC_USE_DEFAULT_AUTH), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            if (useDefaultAuth)
+            {
+                // sync text controls
+                CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
+                CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+                SetDlgItemText(*this, IDC_USERNAME, ((std::wstring)defaultUsername).c_str());
+                SetDlgItemText(*this, IDC_PASSWORD, ((std::wstring)defaultPassword).c_str());
+            }
             break;
         }
         break;
