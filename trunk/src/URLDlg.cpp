@@ -130,6 +130,9 @@ LRESULT CURLDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetDlgItem(*this, IDC_USE_DEFAULT_AUTH), BM_SETCHECK, info.useDefaultAuth ? BST_CHECKED : BST_UNCHECKED, NULL);
             SetDlgItemText(*this, IDC_USERNAME, info.username.c_str());
             SetDlgItemText(*this, IDC_PASSWORD, info.password.c_str());
+            DialogEnableWindow(IDC_USERNAME, !info.useDefaultAuth);
+            DialogEnableWindow(IDC_PASSWORD, !info.useDefaultAuth);
+
 
             SendMessage(GetDlgItem(*this, IDC_CREATEDIFFS), BM_SETCHECK, info.fetchdiffs ? BST_CHECKED : BST_UNCHECKED, NULL);
             if (info.disallowdiffs)
@@ -240,10 +243,10 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
             if (info.useDefaultAuth)
             {
                 // apply defaults
-                CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
-                CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
-                info.username = defaultUsername;
-                info.password = defaultPassword;
+                CRegStdString defaultUsername(_T("Software\\CommitMonitor\\DefaultUsername"));
+                CRegStdString defaultPassword(_T("Software\\CommitMonitor\\DefaultPassword"));
+                info.username = CStringUtils::Decrypt(std::wstring(defaultUsername).c_str()).get();
+                info.password = CStringUtils::Decrypt(std::wstring(defaultPassword).c_str()).get();
             }
             else 
             {
@@ -338,14 +341,8 @@ LRESULT CURLDlg::DoCommand(int id, int cmd)
         case BN_CLICKED: // check box toggle
             //note: changes only get applied in case IDOK!
             bool useDefaultAuth = (SendMessage(GetDlgItem(*this, IDC_USE_DEFAULT_AUTH), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            if (useDefaultAuth)
-            {
-                // sync text controls
-                CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
-                CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
-                SetDlgItemText(*this, IDC_USERNAME, ((std::wstring)defaultUsername).c_str());
-                SetDlgItemText(*this, IDC_PASSWORD, ((std::wstring)defaultPassword).c_str());
-            }
+            DialogEnableWindow(IDC_USERNAME, !useDefaultAuth);
+            DialogEnableWindow(IDC_PASSWORD, !useDefaultAuth);
             break;
         }
         break;

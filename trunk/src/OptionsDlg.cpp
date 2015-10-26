@@ -22,6 +22,7 @@
 #include "OptionsDlg.h"
 #include "PasswordDlg.h"
 #include "Registry.h"
+#include "StringUtils.h"
 #include "AppUtils.h"
 #include "SmartHandle.h"
 #include <string>
@@ -122,10 +123,10 @@ LRESULT COptionsDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(*this, IDC_IGNORESPACES, BM_SETCHECK, ignorewhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
             SendDlgItemMessage(*this, IDC_IGNOREALLSPACES, BM_SETCHECK, ignoreallwhitespaces ? BST_CHECKED : BST_UNCHECKED, NULL);
 
-            CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
-            CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
-            SetDlgItemText(*this, IDC_USERNAME, std::wstring(defaultUsername).c_str());
-            SetDlgItemText(*this, IDC_PASSWORD, std::wstring(defaultPassword).c_str());
+            CRegStdString defaultUsername(_T("Software\\CommitMonitor\\DefaultUsername"));
+            CRegStdString defaultPassword(_T("Software\\CommitMonitor\\DefaultPassword"));
+            SetDlgItemText(*this, IDC_USERNAME, CStringUtils::Decrypt(std::wstring(defaultUsername).c_str()).get());
+            SetDlgItemText(*this, IDC_PASSWORD, CStringUtils::Decrypt(std::wstring(defaultPassword).c_str()).get());
     }
         return TRUE;
     case WM_COMMAND:
@@ -250,14 +251,14 @@ LRESULT COptionsDlg::DoCommand(int id)
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_USERNAME));
             divi = std::unique_ptr<WCHAR[]>(new TCHAR[len + 1]);
             ::GetDlgItemText(*this, IDC_USERNAME, divi.get(), len+1);
-            CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
-            defaultUsername = divi.get();
+            CRegStdString defaultUsername(_T("Software\\CommitMonitor\\DefaultUsername"));
+            defaultUsername = CStringUtils::Encrypt(divi.get());
 
             len = ::GetWindowTextLength(GetDlgItem(*this, IDC_PASSWORD));
             divi = std::unique_ptr<WCHAR[]>(new TCHAR[len + 1]);
             ::GetDlgItemText(*this, IDC_PASSWORD, divi.get(), len+1);
-            CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
-            defaultPassword = divi.get();
+            CRegStdString defaultPassword(_T("Software\\CommitMonitor\\DefaultPassword"));
+            defaultPassword = CStringUtils::Encrypt(divi.get());
         }
         // fall through
     case IDCANCEL:

@@ -19,6 +19,7 @@
 
 #include "stdafx.h"
 #include "UrlInfo.h"
+#include "StringUtils.h"
 #include "AppUtils.h"
 #include "MappedInFile.h"
 #include "SimpleIni.h"
@@ -676,8 +677,8 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
 void CUrlInfos::UpdateAuth()
 {
     // get defaults
-    CRegStdString defaultUsername = CRegStdString(_T("Software\\CommitMonitor\\DefaultUsername"));
-    CRegStdString defaultPassword = CRegStdString(_T("Software\\CommitMonitor\\DefaultPassword"));
+    CRegStdString defaultUsername(_T("Software\\CommitMonitor\\DefaultUsername"));
+    CRegStdString defaultPassword(_T("Software\\CommitMonitor\\DefaultPassword"));
 
     guard.AcquireWriterLock();
 
@@ -687,8 +688,8 @@ void CUrlInfos::UpdateAuth()
     {
         if (it->second.useDefaultAuth)
         {
-            it->second.username = defaultUsername;
-            it->second.password = defaultPassword;
+            it->second.username = CStringUtils::Decrypt(std::wstring(defaultUsername).c_str()).get();
+            it->second.password = CStringUtils::Decrypt(std::wstring(defaultPassword).c_str()).get();
         }
         it++;
     }
