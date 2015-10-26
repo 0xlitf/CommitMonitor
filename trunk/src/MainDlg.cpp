@@ -1177,18 +1177,20 @@ LRESULT CMainDlg::DoCommand(int id)
                                 if (mods)
                                     sClipboardData += L")";
                                 sClipboardData += _T(" : ");
+                                // path
                                 sClipboardData += it->first;
                                 if (!it->second.copyfrom_path.empty())
                                 {
                                     sClipboardData += _T("  (copied from: ");
                                     sClipboardData += it->second.copyfrom_path;
                                     sClipboardData += _T(", revision ");
-                                    _stprintf_s(tempBuf, _countof(tempBuf), _T("%ld)\n"), it->second.copyfrom_revision);
+                                    _stprintf_s(tempBuf, _countof(tempBuf), _T("%ld)"), it->second.copyfrom_revision);
                                     sClipboardData += std::wstring(tempBuf);
                                 }
-                                else
-                                    sClipboardData += _T("\n\n");
+                                sClipboardData += _T("\n");
                             }
+                            // add line break between revisions
+                            sClipboardData += _T("\n");
                         }
                     }
                 }
