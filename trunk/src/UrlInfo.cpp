@@ -562,6 +562,8 @@ bool CUrlInfos::Export(LPCWSTR filename, LPCWSTR password)
         iniFile.SetValue(it->first.c_str(), L"noexecuteignored", numberBuf);
         swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.monitored);
         iniFile.SetValue(it->first.c_str(), L"monitored", numberBuf);
+        swprintf_s(numberBuf, _countof(numberBuf), L"%ld", it->second.useDefaultAuth);
+        iniFile.SetValue(it->first.c_str(), L"useDefaultAuth", numberBuf);
 
         if (!it->second.password.empty())
         {
@@ -624,6 +626,7 @@ bool CUrlInfos::Import(LPCWSTR filename, LPCWSTR password)
         info.maxentries = _wtol(iniFile.GetValue(*it, L"maxentries", L""));
         info.noexecuteignored = !!_wtol(iniFile.GetValue(*it, L"noexecuteignored", L""));
         info.monitored = !!_wtol(iniFile.GetValue(*it, L"monitored", L"1"));
+        info.useDefaultAuth = !!_wtol(iniFile.GetValue(*it, L"useDefaultAuth", L"0"));
 
         std::wstring unencryptedPassword = std::wstring(iniFile.GetValue(*it, _T("password"), _T("")));
         if (!unencryptedPassword.empty())
