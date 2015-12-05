@@ -1,6 +1,6 @@
 Index: engines/e_capi.c
 ===================================================================
---- engines/e_capi.c	(revision 1043)
+--- engines/e_capi.c	(revision 1103)
 +++ engines/e_capi.c	(working copy)
 @@ -72,9 +72,11 @@
  #  include <windows.h>
