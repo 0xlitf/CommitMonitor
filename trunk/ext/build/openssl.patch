@@ -1,6 +1,6 @@
 Index: engines/e_capi.c
 ===================================================================
---- engines/e_capi.c	(revision 1103)
+--- engines/e_capi.c	(revision 1112)
 +++ engines/e_capi.c	(working copy)
 @@ -72,9 +72,11 @@
  #  include <windows.h>
@@ -14,7 +14,7 @@ Index: engines/e_capi.c
  
  /*
   * This module uses several "new" interfaces, among which is
-@@ -571,6 +573,26 @@
+@@ -591,6 +593,26 @@
  
  void ENGINE_load_capi(void)
  {
@@ -41,7 +41,7 @@ Index: engines/e_capi.c
      /* Copied from eng_[openssl|dyn].c */
      ENGINE *toadd = engine_capi();
      if (!toadd)
-@@ -578,6 +600,7 @@
+@@ -598,6 +620,7 @@
      ENGINE_add(toadd);
      ENGINE_free(toadd);
      ERR_clear_error();
@@ -49,7 +49,7 @@ Index: engines/e_capi.c
  }
  # endif
  
-@@ -1739,7 +1762,9 @@
+@@ -1771,7 +1794,9 @@
  
  static int cert_select_simple(ENGINE *e, SSL *ssl, STACK_OF(X509) *certs)
  {
